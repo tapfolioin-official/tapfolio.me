@@ -1,0 +1,456 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum AuthProvider {
+  LOCAL
+  GOOGLE
+  APPLE
+  GITHUB
+  MICROSOFT
+  FACEBOOK
+}
+
+model User {
+  id                  Int              @id @default(autoincrement())
+  name                String
+  email               String           @unique
+  passwordHash        String?
+  connectionCount     Int              @default(0)
+  profileReady        Boolean          @default(false)
+  profile             Profile?
+  sharingSettings     SharingSettings?
+  createdAt           DateTime         @default(now())
+  sentConnections     Connection[]     @relation("Requester")
+  receivedConnections Connection[]     @relation("Receiver")
+  connectionVisibilities ConnectionVisibility[]
+  accounts            Account[]
+  sentNotifications     Notification[]   @relation("NotificationSender")
+  receivedNotifications Notification[]   @relation("NotificationReceiver")
+  fcmTokens             FcmToken[]
+}
+
+model Account {
+  id           Int          @id @default(autoincrement())
+  userId       Int
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider     AuthProvider
+  providerId   String       @map("provider_id")
+  profileImage String?      @map("profile_image")
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@unique([provider, providerId])
+  @@unique([userId, provider])
+  @@map("accounts")
+}
+
+model Profile {
+  id             Int            @id @default(autoincrement())
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         Int            @unique
+  name           String
+  username       String         @unique
+  tagline        String?        @default("Let's connect!")
+  avatar         String         @default("/profile_avatar.png")
+  isOnline       Boolean        @default(true)
+  bio            String?        @default("I design meaningful experiences.")
+  phone          String?
+  whatsapp       String?
+  location       String?
+  diamonds       String         @default("0")
+  isPremium      Boolean        @default(false)
+  tapCount       Int            @default(0)
+  tags           Tag[]
+  socials        SocialLink[]
+  historyEvents  HistoryEvent[]
+  projects       Project[]
+}
+
+model Tag {
+  id        Int     @id @default(autoincrement())
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId Int
+  text      String
+  type      String  // "role" | "location"
+
+  @@index([profileId])
+}
+
+model SocialLink {
+  id        Int     @id @default(autoincrement())
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId Int
+  platform  String
+  handle    String
+  url       String
+  icon      String
+  color     String
+
+  @@index([profileId])
+}
+
+model HistoryEvent {
+  id        Int      @id @default(autoincrement())
+  profile   Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId Int
+  action    String
+  details   String
+  icon      String?
+  color     String?
+  createdAt DateTime @default(now())
+
+  @@index([profileId])
+}
+
+model AppVersion {
+  id          Int      @id @default(autoincrement())
+  versionName String   @map("version_name")
+  buildNumber Int      @map("build_number")
+  changelog   String?
+  apkUrl      String   @map("apk_url")
+  forceUpdate Boolean  @default(false) @map("force_update")
+  isCurrent   Boolean  @default(false) @map("is_current")
+  isDraft     Boolean  @default(true) @map("is_draft")
+  channel     String   @default("stable")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("app_versions")
+}
+
+model Connection {
+  id          Int      @id @default(autoincrement())
+  requesterId Int
+  receiverId  Int
+  status      String   @default("pending") // pending | accepted | rejected | blocked
+  via         String   @default("nfc")     // Default to nfc
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  requester  User                  @relation("Requester", fields: [requesterId], references: [id], onDelete: Cascade)
+  receiver   User                  @relation("Receiver",  fields: [receiverId],  references: [id], onDelete: Cascade)
+  visibilities ConnectionVisibility[]
+
+  @@unique([requesterId, receiverId])
+  @@index([receiverId])
+  @@map("connections")
+}
+
+model SharingSettings {
+  id            Int     @id @default(autoincrement())
+  userId        Int     @unique
+  shareName     Boolean @default(true)
+  shareEmail    Boolean @default(true)
+  sharePhone    Boolean @default(false)
+  shareWhatsapp Boolean @default(true)
+  shareLocation Boolean @default(false)
+
+  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sharing_settings")
+}
+
+model ConnectionVisibility {
+  id              Int      @id @default(autoincrement())
+  connectionId    Int
+  userId          Int
+  shareName       Boolean  @default(true)
+  shareEmail      Boolean  @default(true)
+  sharePhone      Boolean  @default(false)
+  shareWhatsapp   Boolean  @default(true)
+  shareLocation   Boolean  @default(false)
+  sharedSocialIds Int[]
+
+  connection      Connection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([connectionId, userId])
+  @@map("connection_visibilities")
+}
+
+model Notification {
+  id          Int      @id @default(autoincrement())
+  receiverId  Int
+  senderId    Int?
+  type        String   // connection_request | connection_accepted | profile_view | nfc_tap | system | announcement | security
+  title       String
+  message     String
+  data        Json?    // arbitrary payload, e.g. { connectionId, username, profileId }
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  receiver    User     @relation("NotificationReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  sender      User?    @relation("NotificationSender",   fields: [senderId],   references: [id], onDelete: SetNull)
+
+  @@index([receiverId, isRead])
+  @@index([receiverId, createdAt])
+  @@map("notifications")
+}
+
+model FcmToken {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  token      String   @unique
+  deviceType String?  // android | ios
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("fcm_tokens")
+}
+
+model ControlTask {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  category    String   @default("General")
+  priority    String   @default("MEDIUM") // LOW, MEDIUM, HIGH, CRITICAL
+  status      String   @default("TODO")   // BACKLOG, TODO, IN_PROGRESS, TESTING, COMPLETED
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("control_tasks")
+}
+
+model ControlBug {
+  id          Int      @id @default(autoincrement())
+  title       String
+  severity    String   @default("MEDIUM") // LOW, MEDIUM, HIGH, CRITICAL
+  module      String   @default("General")
+  status      String   @default("OPEN")   // OPEN, IN_PROGRESS, FIXED
+  createdAt   DateTime @default(now())
+
+  @@map("control_bugs")
+}
+
+model DevNote {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+
+  @@map("dev_notes")
+}
+
+model Project {
+  id               Int          @id @default(autoincrement())
+  profileId        Int
+  profile          Profile      @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  name             String
+  slug             String
+  shortDesc        String
+  fullDesc         String?      @db.Text
+  category         String       // "Web" | "Mobile" | "UI/UX" | "Open Source" | "AI" | "Research" | "Other"
+  status           String       @default("COMPLETED") // PLANNED | IN_PROGRESS | COMPLETED | ARCHIVED
+  coverImage       String?      @db.Text
+  logo             String?      @db.Text
+  liveDemo         String?      @db.Text
+  github           String?      @db.Text
+  appStore         String?      @db.Text
+  playStore        String?      @db.Text
+  documentation    String?      @db.Text
+  caseStudy        String?      @db.Text
+  isFeatured       Boolean      @default(false)
+  isPublic         Boolean      @default(true)
+  displayOrder     Int          @default(0)
+  pinned           Boolean      @default(false)
+  showTechnologies Boolean      @default(true)
+  showCover        Boolean      @default(true)
+  showDates        Boolean      @default(true)
+  startDate        DateTime?
+  endDate          DateTime?
+  techStack        String[]
+  gallery          String[]
+  views            Int          @default(0)
+  demoClicks       Int          @default(0)
+  githubClicks     Int          @default(0)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  @@unique([profileId, slug])
+  @@index([profileId])
+  @@map("projects")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ADMIN DASHBOARD — Enums
+// ═══════════════════════════════════════════════════════════════
+
+enum AdminRole {
+  SUPER_ADMIN
+  ADMIN
+  SUPPORT
+  MODERATOR
+  ANALYST
+  MARKETING
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  BANNED
+  PENDING
+  DELETED
+}
+
+enum TicketStatus {
+  OPEN
+  PENDING
+  RESOLVED
+  CLOSED
+}
+
+enum ReportStatus {
+  PENDING
+  ACTIONED
+  REJECTED
+}
+
+enum BroadcastChannel {
+  IN_APP
+  EMAIL
+  PUSH
+}
+
+enum BroadcastAudience {
+  EVERYONE
+  PREMIUM
+  FREE
+  VERIFIED
+  COUNTRY
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ADMIN DASHBOARD — Models
+// ═══════════════════════════════════════════════════════════════
+
+model Admin {
+  id          Int       @id @default(autoincrement())
+  email       String    @unique
+  role        AdminRole @default(ADMIN)
+  permissions Json      @default("{}")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  auditLogs   AuditLog[]
+  @@map("admins")
+}
+
+model AuditLog {
+  id          Int      @id @default(autoincrement())
+  adminId     Int?
+  admin       Admin?   @relation(fields: [adminId], references: [id], onDelete: SetNull)
+  action      String
+  module      String
+  targetId    String?
+  targetType  String?
+  before      Json?
+  after       Json?
+  ipAddress   String?
+  device      String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  @@index([adminId])
+  @@index([module])
+  @@map("audit_logs")
+}
+
+model AnalyticsEvent {
+  id        Int      @id @default(autoincrement())
+  userId    Int?
+  event     String
+  platform  String
+  page      String?
+  country   String?
+  city      String?
+  browser   String?
+  device    String?
+  duration  Int?
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  @@index([event])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("analytics_events")
+}
+
+model SupportTicket {
+  id        Int          @id @default(autoincrement())
+  email     String
+  name      String
+  subject   String
+  message   String       @db.Text
+  status    TicketStatus @default(OPEN)
+  createdAt DateTime     @default(now())
+
+  @@index([status])
+  @@map("support_tickets")
+}
+
+model SystemReport {
+  id         Int          @id @default(autoincrement())
+  targetType String
+  targetName String
+  reporter   String
+  reason     String
+  status     ReportStatus @default(PENDING)
+  createdAt  DateTime     @default(now())
+
+  @@index([status])
+  @@map("system_reports")
+}
+
+model BroadcastMessage {
+  id        Int               @id @default(autoincrement())
+  title     String
+  body      String            @db.Text
+  target    BroadcastAudience @default(EVERYONE)
+  channel   BroadcastChannel  @default(IN_APP)
+  createdAt DateTime          @default(now())
+
+  @@map("broadcast_messages")
+}
+
+model LoginHistory {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  ipAddress String?
+  device    String?
+  browser   String?
+  os        String?
+  country   String?
+  city      String?
+  success   Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("login_history")
+}
+
+model SessionHistory {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  token     String?
+  device    String?
+  browser   String?
+  os        String?
+  ipAddress String?
+  active    Boolean   @default(true)
+  startedAt DateTime  @default(now())
+  endedAt   DateTime?
+
+  @@index([userId])
+  @@index([active])
+  @@map("session_history")
+}
+

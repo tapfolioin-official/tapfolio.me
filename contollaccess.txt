@@ -1,0 +1,115 @@
+# Implementation Plan - Tapfolio Developer OS (Control Center)
+
+Design and implement **Tapfolio Developer OS**, a developer-only Project Control Center under `/admin/control-center` that consolidates sprint planning, interactive codebase diagrams, dependency maps, API catalogs, database ER viewers, security scoring, performance benchmarks, and automated AI code assistant consoles.
+
+## User Review Required
+
+> [!IMPORTANT]
+> **Administrative Authenticator**: Locking dashboard access and associated API routes strictly to administrators matching `process.env.ADMIN_EMAIL` (currently configured as `nibrasulhaqqamini@gmail.com`). Unauthorized requests will be blocked.
+> **Visual Dependency Diagrams**: Implementing flowcharts (e.g. Authentication, Public Profile, Connections, Uploads) and database ER relationships dynamically directly in the UI.
+> **Developer Database Seed**: Running database migrations to add `ControlTask`, `ControlBug`, and `DevNote` tables, automatically seeding real audited tasks (e.g. "Rename proxy.ts to middleware.ts", "Remove jsonwebtoken dependency", "Add db indexes") for immediate interactive use.
+
+---
+
+## Proposed Changes
+
+### Database Layer
+
+#### [MODIFY] [schema.prisma](file:///Users/mohammednibrasulhaqq/Documents/Web/pertap%20copy%202/prisma/schema.prisma)
+Add models for tasks, bugs, and release notes:
+```prisma
+model ControlTask {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  category    String   @default("General")
+  priority    String   @default("MEDIUM") // LOW, MEDIUM, HIGH, CRITICAL
+  status      String   @default("TODO")   // BACKLOG, TODO, IN_PROGRESS, TESTING, COMPLETED
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("control_tasks")
+}
+
+model ControlBug {
+  id          Int      @id @default(autoincrement())
+  title       String
+  severity    String   @default("MEDIUM") // LOW, MEDIUM, HIGH, CRITICAL
+  module      String   @default("General")
+  status      String   @default("OPEN")   // OPEN, IN_PROGRESS, FIXED
+  createdAt   DateTime @default(now())
+
+  @@map("control_bugs")
+}
+
+model DevNote {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+
+  @@map("dev_notes")
+}
+```
+
+---
+
+### Backend API Controllers
+
+#### [NEW] [route.ts (Sprint Tasks)](file:///Users/mohammednibrasulhaqq/Documents/Web/pertap%20copy%202/src/app/api/admin/control-center/tasks/route.ts)
+- `GET`: Returns active backlog tasks.
+- `POST`: Creates/updates tasks (supports status transfers for Kanban board).
+- `DELETE`: Clears tasks.
+
+#### [NEW] [route.ts (Bug Tracker)](file:///Users/mohammednibrasulhaqq/Documents/Web/pertap%20copy%202/src/app/api/admin/control-center/bugs/route.ts)
+- `GET`, `POST`, and `DELETE` handlers for Bug database management.
+
+#### [NEW] [route.ts (Dev Notes)](file:///Users/mohammednibrasulhaqq/Documents/Web/pertap%20copy%202/src/app/api/admin/control-center/notes/route.ts)
+- `GET`, `POST`, and `DELETE` handlers for Markdown release logs and engineering summaries.
+
+---
+
+### Front-End Interface (Developer OS)
+
+#### [NEW] [page.tsx (Developer OS Dashboard)](file:///Users/mohammednibrasulhaqq/Documents/Web/pertap%20copy%202/src/app/admin/control-center/page.tsx)
+Build a responsive dashboard using a left-hand navigation sidebar that switches between the following tabs:
+
+1. **System Health & Overview**
+   - General metrics (Build name, Git branch `main`, version `0.8.5`, system uptime, environment checks).
+   - Radial gauges for overall module progress (Auth, DB, UI, Performance, Security, documentation, testing).
+2. **Current Sprint (Kanban Board)**
+   - Drag-and-drop/click-select Kanban board mapping `BACKLOG` -> `TODO` -> `IN_PROGRESS` -> `TESTING` -> `COMPLETED`.
+   - Creation forms to add sprint tasks and assign priorities (Low, Medium, High, Critical).
+3. **Interactive Subsystem Flows**
+   - Architectural flow charts and ascii/visual maps mapping workflows (e.g. Registration, Login, Google verification, Public Profile loading, Connection approvals, NFC/QR tap redirection).
+4. **Interactive ER & DB Schema Viewer**
+   - Interactive schema visualizer displaying fields, indexing indicators, foreign keys, and missing secondary indexes flags.
+5. **API Route Catalog & Tester**
+   - Tabular directory displaying route method, routes path, authenticators constraints, and request/response shapes.
+6. **Codebase Explorer & Tech Stack**
+   - Visual directory map detailing lines of code, components counts, active dependencies (next, react, jose, three, tailwindcss v4), and package sizes.
+   - Flagging of duplicate portfolio templates and dead packages (`jsonwebtoken`).
+7. **Security Center & Risk Assessment**
+   - Security compliance checklists detailing JWT parameters, HTTPOnly cookie indicators, CSRF rate limit statuses, input sanitization checks, and overall threat health score.
+8. **Bug Tracker**
+   - Directory logging active bugs, modules, and severity labels.
+9. **Release Log & Developer Notes**
+   - Rich Markdown block saving development notes, roadmap items (Phases 1-6), and release summaries.
+10. **AI Code Assistant Console**
+    - Dynamic advice box generating structural recommendations based on project audit reports.
+
+#### [NEW] [page.module.css (Dashboard Styles)](file:///Users/mohammednibrasulhaqq/Documents/Web/pertap%20copy%202/src/app/admin/control-center/page.module.css)
+- Custom module styles using CSS grids, rounded card containers, glowing accent tags, and premium dark backdrop-filters.
+
+---
+
+## Verification Plan
+
+### Automated Tests
+- Run `npm run build` to verify Next.js static page generator and type checks.
+- Run `npx prisma db push` to initialize tables.
+
+### Manual Verification
+1. Access `/admin/control-center` with a public user account and ensure a clean 401 Unauthorized block or login redirect is returned.
+2. Log in with the admin account `nibrasulhaqqamini@gmail.com`. Verify the page renders successfully.
+3. Verify adding tasks, updating task columns on the Kanban sprint board, logging bugs, and writing developer notes persist in the database.

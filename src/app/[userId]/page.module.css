@@ -1,0 +1,344 @@
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: radial-gradient(circle at center, rgba(99, 102, 241, 0.1) 0%, var(--bg-primary) 80%);
+  padding: 2rem;
+}
+
+.profileCard {
+  width: 100%;
+  max-width: 480px;
+  padding: 3rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+/* 1. HOME TAB VIEW */
+.homeTabView {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--border-focus);
+}
+
+.name {
+  font-size: 1.8rem;
+  font-weight: 850;
+  letter-spacing: -0.5px;
+}
+
+.profileTagline {
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+/* 2. ACTION / CONNECT CONTAINER */
+.actionContainer {
+  width: 100%;
+}
+
+/* 3. QUOTE BAR */
+.quoteBar {
+  width: 100%;
+  text-align: center;
+  background: var(--bg-secondary);
+  border: 1px dashed var(--border-color);
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius-md);
+}
+
+.quoteBar p {
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* 4. BIO AND DETAILS */
+.detailsSection {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.detailsSection h2 {
+  font-size: 0.95rem;
+  font-weight: 750;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.4rem;
+}
+
+.bioBlock p {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.tagsBlock {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.35rem 0.8rem;
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+}
+
+.tagRole {
+  background: rgba(99, 102, 241, 0.1);
+  color: #a5b4fc;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.tagLoc {
+  background: rgba(168, 85, 247, 0.1);
+  color: #d8b4fe;
+  border: 1px solid rgba(168, 85, 247, 0.2);
+}
+
+.socialGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.socialLinkCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.9rem 1.2rem;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: all var(--transition-fast);
+}
+
+.socialLinkCard:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--hover-color);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.02);
+  transform: translateY(-1px);
+}
+
+.platformName {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.platformHandle {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.contactBlock {
+  margin-bottom: 1.5rem;
+}
+
+.contactGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.contactItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 1.2rem;
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.contactLabel {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.contactValue {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.contactValue[href]:hover {
+  text-decoration: underline;
+  color: var(--accent-glow-secondary);
+}
+
+@media (max-width: 480px) {
+  .profileCard {
+    padding: 2rem 1.5rem;
+  }
+}
+
+.projectsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+.projectsSection h2 {
+  font-size: 0.95rem;
+  font-weight: 750;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.25rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.4rem;
+}
+
+.projectsList {
+  display: flex;
+  overflow-x: auto;
+  gap: 1rem;
+  padding-bottom: 0.5rem;
+  scroll-snap-type: x mandatory;
+}
+
+.projectsList::-webkit-scrollbar {
+  height: 6px;
+}
+
+.projectsList::-webkit-scrollbar-thumb {
+  background-color: var(--border-color);
+  border-radius: 3px;
+}
+
+.projectCard {
+  min-width: 260px;
+  flex: 0 0 260px;
+  scroll-snap-align: start;
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all var(--transition-fast);
+}
+
+.projectCard:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-focus);
+}
+
+.projectCoverWrap {
+  width: 100%;
+  height: 120px;
+  overflow: hidden;
+}
+
+.projectCover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.projectBody {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.projectCategory {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #3b82f6;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.projectName {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.projectDesc {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.projectTech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-top: 0.25rem;
+}
+
+.techChip {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.15rem 0.4rem;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  border-radius: 4px;
+}
+
+.projectLinks {
+  margin-top: auto;
+  padding-top: 0.5rem;
+}
+
+.detailsLink {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #3b82f6;
+  text-decoration: none;
+}
+
+.detailsLink:hover {
+  text-decoration: underline;
+}
+
+@media (min-width: 768px) {
+  .projectsList {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    overflow-x: visible;
+  }
+  
+  .projectCard {
+    min-width: 0;
+    flex: none;
+  }
+}
+
