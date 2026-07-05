@@ -17,6 +17,9 @@ export async function GET(
       include: {
         tags: true,
         socials: true,
+        projects: {
+          orderBy: { displayOrder: 'asc' }
+        },
         user: {
           select: {
             connectionCount: true,
@@ -55,6 +58,7 @@ export async function GET(
           connectionCount: profile.user?.connectionCount ?? 0,
           tags: profile.tags,
           socials: profile.socials,
+          projects: profile.projects,
           theme: profile.user?.profileThemes?.[0]?.settings || null,
         },
       },

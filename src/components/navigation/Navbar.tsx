@@ -77,6 +77,12 @@ export default function Navbar() {
         >
           Order
         </button>
+        <a
+          href="/docs"
+          className="text-blue-600 hover:text-blue-800 font-semibold transition-colors cursor-pointer"
+        >
+          Docs
+        </a>
       </div>
 
       {/* Action Buttons */}

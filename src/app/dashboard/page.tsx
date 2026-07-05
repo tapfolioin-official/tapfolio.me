@@ -18,6 +18,171 @@ import {
   Download, Upload, Copy, Share, ArrowUp, ArrowDown, ShieldAlert,
   Layers, Smartphone, Eye, EyeOff, Save, Trash2, Heart, Image, Star
 } from 'lucide-react';
+import React from 'react';
+
+const THEME_DESCRIPTIONS: Record<string, string> = {
+  // Quick Themes
+  "Professional": "Clean white business style",
+  "Minimal": "Simple clean layout",
+  "Dark": "Midnight elegant dark",
+  "Ocean": "Blue gradients & water",
+  "Forest": "Green natural tones",
+  "Royal": "Purple luxury style",
+  "Carbon": "Modern charcoal dark",
+  "Sunset": "Orange & pink gradients",
+  "Elegant": "Premium bronze elegant",
+  "Glass": "Glassmorphism effects",
+  "Neon": "Bright glowing accents",
+  "Business": "Corporate blue style",
+  // Premium Themes
+  "Luxury": "Gold premium elegance",
+  "Cyber": "Futuristic neon pink & blue",
+  "Aurora": "Northern lights gradient glow",
+  "Liquid Glass": "Soft pastel glassmorphism",
+  "Animated Gradient": "Fluid dynamic spectrum",
+  "Neon Glow": "Cyan electric highlights",
+  "Space": "Cosmic particles & purple",
+  "Apple Style": "Clean Cupertino white",
+  "Material You": "Dynamic pastel themes"
+};
+
+interface MiniProfilePreviewProps {
+  theme: any;
+}
+
+const MiniProfilePreview: React.FC<MiniProfilePreviewProps> = React.memo(({ theme }) => {
+  const settings = theme.settings;
+  const colors = settings.colors;
+  const background = settings.background;
+  const avatar = settings.avatar;
+  const cards = settings.cards;
+  const buttons = settings.buttons;
+  const layout = settings.layout;
+  const socialIcons = settings.socialIcons;
+
+  // Determine container background CSS
+  let bgStyle: React.CSSProperties = {};
+  if (background.type === 'gradient' || background.type === 'animated_gradient') {
+    bgStyle.background = background.value;
+  } else if (background.type === 'solid') {
+    bgStyle.backgroundColor = background.value || colors.background;
+  } else if (background.type === 'aurora') {
+    bgStyle.background = 'linear-gradient(135deg, #020617 0%, #1e1b4b 50%, #0f172a 100%)';
+  } else if (background.type === 'particles') {
+    bgStyle.background = 'linear-gradient(180deg, #03001e 0%, #7303c0 50%, #ec38bc 100%)';
+  } else {
+    bgStyle.backgroundColor = colors.background;
+  }
+
+  // Determine avatar shape & style
+  const avatarRadius = avatar.shape === 'circle' ? '9999px' : avatar.shape === 'rounded' ? '6px' : '0px';
+
+  // Determine card style
+  let cardStyle: React.CSSProperties = {
+    borderRadius: cards.borderRadius || '8px',
+    backgroundColor: colors.surface,
+    borderColor: colors.border || 'transparent',
+    borderWidth: cards.border ? '1px' : '0px',
+    borderStyle: 'solid',
+    boxShadow: cards.shadow || 'none',
+  };
+  if (cards.style === 'glass') {
+    cardStyle.backgroundColor = colors.surface.includes('rgba') ? colors.surface : 'rgba(255, 255, 255, 0.25)';
+    cardStyle.backdropFilter = `blur(${cards.blur || '8px'})`;
+  } else if (cards.style === 'minimal') {
+    cardStyle.boxShadow = 'none';
+    cardStyle.backgroundColor = 'transparent';
+    cardStyle.borderColor = colors.border || '#e5e7eb';
+  }
+
+  // Determine button radius
+  const btnRadius = buttons.style === 'pill' || buttons.radius === '100px' ? '9999px' : buttons.radius || '8px';
+
+  // Align style
+  const alignmentClass = layout.alignment === 'center' ? 'items-center text-center' : 'items-start text-left';
+
+  return (
+    <div
+      className="w-full aspect-[9/16] rounded-2xl relative overflow-hidden flex flex-col p-3 border border-gray-200/50 shadow-inner select-none transition-all duration-300 pointer-events-none"
+      style={bgStyle}
+    >
+      {/* Cover / Header banner representation */}
+      <div
+        className="h-7 w-full rounded-t-xl absolute top-0 left-0 opacity-70"
+        style={{ backgroundColor: colors.primary }}
+      />
+
+      {/* Profile Info Stack */}
+      <div className={`mt-5 flex flex-col ${alignmentClass} gap-1 z-10 w-full`}>
+        {/* Avatar Representation */}
+        <div
+          className="w-8 h-8 border-2 border-white shadow-sm flex items-center justify-center shrink-0"
+          style={{
+            borderRadius: avatarRadius,
+            backgroundColor: colors.surface,
+          }}
+        >
+          <div className="w-6 h-6 rounded-full bg-gray-200/60" />
+        </div>
+
+        {/* User Name & Bio Lines */}
+        <div className="w-[70%] h-2 rounded bg-gray-200 mt-1" style={{ backgroundColor: colors.text, opacity: 0.9 }} />
+        <div className="w-[50%] h-1.5 rounded bg-gray-200" style={{ backgroundColor: colors.mutedText, opacity: 0.7 }} />
+      </div>
+
+      {/* Social Icons row */}
+      <div className="flex justify-center gap-1.5 mt-2.5 z-10">
+        {[1, 2, 3].map((icon) => (
+          <div
+            key={icon}
+            className="w-4 h-4 border border-white/40 flex items-center justify-center shrink-0 shadow-sm"
+            style={{
+              borderRadius: socialIcons.style === 'circle' ? '9999px' : '4px',
+              backgroundColor: colors.primary,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Content Cards section */}
+      <div className="flex-1 flex flex-col gap-2 mt-3 z-10 w-full overflow-hidden">
+        {/* Project Card 1 */}
+        <div className="p-1.5 flex flex-col gap-1 w-full" style={cardStyle}>
+          <div className="h-6 w-full rounded bg-gray-150 relative overflow-hidden shrink-0">
+            {/* mock image accent */}
+            <div className="absolute inset-0 opacity-10" style={{ backgroundColor: colors.primary }} />
+          </div>
+          <div className="h-1.5 w-[80%] rounded" style={{ backgroundColor: colors.text }} />
+          <div className="h-1 w-[60%] rounded" style={{ backgroundColor: colors.mutedText }} />
+        </div>
+
+        {/* Project Card 2 */}
+        <div className="p-1.5 flex flex-col gap-1 w-full" style={cardStyle}>
+          <div className="h-6 w-full rounded bg-gray-150 relative overflow-hidden shrink-0">
+            <div className="absolute inset-0 opacity-10" style={{ backgroundColor: colors.primary }} />
+          </div>
+          <div className="h-1.5 w-[75%] rounded" style={{ backgroundColor: colors.text }} />
+          <div className="h-1 w-[50%] rounded" style={{ backgroundColor: colors.mutedText }} />
+        </div>
+      </div>
+
+      {/* CTA Buttons bar at the bottom */}
+      <div className="mt-auto pt-2 z-10 w-full flex flex-col gap-1.5">
+        <div
+          className="h-5 w-full flex items-center justify-center text-[8px] font-bold text-white shadow-sm shrink-0"
+          style={{
+            backgroundColor: colors.primary,
+            borderRadius: btnRadius,
+          }}
+        >
+          Connect
+        </div>
+      </div>
+    </div>
+  );
+});
+
+MiniProfilePreview.displayName = 'MiniProfilePreview';
 
 interface Tag {
   id?: number;
@@ -132,7 +297,18 @@ export default function Dashboard() {
   const [success, setSuccess] = useState('');
 
   // Tabs Navigation
-  const [activeTab, setActiveTab] = useState<'overview' | 'customizer' | 'projects' | 'sharing'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'customizer' | 'projects' | 'sharing' | 'support'>('overview');
+
+  // Support & Feedback states
+  const [supportSubject, setSupportSubject] = useState('Feedback/Complaint');
+  const [supportMessage, setSupportMessage] = useState('');
+  const [submittingSupport, setSubmittingSupport] = useState(false);
+  const [supportSuccess, setSupportSuccess] = useState('');
+  const [supportError, setSupportError] = useState('');
+
+  // System Announcements states
+  const [announcements, setAnnouncements] = useState<any[]>([]);
+  const [loadingAnnouncements, setLoadingAnnouncements] = useState(true);
 
   // Projects states
   const [projects, setProjects] = useState<any[]>([]);
@@ -290,6 +466,22 @@ export default function Dashboard() {
       }
     } catch (err) {
       console.error('Failed to fetch history logs:', err);
+    }
+  };
+
+  const fetchAnnouncements = async () => {
+    try {
+      const res = await fetch('/api/broadcast');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          setAnnouncements(data.announcements || []);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to fetch system announcements:', err);
+    } finally {
+      setLoadingAnnouncements(false);
     }
   };
 
@@ -479,6 +671,7 @@ export default function Dashboard() {
   useEffect(() => {
     fetchProfile();
     fetchHistory();
+    fetchAnnouncements();
     fetchSharingSettings();
     fetchTheme();
     fetchMarketplace();
@@ -679,6 +872,39 @@ export default function Dashboard() {
       setError(err.message || 'Failed to update settings.');
     } finally {
       setSavingSharing(false);
+    }
+  };
+
+  const handleCreateSupportTicket = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!supportMessage.trim()) return;
+
+    setSubmittingSupport(true);
+    setSupportSuccess('');
+    setSupportError('');
+
+    try {
+      const res = await fetch('/api/support', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          subject: supportSubject,
+          message: supportMessage
+        })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setSupportSuccess('Your feedback has been submitted successfully to the administrators.');
+        setSupportMessage('');
+        setSupportSubject('Feedback/Complaint');
+      } else {
+        setSupportError(data.error || 'Failed to submit feedback.');
+      }
+    } catch (err) {
+      console.error('Support ticket error:', err);
+      setSupportError('Network error. Please try again.');
+    } finally {
+      setSubmittingSupport(false);
     }
   };
 
@@ -991,6 +1217,12 @@ export default function Dashboard() {
               >
                 Privacy & Sharing
               </button>
+              <button
+                onClick={() => setActiveTab('support')}
+                className={`flex-1 sm:flex-none px-6 py-2.5 text-sm font-semibold rounded-lg transition-all whitespace-nowrap ${activeTab === 'support' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+              >
+                Support & Feedback
+              </button>
             </div>
 
             {/* OVERVIEW TAB */}
@@ -1043,6 +1275,33 @@ export default function Dashboard() {
                   </div>
                 </div>
 
+                {/* System Announcements */}
+                <div className="bg-gradient-to-r from-blue-50/50 to-indigo-50/50 rounded-2xl shadow-sm border border-blue-100/50 overflow-hidden">
+                  <div className="px-6 py-5 border-b border-blue-100/30 flex items-center gap-2.5">
+                    <span className="text-xl">📢</span>
+                    <h3 className="text-lg font-bold text-gray-900">System Announcements</h3>
+                  </div>
+                  <div className="divide-y divide-blue-100/20 bg-white">
+                    {loadingAnnouncements ? (
+                      <div className="px-6 py-8 text-center text-gray-400 text-sm">Loading announcements...</div>
+                    ) : announcements.length === 0 ? (
+                      <div className="px-6 py-8 text-center text-gray-400 text-sm">No announcements from the team yet.</div>
+                    ) : (
+                      announcements.map((msg, i) => (
+                        <div key={i} className="px-6 py-5 flex flex-col gap-2 hover:bg-slate-50/50 transition-colors">
+                          <div className="flex items-center justify-between gap-3">
+                            <h4 className="font-bold text-gray-900 text-sm">{msg.title}</h4>
+                            <span className="text-[10px] bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-full font-bold text-blue-600">
+                              {new Date(msg.createdAt).toLocaleDateString()}
+                            </span>
+                          </div>
+                          <p className="text-xs text-gray-600 leading-relaxed whitespace-pre-wrap">{msg.body}</p>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+
                 {/* Recent Logs */}
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                   <div className="px-6 py-5 border-b border-gray-100">
@@ -1073,163 +1332,166 @@ export default function Dashboard() {
             {activeTab === 'customizer' && (
               <div className="flex flex-col gap-6">
 
-                  {/* Category Nav Tabs */}
-                  <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 overflow-x-auto whitespace-nowrap scrollbar-none flex gap-2">
-                    {[
-                      { id: 'profile', label: 'Profile Info' },
-                      { id: 'presets', label: 'Presets' },
-                      { id: 'colors', label: 'Colors' },
-                      { id: 'background', label: 'Backgrounds' },
-                      { id: 'fonts', label: 'Fonts' },
-                      { id: 'cards', label: 'Cards' },
-                      { id: 'buttons', label: 'Buttons' },
-                      { id: 'layout', label: 'Layout' },
-                      { id: 'avatar', label: 'Avatar & Cover' },
-                      { id: 'sections', label: 'Sections' },
-                      { id: 'socials', label: 'Social Icons' },
-                      { id: 'animations', label: 'Animations' },
-                      { id: 'marketplace', label: 'Marketplace' },
-                      { id: 'advanced', label: 'Advanced & WCAG' }
-                    ].map((sub) => (
-                      <button
-                        key={sub.id}
-                        type="button"
-                        onClick={() => setThemeSubTab(sub.id as any)}
-                        className={`px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer ${themeSubTab === sub.id
-                          ? 'bg-gray-900 text-white shadow-sm'
-                          : 'bg-gray-50 text-gray-500 hover:text-gray-900 hover:bg-gray-100'
-                          }`}
-                      >
-                        {sub.label}
-                      </button>
-                    ))}
-                  </div>
+                {/* Category Nav Tabs */}
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 overflow-x-auto whitespace-nowrap scrollbar-none flex gap-2">
+                  {[
+                    { id: 'profile', label: 'Profile Info' },
+                    { id: 'presets', label: 'Presets' },
+                    { id: 'colors', label: 'Colors' },
+                    { id: 'background', label: 'Backgrounds' },
+                    { id: 'fonts', label: 'Fonts' },
+                    { id: 'cards', label: 'Cards' },
+                    { id: 'buttons', label: 'Buttons' },
+                    { id: 'layout', label: 'Layout' },
+                    { id: 'avatar', label: 'Avatar & Cover' },
+                    { id: 'sections', label: 'Sections' },
+                    { id: 'socials', label: 'Social Icons' },
+                    { id: 'animations', label: 'Animations' },
+                    { id: 'marketplace', label: 'Marketplace' },
+                    { id: 'advanced', label: 'Advanced & WCAG' }
+                  ].map((sub) => (
+                    <button
+                      key={sub.id}
+                      type="button"
+                      onClick={() => setThemeSubTab(sub.id as any)}
+                      className={`px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer ${themeSubTab === sub.id
+                        ? 'bg-gray-900 text-white shadow-sm'
+                        : 'bg-gray-50 text-gray-500 hover:text-gray-900 hover:bg-gray-100'
+                        }`}
+                    >
+                      {sub.label}
+                    </button>
+                  ))}
+                </div>
 
-                  {/* Configurator Card Container */}
-                  <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8 flex flex-col gap-6">
+                {/* Configurator Card Container */}
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8 flex flex-col gap-6">
 
-                    {/* SUB-TAB 1: Profile Info */}
-                    {themeSubTab === 'profile' && (
-                      <div className="flex flex-col gap-6">
-                        <div className="flex justify-between items-center pb-3 border-b border-gray-100">
-                          <h4 className="text-lg font-bold text-gray-900">Profile Details</h4>
-                          <span className="text-xs text-blue-600 font-semibold px-2.5 py-1 bg-blue-50 rounded-full">Step 1</span>
-                        </div>
+                  {/* SUB-TAB 1: Profile Info */}
+                  {themeSubTab === 'profile' && (
+                    <div className="flex flex-col gap-6">
+                      <div className="flex justify-between items-center pb-3 border-b border-gray-100">
+                        <h4 className="text-lg font-bold text-gray-900">Profile Details</h4>
+                        <span className="text-xs text-blue-600 font-semibold px-2.5 py-1 bg-blue-50 rounded-full">Step 1</span>
+                      </div>
 
-                        <div className="flex flex-col sm:flex-row gap-6 mb-2">
-                          <div className="flex flex-col items-center gap-3">
-                            <div className="relative w-28 h-28 rounded-full border-4 border-white shadow-md overflow-hidden bg-gray-100">
-                              {avatar ? (
-                                <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center text-gray-400">
-                                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-                                </div>
-                              )}
-                            </div>
-                            <label className="cursor-pointer inline-flex items-center justify-center px-4 py-2 text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
-                              Change Photo
-                              <input type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
-                            </label>
-                          </div>
-
-                          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                              <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">Display Name</label>
-                              <input type="text" value={name} onChange={(e) => setName(e.target.value)} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none transition-all text-gray-900 text-sm font-semibold" placeholder="John Doe" />
-                            </div>
-                            <div>
-                              <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">Tagline</label>
-                              <input type="text" value={tagline} onChange={(e) => setTagline(e.target.value)} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none transition-all text-gray-900 text-sm font-semibold" placeholder="Product Designer" />
-                            </div>
-                            <div>
-                              <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">Location</label>
-                              <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none transition-all text-gray-900 text-sm font-semibold" placeholder="City, Country" />
-                            </div>
-                            <div>
-                              <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">Email Address</label>
-                              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none transition-all text-gray-900 text-sm font-semibold" placeholder="you@email.com" />
-                            </div>
-                            <div>
-                              <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">Phone</label>
-                              <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none transition-all text-gray-900 text-sm font-semibold" placeholder="+123456789" />
-                            </div>
-                            <div>
-                              <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">WhatsApp</label>
-                              <input type="tel" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none transition-all text-gray-900 text-sm font-semibold" placeholder="+123456789" />
-                            </div>
-                          </div>
-                        </div>
-
-                        <div>
-                          <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">Biography</label>
-                          <textarea value={bio} onChange={(e) => setBio(e.target.value)} rows={3} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none transition-all text-gray-900 text-sm font-semibold resize-none" placeholder="Tell people about yourself..." />
-                        </div>
-
-                        {/* Security */}
-                        <div className="border-t border-gray-100 pt-5">
-                          <h5 className="text-sm font-bold text-gray-900 mb-3">Change Password</h5>
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} placeholder="Current Password" className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none text-sm text-gray-900" />
-                            <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="New Password" className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none text-sm text-gray-900" />
-                            <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Confirm Password" className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none text-sm text-gray-900" />
-                          </div>
-                        </div>
-
-                        {/* Social Connections */}
-                        <div className="border-t border-gray-100 pt-5">
-                          <h5 className="text-sm font-bold text-gray-900 mb-3">Social Connections</h5>
-                          <div className="space-y-2 mb-4">
-                            {socials.map((social, idx) => (
-                              <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 font-semibold">
-                                <span className="flex items-center gap-2">
-                                  {social.platform} ({social.handle})
-                                </span>
-                                <button type="button" onClick={() => handleRemoveSocial(idx)} className="text-red-500 hover:bg-red-50 p-1.5 rounded-lg transition-colors cursor-pointer">
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
+                      <div className="flex flex-col sm:flex-row gap-6 mb-2">
+                        <div className="flex flex-col items-center gap-3">
+                          <div className="relative w-28 h-28 rounded-full border-4 border-white shadow-md overflow-hidden bg-gray-100">
+                            {avatar ? (
+                              <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
                               </div>
-                            ))}
-                            {socials.length === 0 && (
-                              <p className="text-xs text-gray-400 italic">No social profiles added. Link your socials below.</p>
                             )}
                           </div>
-                          <form onSubmit={handleAddSocial} className="flex flex-col sm:flex-row gap-3">
-                            <select value={newPlatform} onChange={(e) => setNewPlatform(e.target.value)} className="px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 font-semibold outline-none focus:border-blue-500">
-                              <option>LinkedIn</option>
-                              <option>Twitter</option>
-                              <option>GitHub</option>
-                              <option>Instagram</option>
-                              <option>Facebook</option>
-                              <option>Website</option>
-                            </select>
-                            <input type="text" placeholder="Handle/Label" value={newHandle} onChange={(e) => setNewHandle(e.target.value)} className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 font-semibold outline-none focus:border-blue-500" />
-                            <input type="text" placeholder="URL" value={newUrl} onChange={(e) => setNewUrl(e.target.value)} className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 font-semibold outline-none focus:border-blue-500" />
-                            <button type="submit" className="px-5 py-2 bg-gray-900 text-white text-xs font-bold rounded-lg hover:bg-gray-800 transition-colors">Add</button>
-                          </form>
+                          <label className="cursor-pointer inline-flex items-center justify-center px-4 py-2 text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
+                            Change Photo
+                            <input type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
+                          </label>
                         </div>
 
-                        <div className="flex justify-end mt-4 pt-4 border-t border-gray-100">
-                          <button type="button" onClick={handleSaveProfile} disabled={saving} className="px-6 py-2.5 bg-blue-600 text-white font-bold text-xs rounded-xl hover:bg-blue-700 shadow-sm transition-all">
-                            {saving ? 'Saving...' : 'Save Profile Details'}
-                          </button>
+                        <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">Display Name</label>
+                            <input type="text" value={name} onChange={(e) => setName(e.target.value)} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none transition-all text-gray-900 text-sm font-semibold" placeholder="John Doe" />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">Tagline</label>
+                            <input type="text" value={tagline} onChange={(e) => setTagline(e.target.value)} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none transition-all text-gray-900 text-sm font-semibold" placeholder="Product Designer" />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">Location</label>
+                            <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none transition-all text-gray-900 text-sm font-semibold" placeholder="City, Country" />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">Email Address</label>
+                            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none transition-all text-gray-900 text-sm font-semibold" placeholder="you@email.com" />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">Phone</label>
+                            <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none transition-all text-gray-900 text-sm font-semibold" placeholder="+123456789" />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">WhatsApp</label>
+                            <input type="tel" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none transition-all text-gray-900 text-sm font-semibold" placeholder="+123456789" />
+                          </div>
                         </div>
                       </div>
-                    )}
 
-                    {/* SUB-TAB 2: Theme Presets */}
-                    {themeSubTab === 'presets' && (
-                      <div className="flex flex-col gap-6">
-                        <div className="pb-3 border-b border-gray-100">
-                          <h4 className="text-lg font-bold text-gray-900">Preset Themes</h4>
-                          <p className="text-xs text-gray-500 mt-1">Deploy a beautiful, professionally coordinated aesthetic in one click.</p>
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">Biography</label>
+                        <textarea value={bio} onChange={(e) => setBio(e.target.value)} rows={3} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none transition-all text-gray-900 text-sm font-semibold resize-none" placeholder="Tell people about yourself..." />
+                      </div>
+
+                      {/* Security */}
+                      <div className="border-t border-gray-100 pt-5">
+                        <h5 className="text-sm font-bold text-gray-900 mb-3">Change Password</h5>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} placeholder="Current Password" className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none text-sm text-gray-900" />
+                          <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="New Password" className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none text-sm text-gray-900" />
+                          <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Confirm Password" className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none text-sm text-gray-900" />
                         </div>
+                      </div>
 
-                        {/* Quick Themes */}
-                        <div>
-                          <h5 className="text-xs uppercase font-bold text-gray-400 tracking-wider mb-3">Quick Themes</h5>
-                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                            {QUICK_THEMES.map((theme) => (
+                      {/* Social Connections */}
+                      <div className="border-t border-gray-100 pt-5">
+                        <h5 className="text-sm font-bold text-gray-900 mb-3">Social Connections</h5>
+                        <div className="space-y-2 mb-4">
+                          {socials.map((social, idx) => (
+                            <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 font-semibold">
+                              <span className="flex items-center gap-2">
+                                {social.platform} ({social.handle})
+                              </span>
+                              <button type="button" onClick={() => handleRemoveSocial(idx)} className="text-red-500 hover:bg-red-50 p-1.5 rounded-lg transition-colors cursor-pointer">
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          ))}
+                          {socials.length === 0 && (
+                            <p className="text-xs text-gray-400 italic">No social profiles added. Link your socials below.</p>
+                          )}
+                        </div>
+                        <form onSubmit={handleAddSocial} className="flex flex-col sm:flex-row gap-3">
+                          <select value={newPlatform} onChange={(e) => setNewPlatform(e.target.value)} className="px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 font-semibold outline-none focus:border-blue-500">
+                            <option>LinkedIn</option>
+                            <option>Twitter</option>
+                            <option>GitHub</option>
+                            <option>Instagram</option>
+                            <option>Facebook</option>
+                            <option>Website</option>
+                          </select>
+                          <input type="text" placeholder="Handle/Label" value={newHandle} onChange={(e) => setNewHandle(e.target.value)} className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 font-semibold outline-none focus:border-blue-500" />
+                          <input type="text" placeholder="URL" value={newUrl} onChange={(e) => setNewUrl(e.target.value)} className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 font-semibold outline-none focus:border-blue-500" />
+                          <button type="submit" className="px-5 py-2 bg-gray-900 text-white text-xs font-bold rounded-lg hover:bg-gray-800 transition-colors">Add</button>
+                        </form>
+                      </div>
+
+                      <div className="flex justify-end mt-4 pt-4 border-t border-gray-100">
+                        <button type="button" onClick={handleSaveProfile} disabled={saving} className="px-6 py-2.5 bg-blue-600 text-white font-bold text-xs rounded-xl hover:bg-blue-700 shadow-sm transition-all">
+                          {saving ? 'Saving...' : 'Save Profile Details'}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* SUB-TAB 2: Theme Presets */}
+                  {themeSubTab === 'presets' && (
+                    <div className="flex flex-col gap-6">
+                      <div className="pb-3 border-b border-gray-100">
+                        <h4 className="text-lg font-bold text-gray-900">Preset Themes</h4>
+                        <p className="text-xs text-gray-500 mt-1">Deploy a beautiful, professionally coordinated aesthetic in one click.</p>
+                      </div>
+
+                      {/* Quick Themes */}
+                      <div>
+                        <h5 className="text-xs uppercase font-bold text-gray-400 tracking-wider mb-3">Quick Themes</h5>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                          {QUICK_THEMES.map((theme) => {
+                            const isSelected = themeSettings && themeSettings.colors.primary === theme.settings.colors.primary && themeSettings.colors.background === theme.settings.colors.background;
+                            const desc = THEME_DESCRIPTIONS[theme.name] || 'Creative template style';
+                            return (
                               <button
                                 key={theme.name}
                                 type="button"
@@ -1238,26 +1500,35 @@ export default function Dashboard() {
                                   setSuccess(`Theme presets for "${theme.name}" loaded!`);
                                   setTimeout(() => setSuccess(''), 2500);
                                 }}
-                                className="p-3 border border-gray-200 rounded-xl text-center bg-white hover:border-gray-900 hover:shadow-sm transition-all cursor-pointer"
+                                className={`group relative p-2 border rounded-2xl flex flex-col items-center gap-3 transition-all duration-300 hover:scale-[1.03] hover:shadow-md bg-white cursor-pointer ${isSelected ? 'border-blue-500 bg-blue-50/10 ring-2 ring-blue-500/20' : 'border-gray-200 hover:border-blue-300'
+                                  }`}
                               >
-                                <span className="block text-xs font-bold text-gray-800">{theme.name}</span>
-                                <div className="flex items-center justify-center gap-1.5 mt-2">
-                                  <span className="w-3.5 h-3.5 rounded-full border border-gray-100" style={{ backgroundColor: theme.settings.colors.primary }} />
-                                  <span className="w-3.5 h-3.5 rounded-full border border-gray-100" style={{ backgroundColor: theme.settings.colors.background }} />
-                                  <span className="w-3.5 h-3.5 rounded-full border border-gray-100" style={{ backgroundColor: theme.settings.colors.surface }} />
+                                {/* Miniature live preview container */}
+                                <div className="w-full relative rounded-xl overflow-hidden shadow-sm border border-gray-100 group-hover:border-blue-200 transition-colors">
+                                  <MiniProfilePreview theme={theme} />
+                                </div>
+
+                                {/* Theme metadata */}
+                                <div className="w-full text-center flex flex-col gap-0.5 min-w-0">
+                                  <span className="text-xs font-bold text-gray-800 truncate">{theme.name}</span>
+                                  <span className="text-[10px] text-gray-400 font-medium truncate">{desc}</span>
                                 </div>
                               </button>
-                            ))}
-                          </div>
+                            );
+                          })}
                         </div>
+                      </div>
 
-                        {/* Premium Themes */}
-                        <div className="border-t border-gray-100 pt-5">
-                          <h5 className="text-xs uppercase font-bold text-gray-400 tracking-wider mb-3 flex items-center gap-1">
-                            <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" /> Premium Themes
-                          </h5>
-                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                            {PREMIUM_THEMES.map((theme) => (
+                      {/* Premium Themes */}
+                      <div className="border-t border-gray-100 pt-5">
+                        <h5 className="text-xs uppercase font-bold text-gray-400 tracking-wider mb-3 flex items-center gap-1">
+                          <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" /> Premium Themes
+                        </h5>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                          {PREMIUM_THEMES.map((theme) => {
+                            const isSelected = themeSettings && themeSettings.colors.primary === theme.settings.colors.primary && themeSettings.colors.background === theme.settings.colors.background;
+                            const desc = THEME_DESCRIPTIONS[theme.name] || 'Premium coordinates';
+                            return (
                               <button
                                 key={theme.name}
                                 type="button"
@@ -1266,1130 +1537,1140 @@ export default function Dashboard() {
                                   setSuccess(`Premium Theme "${theme.name}" applied!`);
                                   setTimeout(() => setSuccess(''), 2500);
                                 }}
-                                className="p-3 border border-yellow-200 rounded-xl text-center bg-amber-50/20 hover:border-amber-400 hover:shadow-md transition-all cursor-pointer relative overflow-hidden"
-                              >
-                                <span className="absolute top-0 right-0 bg-yellow-400 text-[8px] font-black text-gray-900 px-1 py-0.5 rounded-bl">PRO</span>
-                                <span className="block text-xs font-bold text-yellow-800 mt-1">{theme.name}</span>
-                                <div className="flex items-center justify-center gap-1.5 mt-2.5">
-                                  <span className="w-3.5 h-3.5 rounded-full border border-gray-100" style={{ backgroundColor: theme.settings.colors.primary }} />
-                                  <span className="w-3.5 h-3.5 rounded-full border border-gray-100" style={{ backgroundColor: theme.settings.colors.background }} />
-                                  <span className="w-3.5 h-3.5 rounded-full border border-gray-100" style={{ backgroundColor: theme.settings.colors.surface }} />
-                                </div>
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* SUB-TAB 3: Colors */}
-                    {themeSubTab === 'colors' && (
-                      <div className="flex flex-col gap-6">
-                        <div className="pb-3 border-b border-gray-100">
-                          <h4 className="text-lg font-bold text-gray-900">Custom Colors</h4>
-                          <p className="text-xs text-gray-500 mt-1">Design a unique palette. Contrast checks will calculate in real time under the Advanced tab.</p>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {[
-                            { label: 'Primary Brand Color', key: 'primary' },
-                            { label: 'Secondary/Muted', key: 'secondary' },
-                            { label: 'Accent Highlights', key: 'accent' },
-                            { label: 'Success (Verified/Online)', key: 'success' },
-                            { label: 'Warning Highlights', key: 'warning' },
-                            { label: 'Danger Color', key: 'danger' },
-                            { label: 'Wrapper Background', key: 'background' },
-                            { label: 'Card Surface', key: 'surface' },
-                            { label: 'Main Text Color', key: 'text' },
-                            { label: 'Muted Subtext Color', key: 'mutedText' },
-                            { label: 'Border Lines', key: 'border' },
-                            { label: 'Shadow Tone', key: 'shadow' }
-                          ].map((col) => (
-                            <div key={col.key} className="flex flex-col gap-1">
-                              <span className="text-xs font-semibold text-gray-700">{col.label}</span>
-                              <div className="flex gap-2">
-                                <input
-                                  type="color"
-                                  value={themeSettings.colors?.[col.key] || '#111827'}
-                                  onChange={(e) => {
-                                    setThemeSettings({
-                                      ...themeSettings,
-                                      colors: {
-                                        ...themeSettings.colors,
-                                        [col.key]: e.target.value
-                                      }
-                                    });
-                                  }}
-                                  className="w-10 h-9 p-0.5 border border-gray-200 rounded-lg cursor-pointer bg-transparent"
-                                />
-                                <input
-                                  type="text"
-                                  value={themeSettings.colors?.[col.key] || '#111827'}
-                                  onChange={(e) => {
-                                    setThemeSettings({
-                                      ...themeSettings,
-                                      colors: {
-                                        ...themeSettings.colors,
-                                        [col.key]: e.target.value
-                                      }
-                                    });
-                                  }}
-                                  className="flex-1 px-3 py-1.5 border border-gray-200 rounded-lg text-sm font-mono text-gray-900"
-                                />
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* SUB-TAB 4: Backgrounds */}
-                    {themeSubTab === 'background' && (
-                      <div className="flex flex-col gap-6">
-                        <div className="pb-3 border-b border-gray-100">
-                          <h4 className="text-lg font-bold text-gray-900">Background Engine</h4>
-                          <p className="text-xs text-gray-500 mt-1">Choose layout background style. Particles and animators are unlocked for custom designs.</p>
-                        </div>
-
-                        <div>
-                          <label className="block text-xs font-bold text-gray-400 uppercase mb-3">Background Type</label>
-                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                            {[
-                              { id: 'solid', label: 'Solid Color' },
-                              { id: 'gradient', label: 'Gradient' },
-                              { id: 'aurora', label: 'Aurora Mesh' },
-                              { id: 'particles', label: 'Particles Space' },
-                              { id: 'video', label: 'Video Clip' },
-                              { id: 'image', label: 'Custom Image' }
-                            ].map((bgType) => (
-                              <button
-                                key={bgType.id}
-                                type="button"
-                                onClick={() => {
-                                  setThemeSettings({
-                                    ...themeSettings,
-                                    background: {
-                                      ...themeSettings.background,
-                                      type: bgType.id,
-                                      value: bgType.id === 'solid' ? '#f0f2f8' :
-                                        bgType.id === 'gradient' ? 'linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)' :
-                                          bgType.id === 'aurora' ? 'aurora-bg' :
-                                            bgType.id === 'particles' ? 'space-particles' : ''
-                                    }
-                                  });
-                                }}
-                                className={`px-4 py-2 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${themeSettings.background?.type === bgType.id
-                                  ? 'border-blue-600 bg-blue-50 text-blue-700 font-bold'
-                                  : 'border-gray-200 hover:bg-gray-50 text-gray-600'
+                                className={`group relative p-2 border rounded-2xl flex flex-col items-center gap-3 transition-all duration-300 hover:scale-[1.03] hover:shadow-md bg-white cursor-pointer ${isSelected ? 'border-blue-500 bg-blue-50/10 ring-2 ring-blue-500/20' : 'border-gray-200 hover:border-blue-300'
                                   }`}
                               >
-                                {bgType.label}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
+                                {/* Premium Badge */}
+                                <div className="absolute top-3.5 right-3.5 bg-yellow-500 text-[8px] font-black text-white px-1.5 py-0.5 rounded-md uppercase tracking-wider shadow-sm z-20 flex items-center gap-0.5 select-none">
+                                  <Star className="w-2 h-2 fill-white" /> Pro
+                                </div>
 
-                        {/* Context-dependent config fields */}
-                        {themeSettings.background?.type === 'solid' && (
-                          <div className="flex flex-col gap-1.5">
-                            <label className="text-xs font-semibold text-gray-700">Solid Color Hex</label>
+                                {/* Miniature live preview container */}
+                                <div className="w-full relative rounded-xl overflow-hidden shadow-sm border border-gray-100 group-hover:border-blue-200 transition-colors">
+                                  <MiniProfilePreview theme={theme} />
+                                </div>
+
+                                {/* Theme metadata */}
+                                <div className="w-full text-center flex flex-col gap-0.5 min-w-0">
+                                  <span className="text-xs font-bold text-gray-800 truncate">{theme.name}</span>
+                                  <span className="text-[10px] text-gray-400 font-medium truncate">{desc}</span>
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* SUB-TAB 3: Colors */}
+                  {themeSubTab === 'colors' && (
+                    <div className="flex flex-col gap-6">
+                      <div className="pb-3 border-b border-gray-100">
+                        <h4 className="text-lg font-bold text-gray-900">Custom Colors</h4>
+                        <p className="text-xs text-gray-500 mt-1">Design a unique palette. Contrast checks will calculate in real time under the Advanced tab.</p>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {[
+                          { label: 'Primary Brand Color', key: 'primary' },
+                          { label: 'Secondary/Muted', key: 'secondary' },
+                          { label: 'Accent Highlights', key: 'accent' },
+                          { label: 'Success (Verified/Online)', key: 'success' },
+                          { label: 'Warning Highlights', key: 'warning' },
+                          { label: 'Danger Color', key: 'danger' },
+                          { label: 'Wrapper Background', key: 'background' },
+                          { label: 'Card Surface', key: 'surface' },
+                          { label: 'Main Text Color', key: 'text' },
+                          { label: 'Muted Subtext Color', key: 'mutedText' },
+                          { label: 'Border Lines', key: 'border' },
+                          { label: 'Shadow Tone', key: 'shadow' }
+                        ].map((col) => (
+                          <div key={col.key} className="flex flex-col gap-1">
+                            <span className="text-xs font-semibold text-gray-700">{col.label}</span>
                             <div className="flex gap-2">
                               <input
                                 type="color"
-                                value={themeSettings.background?.value || '#f0f2f8'}
+                                value={themeSettings.colors?.[col.key] || '#111827'}
                                 onChange={(e) => {
                                   setThemeSettings({
                                     ...themeSettings,
-                                    background: { ...themeSettings.background, value: e.target.value }
+                                    colors: {
+                                      ...themeSettings.colors,
+                                      [col.key]: e.target.value
+                                    }
                                   });
                                 }}
                                 className="w-10 h-9 p-0.5 border border-gray-200 rounded-lg cursor-pointer bg-transparent"
                               />
                               <input
                                 type="text"
-                                value={themeSettings.background?.value || '#f0f2f8'}
+                                value={themeSettings.colors?.[col.key] || '#111827'}
                                 onChange={(e) => {
                                   setThemeSettings({
                                     ...themeSettings,
-                                    background: { ...themeSettings.background, value: e.target.value }
+                                    colors: {
+                                      ...themeSettings.colors,
+                                      [col.key]: e.target.value
+                                    }
                                   });
                                 }}
                                 className="flex-1 px-3 py-1.5 border border-gray-200 rounded-lg text-sm font-mono text-gray-900"
                               />
                             </div>
                           </div>
-                        )}
-
-                        {themeSettings.background?.type === 'gradient' && (
-                          <div className="flex flex-col gap-3">
-                            <label className="text-xs font-semibold text-gray-700">Linear Gradient Value</label>
-                            <input
-                              type="text"
-                              value={themeSettings.background?.value || ''}
-                              onChange={(e) => {
-                                setThemeSettings({
-                                  ...themeSettings,
-                                  background: { ...themeSettings.background, value: e.target.value }
-                                });
-                              }}
-                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm font-mono text-gray-900"
-                              placeholder="linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)"
-                            />
-                            <div className="grid grid-cols-4 gap-2">
-                              {[
-                                'linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)',
-                                'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
-                                'linear-gradient(135deg, #f6d365 0%, #fda085 100%)',
-                                'linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%)'
-                              ].map((gradientVal, idx) => (
-                                <button
-                                  key={idx}
-                                  type="button"
-                                  onClick={() => {
-                                    setThemeSettings({
-                                      ...themeSettings,
-                                      background: { ...themeSettings.background, value: gradientVal }
-                                    });
-                                  }}
-                                  className="h-10 border border-gray-200 rounded-lg cursor-pointer shadow-sm"
-                                  style={{ background: gradientVal }}
-                                />
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
-                        {themeSettings.background?.type === 'image' && (
-                          <div className="flex flex-col gap-2">
-                            <label className="text-xs font-semibold text-gray-700">Background Image Link</label>
-                            <input
-                              type="text"
-                              value={themeSettings.background?.value || ''}
-                              onChange={(e) => {
-                                setThemeSettings({
-                                  ...themeSettings,
-                                  background: { ...themeSettings.background, value: e.target.value }
-                                });
-                              }}
-                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
-                              placeholder="https://images.unsplash.com/photo-1557683316-973673baf926"
-                            />
-                          </div>
-                        )}
-
-                        {themeSettings.background?.type === 'video' && (
-                          <div className="flex flex-col gap-2">
-                            <label className="text-xs font-semibold text-gray-700">Background MP4 Video Link</label>
-                            <input
-                              type="text"
-                              value={themeSettings.background?.value || ''}
-                              onChange={(e) => {
-                                setThemeSettings({
-                                  ...themeSettings,
-                                  background: { ...themeSettings.background, value: e.target.value }
-                                });
-                              }}
-                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
-                              placeholder="https://assets.mixkit.co/videos/preview/mixkit-stars-in-space-background-1611-large.mp4"
-                            />
-                          </div>
-                        )}
+                        ))}
                       </div>
-                    )}
+                    </div>
+                  )}
 
-                    {/* SUB-TAB 5: Fonts */}
-                    {themeSubTab === 'fonts' && (
-                      <div className="flex flex-col gap-6">
-                        <div className="pb-3 border-b border-gray-100">
-                          <h4 className="text-lg font-bold text-gray-900">Typography Setup</h4>
-                          <p className="text-xs text-gray-500 mt-1">Personalize text properties. Selected Google Web Fonts will fetch dynamically.</p>
+                  {/* SUB-TAB 4: Backgrounds */}
+                  {themeSubTab === 'background' && (
+                    <div className="flex flex-col gap-6">
+                      <div className="pb-3 border-b border-gray-100">
+                        <h4 className="text-lg font-bold text-gray-900">Background Engine</h4>
+                        <p className="text-xs text-gray-500 mt-1">Choose layout background style. Particles and animators are unlocked for custom designs.</p>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-gray-400 uppercase mb-3">Background Type</label>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                          {[
+                            { id: 'solid', label: 'Solid Color' },
+                            { id: 'gradient', label: 'Gradient' },
+                            { id: 'aurora', label: 'Aurora Mesh' },
+                            { id: 'particles', label: 'Particles Space' },
+                            { id: 'video', label: 'Video Clip' },
+                            { id: 'image', label: 'Custom Image' }
+                          ].map((bgType) => (
+                            <button
+                              key={bgType.id}
+                              type="button"
+                              onClick={() => {
+                                setThemeSettings({
+                                  ...themeSettings,
+                                  background: {
+                                    ...themeSettings.background,
+                                    type: bgType.id,
+                                    value: bgType.id === 'solid' ? '#f0f2f8' :
+                                      bgType.id === 'gradient' ? 'linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)' :
+                                        bgType.id === 'aurora' ? 'aurora-bg' :
+                                          bgType.id === 'particles' ? 'space-particles' : ''
+                                  }
+                                });
+                              }}
+                              className={`px-4 py-2 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${themeSettings.background?.type === bgType.id
+                                ? 'border-blue-600 bg-blue-50 text-blue-700 font-bold'
+                                : 'border-gray-200 hover:bg-gray-50 text-gray-600'
+                                }`}
+                            >
+                              {bgType.label}
+                            </button>
+                          ))}
                         </div>
+                      </div>
 
-                        <div>
-                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Font Family</label>
-                          <select
-                            value={themeSettings.typography?.fontFamily || 'Outfit'}
+                      {/* Context-dependent config fields */}
+                      {themeSettings.background?.type === 'solid' && (
+                        <div className="flex flex-col gap-1.5">
+                          <label className="text-xs font-semibold text-gray-700">Solid Color Hex</label>
+                          <div className="flex gap-2">
+                            <input
+                              type="color"
+                              value={themeSettings.background?.value || '#f0f2f8'}
+                              onChange={(e) => {
+                                setThemeSettings({
+                                  ...themeSettings,
+                                  background: { ...themeSettings.background, value: e.target.value }
+                                });
+                              }}
+                              className="w-10 h-9 p-0.5 border border-gray-200 rounded-lg cursor-pointer bg-transparent"
+                            />
+                            <input
+                              type="text"
+                              value={themeSettings.background?.value || '#f0f2f8'}
+                              onChange={(e) => {
+                                setThemeSettings({
+                                  ...themeSettings,
+                                  background: { ...themeSettings.background, value: e.target.value }
+                                });
+                              }}
+                              className="flex-1 px-3 py-1.5 border border-gray-200 rounded-lg text-sm font-mono text-gray-900"
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {themeSettings.background?.type === 'gradient' && (
+                        <div className="flex flex-col gap-3">
+                          <label className="text-xs font-semibold text-gray-700">Linear Gradient Value</label>
+                          <input
+                            type="text"
+                            value={themeSettings.background?.value || ''}
                             onChange={(e) => {
                               setThemeSettings({
                                 ...themeSettings,
-                                typography: { ...themeSettings.typography, fontFamily: e.target.value }
+                                background: { ...themeSettings.background, value: e.target.value }
+                              });
+                            }}
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm font-mono text-gray-900"
+                            placeholder="linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)"
+                          />
+                          <div className="grid grid-cols-4 gap-2">
+                            {[
+                              'linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)',
+                              'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+                              'linear-gradient(135deg, #f6d365 0%, #fda085 100%)',
+                              'linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%)'
+                            ].map((gradientVal, idx) => (
+                              <button
+                                key={idx}
+                                type="button"
+                                onClick={() => {
+                                  setThemeSettings({
+                                    ...themeSettings,
+                                    background: { ...themeSettings.background, value: gradientVal }
+                                  });
+                                }}
+                                className="h-10 border border-gray-200 rounded-lg cursor-pointer shadow-sm"
+                                style={{ background: gradientVal }}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {themeSettings.background?.type === 'image' && (
+                        <div className="flex flex-col gap-2">
+                          <label className="text-xs font-semibold text-gray-700">Background Image Link</label>
+                          <input
+                            type="text"
+                            value={themeSettings.background?.value || ''}
+                            onChange={(e) => {
+                              setThemeSettings({
+                                ...themeSettings,
+                                background: { ...themeSettings.background, value: e.target.value }
+                              });
+                            }}
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+                            placeholder="https://images.unsplash.com/photo-1557683316-973673baf926"
+                          />
+                        </div>
+                      )}
+
+                      {themeSettings.background?.type === 'video' && (
+                        <div className="flex flex-col gap-2">
+                          <label className="text-xs font-semibold text-gray-700">Background MP4 Video Link</label>
+                          <input
+                            type="text"
+                            value={themeSettings.background?.value || ''}
+                            onChange={(e) => {
+                              setThemeSettings({
+                                ...themeSettings,
+                                background: { ...themeSettings.background, value: e.target.value }
+                              });
+                            }}
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+                            placeholder="https://assets.mixkit.co/videos/preview/mixkit-stars-in-space-background-1611-large.mp4"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* SUB-TAB 5: Fonts */}
+                  {themeSubTab === 'fonts' && (
+                    <div className="flex flex-col gap-6">
+                      <div className="pb-3 border-b border-gray-100">
+                        <h4 className="text-lg font-bold text-gray-900">Typography Setup</h4>
+                        <p className="text-xs text-gray-500 mt-1">Personalize text properties. Selected Google Web Fonts will fetch dynamically.</p>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-700 mb-1.5">Font Family</label>
+                        <select
+                          value={themeSettings.typography?.fontFamily || 'Outfit'}
+                          onChange={(e) => {
+                            setThemeSettings({
+                              ...themeSettings,
+                              typography: { ...themeSettings.typography, fontFamily: e.target.value }
+                            });
+                          }}
+                          className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 outline-none"
+                        >
+                          <option>Outfit</option>
+                          <option>Inter</option>
+                          <option>Poppins</option>
+                          <option>Roboto</option>
+                          <option>Montserrat</option>
+                          <option>DM Sans</option>
+                        </select>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Heading Size (rem/px)</label>
+                          <input
+                            type="text"
+                            value={themeSettings.typography?.headingSize || '1.5rem'}
+                            onChange={(e) => {
+                              setThemeSettings({
+                                ...themeSettings,
+                                typography: { ...themeSettings.typography, headingSize: e.target.value }
+                              });
+                            }}
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Body Size (rem/px)</label>
+                          <input
+                            type="text"
+                            value={themeSettings.typography?.bodySize || '0.95rem'}
+                            onChange={(e) => {
+                              setThemeSettings({
+                                ...themeSettings,
+                                typography: { ...themeSettings.typography, bodySize: e.target.value }
+                              });
+                            }}
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Letter Spacing</label>
+                          <input
+                            type="text"
+                            value={themeSettings.typography?.letterSpacing || 'normal'}
+                            onChange={(e) => {
+                              setThemeSettings({
+                                ...themeSettings,
+                                typography: { ...themeSettings.typography, letterSpacing: e.target.value }
+                              });
+                            }}
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+                            placeholder="normal or 1px"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Line Height</label>
+                          <input
+                            type="text"
+                            value={themeSettings.typography?.lineHeight || '1.5'}
+                            onChange={(e) => {
+                              setThemeSettings({
+                                ...themeSettings,
+                                typography: { ...themeSettings.typography, lineHeight: e.target.value }
+                              });
+                            }}
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+                            placeholder="1.5 or 1.6"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* SUB-TAB 6: Cards */}
+                  {themeSubTab === 'cards' && (
+                    <div className="flex flex-col gap-6">
+                      <div className="pb-3 border-b border-gray-100">
+                        <h4 className="text-lg font-bold text-gray-900">Tile & Card Styles</h4>
+                        <p className="text-xs text-gray-500 mt-1">Configure layout cards (social links, accordions, project blocks) styling properties.</p>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-gray-400 uppercase mb-3">Card Style Mode</label>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                          {['flat', 'rounded', 'floating', 'glass', 'minimal', 'modern'].map((cardStyle) => (
+                            <button
+                              key={cardStyle}
+                              type="button"
+                              onClick={() => {
+                                setThemeSettings({
+                                  ...themeSettings,
+                                  cards: {
+                                    ...themeSettings.cards,
+                                    style: cardStyle,
+                                    border: cardStyle === 'glass' ? '1px solid rgba(255,255,255,0.3)' :
+                                      cardStyle === 'minimal' ? 'none' : '1px solid #e5e7eb',
+                                    shadow: cardStyle === 'floating' ? '0 12px 28px rgba(0,0,0,0.06)' :
+                                      cardStyle === 'modern' ? '0 8px 30px rgba(0,0,0,0.03)' :
+                                        cardStyle === 'minimal' || cardStyle === 'flat' ? 'none' : '0 4px 12px rgba(0,0,0,0.02)'
+                                  }
+                                });
+                              }}
+                              className={`px-4 py-2 text-xs font-semibold rounded-lg border capitalize transition-all cursor-pointer ${themeSettings.cards?.style === cardStyle
+                                ? 'border-blue-600 bg-blue-50 text-blue-700 font-bold'
+                                : 'border-gray-200 hover:bg-gray-50 text-gray-600'
+                                }`}
+                            >
+                              {cardStyle}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Border Radius (e.g. 1rem)</label>
+                          <input
+                            type="text"
+                            value={themeSettings.cards?.borderRadius || '1rem'}
+                            onChange={(e) => {
+                              setThemeSettings({
+                                ...themeSettings,
+                                cards: { ...themeSettings.cards, borderRadius: e.target.value }
+                              });
+                            }}
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Border Value</label>
+                          <input
+                            type="text"
+                            value={themeSettings.cards?.border || '1px solid #e5e7eb'}
+                            onChange={(e) => {
+                              setThemeSettings({
+                                ...themeSettings,
+                                cards: { ...themeSettings.cards, border: e.target.value }
+                              });
+                            }}
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-700 mb-1">Card Opacity ({themeSettings.cards?.opacity ?? 1.0})</label>
+                          <input
+                            type="range"
+                            min="0.1"
+                            max="1"
+                            step="0.05"
+                            value={themeSettings.cards?.opacity !== undefined ? themeSettings.cards?.opacity : 1}
+                            onChange={(e) => {
+                              setThemeSettings({
+                                ...themeSettings,
+                                cards: { ...themeSettings.cards, opacity: parseFloat(e.target.value) }
+                              });
+                            }}
+                            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600 mt-2"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-700 mb-1">Backdrop Blur Strength (Glass mode)</label>
+                          <input
+                            type="text"
+                            value={themeSettings.cards?.blur || '0px'}
+                            onChange={(e) => {
+                              setThemeSettings({
+                                ...themeSettings,
+                                cards: { ...themeSettings.cards, blur: e.target.value }
+                              });
+                            }}
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+                            placeholder="10px"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* SUB-TAB 7: Buttons */}
+                  {themeSubTab === 'buttons' && (
+                    <div className="flex flex-col gap-6">
+                      <div className="pb-3 border-b border-gray-100">
+                        <h4 className="text-lg font-bold text-gray-900">Button Configuration</h4>
+                        <p className="text-xs text-gray-500 mt-1">Configure action buttons (Save Contact, Send request, Custom buttons).</p>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-gray-400 uppercase mb-3">Button Style</label>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                          {['filled', 'outlined', 'ghost', 'gradient'].map((btnStyle) => (
+                            <button
+                              key={btnStyle}
+                              type="button"
+                              onClick={() => {
+                                setThemeSettings({
+                                  ...themeSettings,
+                                  buttons: { ...themeSettings.buttons, style: btnStyle }
+                                });
+                              }}
+                              className={`px-4 py-2 text-xs font-semibold rounded-lg border capitalize transition-all cursor-pointer ${themeSettings.buttons?.style === btnStyle
+                                ? 'border-blue-600 bg-blue-50 text-blue-700 font-bold'
+                                : 'border-gray-200 hover:bg-gray-50 text-gray-600'
+                                }`}
+                            >
+                              {btnStyle}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Button Radius (e.g. 100px)</label>
+                          <input
+                            type="text"
+                            value={themeSettings.buttons?.radius || '100px'}
+                            onChange={(e) => {
+                              setThemeSettings({
+                                ...themeSettings,
+                                buttons: { ...themeSettings.buttons, radius: e.target.value }
+                              });
+                            }}
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Height (e.g. 44px)</label>
+                          <input
+                            type="text"
+                            value={themeSettings.buttons?.height || '44px'}
+                            onChange={(e) => {
+                              setThemeSettings({
+                                ...themeSettings,
+                                buttons: { ...themeSettings.buttons, height: e.target.value }
+                              });
+                            }}
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Button Hover Anim</label>
+                          <select
+                            value={themeSettings.buttons?.animation || 'hover_lift'}
+                            onChange={(e) => {
+                              setThemeSettings({
+                                ...themeSettings,
+                                buttons: { ...themeSettings.buttons, animation: e.target.value }
                               });
                             }}
                             className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 outline-none"
                           >
-                            <option>Outfit</option>
-                            <option>Inter</option>
-                            <option>Poppins</option>
-                            <option>Roboto</option>
-                            <option>Montserrat</option>
-                            <option>DM Sans</option>
+                            <option value="hover_lift">Lift Up</option>
+                            <option value="button_ripple">Ripple (Highlight)</option>
+                            <option value="none">None</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* SUB-TAB 8: Layout */}
+                  {themeSubTab === 'layout' && (
+                    <div className="flex flex-col gap-6">
+                      <div className="pb-3 border-b border-gray-100">
+                        <h4 className="text-lg font-bold text-gray-900">Grid & Layout</h4>
+                        <p className="text-xs text-gray-500 mt-1">Adjust width, content alignment, and structure presets for the public screen.</p>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-gray-400 uppercase mb-3">Layout Preset</label>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                          {['centered', 'modern', 'minimal', 'compact', 'business', 'creative'].map((l) => (
+                            <button
+                              key={l}
+                              type="button"
+                              onClick={() => {
+                                setThemeSettings({
+                                  ...themeSettings,
+                                  layout: {
+                                    ...themeSettings.layout,
+                                    style: l,
+                                    alignment: l === 'centered' ? 'center' : 'left'
+                                  }
+                                });
+                              }}
+                              className={`px-4 py-2 text-xs font-semibold rounded-lg border capitalize transition-all cursor-pointer ${themeSettings.layout?.style === l
+                                ? 'border-blue-600 bg-blue-50 text-blue-700 font-bold'
+                                : 'border-gray-200 hover:bg-gray-50 text-gray-600'
+                                }`}
+                            >
+                              {l}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Profile Container Width</label>
+                          <input
+                            type="text"
+                            value={themeSettings.layout?.profileWidth || '640px'}
+                            onChange={(e) => {
+                              setThemeSettings({
+                                ...themeSettings,
+                                layout: { ...themeSettings.layout, profileWidth: e.target.value }
+                              });
+                            }}
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Section Spacing</label>
+                          <input
+                            type="text"
+                            value={themeSettings.layout?.spacing || '1.5rem'}
+                            onChange={(e) => {
+                              setThemeSettings({
+                                ...themeSettings,
+                                layout: { ...themeSettings.layout, spacing: e.target.value }
+                              });
+                            }}
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Content Alignment</label>
+                          <select
+                            value={themeSettings.layout?.alignment || 'center'}
+                            onChange={(e) => {
+                              setThemeSettings({
+                                ...themeSettings,
+                                layout: { ...themeSettings.layout, alignment: e.target.value }
+                              });
+                            }}
+                            className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 outline-none"
+                          >
+                            <option value="center">Centered</option>
+                            <option value="left">Left Aligned</option>
+                            <option value="right">Right Aligned</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* SUB-TAB 9: Avatar & Cover */}
+                  {themeSubTab === 'avatar' && (
+                    <div className="flex flex-col gap-6">
+                      <div className="pb-3 border-b border-gray-100">
+                        <h4 className="text-lg font-bold text-gray-900">Avatar & Cover Banner</h4>
+                        <p className="text-xs text-gray-500 mt-1">Configure user photo frame shapes and cover hero banners styling.</p>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Avatar Setup */}
+                        <div>
+                          <h5 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Avatar Shape</h5>
+                          <div className="grid grid-cols-3 gap-2">
+                            {['circle', 'rounded', 'square'].map((sh) => (
+                              <button
+                                key={sh}
+                                type="button"
+                                onClick={() => {
+                                  setThemeSettings({
+                                    ...themeSettings,
+                                    avatar: { ...themeSettings.avatar, shape: sh }
+                                  });
+                                }}
+                                className={`px-3 py-2 text-xs font-semibold rounded-lg border capitalize transition-all cursor-pointer ${themeSettings.avatar?.shape === sh
+                                  ? 'border-blue-600 bg-blue-50 text-blue-700 font-bold'
+                                  : 'border-gray-200 hover:bg-gray-50 text-gray-600'
+                                  }`}
+                              >
+                                {sh}
+                              </button>
+                            ))}
+                          </div>
+                          <div className="mt-4 flex flex-col gap-3">
+                            <div>
+                              <label className="block text-xs font-semibold text-gray-700 mb-1">Border Value</label>
+                              <input
+                                type="text"
+                                value={themeSettings.avatar?.border || '3px solid rgba(255,255,255,0.2)'}
+                                onChange={(e) => {
+                                  setThemeSettings({
+                                    ...themeSettings,
+                                    avatar: { ...themeSettings.avatar, border: e.target.value }
+                                  });
+                                }}
+                                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+                              />
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-semibold text-gray-700">Avatar Border Glow</span>
+                              <input
+                                type="checkbox"
+                                checked={themeSettings.avatar?.glow === 'glow'}
+                                onChange={(e) => {
+                                  setThemeSettings({
+                                    ...themeSettings,
+                                    avatar: { ...themeSettings.avatar, glow: e.target.checked ? 'glow' : 'none' }
+                                  });
+                                }}
+                                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Cover Setup */}
+                        <div>
+                          <h5 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Cover Banner Type</h5>
+                          <div className="grid grid-cols-2 gap-2">
+                            {['none', 'solid', 'gradient', 'image'].map((cov) => (
+                              <button
+                                key={cov}
+                                type="button"
+                                onClick={() => {
+                                  setThemeSettings({
+                                    ...themeSettings,
+                                    cover: {
+                                      ...themeSettings.cover,
+                                      type: cov,
+                                      value: cov === 'solid' ? '#0f172a' :
+                                        cov === 'gradient' ? 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)' : ''
+                                    }
+                                  });
+                                }}
+                                className={`px-3 py-2 text-xs font-semibold rounded-lg border capitalize transition-all cursor-pointer ${themeSettings.cover?.type === cov
+                                  ? 'border-blue-600 bg-blue-50 text-blue-700 font-bold'
+                                  : 'border-gray-200 hover:bg-gray-50 text-gray-600'
+                                  }`}
+                              >
+                                {cov}
+                              </button>
+                            ))}
+                          </div>
+                          {themeSettings.cover?.type !== 'none' && (
+                            <div className="mt-4">
+                              <label className="block text-xs font-semibold text-gray-700 mb-1">Cover Value (Color, gradient, or Image Link)</label>
+                              <input
+                                type="text"
+                                value={themeSettings.cover?.value || ''}
+                                onChange={(e) => {
+                                  setThemeSettings({
+                                    ...themeSettings,
+                                    cover: { ...themeSettings.cover, value: e.target.value }
+                                  });
+                                }}
+                                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* SUB-TAB 10: Sections reordering */}
+                  {themeSubTab === 'sections' && (
+                    <div className="flex flex-col gap-6">
+                      <div className="pb-3 border-b border-gray-100">
+                        <h4 className="text-lg font-bold text-gray-900">Visible Sections & Order</h4>
+                        <p className="text-xs text-gray-500 mt-1">Reorder profile layers using up/down controls, and toggle visibility switchers.</p>
+                      </div>
+
+                      {/* List of sections with reordering controls */}
+                      <div className="space-y-3">
+                        {((themeSettings.sections?.order as string[]) || ["about", "contact", "socials", "portfolio", "projects"]).map((sec, idx, arr) => {
+                          const isVisible = themeSettings.sections?.visibility?.[sec] !== false;
+                          return (
+                            <div key={sec} className="flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-xl">
+                              <div className="flex items-center gap-3">
+                                <div className="flex flex-col gap-1">
+                                  <button
+                                    type="button"
+                                    disabled={idx === 0}
+                                    onClick={() => {
+                                      const newOrder = [...arr];
+                                      const temp = newOrder[idx];
+                                      newOrder[idx] = newOrder[idx - 1];
+                                      newOrder[idx - 1] = temp;
+                                      setThemeSettings({
+                                        ...themeSettings,
+                                        sections: { ...themeSettings.sections, order: newOrder }
+                                      });
+                                    }}
+                                    className="p-1 text-gray-400 hover:text-gray-900 disabled:opacity-30 cursor-pointer"
+                                  >
+                                    <ArrowUp className="w-3.5 h-3.5" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    disabled={idx === arr.length - 1}
+                                    onClick={() => {
+                                      const newOrder = [...arr];
+                                      const temp = newOrder[idx];
+                                      newOrder[idx] = newOrder[idx + 1];
+                                      newOrder[idx + 1] = temp;
+                                      setThemeSettings({
+                                        ...themeSettings,
+                                        sections: { ...themeSettings.sections, order: newOrder }
+                                      });
+                                    }}
+                                    className="p-1 text-gray-400 hover:text-gray-900 disabled:opacity-30 cursor-pointer"
+                                  >
+                                    <ArrowDown className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                                <div>
+                                  <span className="block text-sm font-bold text-gray-800 capitalize">{sec} Section</span>
+                                  <span className="text-[10px] text-gray-400 font-semibold uppercase">Position {idx + 1}</span>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <label className="relative inline-flex items-center cursor-pointer">
+                                  <input
+                                    type="checkbox"
+                                    checked={isVisible}
+                                    onChange={(e) => {
+                                      setThemeSettings({
+                                        ...themeSettings,
+                                        sections: {
+                                          ...themeSettings.sections,
+                                          visibility: {
+                                            ...themeSettings.sections?.visibility,
+                                            [sec]: e.target.checked
+                                          }
+                                        }
+                                      });
+                                    }}
+                                    className="sr-only peer"
+                                  />
+                                  <div className="w-9 h-5 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:width-4 after:transition-all peer-checked:bg-blue-600"></div>
+                                </label>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* SUB-TAB 11: Social Icons */}
+                  {themeSubTab === 'socials' && (
+                    <div className="flex flex-col gap-6">
+                      <div className="pb-3 border-b border-gray-100">
+                        <h4 className="text-lg font-bold text-gray-900">Social Grid & Icons</h4>
+                        <p className="text-xs text-gray-500 mt-1">Adjust size, border layouts, spacing, and hover animations of social links.</p>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-gray-400 uppercase mb-3">Icon Frame Style</label>
+                        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                          {['circle', 'outline', 'minimal', 'rounded', 'filled'].map((iconStyle) => (
+                            <button
+                              key={iconStyle}
+                              type="button"
+                              onClick={() => {
+                                setThemeSettings({
+                                  ...themeSettings,
+                                  socialIcons: { ...themeSettings.socialIcons, style: iconStyle }
+                                });
+                              }}
+                              className={`px-2 py-2 text-xs font-semibold rounded-lg border capitalize transition-all cursor-pointer ${themeSettings.socialIcons?.style === iconStyle
+                                ? 'border-blue-600 bg-blue-50 text-blue-700 font-bold'
+                                : 'border-gray-200 hover:bg-gray-50 text-gray-600'
+                                }`}
+                            >
+                              {iconStyle}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Icon Size (px)</label>
+                          <input
+                            type="text"
+                            value={themeSettings.socialIcons?.size || '24px'}
+                            onChange={(e) => {
+                              setThemeSettings({
+                                ...themeSettings,
+                                socialIcons: { ...themeSettings.socialIcons, size: e.target.value }
+                              });
+                            }}
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Grid Spacing</label>
+                          <input
+                            type="text"
+                            value={themeSettings.socialIcons?.spacing || '0.75rem'}
+                            onChange={(e) => {
+                              setThemeSettings({
+                                ...themeSettings,
+                                socialIcons: { ...themeSettings.socialIcons, spacing: e.target.value }
+                              });
+                            }}
+                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Hover Effect</label>
+                          <select
+                            value={themeSettings.socialIcons?.hover || 'scale'}
+                            onChange={(e) => {
+                              setThemeSettings({
+                                ...themeSettings,
+                                socialIcons: { ...themeSettings.socialIcons, hover: e.target.value }
+                              });
+                            }}
+                            className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 outline-none"
+                          >
+                            <option value="scale">Scale Up</option>
+                            <option value="lift">Lift Up</option>
+                            <option value="none">None</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* SUB-TAB 12: Animations */}
+                  {themeSubTab === 'animations' && (
+                    <div className="flex flex-col gap-6">
+                      <div className="pb-3 border-b border-gray-100">
+                        <h4 className="text-lg font-bold text-gray-900">Motion & Interaction Effects</h4>
+                        <p className="text-xs text-gray-500 mt-1">Unlock micro-animations, transitions, and hover lifting events.</p>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Page Entrance Animation</label>
+                          <select
+                            value={themeSettings.animations?.style || 'fade'}
+                            onChange={(e) => {
+                              setThemeSettings({
+                                ...themeSettings,
+                                animations: { ...themeSettings.animations, style: e.target.value }
+                              });
+                            }}
+                            className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 outline-none"
+                          >
+                            <option value="fade">Fade In</option>
+                            <option value="slide">Slide Up Entrance</option>
+                            <option value="scale">Scale Up Entrance</option>
+                            <option value="none">None</option>
                           </select>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Heading Size (rem/px)</label>
+                        <div className="flex flex-col gap-3 mt-1.5">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-semibold text-gray-700">Enable Cursor Glow Light</span>
                             <input
-                              type="text"
-                              value={themeSettings.typography?.headingSize || '1.5rem'}
+                              type="checkbox"
+                              checked={themeSettings.animations?.cursorGlow || false}
                               onChange={(e) => {
                                 setThemeSettings({
                                   ...themeSettings,
-                                  typography: { ...themeSettings.typography, headingSize: e.target.value }
+                                  animations: { ...themeSettings.animations, cursorGlow: e.target.checked }
                                 });
                               }}
-                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+                              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                             />
                           </div>
-                          <div>
-                            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Body Size (rem/px)</label>
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-semibold text-gray-700">Parallax Scroll Effects</span>
                             <input
-                              type="text"
-                              value={themeSettings.typography?.bodySize || '0.95rem'}
+                              type="checkbox"
+                              checked={themeSettings.animations?.parallax || false}
                               onChange={(e) => {
                                 setThemeSettings({
                                   ...themeSettings,
-                                  typography: { ...themeSettings.typography, bodySize: e.target.value }
+                                  animations: { ...themeSettings.animations, parallax: e.target.checked }
                                 });
                               }}
-                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
-                            />
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Letter Spacing</label>
-                            <input
-                              type="text"
-                              value={themeSettings.typography?.letterSpacing || 'normal'}
-                              onChange={(e) => {
-                                setThemeSettings({
-                                  ...themeSettings,
-                                  typography: { ...themeSettings.typography, letterSpacing: e.target.value }
-                                });
-                              }}
-                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
-                              placeholder="normal or 1px"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Line Height</label>
-                            <input
-                              type="text"
-                              value={themeSettings.typography?.lineHeight || '1.5'}
-                              onChange={(e) => {
-                                setThemeSettings({
-                                  ...themeSettings,
-                                  typography: { ...themeSettings.typography, lineHeight: e.target.value }
-                                });
-                              }}
-                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
-                              placeholder="1.5 or 1.6"
+                              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                             />
                           </div>
                         </div>
                       </div>
-                    )}
+                    </div>
+                  )}
 
-                    {/* SUB-TAB 6: Cards */}
-                    {themeSubTab === 'cards' && (
-                      <div className="flex flex-col gap-6">
-                        <div className="pb-3 border-b border-gray-100">
-                          <h4 className="text-lg font-bold text-gray-900">Tile & Card Styles</h4>
-                          <p className="text-xs text-gray-500 mt-1">Configure layout cards (social links, accordions, project blocks) styling properties.</p>
-                        </div>
-
+                  {/* SUB-TAB 13: Marketplace */}
+                  {themeSubTab === 'marketplace' && (
+                    <div className="flex flex-col gap-6">
+                      <div className="pb-3 border-b border-gray-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
                         <div>
-                          <label className="block text-xs font-bold text-gray-400 uppercase mb-3">Card Style Mode</label>
-                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                            {['flat', 'rounded', 'floating', 'glass', 'minimal', 'modern'].map((cardStyle) => (
-                              <button
-                                key={cardStyle}
-                                type="button"
-                                onClick={() => {
-                                  setThemeSettings({
-                                    ...themeSettings,
-                                    cards: {
-                                      ...themeSettings.cards,
-                                      style: cardStyle,
-                                      border: cardStyle === 'glass' ? '1px solid rgba(255,255,255,0.3)' :
-                                        cardStyle === 'minimal' ? 'none' : '1px solid #e5e7eb',
-                                      shadow: cardStyle === 'floating' ? '0 12px 28px rgba(0,0,0,0.06)' :
-                                        cardStyle === 'modern' ? '0 8px 30px rgba(0,0,0,0.03)' :
-                                          cardStyle === 'minimal' || cardStyle === 'flat' ? 'none' : '0 4px 12px rgba(0,0,0,0.02)'
-                                    }
-                                  });
-                                }}
-                                className={`px-4 py-2 text-xs font-semibold rounded-lg border capitalize transition-all cursor-pointer ${themeSettings.cards?.style === cardStyle
-                                  ? 'border-blue-600 bg-blue-50 text-blue-700 font-bold'
-                                  : 'border-gray-200 hover:bg-gray-50 text-gray-600'
-                                  }`}
-                              >
-                                {cardStyle}
-                              </button>
-                            ))}
-                          </div>
+                          <h4 className="text-lg font-bold text-gray-900">Community Marketplace</h4>
+                          <p className="text-xs text-gray-500 mt-1">Browse, install, and share creative page themes with others.</p>
                         </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Border Radius (e.g. 1rem)</label>
-                            <input
-                              type="text"
-                              value={themeSettings.cards?.borderRadius || '1rem'}
-                              onChange={(e) => {
-                                setThemeSettings({
-                                  ...themeSettings,
-                                  cards: { ...themeSettings.cards, borderRadius: e.target.value }
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const pName = prompt('Enter a name for this custom theme:');
+                            if (pName) {
+                              setPublishThemeName(pName);
+                              // Set immediately or call publish
+                              fetch('/api/profile/theme/marketplace', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ action: 'publish', themeName: pName, settings: themeSettings })
+                              })
+                                .then(() => {
+                                  setSuccess('Theme published!');
+                                  fetchMarketplace();
+                                  setTimeout(() => setSuccess(''), 2500);
                                 });
-                              }}
-                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Border Value</label>
-                            <input
-                              type="text"
-                              value={themeSettings.cards?.border || '1px solid #e5e7eb'}
-                              onChange={(e) => {
-                                setThemeSettings({
-                                  ...themeSettings,
-                                  cards: { ...themeSettings.cards, border: e.target.value }
-                                });
-                              }}
-                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
-                            />
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-xs font-semibold text-gray-700 mb-1">Card Opacity ({themeSettings.cards?.opacity ?? 1.0})</label>
-                            <input
-                              type="range"
-                              min="0.1"
-                              max="1"
-                              step="0.05"
-                              value={themeSettings.cards?.opacity !== undefined ? themeSettings.cards?.opacity : 1}
-                              onChange={(e) => {
-                                setThemeSettings({
-                                  ...themeSettings,
-                                  cards: { ...themeSettings.cards, opacity: parseFloat(e.target.value) }
-                                });
-                              }}
-                              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600 mt-2"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-semibold text-gray-700 mb-1">Backdrop Blur Strength (Glass mode)</label>
-                            <input
-                              type="text"
-                              value={themeSettings.cards?.blur || '0px'}
-                              onChange={(e) => {
-                                setThemeSettings({
-                                  ...themeSettings,
-                                  cards: { ...themeSettings.cards, blur: e.target.value }
-                                });
-                              }}
-                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
-                              placeholder="10px"
-                            />
-                          </div>
-                        </div>
+                            }
+                          }}
+                          className="px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-xl hover:bg-blue-700 shadow-sm transition-all"
+                        >
+                          Publish Theme
+                        </button>
                       </div>
-                    )}
 
-                    {/* SUB-TAB 7: Buttons */}
-                    {themeSubTab === 'buttons' && (
-                      <div className="flex flex-col gap-6">
-                        <div className="pb-3 border-b border-gray-100">
-                          <h4 className="text-lg font-bold text-gray-900">Button Configuration</h4>
-                          <p className="text-xs text-gray-500 mt-1">Configure action buttons (Save Contact, Send request, Custom buttons).</p>
-                        </div>
-
-                        <div>
-                          <label className="block text-xs font-bold text-gray-400 uppercase mb-3">Button Style</label>
-                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                            {['filled', 'outlined', 'ghost', 'gradient'].map((btnStyle) => (
-                              <button
-                                key={btnStyle}
-                                type="button"
-                                onClick={() => {
-                                  setThemeSettings({
-                                    ...themeSettings,
-                                    buttons: { ...themeSettings.buttons, style: btnStyle }
-                                  });
-                                }}
-                                className={`px-4 py-2 text-xs font-semibold rounded-lg border capitalize transition-all cursor-pointer ${themeSettings.buttons?.style === btnStyle
-                                  ? 'border-blue-600 bg-blue-50 text-blue-700 font-bold'
-                                  : 'border-gray-200 hover:bg-gray-50 text-gray-600'
-                                  }`}
-                              >
-                                {btnStyle}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div>
-                            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Button Radius (e.g. 100px)</label>
-                            <input
-                              type="text"
-                              value={themeSettings.buttons?.radius || '100px'}
-                              onChange={(e) => {
-                                setThemeSettings({
-                                  ...themeSettings,
-                                  buttons: { ...themeSettings.buttons, radius: e.target.value }
-                                });
-                              }}
-                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Height (e.g. 44px)</label>
-                            <input
-                              type="text"
-                              value={themeSettings.buttons?.height || '44px'}
-                              onChange={(e) => {
-                                setThemeSettings({
-                                  ...themeSettings,
-                                  buttons: { ...themeSettings.buttons, height: e.target.value }
-                                });
-                              }}
-                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Button Hover Anim</label>
-                            <select
-                              value={themeSettings.buttons?.animation || 'hover_lift'}
-                              onChange={(e) => {
-                                setThemeSettings({
-                                  ...themeSettings,
-                                  buttons: { ...themeSettings.buttons, animation: e.target.value }
-                                });
-                              }}
-                              className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 outline-none"
-                            >
-                              <option value="hover_lift">Lift Up</option>
-                              <option value="button_ripple">Ripple (Highlight)</option>
-                              <option value="none">None</option>
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* SUB-TAB 8: Layout */}
-                    {themeSubTab === 'layout' && (
-                      <div className="flex flex-col gap-6">
-                        <div className="pb-3 border-b border-gray-100">
-                          <h4 className="text-lg font-bold text-gray-900">Grid & Layout</h4>
-                          <p className="text-xs text-gray-500 mt-1">Adjust width, content alignment, and structure presets for the public screen.</p>
-                        </div>
-
-                        <div>
-                          <label className="block text-xs font-bold text-gray-400 uppercase mb-3">Layout Preset</label>
-                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                            {['centered', 'modern', 'minimal', 'compact', 'business', 'creative'].map((l) => (
-                              <button
-                                key={l}
-                                type="button"
-                                onClick={() => {
-                                  setThemeSettings({
-                                    ...themeSettings,
-                                    layout: {
-                                      ...themeSettings.layout,
-                                      style: l,
-                                      alignment: l === 'centered' ? 'center' : 'left'
-                                    }
-                                  });
-                                }}
-                                className={`px-4 py-2 text-xs font-semibold rounded-lg border capitalize transition-all cursor-pointer ${themeSettings.layout?.style === l
-                                  ? 'border-blue-600 bg-blue-50 text-blue-700 font-bold'
-                                  : 'border-gray-200 hover:bg-gray-50 text-gray-600'
-                                  }`}
-                              >
-                                {l}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div>
-                            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Profile Container Width</label>
-                            <input
-                              type="text"
-                              value={themeSettings.layout?.profileWidth || '640px'}
-                              onChange={(e) => {
-                                setThemeSettings({
-                                  ...themeSettings,
-                                  layout: { ...themeSettings.layout, profileWidth: e.target.value }
-                                });
-                              }}
-                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Section Spacing</label>
-                            <input
-                              type="text"
-                              value={themeSettings.layout?.spacing || '1.5rem'}
-                              onChange={(e) => {
-                                setThemeSettings({
-                                  ...themeSettings,
-                                  layout: { ...themeSettings.layout, spacing: e.target.value }
-                                });
-                              }}
-                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Content Alignment</label>
-                            <select
-                              value={themeSettings.layout?.alignment || 'center'}
-                              onChange={(e) => {
-                                setThemeSettings({
-                                  ...themeSettings,
-                                  layout: { ...themeSettings.layout, alignment: e.target.value }
-                                });
-                              }}
-                              className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 outline-none"
-                            >
-                              <option value="center">Centered</option>
-                              <option value="left">Left Aligned</option>
-                              <option value="right">Right Aligned</option>
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* SUB-TAB 9: Avatar & Cover */}
-                    {themeSubTab === 'avatar' && (
-                      <div className="flex flex-col gap-6">
-                        <div className="pb-3 border-b border-gray-100">
-                          <h4 className="text-lg font-bold text-gray-900">Avatar & Cover Banner</h4>
-                          <p className="text-xs text-gray-500 mt-1">Configure user photo frame shapes and cover hero banners styling.</p>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          {/* Avatar Setup */}
-                          <div>
-                            <h5 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Avatar Shape</h5>
-                            <div className="grid grid-cols-3 gap-2">
-                              {['circle', 'rounded', 'square'].map((sh) => (
-                                <button
-                                  key={sh}
-                                  type="button"
-                                  onClick={() => {
-                                    setThemeSettings({
-                                      ...themeSettings,
-                                      avatar: { ...themeSettings.avatar, shape: sh }
-                                    });
-                                  }}
-                                  className={`px-3 py-2 text-xs font-semibold rounded-lg border capitalize transition-all cursor-pointer ${themeSettings.avatar?.shape === sh
-                                    ? 'border-blue-600 bg-blue-50 text-blue-700 font-bold'
-                                    : 'border-gray-200 hover:bg-gray-50 text-gray-600'
-                                    }`}
-                                >
-                                  {sh}
-                                </button>
-                              ))}
+                      {/* Marketplace themes grid */}
+                      <div className="space-y-3 max-h-[350px] overflow-y-auto pr-1">
+                        {marketplaceThemes.map((theme) => (
+                          <div key={theme.id} className="flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-xl">
+                            <div>
+                              <span className="block text-sm font-bold text-gray-900">{theme.themeName}</span>
+                              <span className="block text-[10px] text-gray-400 font-semibold uppercase mt-0.5">By {theme.user?.name || 'Tapfolio Creator'}</span>
                             </div>
-                            <div className="mt-4 flex flex-col gap-3">
-                              <div>
-                                <label className="block text-xs font-semibold text-gray-700 mb-1">Border Value</label>
-                                <input
-                                  type="text"
-                                  value={themeSettings.avatar?.border || '3px solid rgba(255,255,255,0.2)'}
-                                  onChange={(e) => {
-                                    setThemeSettings({
-                                      ...themeSettings,
-                                      avatar: { ...themeSettings.avatar, border: e.target.value }
-                                    });
-                                  }}
-                                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
-                                />
-                              </div>
-                              <div className="flex items-center justify-between">
-                                <span className="text-xs font-semibold text-gray-700">Avatar Border Glow</span>
-                                <input
-                                  type="checkbox"
-                                  checked={themeSettings.avatar?.glow === 'glow'}
-                                  onChange={(e) => {
-                                    setThemeSettings({
-                                      ...themeSettings,
-                                      avatar: { ...themeSettings.avatar, glow: e.target.checked ? 'glow' : 'none' }
-                                    });
-                                  }}
-                                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                                />
-                              </div>
+                            <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                onClick={() => likeMarketplaceTheme(theme.id)}
+                                className="flex items-center gap-1 px-3 py-1.5 bg-white border border-gray-200 hover:border-red-400 rounded-lg text-xs font-bold text-gray-600 hover:text-red-500 transition-colors cursor-pointer"
+                              >
+                                <Heart className="w-3.5 h-3.5 fill-red-500 stroke-red-500" />
+                                <span>{theme.likesCount}</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => installMarketplaceTheme(theme.id)}
+                                className="px-4 py-1.5 bg-gray-900 text-white text-xs font-bold rounded-lg hover:bg-gray-800 transition-colors"
+                              >
+                                Install
+                              </button>
                             </div>
                           </div>
-
-                          {/* Cover Setup */}
-                          <div>
-                            <h5 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Cover Banner Type</h5>
-                            <div className="grid grid-cols-2 gap-2">
-                              {['none', 'solid', 'gradient', 'image'].map((cov) => (
-                                <button
-                                  key={cov}
-                                  type="button"
-                                  onClick={() => {
-                                    setThemeSettings({
-                                      ...themeSettings,
-                                      cover: {
-                                        ...themeSettings.cover,
-                                        type: cov,
-                                        value: cov === 'solid' ? '#0f172a' :
-                                          cov === 'gradient' ? 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)' : ''
-                                      }
-                                    });
-                                  }}
-                                  className={`px-3 py-2 text-xs font-semibold rounded-lg border capitalize transition-all cursor-pointer ${themeSettings.cover?.type === cov
-                                    ? 'border-blue-600 bg-blue-50 text-blue-700 font-bold'
-                                    : 'border-gray-200 hover:bg-gray-50 text-gray-600'
-                                    }`}
-                                >
-                                  {cov}
-                                </button>
-                              ))}
-                            </div>
-                            {themeSettings.cover?.type !== 'none' && (
-                              <div className="mt-4">
-                                <label className="block text-xs font-semibold text-gray-700 mb-1">Cover Value (Color, gradient, or Image Link)</label>
-                                <input
-                                  type="text"
-                                  value={themeSettings.cover?.value || ''}
-                                  onChange={(e) => {
-                                    setThemeSettings({
-                                      ...themeSettings,
-                                      cover: { ...themeSettings.cover, value: e.target.value }
-                                    });
-                                  }}
-                                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
-                                />
-                              </div>
-                            )}
-                          </div>
-                        </div>
+                        ))}
+                        {marketplaceThemes.length === 0 && (
+                          <p className="text-center text-xs text-gray-400 py-10 italic">No community themes published yet. Be the first!</p>
+                        )}
                       </div>
-                    )}
+                    </div>
+                  )}
 
-                    {/* SUB-TAB 10: Sections reordering */}
-                    {themeSubTab === 'sections' && (
-                      <div className="flex flex-col gap-6">
-                        <div className="pb-3 border-b border-gray-100">
-                          <h4 className="text-lg font-bold text-gray-900">Visible Sections & Order</h4>
-                          <p className="text-xs text-gray-500 mt-1">Reorder profile layers using up/down controls, and toggle visibility switchers.</p>
+                  {/* SUB-TAB 14: Advanced, JSON & WCAG checks */}
+                  {themeSubTab === 'advanced' && (
+                    <div className="flex flex-col gap-6">
+
+                      {/* Accessibility Contrast Checker */}
+                      <div>
+                        <div className="pb-3 border-b border-gray-100 mb-4">
+                          <h4 className="text-lg font-bold text-gray-900 flex items-center gap-1.5">
+                            <ShieldAlert className="w-5 h-5 text-blue-600" /> WCAG Color Contrast Validator
+                          </h4>
+                          <p className="text-xs text-gray-500 mt-1">Automatic real-time relative luminance checking to meet WCAG AA requirements (4.5:1).</p>
                         </div>
 
-                        {/* List of sections with reordering controls */}
-                        <div className="space-y-3">
-                          {((themeSettings.sections?.order as string[]) || ["about", "contact", "socials", "portfolio", "projects"]).map((sec, idx, arr) => {
-                            const isVisible = themeSettings.sections?.visibility?.[sec] !== false;
+                        <div className="space-y-3.5">
+                          {[
+                            {
+                              label: 'Main Text color vs Page Background',
+                              color1: themeSettings.colors?.text || '#111827',
+                              color2: themeSettings.background?.type === 'solid' ? themeSettings.background?.value || '#f0f2f8' : '#ffffff'
+                            },
+                            {
+                              label: 'Main Text color vs Card Surface background',
+                              color1: themeSettings.colors?.text || '#111827',
+                              color2: themeSettings.colors?.surface || '#ffffff'
+                            },
+                            {
+                              label: 'Action Button text color vs Action Button background',
+                              color1: '#ffffff',
+                              color2: themeSettings.colors?.primary || '#014BAA'
+                            }
+                          ].map((test, index) => {
+                            const ratio = calculateContrastRatio(test.color1, test.color2);
+                            const rating = ratio >= 7 ? { label: 'AAA Pass (Excellent)', cls: 'bg-green-50 text-green-700 border-green-200' } :
+                              ratio >= 4.5 ? { label: 'AA Pass (Good)', cls: 'bg-green-50 text-green-600 border-green-100' } :
+                                ratio >= 3 ? { label: 'Large Text Pass', cls: 'bg-yellow-50 text-yellow-600 border-yellow-200' } :
+                                  { label: 'Fail (Low Contrast)', cls: 'bg-red-50 text-red-600 border-red-200' };
+
                             return (
-                              <div key={sec} className="flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-xl">
-                                <div className="flex items-center gap-3">
-                                  <div className="flex flex-col gap-1">
-                                    <button
-                                      type="button"
-                                      disabled={idx === 0}
-                                      onClick={() => {
-                                        const newOrder = [...arr];
-                                        const temp = newOrder[idx];
-                                        newOrder[idx] = newOrder[idx - 1];
-                                        newOrder[idx - 1] = temp;
-                                        setThemeSettings({
-                                          ...themeSettings,
-                                          sections: { ...themeSettings.sections, order: newOrder }
-                                        });
-                                      }}
-                                      className="p-1 text-gray-400 hover:text-gray-900 disabled:opacity-30 cursor-pointer"
-                                    >
-                                      <ArrowUp className="w-3.5 h-3.5" />
-                                    </button>
-                                    <button
-                                      type="button"
-                                      disabled={idx === arr.length - 1}
-                                      onClick={() => {
-                                        const newOrder = [...arr];
-                                        const temp = newOrder[idx];
-                                        newOrder[idx] = newOrder[idx + 1];
-                                        newOrder[idx + 1] = temp;
-                                        setThemeSettings({
-                                          ...themeSettings,
-                                          sections: { ...themeSettings.sections, order: newOrder }
-                                        });
-                                      }}
-                                      className="p-1 text-gray-400 hover:text-gray-900 disabled:opacity-30 cursor-pointer"
-                                    >
-                                      <ArrowDown className="w-3.5 h-3.5" />
-                                    </button>
-                                  </div>
-                                  <div>
-                                    <span className="block text-sm font-bold text-gray-800 capitalize">{sec} Section</span>
-                                    <span className="text-[10px] text-gray-400 font-semibold uppercase">Position {idx + 1}</span>
-                                  </div>
+                              <div key={index} className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3.5 bg-gray-50 border border-gray-200 rounded-xl gap-2">
+                                <div>
+                                  <span className="block text-xs font-bold text-gray-800">{test.label}</span>
+                                  <span className="text-[10px] font-mono text-gray-400 uppercase mt-0.5">Colors: {test.color1} / {test.color2}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <label className="relative inline-flex items-center cursor-pointer">
-                                    <input
-                                      type="checkbox"
-                                      checked={isVisible}
-                                      onChange={(e) => {
-                                        setThemeSettings({
-                                          ...themeSettings,
-                                          sections: {
-                                            ...themeSettings.sections,
-                                            visibility: {
-                                              ...themeSettings.sections?.visibility,
-                                              [sec]: e.target.checked
-                                            }
-                                          }
-                                        });
-                                      }}
-                                      className="sr-only peer"
-                                    />
-                                    <div className="w-9 h-5 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:width-4 after:transition-all peer-checked:bg-blue-600"></div>
-                                  </label>
+                                  <span className="text-xs font-mono font-black text-gray-800">{ratio.toFixed(2)}:1</span>
+                                  <span className={`px-2.5 py-1 text-[10px] font-black rounded-lg border uppercase tracking-wider ${rating.cls}`}>
+                                    {rating.label}
+                                  </span>
                                 </div>
                               </div>
                             );
                           })}
                         </div>
                       </div>
-                    )}
 
-                    {/* SUB-TAB 11: Social Icons */}
-                    {themeSubTab === 'socials' && (
-                      <div className="flex flex-col gap-6">
-                        <div className="pb-3 border-b border-gray-100">
-                          <h4 className="text-lg font-bold text-gray-900">Social Grid & Icons</h4>
-                          <p className="text-xs text-gray-500 mt-1">Adjust size, border layouts, spacing, and hover animations of social links.</p>
-                        </div>
-
-                        <div>
-                          <label className="block text-xs font-bold text-gray-400 uppercase mb-3">Icon Frame Style</label>
-                          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-                            {['circle', 'outline', 'minimal', 'rounded', 'filled'].map((iconStyle) => (
-                              <button
-                                key={iconStyle}
-                                type="button"
-                                onClick={() => {
-                                  setThemeSettings({
-                                    ...themeSettings,
-                                    socialIcons: { ...themeSettings.socialIcons, style: iconStyle }
-                                  });
-                                }}
-                                className={`px-2 py-2 text-xs font-semibold rounded-lg border capitalize transition-all cursor-pointer ${themeSettings.socialIcons?.style === iconStyle
-                                  ? 'border-blue-600 bg-blue-50 text-blue-700 font-bold'
-                                  : 'border-gray-200 hover:bg-gray-50 text-gray-600'
-                                  }`}
-                              >
-                                {iconStyle}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div>
-                            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Icon Size (px)</label>
-                            <input
-                              type="text"
-                              value={themeSettings.socialIcons?.size || '24px'}
-                              onChange={(e) => {
-                                setThemeSettings({
-                                  ...themeSettings,
-                                  socialIcons: { ...themeSettings.socialIcons, size: e.target.value }
-                                });
-                              }}
-                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Grid Spacing</label>
-                            <input
-                              type="text"
-                              value={themeSettings.socialIcons?.spacing || '0.75rem'}
-                              onChange={(e) => {
-                                setThemeSettings({
-                                  ...themeSettings,
-                                  socialIcons: { ...themeSettings.socialIcons, spacing: e.target.value }
-                                });
-                              }}
-                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Hover Effect</label>
-                            <select
-                              value={themeSettings.socialIcons?.hover || 'scale'}
-                              onChange={(e) => {
-                                setThemeSettings({
-                                  ...themeSettings,
-                                  socialIcons: { ...themeSettings.socialIcons, hover: e.target.value }
-                                });
-                              }}
-                              className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 outline-none"
-                            >
-                              <option value="scale">Scale Up</option>
-                              <option value="lift">Lift Up</option>
-                              <option value="none">None</option>
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* SUB-TAB 12: Animations */}
-                    {themeSubTab === 'animations' && (
-                      <div className="flex flex-col gap-6">
-                        <div className="pb-3 border-b border-gray-100">
-                          <h4 className="text-lg font-bold text-gray-900">Motion & Interaction Effects</h4>
-                          <p className="text-xs text-gray-500 mt-1">Unlock micro-animations, transitions, and hover lifting events.</p>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Page Entrance Animation</label>
-                            <select
-                              value={themeSettings.animations?.style || 'fade'}
-                              onChange={(e) => {
-                                setThemeSettings({
-                                  ...themeSettings,
-                                  animations: { ...themeSettings.animations, style: e.target.value }
-                                });
-                              }}
-                              className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 outline-none"
-                            >
-                              <option value="fade">Fade In</option>
-                              <option value="slide">Slide Up Entrance</option>
-                              <option value="scale">Scale Up Entrance</option>
-                              <option value="none">None</option>
-                            </select>
-                          </div>
-
-                          <div className="flex flex-col gap-3 mt-1.5">
-                            <div className="flex items-center justify-between">
-                              <span className="text-xs font-semibold text-gray-700">Enable Cursor Glow Light</span>
-                              <input
-                                type="checkbox"
-                                checked={themeSettings.animations?.cursorGlow || false}
-                                onChange={(e) => {
-                                  setThemeSettings({
-                                    ...themeSettings,
-                                    animations: { ...themeSettings.animations, cursorGlow: e.target.checked }
-                                  });
-                                }}
-                                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                              />
-                            </div>
-                            <div className="flex items-center justify-between">
-                              <span className="text-xs font-semibold text-gray-700">Parallax Scroll Effects</span>
-                              <input
-                                type="checkbox"
-                                checked={themeSettings.animations?.parallax || false}
-                                onChange={(e) => {
-                                  setThemeSettings({
-                                    ...themeSettings,
-                                    animations: { ...themeSettings.animations, parallax: e.target.checked }
-                                  });
-                                }}
-                                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* SUB-TAB 13: Marketplace */}
-                    {themeSubTab === 'marketplace' && (
-                      <div className="flex flex-col gap-6">
-                        <div className="pb-3 border-b border-gray-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-                          <div>
-                            <h4 className="text-lg font-bold text-gray-900">Community Marketplace</h4>
-                            <p className="text-xs text-gray-500 mt-1">Browse, install, and share creative page themes with others.</p>
-                          </div>
+                      {/* Import / Export JSON */}
+                      <div className="border-t border-gray-100 pt-5">
+                        <h4 className="text-sm font-bold text-gray-900 mb-2 flex items-center gap-1">
+                          <Layers className="w-4 h-4" /> Theme Import / Export (theme.json)
+                        </h4>
+                        <p className="text-xs text-gray-500 mb-3">Copy this settings configuration payload to backup, share, or import theme setups.</p>
+                        <textarea
+                          value={importJson}
+                          onChange={(e) => setImportJson(e.target.value)}
+                          rows={6}
+                          className="w-full p-3.5 bg-gray-900 text-gray-200 font-mono text-xs rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                        <div className="flex flex-wrap gap-2 mt-3 justify-end">
                           <button
                             type="button"
                             onClick={() => {
-                              const pName = prompt('Enter a name for this custom theme:');
-                              if (pName) {
-                                setPublishThemeName(pName);
-                                // Set immediately or call publish
-                                fetch('/api/profile/theme/marketplace', {
-                                  method: 'POST',
-                                  headers: { 'Content-Type': 'application/json' },
-                                  body: JSON.stringify({ action: 'publish', themeName: pName, settings: themeSettings })
-                                })
-                                  .then(() => {
-                                    setSuccess('Theme published!');
-                                    fetchMarketplace();
-                                    setTimeout(() => setSuccess(''), 2500);
-                                  });
-                              }
+                              navigator.clipboard.writeText(importJson);
+                              setSuccess('JSON copied to clipboard!');
+                              setTimeout(() => setSuccess(''), 2500);
                             }}
-                            className="px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-xl hover:bg-blue-700 shadow-sm transition-all"
+                            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl transition-colors cursor-pointer"
                           >
-                            Publish Theme
+                            Copy Config
+                          </button>
+                          <button
+                            type="button"
+                            onClick={handleImportTheme}
+                            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-colors cursor-pointer"
+                          >
+                            Import config
                           </button>
                         </div>
-
-                        {/* Marketplace themes grid */}
-                        <div className="space-y-3 max-h-[350px] overflow-y-auto pr-1">
-                          {marketplaceThemes.map((theme) => (
-                            <div key={theme.id} className="flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-xl">
-                              <div>
-                                <span className="block text-sm font-bold text-gray-900">{theme.themeName}</span>
-                                <span className="block text-[10px] text-gray-400 font-semibold uppercase mt-0.5">By {theme.user?.name || 'Tapfolio Creator'}</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <button
-                                  type="button"
-                                  onClick={() => likeMarketplaceTheme(theme.id)}
-                                  className="flex items-center gap-1 px-3 py-1.5 bg-white border border-gray-200 hover:border-red-400 rounded-lg text-xs font-bold text-gray-600 hover:text-red-500 transition-colors cursor-pointer"
-                                >
-                                  <Heart className="w-3.5 h-3.5 fill-red-500 stroke-red-500" />
-                                  <span>{theme.likesCount}</span>
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => installMarketplaceTheme(theme.id)}
-                                  className="px-4 py-1.5 bg-gray-900 text-white text-xs font-bold rounded-lg hover:bg-gray-800 transition-colors"
-                                >
-                                  Install
-                                </button>
-                              </div>
-                            </div>
-                          ))}
-                          {marketplaceThemes.length === 0 && (
-                            <p className="text-center text-xs text-gray-400 py-10 italic">No community themes published yet. Be the first!</p>
-                          )}
-                        </div>
                       </div>
-                    )}
+                    </div>
+                  )}
 
-                    {/* SUB-TAB 14: Advanced, JSON & WCAG checks */}
-                    {themeSubTab === 'advanced' && (
-                      <div className="flex flex-col gap-6">
-
-                        {/* Accessibility Contrast Checker */}
-                        <div>
-                          <div className="pb-3 border-b border-gray-100 mb-4">
-                            <h4 className="text-lg font-bold text-gray-900 flex items-center gap-1.5">
-                              <ShieldAlert className="w-5 h-5 text-blue-600" /> WCAG Color Contrast Validator
-                            </h4>
-                            <p className="text-xs text-gray-500 mt-1">Automatic real-time relative luminance checking to meet WCAG AA requirements (4.5:1).</p>
-                          </div>
-
-                          <div className="space-y-3.5">
-                            {[
-                              {
-                                label: 'Main Text color vs Page Background',
-                                color1: themeSettings.colors?.text || '#111827',
-                                color2: themeSettings.background?.type === 'solid' ? themeSettings.background?.value || '#f0f2f8' : '#ffffff'
-                              },
-                              {
-                                label: 'Main Text color vs Card Surface background',
-                                color1: themeSettings.colors?.text || '#111827',
-                                color2: themeSettings.colors?.surface || '#ffffff'
-                              },
-                              {
-                                label: 'Action Button text color vs Action Button background',
-                                color1: '#ffffff',
-                                color2: themeSettings.colors?.primary || '#014BAA'
-                              }
-                            ].map((test, index) => {
-                              const ratio = calculateContrastRatio(test.color1, test.color2);
-                              const rating = ratio >= 7 ? { label: 'AAA Pass (Excellent)', cls: 'bg-green-50 text-green-700 border-green-200' } :
-                                ratio >= 4.5 ? { label: 'AA Pass (Good)', cls: 'bg-green-50 text-green-600 border-green-100' } :
-                                  ratio >= 3 ? { label: 'Large Text Pass', cls: 'bg-yellow-50 text-yellow-600 border-yellow-200' } :
-                                    { label: 'Fail (Low Contrast)', cls: 'bg-red-50 text-red-600 border-red-200' };
-
-                              return (
-                                <div key={index} className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3.5 bg-gray-50 border border-gray-200 rounded-xl gap-2">
-                                  <div>
-                                    <span className="block text-xs font-bold text-gray-800">{test.label}</span>
-                                    <span className="text-[10px] font-mono text-gray-400 uppercase mt-0.5">Colors: {test.color1} / {test.color2}</span>
-                                  </div>
-                                  <div className="flex items-center gap-2">
-                                    <span className="text-xs font-mono font-black text-gray-800">{ratio.toFixed(2)}:1</span>
-                                    <span className={`px-2.5 py-1 text-[10px] font-black rounded-lg border uppercase tracking-wider ${rating.cls}`}>
-                                      {rating.label}
-                                    </span>
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-
-                        {/* Import / Export JSON */}
-                        <div className="border-t border-gray-100 pt-5">
-                          <h4 className="text-sm font-bold text-gray-900 mb-2 flex items-center gap-1">
-                            <Layers className="w-4 h-4" /> Theme Import / Export (theme.json)
-                          </h4>
-                          <p className="text-xs text-gray-500 mb-3">Copy this settings configuration payload to backup, share, or import theme setups.</p>
-                          <textarea
-                            value={importJson}
-                            onChange={(e) => setImportJson(e.target.value)}
-                            rows={6}
-                            className="w-full p-3.5 bg-gray-900 text-gray-200 font-mono text-xs rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          />
-                          <div className="flex flex-wrap gap-2 mt-3 justify-end">
-                            <button
-                              type="button"
-                              onClick={() => {
-                                navigator.clipboard.writeText(importJson);
-                                setSuccess('JSON copied to clipboard!');
-                                setTimeout(() => setSuccess(''), 2500);
-                              }}
-                              className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl transition-colors cursor-pointer"
-                            >
-                              Copy Config
-                            </button>
-                            <button
-                              type="button"
-                              onClick={handleImportTheme}
-                              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-colors cursor-pointer"
-                            >
-                              Import config
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Unified Customize Theme Save block (Always visible for theme config tabs) */}
-                    {themeSubTab !== 'profile' && (
-                      <div className="pt-6 border-t border-gray-100 flex justify-between items-center gap-3">
-                        <button
-                          type="button"
-                          onClick={resetThemeToDefault}
-                          className="px-4 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 rounded-xl transition-all cursor-pointer"
-                        >
-                          Reset Default
-                        </button>
-                        <button
-                          type="button"
-                          onClick={saveTheme}
-                          disabled={savingTheme}
-                          className="px-6 py-2.5 bg-gray-900 hover:bg-blue-600 text-white font-bold text-xs rounded-xl transition-all shadow-sm"
-                        >
-                          {savingTheme ? 'Saving Theme...' : 'Save Current Theme'}
-                        </button>
-                      </div>
-                    )}
-                  </div>
+                  {/* Unified Customize Theme Save block (Always visible for theme config tabs) */}
+                  {themeSubTab !== 'profile' && (
+                    <div className="pt-6 border-t border-gray-100 flex justify-between items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={resetThemeToDefault}
+                        className="px-4 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 rounded-xl transition-all cursor-pointer"
+                      >
+                        Reset Default
+                      </button>
+                      <button
+                        type="button"
+                        onClick={saveTheme}
+                        disabled={savingTheme}
+                        className="px-6 py-2.5 bg-gray-900 hover:bg-blue-600 text-white font-bold text-xs rounded-xl transition-all shadow-sm"
+                      >
+                        {savingTheme ? 'Saving Theme...' : 'Save Current Theme'}
+                      </button>
+                    </div>
+                  )}
                 </div>
+              </div>
             )}
 
             {/* PROJECTS TAB */}
@@ -2738,6 +3019,66 @@ export default function Dashboard() {
               </div>
             )}
 
+            {/* SUPPORT & FEEDBACK TAB */}
+            {activeTab === 'support' && (
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 flex flex-col gap-6">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">Reviews & Complaints</h3>
+                  <p className="text-gray-500 text-sm mt-1">Submit feedback, report system issues, or share complaints. Your name and account email will automatically be attached to the message.</p>
+                </div>
+
+                {supportSuccess && (
+                  <div className="p-4 bg-green-50 border border-green-200 text-green-700 rounded-xl text-sm font-medium">
+                    {supportSuccess}
+                  </div>
+                )}
+
+                {supportError && (
+                  <div className="p-4 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm font-medium">
+                    {supportError}
+                  </div>
+                )}
+
+                <form onSubmit={handleCreateSupportTicket} className="flex flex-col gap-5">
+                  <div className="flex flex-col gap-2">
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Subject</label>
+                    <select
+                      value={supportSubject}
+                      onChange={(e) => setSupportSubject(e.target.value)}
+                      className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-blue-500 transition-colors"
+                    >
+                      <option value="Feedback/Complaint">General Feedback / Complaint</option>
+                      <option value="Bug Report">Technical Bug Report</option>
+                      <option value="Feature Request">New Feature Request</option>
+                      <option value="Account Issue">Account Billing & Access Support</option>
+                    </select>
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Message Description</label>
+                    <textarea
+                      rows={6}
+                      required
+                      value={supportMessage}
+                      onChange={(e) => setSupportMessage(e.target.value)}
+                      placeholder="Please write the details of your review or complaint here..."
+                      className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm outline-none focus:border-blue-500 transition-colors resize-none"
+                    />
+                  </div>
+
+                  <div className="flex justify-end pt-4 border-t border-gray-100">
+                    <button
+                      type="submit"
+                      disabled={submittingSupport}
+                      className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-sm transition-all disabled:opacity-50"
+                    >
+                      {submittingSupport ? 'Submitting...' : 'Send to Admin'}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+
           </div>
 
           {/* RIGHT COLUMN - LIVE PREVIEW */}
@@ -2746,12 +3087,12 @@ export default function Dashboard() {
               <div className="text-[10px] text-gray-400 uppercase tracking-widest font-black mb-3.5 flex items-center gap-1.5">
                 <Smartphone className="w-3.5 h-3.5 text-gray-400 animate-pulse" /> Your Live Tapfolio Showcase
               </div>
-              
+
               {/* Smartphone Frame mockup */}
               <div className="w-[310px] h-[580px] sm:w-[335px] sm:h-[650px] rounded-[40px] border-[10px] border-gray-900 shadow-2xl overflow-hidden bg-gray-100 relative sticky top-28 flex flex-col">
                 {/* Speaker Notch */}
                 <div className="absolute top-0 left-1/2 transform -translate-x-1/2 h-3.5 w-24 bg-gray-900 rounded-b-xl z-30" />
-                
+
                 {/* iPhone Status Bar */}
                 <div className="h-9 bg-slate-900 text-white flex items-center justify-between px-5 text-[11px] font-semibold select-none z-20 shrink-0 font-sans">
                   <span>12:48</span>
@@ -2815,7 +3156,7 @@ export default function Dashboard() {
                       <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                     </svg>
                   </div>
-                  
+
                   {/* URL Input mock */}
                   <div className="flex-1 bg-white border border-slate-200/80 rounded-lg px-2.5 py-1 flex items-center justify-between text-[11px] text-gray-800 shadow-sm gap-1.5">
                     {/* Lock icon */}
@@ -2830,7 +3171,7 @@ export default function Dashboard() {
                       <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
                     </svg>
                   </div>
-                  
+
                   {/* Options/More icon */}
                   <svg className="w-4 h-4 text-gray-500 hover:text-gray-900 cursor-pointer shrink-0" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM18 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -2838,6 +3179,7 @@ export default function Dashboard() {
                 </div>
 
               </div>
+
             </div>
           )}
 
