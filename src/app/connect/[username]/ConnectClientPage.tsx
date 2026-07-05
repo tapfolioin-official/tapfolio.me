@@ -569,6 +569,7 @@ export default function ConnectClientPage({
         ...getThemeStyles(),
         alignItems: activeTheme?.layout?.alignment === 'left' ? 'flex-start' :
                     activeTheme?.layout?.alignment === 'right' ? 'flex-end' : 'center',
+        minHeight: previewTheme ? '100%' : '100vh',
       }}
     >
       {/* ─── Premium Background Rendering ─── */}
@@ -600,12 +601,13 @@ export default function ConnectClientPage({
         {/* ─── Hero Banner ─── */}
         <div className={styles.heroBanner}>
           <div className={styles.heroContent}>
-            {/* Profile Row: avatar left, info right */}
+            {/* Profile Row: avatar left/top, info right/center */}
             <div
               className={styles.profileRow}
               style={{
-                flexDirection: activeTheme?.layout?.style === 'compact' ? 'row' : 'row',
-                textAlign: activeTheme?.layout?.alignment === 'left' ? 'left' : 'center'
+                flexDirection: activeTheme?.layout?.alignment === 'center' ? 'column' : 'row',
+                alignItems: 'center',
+                textAlign: activeTheme?.layout?.alignment === 'center' ? 'center' : 'left'
               }}
             >
               <img
@@ -627,7 +629,12 @@ export default function ConnectClientPage({
                 </h1>
                 {rolesText && <div className={styles.heroRoles}>{rolesText}</div>}
                 {locationString && (
-                  <div className={styles.heroLocation}>
+                  <div
+                    className={styles.heroLocation}
+                    style={{
+                      justifyContent: activeTheme?.layout?.alignment === 'center' ? 'center' : 'flex-start'
+                    }}
+                  >
                     <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0z" />
@@ -639,7 +646,12 @@ export default function ConnectClientPage({
             </div>
 
             {/* Actions: Save Contact + Share */}
-            <div className={styles.heroActions}>
+            <div
+              className={styles.heroActions}
+              style={{
+                justifyContent: activeTheme?.layout?.alignment === 'center' ? 'center' : 'flex-start'
+              }}
+            >
               <button className={styles.saveContactBtn} onClick={handleSaveContact}>
                 <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0z" />

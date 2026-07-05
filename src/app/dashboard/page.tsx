@@ -963,7 +963,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
           {/* LEFT COLUMN - MAIN CONTROLS */}
-          <div className={`${activeTab === 'customizer' ? 'lg:col-span-12' : 'lg:col-span-8'} flex flex-col gap-6`}>
+          <div className={`${activeTab === 'customizer' ? 'lg:col-span-7' : 'lg:col-span-12'} flex flex-col gap-6`}>
 
             {/* SEGMENTED TABS */}
             <div className="flex p-1 bg-gray-200/60 rounded-xl w-full sm:w-fit overflow-x-auto">
@@ -2741,41 +2741,105 @@ export default function Dashboard() {
           </div>
 
           {/* RIGHT COLUMN - LIVE PREVIEW */}
-          <div className="lg:col-span-4 relative flex flex-col items-center">
-            <div className="text-[10px] text-gray-400 uppercase tracking-widest font-black mb-3.5 flex items-center gap-1.5">
-              <Smartphone className="w-3.5 h-3.5 text-gray-400 animate-pulse" /> Your Live Tapfolio Showcase
-            </div>
-            
-            {/* Smartphone Frame mockup */}
-            <div className="w-[310px] h-[580px] sm:w-[320px] sm:h-[600px] rounded-[40px] border-[8px] border-gray-900 shadow-2xl overflow-y-auto bg-gray-100 relative scrollbar-none sticky top-28">
-              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 h-3.5 w-24 bg-gray-900 rounded-b-xl z-20" /> {/* speaker notch */}
+          {activeTab === 'customizer' && (
+            <div className="lg:col-span-5 relative flex flex-col items-center">
+              <div className="text-[10px] text-gray-400 uppercase tracking-widest font-black mb-3.5 flex items-center gap-1.5">
+                <Smartphone className="w-3.5 h-3.5 text-gray-400 animate-pulse" /> Your Live Tapfolio Showcase
+              </div>
               
-              {themeSettings ? (
-                <ConnectClientPage
-                  username={profile?.username || ''}
-                  profile={{
-                    id: profile?.id || 0,
-                    userId: profile?.userId || 0,
-                    name: name || 'Your Name',
-                    avatar: avatar || '/profile_avatar.png',
-                    isPremium: isPremium,
-                    tagline: tagline || 'Tagline'
-                  }}
-                  isLoggedIn={false}
-                  previewTheme={themeSettings}
-                  previewProfileData={{
-                    tags,
-                    socials,
-                    location,
-                    bio,
-                    projects
-                  }}
-                />
-              ) : (
-                <div className="flex items-center justify-center h-full text-xs text-gray-400 animate-pulse">Loading visual showcase...</div>
-              )}
+              {/* Smartphone Frame mockup */}
+              <div className="w-[310px] h-[580px] sm:w-[335px] sm:h-[650px] rounded-[40px] border-[10px] border-gray-900 shadow-2xl overflow-hidden bg-gray-100 relative sticky top-28 flex flex-col">
+                {/* Speaker Notch */}
+                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 h-3.5 w-24 bg-gray-900 rounded-b-xl z-30" />
+                
+                {/* iPhone Status Bar */}
+                <div className="h-9 bg-slate-900 text-white flex items-center justify-between px-5 text-[11px] font-semibold select-none z-20 shrink-0 font-sans">
+                  <span>12:48</span>
+                  <div className="flex items-center gap-1.5">
+                    {/* Cellular Signal Bars */}
+                    <div className="flex items-end gap-[1.5px] h-2">
+                      <div className="w-[2.5px] h-[3px] bg-white rounded-sm" />
+                      <div className="w-[2.5px] h-[5px] bg-white rounded-sm" />
+                      <div className="w-[2.5px] h-[7px] bg-white rounded-sm" />
+                      <div className="w-[2.5px] h-[8.5px] bg-white rounded-sm" />
+                    </div>
+                    {/* Wifi Icon */}
+                    <svg className="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                      <path d="M12 20h.01M8.5 16.5a5 5 0 0 1 7 0M5 13a10 10 0 0 1 14 0M1.5 9.5a15 15 0 0 1 21 0" strokeLinecap="round" />
+                    </svg>
+                    {/* Battery Icon */}
+                    <div className="w-5 h-2.5 border border-white/60 rounded-[3px] p-[1.5px] flex items-center relative">
+                      <div className="w-3.5 h-full bg-white rounded-[1.5px]" />
+                      <div className="w-[1.5px] h-1.5 bg-white/60 absolute -right-[2.5px] top-[1.5px] rounded-r-[1px]" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Scrollable Smartphone Screen Area */}
+                <div className="flex-1 overflow-y-auto scrollbar-none relative bg-gray-50">
+                  {themeSettings ? (
+                    <ConnectClientPage
+                      username={profile?.username || ''}
+                      profile={{
+                        id: profile?.id || 0,
+                        userId: profile?.userId || 0,
+                        name: name || 'Your Name',
+                        avatar: avatar || '/profile_avatar.png',
+                        isPremium: isPremium,
+                        tagline: tagline || 'Tagline'
+                      }}
+                      isLoggedIn={false}
+                      previewTheme={themeSettings}
+                      previewProfileData={{
+                        tags,
+                        socials,
+                        location,
+                        bio,
+                        projects
+                      }}
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-xs text-gray-400 animate-pulse">Loading visual showcase...</div>
+                  )}
+                </div>
+
+                {/* Safari-style Address Bar at Bottom */}
+                <div className="bg-slate-100/95 backdrop-blur-md border-t border-slate-200/50 py-2 px-4 flex items-center justify-between gap-3 text-gray-700 select-none z-20 shrink-0 font-sans">
+                  <div className="flex gap-4">
+                    {/* Back Arrow */}
+                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                    </svg>
+                    {/* Forward Arrow */}
+                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                  </div>
+                  
+                  {/* URL Input mock */}
+                  <div className="flex-1 bg-white border border-slate-200/80 rounded-lg px-2.5 py-1 flex items-center justify-between text-[11px] text-gray-800 shadow-sm gap-1.5">
+                    {/* Lock icon */}
+                    <svg className="w-2.5 h-2.5 text-gray-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="font-medium text-slate-700 truncate tracking-wide">
+                      {profile?.username ? `phi.vercel.app/${profile.username}` : 'phi.vercel.app'}
+                    </span>
+                    {/* Refresh icon */}
+                    <svg className="w-3 h-3 text-gray-450 hover:text-gray-900 cursor-pointer shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                    </svg>
+                  </div>
+                  
+                  {/* Options/More icon */}
+                  <svg className="w-4 h-4 text-gray-500 hover:text-gray-900 cursor-pointer shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM18 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                </div>
+
+              </div>
             </div>
-          </div>
+          )}
 
         </div>
       </main>
