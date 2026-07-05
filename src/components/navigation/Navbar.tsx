@@ -4,6 +4,18 @@ import React from "react";
 import { ChevronRight } from "lucide-react";
 
 export default function Navbar() {
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+
+  React.useEffect(() => {
+    fetch("/api/auth/me")
+      .then((res) => {
+        if (res.ok) {
+          setIsLoggedIn(true);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
     if (el) {
@@ -72,17 +84,33 @@ export default function Navbar() {
         <button
           type="button"
           onClick={() => scrollToSection("order")}
-          className="hidden sm:inline-flex items-center justify-center px-6 h-[50px] border border-gray-900 text-gray-900 font-semibold rounded-full hover:bg-gray-50 transition-all cursor-pointer"
+          className="hidden lg:inline-flex items-center justify-center px-6 h-[50px] border border-gray-200 text-gray-700 font-semibold rounded-full hover:bg-gray-50 transition-all cursor-pointer"
         >
           Configure
         </button>
         <button
           type="button"
           onClick={() => scrollToSection("order")}
-          className="inline-flex items-center justify-center px-6 h-[50px] bg-gray-900 text-white font-semibold rounded-full hover:bg-blue-600 hover:border-blue-600 transition-all cursor-pointer shadow-md"
+          className="hidden sm:inline-flex items-center justify-center px-6 h-[50px] border border-gray-900 text-gray-900 font-semibold rounded-full hover:bg-gray-50 transition-all cursor-pointer"
         >
           Order Now
         </button>
+        
+        {isLoggedIn ? (
+          <a
+            href="/dashboard"
+            className="inline-flex items-center justify-center px-6 h-[50px] bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 transition-all cursor-pointer shadow-md text-sm"
+          >
+            Dashboard
+          </a>
+        ) : (
+          <a
+            href="/login"
+            className="inline-flex items-center justify-center px-6 h-[50px] bg-gray-900 text-white font-semibold rounded-full hover:bg-blue-600 transition-all cursor-pointer shadow-md text-sm"
+          >
+            Login to Dashboard
+          </a>
+        )}
       </div>
     </nav>
   );

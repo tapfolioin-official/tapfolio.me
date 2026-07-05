@@ -34,6 +34,13 @@ export default function DynamicPortfolioPage() {
       return;
     }
 
+    // Bypass check for static template users to ensure showcase pages work instantly
+    if (username === 'abhinand' || username === 'nibras') {
+      setProfileExists(true);
+      setLoading(false);
+      return;
+    }
+
     // Verify user profile exists in database
     fetch(`/api/profile/${username}`)
       .then((res) => res.json())
