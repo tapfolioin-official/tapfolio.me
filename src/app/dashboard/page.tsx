@@ -1,11 +1,23 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import LoadingScreen from '@/components/LoadingScreen';
 import ImageCropModal from '@/components/ImageCropModal';
+import ConnectClientPage from '@/app/connect/[username]/ConnectClientPage';
+import {
+  DEFAULT_THEME_SETTINGS,
+  QUICK_THEMES,
+  PREMIUM_THEMES,
+  calculateContrastRatio
+} from '@/lib/theme';
+import {
+  Palette, Type, CreditCard, Layout, Sparkles, Check,
+  Download, Upload, Copy, Share, ArrowUp, ArrowDown, ShieldAlert,
+  Layers, Smartphone, Eye, EyeOff, Save, Trash2, Heart, Image, Star
+} from 'lucide-react';
 
 interface Tag {
   id?: number;
@@ -170,8 +182,19 @@ export default function Dashboard() {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-const [showNewPassword, setShowNewPassword] = useState(false);
-const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // Theme Customizer States
+  const [themeSettings, setThemeSettings] = useState<any>(DEFAULT_THEME_SETTINGS);
+  const [savingTheme, setSavingTheme] = useState(false);
+  const [themeSubTab, setThemeSubTab] = useState<'profile' | 'presets' | 'colors' | 'background' | 'fonts' | 'cards' | 'buttons' | 'layout' | 'avatar' | 'sections' | 'socials' | 'animations' | 'marketplace' | 'advanced'>('profile');
+  const [marketplaceThemes, setMarketplaceThemes] = useState<any[]>([]);
+  const [loadingMarketplace, setLoadingMarketplace] = useState(false);
+  const [marketplaceFilter, setMarketplaceFilter] = useState<'trending' | 'newest'>('trending');
+  const [importJson, setImportJson] = useState('');
+  const [showPublishModal, setShowPublishModal] = useState(false);
+  const [publishThemeName, setPublishThemeName] = useState('');
 
   // Tags states
   const [tags, setTags] = useState<Tag[]>([]);
@@ -288,10 +311,177 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     }
   };
 
+  const fetchTheme = async () => {
+    try {
+      const res = await fetch('/api/profile/theme');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.theme) {
+          setThemeSettings(data.theme.settings || DEFAULT_THEME_SETTINGS);
+          setImportJson(JSON.stringify(data.theme.settings || DEFAULT_THEME_SETTINGS, null, 2));
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching theme settings:', error);
+    }
+  };
+
+  const fetchMarketplace = async (filterType = marketplaceFilter) => {
+    setLoadingMarketplace(true);
+    try {
+      const res = await fetch(`/api/profile/theme/marketplace?filter=${filterType}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          setMarketplaceThemes(data.themes || []);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching marketplace themes:', error);
+    } finally {
+      setLoadingMarketplace(false);
+    }
+  };
+
+  const publishTheme = async () => {
+    if (!publishThemeName.trim()) return;
+    try {
+      const res = await fetch('/api/profile/theme/marketplace', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'publish',
+          themeName: publishThemeName,
+          settings: themeSettings
+        })
+      });
+      if (res.ok) {
+        setSuccess('Theme published to the marketplace successfully!');
+        setPublishThemeName('');
+        setShowPublishModal(false);
+        fetchMarketplace();
+        setTimeout(() => setSuccess(''), 3000);
+      }
+    } catch (err) {
+      console.error('Error publishing theme:', err);
+    }
+  };
+
+  const likeMarketplaceTheme = async (themeId: number) => {
+    try {
+      const res = await fetch('/api/profile/theme/marketplace', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'like',
+          themeId
+        })
+      });
+      if (res.ok) {
+        fetchMarketplace();
+      }
+    } catch (err) {
+      console.error('Error liking theme:', err);
+    }
+  };
+
+  const installMarketplaceTheme = async (themeId: number) => {
+    try {
+      const res = await fetch('/api/profile/theme/marketplace', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'install',
+          themeId
+        })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.theme) {
+          setThemeSettings(data.theme.settings);
+          setImportJson(JSON.stringify(data.theme.settings, null, 2));
+          setSuccess('Community theme installed successfully!');
+          setTimeout(() => setSuccess(''), 3000);
+        }
+      }
+    } catch (err) {
+      console.error('Error installing theme:', err);
+    }
+  };
+
+  const resetThemeToDefault = async () => {
+    if (!confirm('Are you sure you want to reset all customizations to default styles?')) return;
+    try {
+      const res = await fetch('/api/profile/theme/reset', { method: 'POST' });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.theme) {
+          setThemeSettings(data.theme.settings);
+          setImportJson(JSON.stringify(data.theme.settings, null, 2));
+          setSuccess('Theme reset to system defaults!');
+          setTimeout(() => setSuccess(''), 3000);
+        }
+      }
+    } catch (err) {
+      console.error('Error resetting theme:', err);
+    }
+  };
+
+  const handleImportTheme = async () => {
+    try {
+      const parsed = JSON.parse(importJson);
+      const res = await fetch('/api/profile/theme/import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ settings: parsed })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.theme) {
+          setThemeSettings(data.theme.settings);
+          setSuccess('Theme imported successfully!');
+          setTimeout(() => setSuccess(''), 3000);
+        }
+      } else {
+        alert('Invalid theme format or server rejected import.');
+      }
+    } catch (err) {
+      alert('Invalid JSON input. Please verify formatting.');
+    }
+  };
+
+  const saveTheme = async () => {
+    setSavingTheme(true);
+    try {
+      const res = await fetch('/api/profile/theme', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ settings: themeSettings })
+      });
+      if (res.ok) {
+        setSuccess('Theme settings saved successfully!');
+        setImportJson(JSON.stringify(themeSettings, null, 2));
+        setTimeout(() => setSuccess(''), 3000);
+      } else {
+        const err = await res.json();
+        setError(err.error || 'Failed to save theme');
+        setTimeout(() => setError(''), 4000);
+      }
+    } catch (err) {
+      console.error('Error saving theme:', err);
+      setError('Failed to save theme settings.');
+      setTimeout(() => setError(''), 4000);
+    } finally {
+      setSavingTheme(false);
+    }
+  };
+
   useEffect(() => {
     fetchProfile();
     fetchHistory();
     fetchSharingSettings();
+    fetchTheme();
+    fetchMarketplace();
   }, []);
 
   // Step 1: User picks a file → show crop modal
@@ -773,7 +963,7 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
           {/* LEFT COLUMN - MAIN CONTROLS */}
-          <div className="lg:col-span-8 flex flex-col gap-6">
+          <div className={`${activeTab === 'customizer' ? 'lg:col-span-12' : 'lg:col-span-8'} flex flex-col gap-6`}>
 
             {/* SEGMENTED TABS */}
             <div className="flex p-1 bg-gray-200/60 rounded-xl w-full sm:w-fit overflow-x-auto">
@@ -882,239 +1072,1324 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
             {/* CUSTOMIZER TAB */}
             {activeTab === 'customizer' && (
               <div className="flex flex-col gap-6">
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8">
-                  <h3 className="text-xl font-bold text-gray-900 mb-6">Profile Details</h3>
 
-                  <div className="flex flex-col sm:flex-row gap-8 mb-8">
-                    <div className="flex flex-col items-center gap-3">
-                      <div className="relative w-28 h-28 rounded-full border-4 border-white shadow-md overflow-hidden bg-gray-100">
-                        {avatar ? (
-                          <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-gray-400">
-                            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                  {/* Category Nav Tabs */}
+                  <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 overflow-x-auto whitespace-nowrap scrollbar-none flex gap-2">
+                    {[
+                      { id: 'profile', label: 'Profile Info' },
+                      { id: 'presets', label: 'Presets' },
+                      { id: 'colors', label: 'Colors' },
+                      { id: 'background', label: 'Backgrounds' },
+                      { id: 'fonts', label: 'Fonts' },
+                      { id: 'cards', label: 'Cards' },
+                      { id: 'buttons', label: 'Buttons' },
+                      { id: 'layout', label: 'Layout' },
+                      { id: 'avatar', label: 'Avatar & Cover' },
+                      { id: 'sections', label: 'Sections' },
+                      { id: 'socials', label: 'Social Icons' },
+                      { id: 'animations', label: 'Animations' },
+                      { id: 'marketplace', label: 'Marketplace' },
+                      { id: 'advanced', label: 'Advanced & WCAG' }
+                    ].map((sub) => (
+                      <button
+                        key={sub.id}
+                        type="button"
+                        onClick={() => setThemeSubTab(sub.id as any)}
+                        className={`px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer ${themeSubTab === sub.id
+                          ? 'bg-gray-900 text-white shadow-sm'
+                          : 'bg-gray-50 text-gray-500 hover:text-gray-900 hover:bg-gray-100'
+                          }`}
+                      >
+                        {sub.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Configurator Card Container */}
+                  <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8 flex flex-col gap-6">
+
+                    {/* SUB-TAB 1: Profile Info */}
+                    {themeSubTab === 'profile' && (
+                      <div className="flex flex-col gap-6">
+                        <div className="flex justify-between items-center pb-3 border-b border-gray-100">
+                          <h4 className="text-lg font-bold text-gray-900">Profile Details</h4>
+                          <span className="text-xs text-blue-600 font-semibold px-2.5 py-1 bg-blue-50 rounded-full">Step 1</span>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row gap-6 mb-2">
+                          <div className="flex flex-col items-center gap-3">
+                            <div className="relative w-28 h-28 rounded-full border-4 border-white shadow-md overflow-hidden bg-gray-100">
+                              {avatar ? (
+                                <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                                </div>
+                              )}
+                            </div>
+                            <label className="cursor-pointer inline-flex items-center justify-center px-4 py-2 text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
+                              Change Photo
+                              <input type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
+                            </label>
+                          </div>
+
+                          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">Display Name</label>
+                              <input type="text" value={name} onChange={(e) => setName(e.target.value)} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none transition-all text-gray-900 text-sm font-semibold" placeholder="John Doe" />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">Tagline</label>
+                              <input type="text" value={tagline} onChange={(e) => setTagline(e.target.value)} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none transition-all text-gray-900 text-sm font-semibold" placeholder="Product Designer" />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">Location</label>
+                              <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none transition-all text-gray-900 text-sm font-semibold" placeholder="City, Country" />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">Email Address</label>
+                              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none transition-all text-gray-900 text-sm font-semibold" placeholder="you@email.com" />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">Phone</label>
+                              <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none transition-all text-gray-900 text-sm font-semibold" placeholder="+123456789" />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">WhatsApp</label>
+                              <input type="tel" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none transition-all text-gray-900 text-sm font-semibold" placeholder="+123456789" />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">Biography</label>
+                          <textarea value={bio} onChange={(e) => setBio(e.target.value)} rows={3} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none transition-all text-gray-900 text-sm font-semibold resize-none" placeholder="Tell people about yourself..." />
+                        </div>
+
+                        {/* Security */}
+                        <div className="border-t border-gray-100 pt-5">
+                          <h5 className="text-sm font-bold text-gray-900 mb-3">Change Password</h5>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} placeholder="Current Password" className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none text-sm text-gray-900" />
+                            <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="New Password" className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none text-sm text-gray-900" />
+                            <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Confirm Password" className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none text-sm text-gray-900" />
+                          </div>
+                        </div>
+
+                        {/* Social Connections */}
+                        <div className="border-t border-gray-100 pt-5">
+                          <h5 className="text-sm font-bold text-gray-900 mb-3">Social Connections</h5>
+                          <div className="space-y-2 mb-4">
+                            {socials.map((social, idx) => (
+                              <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 font-semibold">
+                                <span className="flex items-center gap-2">
+                                  {social.platform} ({social.handle})
+                                </span>
+                                <button type="button" onClick={() => handleRemoveSocial(idx)} className="text-red-500 hover:bg-red-50 p-1.5 rounded-lg transition-colors cursor-pointer">
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            ))}
+                            {socials.length === 0 && (
+                              <p className="text-xs text-gray-400 italic">No social profiles added. Link your socials below.</p>
+                            )}
+                          </div>
+                          <form onSubmit={handleAddSocial} className="flex flex-col sm:flex-row gap-3">
+                            <select value={newPlatform} onChange={(e) => setNewPlatform(e.target.value)} className="px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 font-semibold outline-none focus:border-blue-500">
+                              <option>LinkedIn</option>
+                              <option>Twitter</option>
+                              <option>GitHub</option>
+                              <option>Instagram</option>
+                              <option>Facebook</option>
+                              <option>Website</option>
+                            </select>
+                            <input type="text" placeholder="Handle/Label" value={newHandle} onChange={(e) => setNewHandle(e.target.value)} className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 font-semibold outline-none focus:border-blue-500" />
+                            <input type="text" placeholder="URL" value={newUrl} onChange={(e) => setNewUrl(e.target.value)} className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 font-semibold outline-none focus:border-blue-500" />
+                            <button type="submit" className="px-5 py-2 bg-gray-900 text-white text-xs font-bold rounded-lg hover:bg-gray-800 transition-colors">Add</button>
+                          </form>
+                        </div>
+
+                        <div className="flex justify-end mt-4 pt-4 border-t border-gray-100">
+                          <button type="button" onClick={handleSaveProfile} disabled={saving} className="px-6 py-2.5 bg-blue-600 text-white font-bold text-xs rounded-xl hover:bg-blue-700 shadow-sm transition-all">
+                            {saving ? 'Saving...' : 'Save Profile Details'}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SUB-TAB 2: Theme Presets */}
+                    {themeSubTab === 'presets' && (
+                      <div className="flex flex-col gap-6">
+                        <div className="pb-3 border-b border-gray-100">
+                          <h4 className="text-lg font-bold text-gray-900">Preset Themes</h4>
+                          <p className="text-xs text-gray-500 mt-1">Deploy a beautiful, professionally coordinated aesthetic in one click.</p>
+                        </div>
+
+                        {/* Quick Themes */}
+                        <div>
+                          <h5 className="text-xs uppercase font-bold text-gray-400 tracking-wider mb-3">Quick Themes</h5>
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            {QUICK_THEMES.map((theme) => (
+                              <button
+                                key={theme.name}
+                                type="button"
+                                onClick={() => {
+                                  setThemeSettings(theme.settings);
+                                  setSuccess(`Theme presets for "${theme.name}" loaded!`);
+                                  setTimeout(() => setSuccess(''), 2500);
+                                }}
+                                className="p-3 border border-gray-200 rounded-xl text-center bg-white hover:border-gray-900 hover:shadow-sm transition-all cursor-pointer"
+                              >
+                                <span className="block text-xs font-bold text-gray-800">{theme.name}</span>
+                                <div className="flex items-center justify-center gap-1.5 mt-2">
+                                  <span className="w-3.5 h-3.5 rounded-full border border-gray-100" style={{ backgroundColor: theme.settings.colors.primary }} />
+                                  <span className="w-3.5 h-3.5 rounded-full border border-gray-100" style={{ backgroundColor: theme.settings.colors.background }} />
+                                  <span className="w-3.5 h-3.5 rounded-full border border-gray-100" style={{ backgroundColor: theme.settings.colors.surface }} />
+                                </div>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Premium Themes */}
+                        <div className="border-t border-gray-100 pt-5">
+                          <h5 className="text-xs uppercase font-bold text-gray-400 tracking-wider mb-3 flex items-center gap-1">
+                            <Star className="w-3.5 h-3.5 text-yellow-500 fill-yellow-500" /> Premium Themes
+                          </h5>
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            {PREMIUM_THEMES.map((theme) => (
+                              <button
+                                key={theme.name}
+                                type="button"
+                                onClick={() => {
+                                  setThemeSettings(theme.settings);
+                                  setSuccess(`Premium Theme "${theme.name}" applied!`);
+                                  setTimeout(() => setSuccess(''), 2500);
+                                }}
+                                className="p-3 border border-yellow-200 rounded-xl text-center bg-amber-50/20 hover:border-amber-400 hover:shadow-md transition-all cursor-pointer relative overflow-hidden"
+                              >
+                                <span className="absolute top-0 right-0 bg-yellow-400 text-[8px] font-black text-gray-900 px-1 py-0.5 rounded-bl">PRO</span>
+                                <span className="block text-xs font-bold text-yellow-800 mt-1">{theme.name}</span>
+                                <div className="flex items-center justify-center gap-1.5 mt-2.5">
+                                  <span className="w-3.5 h-3.5 rounded-full border border-gray-100" style={{ backgroundColor: theme.settings.colors.primary }} />
+                                  <span className="w-3.5 h-3.5 rounded-full border border-gray-100" style={{ backgroundColor: theme.settings.colors.background }} />
+                                  <span className="w-3.5 h-3.5 rounded-full border border-gray-100" style={{ backgroundColor: theme.settings.colors.surface }} />
+                                </div>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SUB-TAB 3: Colors */}
+                    {themeSubTab === 'colors' && (
+                      <div className="flex flex-col gap-6">
+                        <div className="pb-3 border-b border-gray-100">
+                          <h4 className="text-lg font-bold text-gray-900">Custom Colors</h4>
+                          <p className="text-xs text-gray-500 mt-1">Design a unique palette. Contrast checks will calculate in real time under the Advanced tab.</p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {[
+                            { label: 'Primary Brand Color', key: 'primary' },
+                            { label: 'Secondary/Muted', key: 'secondary' },
+                            { label: 'Accent Highlights', key: 'accent' },
+                            { label: 'Success (Verified/Online)', key: 'success' },
+                            { label: 'Warning Highlights', key: 'warning' },
+                            { label: 'Danger Color', key: 'danger' },
+                            { label: 'Wrapper Background', key: 'background' },
+                            { label: 'Card Surface', key: 'surface' },
+                            { label: 'Main Text Color', key: 'text' },
+                            { label: 'Muted Subtext Color', key: 'mutedText' },
+                            { label: 'Border Lines', key: 'border' },
+                            { label: 'Shadow Tone', key: 'shadow' }
+                          ].map((col) => (
+                            <div key={col.key} className="flex flex-col gap-1">
+                              <span className="text-xs font-semibold text-gray-700">{col.label}</span>
+                              <div className="flex gap-2">
+                                <input
+                                  type="color"
+                                  value={themeSettings.colors?.[col.key] || '#111827'}
+                                  onChange={(e) => {
+                                    setThemeSettings({
+                                      ...themeSettings,
+                                      colors: {
+                                        ...themeSettings.colors,
+                                        [col.key]: e.target.value
+                                      }
+                                    });
+                                  }}
+                                  className="w-10 h-9 p-0.5 border border-gray-200 rounded-lg cursor-pointer bg-transparent"
+                                />
+                                <input
+                                  type="text"
+                                  value={themeSettings.colors?.[col.key] || '#111827'}
+                                  onChange={(e) => {
+                                    setThemeSettings({
+                                      ...themeSettings,
+                                      colors: {
+                                        ...themeSettings.colors,
+                                        [col.key]: e.target.value
+                                      }
+                                    });
+                                  }}
+                                  className="flex-1 px-3 py-1.5 border border-gray-200 rounded-lg text-sm font-mono text-gray-900"
+                                />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SUB-TAB 4: Backgrounds */}
+                    {themeSubTab === 'background' && (
+                      <div className="flex flex-col gap-6">
+                        <div className="pb-3 border-b border-gray-100">
+                          <h4 className="text-lg font-bold text-gray-900">Background Engine</h4>
+                          <p className="text-xs text-gray-500 mt-1">Choose layout background style. Particles and animators are unlocked for custom designs.</p>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-gray-400 uppercase mb-3">Background Type</label>
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                            {[
+                              { id: 'solid', label: 'Solid Color' },
+                              { id: 'gradient', label: 'Gradient' },
+                              { id: 'aurora', label: 'Aurora Mesh' },
+                              { id: 'particles', label: 'Particles Space' },
+                              { id: 'video', label: 'Video Clip' },
+                              { id: 'image', label: 'Custom Image' }
+                            ].map((bgType) => (
+                              <button
+                                key={bgType.id}
+                                type="button"
+                                onClick={() => {
+                                  setThemeSettings({
+                                    ...themeSettings,
+                                    background: {
+                                      ...themeSettings.background,
+                                      type: bgType.id,
+                                      value: bgType.id === 'solid' ? '#f0f2f8' :
+                                        bgType.id === 'gradient' ? 'linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)' :
+                                          bgType.id === 'aurora' ? 'aurora-bg' :
+                                            bgType.id === 'particles' ? 'space-particles' : ''
+                                    }
+                                  });
+                                }}
+                                className={`px-4 py-2 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${themeSettings.background?.type === bgType.id
+                                  ? 'border-blue-600 bg-blue-50 text-blue-700 font-bold'
+                                  : 'border-gray-200 hover:bg-gray-50 text-gray-600'
+                                  }`}
+                              >
+                                {bgType.label}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Context-dependent config fields */}
+                        {themeSettings.background?.type === 'solid' && (
+                          <div className="flex flex-col gap-1.5">
+                            <label className="text-xs font-semibold text-gray-700">Solid Color Hex</label>
+                            <div className="flex gap-2">
+                              <input
+                                type="color"
+                                value={themeSettings.background?.value || '#f0f2f8'}
+                                onChange={(e) => {
+                                  setThemeSettings({
+                                    ...themeSettings,
+                                    background: { ...themeSettings.background, value: e.target.value }
+                                  });
+                                }}
+                                className="w-10 h-9 p-0.5 border border-gray-200 rounded-lg cursor-pointer bg-transparent"
+                              />
+                              <input
+                                type="text"
+                                value={themeSettings.background?.value || '#f0f2f8'}
+                                onChange={(e) => {
+                                  setThemeSettings({
+                                    ...themeSettings,
+                                    background: { ...themeSettings.background, value: e.target.value }
+                                  });
+                                }}
+                                className="flex-1 px-3 py-1.5 border border-gray-200 rounded-lg text-sm font-mono text-gray-900"
+                              />
+                            </div>
+                          </div>
+                        )}
+
+                        {themeSettings.background?.type === 'gradient' && (
+                          <div className="flex flex-col gap-3">
+                            <label className="text-xs font-semibold text-gray-700">Linear Gradient Value</label>
+                            <input
+                              type="text"
+                              value={themeSettings.background?.value || ''}
+                              onChange={(e) => {
+                                setThemeSettings({
+                                  ...themeSettings,
+                                  background: { ...themeSettings.background, value: e.target.value }
+                                });
+                              }}
+                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm font-mono text-gray-900"
+                              placeholder="linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)"
+                            />
+                            <div className="grid grid-cols-4 gap-2">
+                              {[
+                                'linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)',
+                                'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+                                'linear-gradient(135deg, #f6d365 0%, #fda085 100%)',
+                                'linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%)'
+                              ].map((gradientVal, idx) => (
+                                <button
+                                  key={idx}
+                                  type="button"
+                                  onClick={() => {
+                                    setThemeSettings({
+                                      ...themeSettings,
+                                      background: { ...themeSettings.background, value: gradientVal }
+                                    });
+                                  }}
+                                  className="h-10 border border-gray-200 rounded-lg cursor-pointer shadow-sm"
+                                  style={{ background: gradientVal }}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {themeSettings.background?.type === 'image' && (
+                          <div className="flex flex-col gap-2">
+                            <label className="text-xs font-semibold text-gray-700">Background Image Link</label>
+                            <input
+                              type="text"
+                              value={themeSettings.background?.value || ''}
+                              onChange={(e) => {
+                                setThemeSettings({
+                                  ...themeSettings,
+                                  background: { ...themeSettings.background, value: e.target.value }
+                                });
+                              }}
+                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+                              placeholder="https://images.unsplash.com/photo-1557683316-973673baf926"
+                            />
+                          </div>
+                        )}
+
+                        {themeSettings.background?.type === 'video' && (
+                          <div className="flex flex-col gap-2">
+                            <label className="text-xs font-semibold text-gray-700">Background MP4 Video Link</label>
+                            <input
+                              type="text"
+                              value={themeSettings.background?.value || ''}
+                              onChange={(e) => {
+                                setThemeSettings({
+                                  ...themeSettings,
+                                  background: { ...themeSettings.background, value: e.target.value }
+                                });
+                              }}
+                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+                              placeholder="https://assets.mixkit.co/videos/preview/mixkit-stars-in-space-background-1611-large.mp4"
+                            />
                           </div>
                         )}
                       </div>
-                      <label className="cursor-pointer inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
-                        Change Photo
-                        <input type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
-                      </label>
-                    </div>
+                    )}
 
-                    <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">Display Name</label>
-                        <input type="text" value={name} onChange={(e) => setName(e.target.value)} className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all text-gray-900 font-medium" placeholder="John Doe" />
+                    {/* SUB-TAB 5: Fonts */}
+                    {themeSubTab === 'fonts' && (
+                      <div className="flex flex-col gap-6">
+                        <div className="pb-3 border-b border-gray-100">
+                          <h4 className="text-lg font-bold text-gray-900">Typography Setup</h4>
+                          <p className="text-xs text-gray-500 mt-1">Personalize text properties. Selected Google Web Fonts will fetch dynamically.</p>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Font Family</label>
+                          <select
+                            value={themeSettings.typography?.fontFamily || 'Outfit'}
+                            onChange={(e) => {
+                              setThemeSettings({
+                                ...themeSettings,
+                                typography: { ...themeSettings.typography, fontFamily: e.target.value }
+                              });
+                            }}
+                            className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 outline-none"
+                          >
+                            <option>Outfit</option>
+                            <option>Inter</option>
+                            <option>Poppins</option>
+                            <option>Roboto</option>
+                            <option>Montserrat</option>
+                            <option>DM Sans</option>
+                          </select>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Heading Size (rem/px)</label>
+                            <input
+                              type="text"
+                              value={themeSettings.typography?.headingSize || '1.5rem'}
+                              onChange={(e) => {
+                                setThemeSettings({
+                                  ...themeSettings,
+                                  typography: { ...themeSettings.typography, headingSize: e.target.value }
+                                });
+                              }}
+                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Body Size (rem/px)</label>
+                            <input
+                              type="text"
+                              value={themeSettings.typography?.bodySize || '0.95rem'}
+                              onChange={(e) => {
+                                setThemeSettings({
+                                  ...themeSettings,
+                                  typography: { ...themeSettings.typography, bodySize: e.target.value }
+                                });
+                              }}
+                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Letter Spacing</label>
+                            <input
+                              type="text"
+                              value={themeSettings.typography?.letterSpacing || 'normal'}
+                              onChange={(e) => {
+                                setThemeSettings({
+                                  ...themeSettings,
+                                  typography: { ...themeSettings.typography, letterSpacing: e.target.value }
+                                });
+                              }}
+                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+                              placeholder="normal or 1px"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Line Height</label>
+                            <input
+                              type="text"
+                              value={themeSettings.typography?.lineHeight || '1.5'}
+                              onChange={(e) => {
+                                setThemeSettings({
+                                  ...themeSettings,
+                                  typography: { ...themeSettings.typography, lineHeight: e.target.value }
+                                });
+                              }}
+                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+                              placeholder="1.5 or 1.6"
+                            />
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">Professional Tagline</label>
-                        <input type="text" value={tagline} onChange={(e) => setTagline(e.target.value)} className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all text-gray-900 font-medium" placeholder="Founder & CEO" />
+                    )}
+
+                    {/* SUB-TAB 6: Cards */}
+                    {themeSubTab === 'cards' && (
+                      <div className="flex flex-col gap-6">
+                        <div className="pb-3 border-b border-gray-100">
+                          <h4 className="text-lg font-bold text-gray-900">Tile & Card Styles</h4>
+                          <p className="text-xs text-gray-500 mt-1">Configure layout cards (social links, accordions, project blocks) styling properties.</p>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-gray-400 uppercase mb-3">Card Style Mode</label>
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                            {['flat', 'rounded', 'floating', 'glass', 'minimal', 'modern'].map((cardStyle) => (
+                              <button
+                                key={cardStyle}
+                                type="button"
+                                onClick={() => {
+                                  setThemeSettings({
+                                    ...themeSettings,
+                                    cards: {
+                                      ...themeSettings.cards,
+                                      style: cardStyle,
+                                      border: cardStyle === 'glass' ? '1px solid rgba(255,255,255,0.3)' :
+                                        cardStyle === 'minimal' ? 'none' : '1px solid #e5e7eb',
+                                      shadow: cardStyle === 'floating' ? '0 12px 28px rgba(0,0,0,0.06)' :
+                                        cardStyle === 'modern' ? '0 8px 30px rgba(0,0,0,0.03)' :
+                                          cardStyle === 'minimal' || cardStyle === 'flat' ? 'none' : '0 4px 12px rgba(0,0,0,0.02)'
+                                    }
+                                  });
+                                }}
+                                className={`px-4 py-2 text-xs font-semibold rounded-lg border capitalize transition-all cursor-pointer ${themeSettings.cards?.style === cardStyle
+                                  ? 'border-blue-600 bg-blue-50 text-blue-700 font-bold'
+                                  : 'border-gray-200 hover:bg-gray-50 text-gray-600'
+                                  }`}
+                              >
+                                {cardStyle}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Border Radius (e.g. 1rem)</label>
+                            <input
+                              type="text"
+                              value={themeSettings.cards?.borderRadius || '1rem'}
+                              onChange={(e) => {
+                                setThemeSettings({
+                                  ...themeSettings,
+                                  cards: { ...themeSettings.cards, borderRadius: e.target.value }
+                                });
+                              }}
+                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Border Value</label>
+                            <input
+                              type="text"
+                              value={themeSettings.cards?.border || '1px solid #e5e7eb'}
+                              onChange={(e) => {
+                                setThemeSettings({
+                                  ...themeSettings,
+                                  cards: { ...themeSettings.cards, border: e.target.value }
+                                });
+                              }}
+                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-700 mb-1">Card Opacity ({themeSettings.cards?.opacity ?? 1.0})</label>
+                            <input
+                              type="range"
+                              min="0.1"
+                              max="1"
+                              step="0.05"
+                              value={themeSettings.cards?.opacity !== undefined ? themeSettings.cards?.opacity : 1}
+                              onChange={(e) => {
+                                setThemeSettings({
+                                  ...themeSettings,
+                                  cards: { ...themeSettings.cards, opacity: parseFloat(e.target.value) }
+                                });
+                              }}
+                              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600 mt-2"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-700 mb-1">Backdrop Blur Strength (Glass mode)</label>
+                            <input
+                              type="text"
+                              value={themeSettings.cards?.blur || '0px'}
+                              onChange={(e) => {
+                                setThemeSettings({
+                                  ...themeSettings,
+                                  cards: { ...themeSettings.cards, blur: e.target.value }
+                                });
+                              }}
+                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+                              placeholder="10px"
+                            />
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">Location</label>
-                        <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all text-gray-900 font-medium" placeholder="City, Country" />
+                    )}
+
+                    {/* SUB-TAB 7: Buttons */}
+                    {themeSubTab === 'buttons' && (
+                      <div className="flex flex-col gap-6">
+                        <div className="pb-3 border-b border-gray-100">
+                          <h4 className="text-lg font-bold text-gray-900">Button Configuration</h4>
+                          <p className="text-xs text-gray-500 mt-1">Configure action buttons (Save Contact, Send request, Custom buttons).</p>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-gray-400 uppercase mb-3">Button Style</label>
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                            {['filled', 'outlined', 'ghost', 'gradient'].map((btnStyle) => (
+                              <button
+                                key={btnStyle}
+                                type="button"
+                                onClick={() => {
+                                  setThemeSettings({
+                                    ...themeSettings,
+                                    buttons: { ...themeSettings.buttons, style: btnStyle }
+                                  });
+                                }}
+                                className={`px-4 py-2 text-xs font-semibold rounded-lg border capitalize transition-all cursor-pointer ${themeSettings.buttons?.style === btnStyle
+                                  ? 'border-blue-600 bg-blue-50 text-blue-700 font-bold'
+                                  : 'border-gray-200 hover:bg-gray-50 text-gray-600'
+                                  }`}
+                              >
+                                {btnStyle}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Button Radius (e.g. 100px)</label>
+                            <input
+                              type="text"
+                              value={themeSettings.buttons?.radius || '100px'}
+                              onChange={(e) => {
+                                setThemeSettings({
+                                  ...themeSettings,
+                                  buttons: { ...themeSettings.buttons, radius: e.target.value }
+                                });
+                              }}
+                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Height (e.g. 44px)</label>
+                            <input
+                              type="text"
+                              value={themeSettings.buttons?.height || '44px'}
+                              onChange={(e) => {
+                                setThemeSettings({
+                                  ...themeSettings,
+                                  buttons: { ...themeSettings.buttons, height: e.target.value }
+                                });
+                              }}
+                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Button Hover Anim</label>
+                            <select
+                              value={themeSettings.buttons?.animation || 'hover_lift'}
+                              onChange={(e) => {
+                                setThemeSettings({
+                                  ...themeSettings,
+                                  buttons: { ...themeSettings.buttons, animation: e.target.value }
+                                });
+                              }}
+                              className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 outline-none"
+                            >
+                              <option value="hover_lift">Lift Up</option>
+                              <option value="button_ripple">Ripple (Highlight)</option>
+                              <option value="none">None</option>
+                            </select>
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">Email Address (Account ID)</label>
-                        {/* ✅ Email is now editable */}
-                        <input
-                          type="email"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all text-gray-900 font-medium"
-                          placeholder="your@email.com"
-                        />
+                    )}
+
+                    {/* SUB-TAB 8: Layout */}
+                    {themeSubTab === 'layout' && (
+                      <div className="flex flex-col gap-6">
+                        <div className="pb-3 border-b border-gray-100">
+                          <h4 className="text-lg font-bold text-gray-900">Grid & Layout</h4>
+                          <p className="text-xs text-gray-500 mt-1">Adjust width, content alignment, and structure presets for the public screen.</p>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-gray-400 uppercase mb-3">Layout Preset</label>
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                            {['centered', 'modern', 'minimal', 'compact', 'business', 'creative'].map((l) => (
+                              <button
+                                key={l}
+                                type="button"
+                                onClick={() => {
+                                  setThemeSettings({
+                                    ...themeSettings,
+                                    layout: {
+                                      ...themeSettings.layout,
+                                      style: l,
+                                      alignment: l === 'centered' ? 'center' : 'left'
+                                    }
+                                  });
+                                }}
+                                className={`px-4 py-2 text-xs font-semibold rounded-lg border capitalize transition-all cursor-pointer ${themeSettings.layout?.style === l
+                                  ? 'border-blue-600 bg-blue-50 text-blue-700 font-bold'
+                                  : 'border-gray-200 hover:bg-gray-50 text-gray-600'
+                                  }`}
+                              >
+                                {l}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Profile Container Width</label>
+                            <input
+                              type="text"
+                              value={themeSettings.layout?.profileWidth || '640px'}
+                              onChange={(e) => {
+                                setThemeSettings({
+                                  ...themeSettings,
+                                  layout: { ...themeSettings.layout, profileWidth: e.target.value }
+                                });
+                              }}
+                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Section Spacing</label>
+                            <input
+                              type="text"
+                              value={themeSettings.layout?.spacing || '1.5rem'}
+                              onChange={(e) => {
+                                setThemeSettings({
+                                  ...themeSettings,
+                                  layout: { ...themeSettings.layout, spacing: e.target.value }
+                                });
+                              }}
+                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Content Alignment</label>
+                            <select
+                              value={themeSettings.layout?.alignment || 'center'}
+                              onChange={(e) => {
+                                setThemeSettings({
+                                  ...themeSettings,
+                                  layout: { ...themeSettings.layout, alignment: e.target.value }
+                                });
+                              }}
+                              className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 outline-none"
+                            >
+                              <option value="center">Centered</option>
+                              <option value="left">Left Aligned</option>
+                              <option value="right">Right Aligned</option>
+                            </select>
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">Phone Number</label>
-                        <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all text-gray-900 font-medium" placeholder="+1234567890" />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">WhatsApp Number</label>
-                        <input type="tel" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all text-gray-900 font-medium" placeholder="+1234567890" />
-                      </div>
-                    </div>
-                  </div>
+                    )}
 
-                  <div className="mb-8">
-                    <label className="block text-sm font-semibold text-gray-700 mb-1">Biography</label>
-                    <textarea value={bio} onChange={(e) => setBio(e.target.value)} rows={4} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all text-gray-900 font-medium resize-none" placeholder="Tell people about yourself..." />
-                  </div>
+                    {/* SUB-TAB 9: Avatar & Cover */}
+                    {themeSubTab === 'avatar' && (
+                      <div className="flex flex-col gap-6">
+                        <div className="pb-3 border-b border-gray-100">
+                          <h4 className="text-lg font-bold text-gray-900">Avatar & Cover Banner</h4>
+                          <p className="text-xs text-gray-500 mt-1">Configure user photo frame shapes and cover hero banners styling.</p>
+                        </div>
 
-                  {/* ─── 🔐 ACCOUNT SECURITY (WITH TOGGLE ALL) ─── */}
-<div className="mb-8 border-t border-gray-200 pt-6">
-  <div className="flex items-center justify-between mb-4">
-    <h4 className="text-lg font-bold text-gray-900">Account Security</h4>
-    <button
-      type="button"
-      onClick={() => {
-        const allVisible = showCurrentPassword && showNewPassword && showConfirmPassword;
-        setShowCurrentPassword(!allVisible);
-        setShowNewPassword(!allVisible);
-        setShowConfirmPassword(!allVisible);
-      }}
-      className="text-sm font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
-    >
-      {showCurrentPassword && showNewPassword && showConfirmPassword ? (
-        <>
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-          </svg>
-          Hide All
-        </>
-      ) : (
-        <>
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-          </svg>
-          Show All
-        </>
-      )}
-    </button>
-  </div>
-
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-    {/* Current Password */}
-    <div>
-      <label className="block text-sm font-semibold text-gray-700 mb-1">Current Password</label>
-      <div className="relative">
-        <input
-          type={showCurrentPassword ? "text" : "password"}
-          value={currentPassword}
-          onChange={(e) => setCurrentPassword(e.target.value)}
-          className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all pr-10"
-          placeholder="••••••••"
-        />
-        <button
-          type="button"
-          onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-          className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-          aria-label={showCurrentPassword ? "Hide password" : "Show password"}
-        >
-          {showCurrentPassword ? (
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
-          ) : (
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-            </svg>
-          )}
-        </button>
-      </div>
-    </div>
-
-    {/* New Password */}
-    <div>
-      <label className="block text-sm font-semibold text-gray-700 mb-1">New Password</label>
-      <div className="relative">
-        <input
-          type={showNewPassword ? "text" : "password"}
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-          className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all pr-10"
-          placeholder="••••••••"
-        />
-        <button
-          type="button"
-          onClick={() => setShowNewPassword(!showNewPassword)}
-          className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-          aria-label={showNewPassword ? "Hide password" : "Show password"}
-        >
-          {showNewPassword ? (
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
-          ) : (
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-            </svg>
-          )}
-        </button>
-      </div>
-    </div>
-
-    {/* Confirm New Password (full width) */}
-    <div className="md:col-span-2">
-      <label className="block text-sm font-semibold text-gray-700 mb-1">Confirm New Password</label>
-      <div className="relative">
-        <input
-          type={showConfirmPassword ? "text" : "password"}
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all pr-10"
-          placeholder="••••••••"
-        />
-        <button
-          type="button"
-          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-          className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-          aria-label={showConfirmPassword ? "Hide password" : "Show password"}
-        >
-          {showConfirmPassword ? (
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
-          ) : (
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-            </svg>
-          )}
-        </button>
-      </div>
-    </div>
-  </div>
-  <p className="text-xs text-gray-400 mt-3">Leave password fields blank to keep your current password.</p>
-</div>
-
-                  {/* Social Links */}
-                  <div className="mb-8">
-                    <h4 className="text-lg font-bold text-gray-900 mb-4">Social Links</h4>
-                    <div className="space-y-3 mb-4">
-                      {socials.map((social, idx) => (
-                        <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-lg">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded bg-white shadow-sm flex items-center justify-center text-gray-700">
-                              {getPlatformIcon(social.platform)}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          {/* Avatar Setup */}
+                          <div>
+                            <h5 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Avatar Shape</h5>
+                            <div className="grid grid-cols-3 gap-2">
+                              {['circle', 'rounded', 'square'].map((sh) => (
+                                <button
+                                  key={sh}
+                                  type="button"
+                                  onClick={() => {
+                                    setThemeSettings({
+                                      ...themeSettings,
+                                      avatar: { ...themeSettings.avatar, shape: sh }
+                                    });
+                                  }}
+                                  className={`px-3 py-2 text-xs font-semibold rounded-lg border capitalize transition-all cursor-pointer ${themeSettings.avatar?.shape === sh
+                                    ? 'border-blue-600 bg-blue-50 text-blue-700 font-bold'
+                                    : 'border-gray-200 hover:bg-gray-50 text-gray-600'
+                                    }`}
+                                >
+                                  {sh}
+                                </button>
+                              ))}
                             </div>
-                            <div>
-                              <p className="text-sm font-bold text-gray-900">{social.platform}</p>
-                              <p className="text-xs text-gray-500">{social.handle}</p>
+                            <div className="mt-4 flex flex-col gap-3">
+                              <div>
+                                <label className="block text-xs font-semibold text-gray-700 mb-1">Border Value</label>
+                                <input
+                                  type="text"
+                                  value={themeSettings.avatar?.border || '3px solid rgba(255,255,255,0.2)'}
+                                  onChange={(e) => {
+                                    setThemeSettings({
+                                      ...themeSettings,
+                                      avatar: { ...themeSettings.avatar, border: e.target.value }
+                                    });
+                                  }}
+                                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+                                />
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs font-semibold text-gray-700">Avatar Border Glow</span>
+                                <input
+                                  type="checkbox"
+                                  checked={themeSettings.avatar?.glow === 'glow'}
+                                  onChange={(e) => {
+                                    setThemeSettings({
+                                      ...themeSettings,
+                                      avatar: { ...themeSettings.avatar, glow: e.target.checked ? 'glow' : 'none' }
+                                    });
+                                  }}
+                                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                />
+                              </div>
                             </div>
                           </div>
-                          <button onClick={() => handleRemoveSocial(idx)} className="text-red-500 hover:bg-red-50 p-2 rounded-md transition-colors">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+
+                          {/* Cover Setup */}
+                          <div>
+                            <h5 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Cover Banner Type</h5>
+                            <div className="grid grid-cols-2 gap-2">
+                              {['none', 'solid', 'gradient', 'image'].map((cov) => (
+                                <button
+                                  key={cov}
+                                  type="button"
+                                  onClick={() => {
+                                    setThemeSettings({
+                                      ...themeSettings,
+                                      cover: {
+                                        ...themeSettings.cover,
+                                        type: cov,
+                                        value: cov === 'solid' ? '#0f172a' :
+                                          cov === 'gradient' ? 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)' : ''
+                                      }
+                                    });
+                                  }}
+                                  className={`px-3 py-2 text-xs font-semibold rounded-lg border capitalize transition-all cursor-pointer ${themeSettings.cover?.type === cov
+                                    ? 'border-blue-600 bg-blue-50 text-blue-700 font-bold'
+                                    : 'border-gray-200 hover:bg-gray-50 text-gray-600'
+                                    }`}
+                                >
+                                  {cov}
+                                </button>
+                              ))}
+                            </div>
+                            {themeSettings.cover?.type !== 'none' && (
+                              <div className="mt-4">
+                                <label className="block text-xs font-semibold text-gray-700 mb-1">Cover Value (Color, gradient, or Image Link)</label>
+                                <input
+                                  type="text"
+                                  value={themeSettings.cover?.value || ''}
+                                  onChange={(e) => {
+                                    setThemeSettings({
+                                      ...themeSettings,
+                                      cover: { ...themeSettings.cover, value: e.target.value }
+                                    });
+                                  }}
+                                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+                                />
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SUB-TAB 10: Sections reordering */}
+                    {themeSubTab === 'sections' && (
+                      <div className="flex flex-col gap-6">
+                        <div className="pb-3 border-b border-gray-100">
+                          <h4 className="text-lg font-bold text-gray-900">Visible Sections & Order</h4>
+                          <p className="text-xs text-gray-500 mt-1">Reorder profile layers using up/down controls, and toggle visibility switchers.</p>
+                        </div>
+
+                        {/* List of sections with reordering controls */}
+                        <div className="space-y-3">
+                          {((themeSettings.sections?.order as string[]) || ["about", "contact", "socials", "portfolio", "projects"]).map((sec, idx, arr) => {
+                            const isVisible = themeSettings.sections?.visibility?.[sec] !== false;
+                            return (
+                              <div key={sec} className="flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-xl">
+                                <div className="flex items-center gap-3">
+                                  <div className="flex flex-col gap-1">
+                                    <button
+                                      type="button"
+                                      disabled={idx === 0}
+                                      onClick={() => {
+                                        const newOrder = [...arr];
+                                        const temp = newOrder[idx];
+                                        newOrder[idx] = newOrder[idx - 1];
+                                        newOrder[idx - 1] = temp;
+                                        setThemeSettings({
+                                          ...themeSettings,
+                                          sections: { ...themeSettings.sections, order: newOrder }
+                                        });
+                                      }}
+                                      className="p-1 text-gray-400 hover:text-gray-900 disabled:opacity-30 cursor-pointer"
+                                    >
+                                      <ArrowUp className="w-3.5 h-3.5" />
+                                    </button>
+                                    <button
+                                      type="button"
+                                      disabled={idx === arr.length - 1}
+                                      onClick={() => {
+                                        const newOrder = [...arr];
+                                        const temp = newOrder[idx];
+                                        newOrder[idx] = newOrder[idx + 1];
+                                        newOrder[idx + 1] = temp;
+                                        setThemeSettings({
+                                          ...themeSettings,
+                                          sections: { ...themeSettings.sections, order: newOrder }
+                                        });
+                                      }}
+                                      className="p-1 text-gray-400 hover:text-gray-900 disabled:opacity-30 cursor-pointer"
+                                    >
+                                      <ArrowDown className="w-3.5 h-3.5" />
+                                    </button>
+                                  </div>
+                                  <div>
+                                    <span className="block text-sm font-bold text-gray-800 capitalize">{sec} Section</span>
+                                    <span className="text-[10px] text-gray-400 font-semibold uppercase">Position {idx + 1}</span>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <label className="relative inline-flex items-center cursor-pointer">
+                                    <input
+                                      type="checkbox"
+                                      checked={isVisible}
+                                      onChange={(e) => {
+                                        setThemeSettings({
+                                          ...themeSettings,
+                                          sections: {
+                                            ...themeSettings.sections,
+                                            visibility: {
+                                              ...themeSettings.sections?.visibility,
+                                              [sec]: e.target.checked
+                                            }
+                                          }
+                                        });
+                                      }}
+                                      className="sr-only peer"
+                                    />
+                                    <div className="w-9 h-5 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:width-4 after:transition-all peer-checked:bg-blue-600"></div>
+                                  </label>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SUB-TAB 11: Social Icons */}
+                    {themeSubTab === 'socials' && (
+                      <div className="flex flex-col gap-6">
+                        <div className="pb-3 border-b border-gray-100">
+                          <h4 className="text-lg font-bold text-gray-900">Social Grid & Icons</h4>
+                          <p className="text-xs text-gray-500 mt-1">Adjust size, border layouts, spacing, and hover animations of social links.</p>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-gray-400 uppercase mb-3">Icon Frame Style</label>
+                          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                            {['circle', 'outline', 'minimal', 'rounded', 'filled'].map((iconStyle) => (
+                              <button
+                                key={iconStyle}
+                                type="button"
+                                onClick={() => {
+                                  setThemeSettings({
+                                    ...themeSettings,
+                                    socialIcons: { ...themeSettings.socialIcons, style: iconStyle }
+                                  });
+                                }}
+                                className={`px-2 py-2 text-xs font-semibold rounded-lg border capitalize transition-all cursor-pointer ${themeSettings.socialIcons?.style === iconStyle
+                                  ? 'border-blue-600 bg-blue-50 text-blue-700 font-bold'
+                                  : 'border-gray-200 hover:bg-gray-50 text-gray-600'
+                                  }`}
+                              >
+                                {iconStyle}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Icon Size (px)</label>
+                            <input
+                              type="text"
+                              value={themeSettings.socialIcons?.size || '24px'}
+                              onChange={(e) => {
+                                setThemeSettings({
+                                  ...themeSettings,
+                                  socialIcons: { ...themeSettings.socialIcons, size: e.target.value }
+                                });
+                              }}
+                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Grid Spacing</label>
+                            <input
+                              type="text"
+                              value={themeSettings.socialIcons?.spacing || '0.75rem'}
+                              onChange={(e) => {
+                                setThemeSettings({
+                                  ...themeSettings,
+                                  socialIcons: { ...themeSettings.socialIcons, spacing: e.target.value }
+                                });
+                              }}
+                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Hover Effect</label>
+                            <select
+                              value={themeSettings.socialIcons?.hover || 'scale'}
+                              onChange={(e) => {
+                                setThemeSettings({
+                                  ...themeSettings,
+                                  socialIcons: { ...themeSettings.socialIcons, hover: e.target.value }
+                                });
+                              }}
+                              className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 outline-none"
+                            >
+                              <option value="scale">Scale Up</option>
+                              <option value="lift">Lift Up</option>
+                              <option value="none">None</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SUB-TAB 12: Animations */}
+                    {themeSubTab === 'animations' && (
+                      <div className="flex flex-col gap-6">
+                        <div className="pb-3 border-b border-gray-100">
+                          <h4 className="text-lg font-bold text-gray-900">Motion & Interaction Effects</h4>
+                          <p className="text-xs text-gray-500 mt-1">Unlock micro-animations, transitions, and hover lifting events.</p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-700 mb-1.5">Page Entrance Animation</label>
+                            <select
+                              value={themeSettings.animations?.style || 'fade'}
+                              onChange={(e) => {
+                                setThemeSettings({
+                                  ...themeSettings,
+                                  animations: { ...themeSettings.animations, style: e.target.value }
+                                });
+                              }}
+                              className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 outline-none"
+                            >
+                              <option value="fade">Fade In</option>
+                              <option value="slide">Slide Up Entrance</option>
+                              <option value="scale">Scale Up Entrance</option>
+                              <option value="none">None</option>
+                            </select>
+                          </div>
+
+                          <div className="flex flex-col gap-3 mt-1.5">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-semibold text-gray-700">Enable Cursor Glow Light</span>
+                              <input
+                                type="checkbox"
+                                checked={themeSettings.animations?.cursorGlow || false}
+                                onChange={(e) => {
+                                  setThemeSettings({
+                                    ...themeSettings,
+                                    animations: { ...themeSettings.animations, cursorGlow: e.target.checked }
+                                  });
+                                }}
+                                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                              />
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-semibold text-gray-700">Parallax Scroll Effects</span>
+                              <input
+                                type="checkbox"
+                                checked={themeSettings.animations?.parallax || false}
+                                onChange={(e) => {
+                                  setThemeSettings({
+                                    ...themeSettings,
+                                    animations: { ...themeSettings.animations, parallax: e.target.checked }
+                                  });
+                                }}
+                                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SUB-TAB 13: Marketplace */}
+                    {themeSubTab === 'marketplace' && (
+                      <div className="flex flex-col gap-6">
+                        <div className="pb-3 border-b border-gray-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                          <div>
+                            <h4 className="text-lg font-bold text-gray-900">Community Marketplace</h4>
+                            <p className="text-xs text-gray-500 mt-1">Browse, install, and share creative page themes with others.</p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const pName = prompt('Enter a name for this custom theme:');
+                              if (pName) {
+                                setPublishThemeName(pName);
+                                // Set immediately or call publish
+                                fetch('/api/profile/theme/marketplace', {
+                                  method: 'POST',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify({ action: 'publish', themeName: pName, settings: themeSettings })
+                                })
+                                  .then(() => {
+                                    setSuccess('Theme published!');
+                                    fetchMarketplace();
+                                    setTimeout(() => setSuccess(''), 2500);
+                                  });
+                              }
+                            }}
+                            className="px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-xl hover:bg-blue-700 shadow-sm transition-all"
+                          >
+                            Publish Theme
                           </button>
                         </div>
-                      ))}
-                    </div>
-                    <form onSubmit={handleAddSocial} className="flex flex-col sm:flex-row gap-3">
-                      <select value={newPlatform} onChange={(e) => setNewPlatform(e.target.value)} className="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 font-medium focus:outline-none focus:border-blue-500">
-                        <option>LinkedIn</option>
-                        <option>Twitter</option>
-                        <option>GitHub</option>
-                        <option>Instagram</option>
-                        <option>Facebook</option>
-                        <option>Website</option>
-                      </select>
-                      <input type="text" placeholder="Handle / Label" value={newHandle} onChange={(e) => setNewHandle(e.target.value)} className="flex-1 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 font-medium focus:outline-none focus:border-blue-500" />
-                      <input type="text" placeholder="URL (e.g. linkedin.com/in/...)" value={newUrl} onChange={(e) => setNewUrl(e.target.value)} className="flex-1 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 font-medium focus:outline-none focus:border-blue-500" />
-                      <button type="submit" className="px-6 py-2.5 bg-gray-900 text-white font-semibold rounded-lg hover:bg-blue-600 transition-colors">Add</button>
-                    </form>
-                  </div>
 
-                  <div className="pt-6 border-t border-gray-100 flex justify-end">
-                    <button onClick={handleSaveProfile} disabled={saving} className="px-8 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 shadow-sm shadow-blue-200 transition-all disabled:opacity-50">
-                      {saving ? 'Saving...' : 'Save Profile Details'}
-                    </button>
+                        {/* Marketplace themes grid */}
+                        <div className="space-y-3 max-h-[350px] overflow-y-auto pr-1">
+                          {marketplaceThemes.map((theme) => (
+                            <div key={theme.id} className="flex items-center justify-between p-4 bg-gray-50 border border-gray-200 rounded-xl">
+                              <div>
+                                <span className="block text-sm font-bold text-gray-900">{theme.themeName}</span>
+                                <span className="block text-[10px] text-gray-400 font-semibold uppercase mt-0.5">By {theme.user?.name || 'Tapfolio Creator'}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => likeMarketplaceTheme(theme.id)}
+                                  className="flex items-center gap-1 px-3 py-1.5 bg-white border border-gray-200 hover:border-red-400 rounded-lg text-xs font-bold text-gray-600 hover:text-red-500 transition-colors cursor-pointer"
+                                >
+                                  <Heart className="w-3.5 h-3.5 fill-red-500 stroke-red-500" />
+                                  <span>{theme.likesCount}</span>
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => installMarketplaceTheme(theme.id)}
+                                  className="px-4 py-1.5 bg-gray-900 text-white text-xs font-bold rounded-lg hover:bg-gray-800 transition-colors"
+                                >
+                                  Install
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                          {marketplaceThemes.length === 0 && (
+                            <p className="text-center text-xs text-gray-400 py-10 italic">No community themes published yet. Be the first!</p>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SUB-TAB 14: Advanced, JSON & WCAG checks */}
+                    {themeSubTab === 'advanced' && (
+                      <div className="flex flex-col gap-6">
+
+                        {/* Accessibility Contrast Checker */}
+                        <div>
+                          <div className="pb-3 border-b border-gray-100 mb-4">
+                            <h4 className="text-lg font-bold text-gray-900 flex items-center gap-1.5">
+                              <ShieldAlert className="w-5 h-5 text-blue-600" /> WCAG Color Contrast Validator
+                            </h4>
+                            <p className="text-xs text-gray-500 mt-1">Automatic real-time relative luminance checking to meet WCAG AA requirements (4.5:1).</p>
+                          </div>
+
+                          <div className="space-y-3.5">
+                            {[
+                              {
+                                label: 'Main Text color vs Page Background',
+                                color1: themeSettings.colors?.text || '#111827',
+                                color2: themeSettings.background?.type === 'solid' ? themeSettings.background?.value || '#f0f2f8' : '#ffffff'
+                              },
+                              {
+                                label: 'Main Text color vs Card Surface background',
+                                color1: themeSettings.colors?.text || '#111827',
+                                color2: themeSettings.colors?.surface || '#ffffff'
+                              },
+                              {
+                                label: 'Action Button text color vs Action Button background',
+                                color1: '#ffffff',
+                                color2: themeSettings.colors?.primary || '#014BAA'
+                              }
+                            ].map((test, index) => {
+                              const ratio = calculateContrastRatio(test.color1, test.color2);
+                              const rating = ratio >= 7 ? { label: 'AAA Pass (Excellent)', cls: 'bg-green-50 text-green-700 border-green-200' } :
+                                ratio >= 4.5 ? { label: 'AA Pass (Good)', cls: 'bg-green-50 text-green-600 border-green-100' } :
+                                  ratio >= 3 ? { label: 'Large Text Pass', cls: 'bg-yellow-50 text-yellow-600 border-yellow-200' } :
+                                    { label: 'Fail (Low Contrast)', cls: 'bg-red-50 text-red-600 border-red-200' };
+
+                              return (
+                                <div key={index} className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3.5 bg-gray-50 border border-gray-200 rounded-xl gap-2">
+                                  <div>
+                                    <span className="block text-xs font-bold text-gray-800">{test.label}</span>
+                                    <span className="text-[10px] font-mono text-gray-400 uppercase mt-0.5">Colors: {test.color1} / {test.color2}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-xs font-mono font-black text-gray-800">{ratio.toFixed(2)}:1</span>
+                                    <span className={`px-2.5 py-1 text-[10px] font-black rounded-lg border uppercase tracking-wider ${rating.cls}`}>
+                                      {rating.label}
+                                    </span>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        {/* Import / Export JSON */}
+                        <div className="border-t border-gray-100 pt-5">
+                          <h4 className="text-sm font-bold text-gray-900 mb-2 flex items-center gap-1">
+                            <Layers className="w-4 h-4" /> Theme Import / Export (theme.json)
+                          </h4>
+                          <p className="text-xs text-gray-500 mb-3">Copy this settings configuration payload to backup, share, or import theme setups.</p>
+                          <textarea
+                            value={importJson}
+                            onChange={(e) => setImportJson(e.target.value)}
+                            rows={6}
+                            className="w-full p-3.5 bg-gray-900 text-gray-200 font-mono text-xs rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          />
+                          <div className="flex flex-wrap gap-2 mt-3 justify-end">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                navigator.clipboard.writeText(importJson);
+                                setSuccess('JSON copied to clipboard!');
+                                setTimeout(() => setSuccess(''), 2500);
+                              }}
+                              className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl transition-colors cursor-pointer"
+                            >
+                              Copy Config
+                            </button>
+                            <button
+                              type="button"
+                              onClick={handleImportTheme}
+                              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-colors cursor-pointer"
+                            >
+                              Import config
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Unified Customize Theme Save block (Always visible for theme config tabs) */}
+                    {themeSubTab !== 'profile' && (
+                      <div className="pt-6 border-t border-gray-100 flex justify-between items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={resetThemeToDefault}
+                          className="px-4 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 rounded-xl transition-all cursor-pointer"
+                        >
+                          Reset Default
+                        </button>
+                        <button
+                          type="button"
+                          onClick={saveTheme}
+                          disabled={savingTheme}
+                          className="px-6 py-2.5 bg-gray-900 hover:bg-blue-600 text-white font-bold text-xs rounded-xl transition-all shadow-sm"
+                        >
+                          {savingTheme ? 'Saving Theme...' : 'Save Current Theme'}
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
-              </div>
             )}
 
             {/* PROJECTS TAB */}
@@ -1466,58 +2741,39 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
           </div>
 
           {/* RIGHT COLUMN - LIVE PREVIEW */}
-          <div className="lg:col-span-4 relative">
-            <div className="sticky top-28 bg-white rounded-[2rem] shadow-xl border-[6px] border-gray-100 overflow-hidden w-full max-w-[320px] mx-auto min-h-[600px] flex flex-col">
-              {/* Dynamic Theme Background */}
-              <div className="h-32 bg-gradient-to-br from-blue-600 to-indigo-800 relative">
-                <div className="absolute top-4 right-4 bg-black/20 backdrop-blur-sm px-3 py-1 rounded-full text-white text-xs font-bold flex items-center gap-1">
-                  <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" /> Live Preview
-                </div>
-              </div>
-
-              <div className="px-6 flex-1 -mt-12 relative flex flex-col items-center">
-                <div className="w-24 h-24 rounded-full border-4 border-white shadow-md bg-white overflow-hidden mb-4">
-                  {showName ? (
-                    avatar ? (
-                      <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400">
-                        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-                      </div>
-                    )
-                  ) : (
-                    <div className="w-full h-full bg-transparent" />
-                  )}
-                </div>
-                {showName && (
-                  <>
-                    <h2 className="text-xl font-bold text-gray-900 text-center">{name || 'Your Name'}</h2>
-                  </>
-                )}
-                {showTagline && (
-                  <p className="text-sm font-medium text-blue-600 text-center mb-4">{tagline || 'Your Tagline'}</p>
-                )}
-
-                {showBio && (
-                  <p className="text-xs text-gray-500 text-center leading-relaxed mb-6">{bio || 'Your bio will appear here. Tell people about what you do and how you can help them.'}</p>
-                )}
-
-                {showSocials && socials.length > 0 && (
-                  <div className="w-full grid grid-cols-5 gap-2 mb-6">
-                    {socials.map((s, i) => (
-                      <div key={i} className="aspect-square bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer" style={{ color: s.color }}>
-                        {getPlatformIcon(s.platform)}
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                <div className="mt-auto w-full pb-6">
-                  <button className="w-full py-3 bg-gray-900 text-white rounded-xl font-bold text-sm shadow-md">
-                    Save Contact
-                  </button>
-                </div>
-              </div>
+          <div className="lg:col-span-4 relative flex flex-col items-center">
+            <div className="text-[10px] text-gray-400 uppercase tracking-widest font-black mb-3.5 flex items-center gap-1.5">
+              <Smartphone className="w-3.5 h-3.5 text-gray-400 animate-pulse" /> Your Live Tapfolio Showcase
+            </div>
+            
+            {/* Smartphone Frame mockup */}
+            <div className="w-[310px] h-[580px] sm:w-[320px] sm:h-[600px] rounded-[40px] border-[8px] border-gray-900 shadow-2xl overflow-y-auto bg-gray-100 relative scrollbar-none sticky top-28">
+              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 h-3.5 w-24 bg-gray-900 rounded-b-xl z-20" /> {/* speaker notch */}
+              
+              {themeSettings ? (
+                <ConnectClientPage
+                  username={profile?.username || ''}
+                  profile={{
+                    id: profile?.id || 0,
+                    userId: profile?.userId || 0,
+                    name: name || 'Your Name',
+                    avatar: avatar || '/profile_avatar.png',
+                    isPremium: isPremium,
+                    tagline: tagline || 'Tagline'
+                  }}
+                  isLoggedIn={false}
+                  previewTheme={themeSettings}
+                  previewProfileData={{
+                    tags,
+                    socials,
+                    location,
+                    bio,
+                    projects
+                  }}
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full text-xs text-gray-400 animate-pulse">Loading visual showcase...</div>
+              )}
             </div>
           </div>
 

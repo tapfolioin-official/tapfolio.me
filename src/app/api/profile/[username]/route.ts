@@ -21,6 +21,9 @@ export async function GET(
           select: {
             connectionCount: true,
             email: true,
+            profileThemes: {
+              where: { isDefault: true }
+            }
           },
         },
       },
@@ -52,6 +55,7 @@ export async function GET(
           connectionCount: profile.user?.connectionCount ?? 0,
           tags: profile.tags,
           socials: profile.socials,
+          theme: profile.user?.profileThemes?.[0]?.settings || null,
         },
       },
       {

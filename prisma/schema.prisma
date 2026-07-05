@@ -32,6 +32,7 @@ model User {
   sentNotifications     Notification[]   @relation("NotificationSender")
   receivedNotifications Notification[]   @relation("NotificationReceiver")
   fcmTokens             FcmToken[]
+  profileThemes         ProfileTheme[]
 }
 
 model Account {
@@ -453,4 +454,23 @@ model SessionHistory {
   @@index([active])
   @@map("session_history")
 }
+
+model ProfileTheme {
+  id                 Int      @id @default(autoincrement())
+  userId             Int      @map("user_id")
+  themeName          String   @map("theme_name")
+  isDefault          Boolean  @default(true) @map("is_default")
+  isMarketplace      Boolean  @default(false) @map("is_marketplace")
+  likesCount         Int      @default(0) @map("likes_count")
+  
+  settings           Json     @default("{}")
+  
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+  
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("profile_themes")
+}
+
 
