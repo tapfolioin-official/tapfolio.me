@@ -14,6 +14,7 @@ interface KPIs {
   growth: number;
   openTickets: number;
   pendingReports: number;
+  totalTaps: number;
 }
 
 export default function AdminDashboard() {
@@ -195,6 +196,20 @@ export default function AdminDashboard() {
           label="Projects"
           value={loading ? undefined : kpis?.totalProjects}
           formatter={(v) => v.toLocaleString()}
+          loading={loading}
+        />
+
+        {/* Card: Total Taps */}
+        <MetricCard
+          icon="👆"
+          label="Total Taps"
+          value={loading ? undefined : kpis?.totalTaps}
+          formatter={(v) => v.toLocaleString()}
+          footer={
+            <span className={styles.metricTrendUp}>
+              NFC profile connections
+            </span>
+          }
           loading={loading}
         />
 

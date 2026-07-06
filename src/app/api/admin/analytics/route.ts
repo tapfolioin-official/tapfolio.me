@@ -31,6 +31,7 @@ export async function GET(request: NextRequest) {
     recentEvents,
     openTickets,
     pendingReports,
+    totalTapsResult,
   ] = await Promise.all([
     prisma.user.count(),
     prisma.user.count({ where: { createdAt: { gte: todayStart } } }),
@@ -45,7 +46,14 @@ export async function GET(request: NextRequest) {
     }),
     prisma.supportTicket.count({ where: { status: 'OPEN' } }),
     prisma.systemReport.count({ where: { status: 'PENDING' } }),
+    prisma.profile.aggregate({
+      _sum: {
+        tapCount: true,
+      },
+    }),
   ]);
+
+  const totalTaps = totalTapsResult._sum.tapCount || 0;
 
   // Calculate growth percentage
   const previousWeekUsers = await prisma.user.count({
@@ -72,6 +80,7 @@ export async function GET(request: NextRequest) {
       growth: parseFloat(growth as string),
       openTickets,
       pendingReports,
+      totalTaps,
     },
     recentEvents,
   });
