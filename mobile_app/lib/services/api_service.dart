@@ -61,15 +61,22 @@ class ApiService {
   static const String envApiUrl = String.fromEnvironment('API_URL');
 
   String get baseUrl {
+    debugPrint('==============================');
+    debugPrint('API_URL define: $envApiUrl');
+    debugPrint('kDebugMode: $kDebugMode');
+    debugPrint('kIsWeb: $kIsWeb');
+    debugPrint('Base URL selected: ${envApiUrl.isNotEmpty ? envApiUrl : productionUrl}');
+    debugPrint('==============================');
+
     if (envApiUrl.isNotEmpty) {
       return envApiUrl;
     }
-    if (defaultTargetPlatform == TargetPlatform.android) {
+
+    if (kDebugMode) {
       return 'http://192.168.1.2:3000';
     }
-    if (!kDebugMode) return productionUrl;
-    if (kIsWeb) return 'http://localhost:3000';
-    return 'http://localhost:3000';
+
+    return productionUrl;
   }
 
   Future<void> init() async {
