@@ -100,7 +100,7 @@ export default async function PublicProfile({ params }: { params: Promise<{ user
     s.platform.toLowerCase() !== 'website' && s.platform.toLowerCase() !== 'portfolio'
   ) || [];
 
-  const roleTags = profile.tags?.filter((t: any) => t.type === 'role') || [];
+  const roleTags = profile.tags?.filter((t: any) => t.type === 'role' || t.type === 'skill') || [];
   const locationText = profile.location || '';
 
   return (

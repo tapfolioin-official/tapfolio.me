@@ -4,7 +4,10 @@ import pg from 'pg';
 
 const prismaClientSingleton = () => {
   const pool = new pg.Pool({
-    connectionString: process.env.DATABASE_URL
+    connectionString: process.env.DATABASE_URL,
+    max: 4, // Limit connection pool size in development to prevent connection exhaustion
+    idleTimeoutMillis: 15000, // Close idle connections quickly
+    connectionTimeoutMillis: 5000 // Timeout fast instead of hanging
   });
   const adapter = new PrismaPg(pool);
   return new PrismaClient({ adapter });

@@ -43,7 +43,7 @@ export function calculateProfileScore(profile: any) {
       points: 15,
       completed: (() => {
         if (!profile.tags) return false;
-        const hasRole = profile.tags.some((t: any) => t.type === 'role');
+        const hasRole = profile.tags.some((t: any) => t.type === 'role' || t.type === 'skill');
         const hasLoc = profile.tags.some((t: any) => t.type === 'location');
         return hasRole && hasLoc;
       })()

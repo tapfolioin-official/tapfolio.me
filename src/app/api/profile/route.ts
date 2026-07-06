@@ -249,71 +249,78 @@ await prisma.user.update({
 });
 }
 
-    if (tags !== undefined) {
-      await prisma.tag.deleteMany({ where: { profileId: existingProfile.id } });
-    }
-    if (socials !== undefined) {
-      await prisma.socialLink.deleteMany({ where: { profileId: existingProfile.id } });
-    }
+    const finalProfile = await prisma.$transaction(async (tx) => {
+      if (tags !== undefined) {
+        await tx.tag.deleteMany({ where: { profileId: existingProfile.id } });
+      }
+      if (socials !== undefined) {
+        await tx.socialLink.deleteMany({ where: { profileId: existingProfile.id } });
+      }
 
-    const updatedProfile = await prisma.profile.update({
-      where: { userId: payload.userId },
-      data: {
-        name: name !== undefined ? name : existingProfile.name,
-        tagline: tagline !== undefined ? tagline : existingProfile.tagline,
-        bio: bio !== undefined ? bio : existingProfile.bio,
-        avatar: avatar !== undefined ? avatar : existingProfile.avatar,
-        isPremium: isPremium !== undefined ? isPremium : existingProfile.isPremium,
-        phone: phone !== undefined ? phone : existingProfile.phone,
-        whatsapp: whatsapp !== undefined ? whatsapp : existingProfile.whatsapp,
-        location: location !== undefined ? location : existingProfile.location,
-        tags: tags ? {
-          create: tags.map((t: any) => ({ text: t.text, type: t.type }))
-        } : undefined,
-        socials: socials ? {
-          create: socials.map((s: any) => ({
-            platform: s.platform,
-            handle: s.handle,
-            url: s.url,
-            icon: s.icon,
-            color: s.color
-          }))
-        } : undefined
-      },
-      include: {
-        tags: true,
-        socials: true,
-        user: {
-          select: {
-            email: true,
-            profileReady: true,
-            sharingSettings: true,
-            connectionCount: true
+      const updatedProfile = await tx.profile.update({
+        where: { userId: payload.userId },
+        data: {
+          name: name !== undefined ? name : existingProfile.name,
+          tagline: tagline !== undefined ? tagline : existingProfile.tagline,
+          bio: bio !== undefined ? bio : existingProfile.bio,
+          avatar: avatar !== undefined ? avatar : existingProfile.avatar,
+          isPremium: isPremium !== undefined ? isPremium : existingProfile.isPremium,
+          phone: phone !== undefined ? phone : existingProfile.phone,
+          whatsapp: whatsapp !== undefined ? whatsapp : existingProfile.whatsapp,
+          location: location !== undefined ? location : existingProfile.location,
+          tags: tags ? {
+            create: tags.map((t: any) => ({ text: t.text, type: t.type }))
+          } : undefined,
+          socials: socials ? {
+            create: socials.map((s: any) => ({
+              platform: s.platform,
+              handle: s.handle,
+              url: s.url,
+              icon: s.icon,
+              color: s.color
+            }))
+          } : undefined
+        },
+        include: {
+          tags: true,
+          socials: true,
+          user: {
+            select: {
+              email: true,
+              profileReady: true,
+              sharingSettings: true,
+              connectionCount: true
+            }
           }
         }
-      }
-    });
+      });
 
-    const scoreData = calculateProfileScore(updatedProfile);
+      const scoreData = calculateProfileScore(updatedProfile);
 
-    const finalProfile = await prisma.profile.update({
-      where: { id: updatedProfile.id },
-      data: {
-        diamonds: String(scoreData.score)
-      },
-      include: {
-        tags: true,
-        socials: true,
-        user: {
-          select: {
-            email: true,
-            profileReady: true,
-            sharingSettings: true,
-            connectionCount: true
+      return await tx.profile.update({
+        where: { id: updatedProfile.id },
+        data: {
+          diamonds: String(scoreData.score)
+        },
+        include: {
+          tags: true,
+          socials: true,
+          user: {
+            select: {
+              email: true,
+              profileReady: true,
+              sharingSettings: true,
+              connectionCount: true
+            }
           }
         }
-      }
+      });
+    }, {
+      maxWait: 15000, // wait up to 15s to obtain a connection from the pool
+      timeout: 30000  // give the serverless transaction up to 30s to fully execute
     });
+
+    const scoreData = calculateProfileScore(finalProfile);
 
     return NextResponse.json({
       success: true,

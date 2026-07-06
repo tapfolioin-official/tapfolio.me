@@ -30,7 +30,7 @@ export async function GET(
     }
 
     const roleText = profile.tags
-      ?.filter((t: any) => t.type === 'role')
+      ?.filter((t: any) => t.type === 'role' || t.type === 'skill')
       .map((t: any) => t.text)
       .join(', ') || 'Creator';
 

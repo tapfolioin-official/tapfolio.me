@@ -249,7 +249,7 @@ export default function ConnectClientPage({
   // ─── Data helpers ───
   const getRolesText = () => {
     const list = activeProfileData?.tags
-      ?.filter((t: any) => t.type === 'role')
+      ?.filter((t: any) => t.type === 'role' || t.type === 'skill')
       .map((t: any) => t.text) || [];
     if (list.length === 0) return activeProfileData ? '' : 'Creator • Developer';
     return list.join(' • ');
@@ -482,9 +482,9 @@ export default function ConnectClientPage({
         return (
           <div className={styles.socialSection} key="socials">
             <div className={styles.socialGrid} style={{ gridTemplateColumns: activeTheme?.layout?.style === 'compact' ? 'repeat(3, 1fr)' : 'repeat(3, 1fr)' }}>
-              {socials.map((link: any) => (
+              {socials.map((link: any, idx: number) => (
                 <a
-                  key={link.id}
+                  key={link.id || `${link.platform}-${idx}`}
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"

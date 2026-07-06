@@ -1425,6 +1425,75 @@ export default function Dashboard() {
                         <textarea value={bio} onChange={(e) => setBio(e.target.value)} rows={3} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none transition-all text-gray-900 text-sm font-semibold resize-none" placeholder="Tell people about yourself..." />
                       </div>
 
+                      {/* Tags Section */}
+                      <div className="border-t border-gray-100 pt-5">
+                        <h5 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-1.5">
+                          🏷️ Profile Tags
+                        </h5>
+                        <p className="text-xs text-gray-500 mb-4">Add keywords/tags to display on your public profile. For example: roles (e.g. Developer, Designer) or locations.</p>
+                        
+                        {/* Tags list */}
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          {tags.map((tag, idx) => (
+                            <span 
+                              key={idx} 
+                              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border ${
+                                tag.type === 'location' 
+                                  ? 'bg-purple-50 text-purple-700 border-purple-100' 
+                                  : 'bg-blue-50 text-blue-700 border-blue-100'
+                              }`}
+                            >
+                              <span className="opacity-60 uppercase text-[9px] tracking-wider font-bold">
+                                {tag.type}
+                              </span>
+                              <span className="font-bold text-gray-900">{tag.text}</span>
+                              <button 
+                                type="button" 
+                                onClick={() => handleRemoveTag(idx)} 
+                                className="text-gray-400 hover:text-red-600 font-bold focus:outline-none transition-colors cursor-pointer text-sm"
+                              >
+                                &times;
+                              </button>
+                            </span>
+                          ))}
+                          {tags.length === 0 && (
+                            <span className="text-xs text-gray-400 italic">No tags added yet. Use the tool below to add some!</span>
+                          )}
+                        </div>
+
+                        {/* Add tag form */}
+                        <div className="flex flex-col sm:flex-row gap-3">
+                          <select 
+                            value={newTagType} 
+                            onChange={(e) => setNewTagType(e.target.value)} 
+                            className="px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 font-semibold outline-none focus:border-blue-500"
+                          >
+                            <option value="role">Role / Skill</option>
+                            <option value="location">Location</option>
+                          </select>
+                          <input 
+                            type="text" 
+                            placeholder="Tag text (e.g. Next.js, Austin TX)" 
+                            value={newTagText} 
+                            onChange={(e) => setNewTagText(e.target.value)} 
+                            className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 font-semibold outline-none focus:border-blue-500"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                handleAddTag(e);
+                              }
+                            }}
+                          />
+                          <button 
+                            type="button" 
+                            onClick={handleAddTag} 
+                            className="px-5 py-2.5 bg-gray-900 hover:bg-gray-800 text-white text-xs font-bold rounded-lg transition-colors cursor-pointer"
+                          >
+                            Add Tag
+                          </button>
+                        </div>
+                      </div>
+
                       {/* Security */}
                       <div className="border-t border-gray-100 pt-5">
                         <h5 className="text-sm font-bold text-gray-900 mb-3">Change Password</h5>
