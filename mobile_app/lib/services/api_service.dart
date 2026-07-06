@@ -171,15 +171,13 @@ class ApiService {
       }
     }
 
-    if (kDebugMode) {
-      debugPrint('[API-REQ] ======= START REQUEST =======');
-      debugPrint('[API-REQ] Method: $method');
-      debugPrint('[API-REQ] URL: $url');
-      debugPrint('[API-REQ] Auth State: ${_jwtToken != null ? "Authenticated (Token len=${_jwtToken!.length})" : "Unauthenticated"}');
-      debugPrint('[API-REQ] Request Headers: $finalHeaders');
-      if (body != null) {
-        debugPrint('[API-REQ] Request Body: $body');
-      }
+    debugPrint('[API-REQ] ======= START REQUEST =======');
+    debugPrint('[API-REQ] Method: $method');
+    debugPrint('[API-REQ] URL: $url');
+    debugPrint('[API-REQ] Auth State: ${_jwtToken != null ? "Authenticated (Token len=${_jwtToken!.length})" : "Unauthenticated"}');
+    debugPrint('[API-REQ] Request Headers: $finalHeaders');
+    if (body != null) {
+      debugPrint('[API-REQ] Request Body: $body');
     }
 
     try {
@@ -187,23 +185,20 @@ class ApiService {
       final response = await http.Response.fromStream(streamedResponse);
       final duration = DateTime.now().difference(startTime);
 
-      if (kDebugMode) {
-        debugPrint('[API-RESP] URL: $url');
-        debugPrint('[API-RESP] Status Code: ${response.statusCode}');
-        debugPrint('[API-RESP] Response Headers: ${response.headers}');
-        debugPrint('[API-RESP] Response Body: ${response.body}');
-        debugPrint('[API-RESP] Response Time: ${duration.inMilliseconds}ms');
-        debugPrint('[API-REQ] ======= END REQUEST =======');
-      }
+      debugPrint('[API-RESP] URL: $url');
+      debugPrint('[API-RESP] Status Code: ${response.statusCode}');
+      debugPrint('[API-RESP] Response Headers: ${response.headers}');
+      debugPrint('[API-RESP] Response Body: ${response.body}');
+      debugPrint('[API-RESP] Response Time: ${duration.inMilliseconds}ms');
+      debugPrint('[API-REQ] ======= END REQUEST =======');
 
       return response;
-    } catch (e) {
+    } catch (e, stackTrace) {
       final duration = DateTime.now().difference(startTime);
-      if (kDebugMode) {
-        debugPrint('[API-RESP] ERROR: $e');
-        debugPrint('[API-RESP] Response Time: ${duration.inMilliseconds}ms');
-        debugPrint('[API-REQ] ======= END REQUEST =======');
-      }
+      debugPrint('[API-RESP] ERROR: $e');
+      debugPrint('[API-RESP] StackTrace: $stackTrace');
+      debugPrint('[API-RESP] Response Time: ${duration.inMilliseconds}ms');
+      debugPrint('[API-REQ] ======= END REQUEST =======');
       rethrow;
     }
   }
@@ -415,8 +410,9 @@ class ApiService {
           return User.fromJson(data['user']);
         }
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       debugPrint('getMe error: $e');
+      debugPrint('getMe StackTrace: $stackTrace');
     }
     return null;
   }
@@ -454,8 +450,9 @@ class ApiService {
           };
         }
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       debugPrint('getProfile error: $e');
+      debugPrint('getProfile StackTrace: $stackTrace');
     }
     return null;
   }

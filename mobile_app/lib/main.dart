@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'services/api_service.dart';
@@ -13,6 +14,22 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
  
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Print active API URL
+  debugPrint('[MAIN] Active API URL: ${ApiService().baseUrl}');
+
+  // Global Flutter Error Catcher
+  FlutterError.onError = (details) {
+    debugPrint('[FLUTTER CRITICAL ERROR] Exception: ${details.exceptionAsString()}');
+    debugPrint('[FLUTTER CRITICAL ERROR] StackTrace: ${details.stack}');
+  };
+
+  // Global Platform Error Catcher
+  PlatformDispatcher.instance.onError = (error, stack) {
+    debugPrint('[PLATFORM CRITICAL ERROR] Error: ${error.toString()}');
+    debugPrint('[PLATFORM CRITICAL ERROR] StackTrace: $stack');
+    return true;
+  };
 
   // Load stored JWT from SharedPreferences before anything else
   try {
