@@ -58,9 +58,9 @@ android {
                 // Fallback to debug for local builds without key.properties
                 signingConfigs.getByName("debug")
             }
-            // R8 / ProGuard
-            isMinifyEnabled = true
-            isShrinkResources = true
+            // Disable minification and shrinking for robust local/release testing
+            isMinifyEnabled = false
+            isShrinkResources = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
