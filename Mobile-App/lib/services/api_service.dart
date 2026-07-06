@@ -89,6 +89,8 @@ class ApiService {
     };
     if (_jwtToken != null && _jwtToken != 'web_session') {
       headers['Cookie'] = 'pertap_jwt=$_jwtToken';
+      headers['Authorization'] = 'Bearer $_jwtToken';
+      headers['X-Pertap-Token'] = _jwtToken!;
     }
     return headers;
   }

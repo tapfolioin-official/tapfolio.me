@@ -21,7 +21,18 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  const token = request.cookies.get('pertap_jwt')?.value;
+  let token = request.cookies.get('pertap_jwt')?.value;
+  if (!token) {
+    const authHeader = request.headers.get('Authorization');
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.substring(7);
+    } else {
+      token = request.headers.get('X-Pertap-Token') || undefined;
+    }
+    if (token) {
+      request.cookies.set('pertap_jwt', token);
+    }
+  }
 
   // 2. Handle dynamic /@username path rewriting
   if (pathname.startsWith('/@')) {
