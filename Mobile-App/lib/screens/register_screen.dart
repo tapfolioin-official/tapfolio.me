@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -694,9 +695,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       backgroundColor: Colors.white.withValues(alpha: 0.02),
                                     ),
                                     onPressed: _handleGoogleSignIn,
-                                    icon: Image.network(
-                                      'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/24px-Google_%22G%22_logo.svg.png',
-                                      height: 20,
+                                    icon: const FaIcon(
+                                      FontAwesomeIcons.google,
+                                      color: Color(0xFF4285F4),
+                                      size: 20,
                                     ),
                                     label: Text(
                                       'Continue with Google',
