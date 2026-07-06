@@ -49,8 +49,7 @@ android {
 
     buildTypes {
         debug {
-            applicationIdSuffix = ".debug"
-            versionNameSuffix = "-debug"
+            // Keep same package name as production to match google-services.json
         }
         release {
             signingConfig = if (keystorePropertiesFile.exists()) {
