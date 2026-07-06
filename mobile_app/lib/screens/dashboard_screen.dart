@@ -240,25 +240,39 @@ class _DashboardScreenState extends State<DashboardScreen> {
       _loading = true;
     });
 
-    final res = await _apiService.getProfile();
-    if (res != null) {
+    try {
+      final res = await _apiService.getProfile();
+      if (res != null && res['profile'] != null) {
+        setState(() {
+          _profile = res['profile'];
+          _score = res['score'];
+          _checklist = res['checklist'];
+
+          _nameController.text = _profile!.name;
+          _taglineController.text = _profile!.tagline;
+          _bioController.text = _profile!.bio;
+          _phoneController.text = _profile!.phone ?? '';
+          _whatsappController.text = _profile!.whatsapp ?? '';
+          _locationController.text = _profile!.location ?? '';
+        });
+      } else {
+        setState(() {
+          _profile = null;
+        });
+      }
+    } catch (e, stackTrace) {
+      debugPrint('[DASHBOARD] _fetchProfile error: $e');
+      debugPrint('[DASHBOARD] StackTrace: $stackTrace');
       setState(() {
-        _profile = res['profile'];
-        _score = res['score'];
-        _checklist = res['checklist'];
-
-        _nameController.text = _profile!.name;
-        _taglineController.text = _profile!.tagline;
-        _bioController.text = _profile!.bio;
-        _phoneController.text = _profile!.phone ?? '';
-        _whatsappController.text = _profile!.whatsapp ?? '';
-        _locationController.text = _profile!.location ?? '';
+        _profile = null;
       });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _loading = false;
+        });
+      }
     }
-
-    setState(() {
-      _loading = false;
-    });
   }
 
   Future<void> _pickAndUploadImage() async {
