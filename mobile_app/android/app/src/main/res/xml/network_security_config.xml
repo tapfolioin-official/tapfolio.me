@@ -6,7 +6,7 @@
     - No cleartext domains are permitted in production.
 -->
 <network-security-config>
-    <base-config cleartextTrafficPermitted="false">
+    <base-config cleartextTrafficPermitted="true">
         <trust-anchors>
             <!-- Trust the default system CAs -->
             <certificates src="system"/>
