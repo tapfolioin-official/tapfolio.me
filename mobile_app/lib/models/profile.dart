@@ -67,7 +67,9 @@ class Profile {
     required this.tapCount,
     required this.tags,
     required this.socials,
-  });
+  }) {
+    debugPrint('[PROFILE-CONSTRUCTOR-BODY] Successfully entered constructor body!');
+  }
 
   factory Profile.fromJson(Map<String, dynamic> json) {
     debugPrint('[JSON-DECODE-PROFILE] raw input JSON: $json');
