@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 class User {
   final int id;
   final String name;
@@ -71,24 +73,66 @@ class Profile {
     var tagsList = json['tags'] as List? ?? [];
     var socialsList = json['socials'] as List? ?? [];
 
-    return Profile(
-      id: json['id'],
-      userId: json['userId'],
-      name: json['name'] ?? '',
-      username: json['username'] ?? '',
-      tagline: json['tagline'] ?? '',
-      avatar: json['avatar'] ?? '',
-      isOnline: json['isOnline'] ?? false,
-      bio: json['bio'] ?? '',
-      phone: json['phone'],
-      whatsapp: json['whatsapp'],
-      location: json['location'],
-      diamonds: json['diamonds'] ?? '0',
-      isPremium: json['isPremium'] ?? false,
-      tapCount: json['tapCount'] ?? 0,
-      tags: tagsList.map((i) => Tag.fromJson(i)).toList(),
-      socials: socialsList.map((i) => SocialLink.fromJson(i)).toList(),
-    );
+    try {
+      final idVal = json['id'];
+      final userIdVal = json['userId'];
+      final nameVal = json['name'] ?? '';
+      final usernameVal = json['username'] ?? '';
+      final taglineVal = json['tagline'] ?? '';
+      final avatarVal = json['avatar'] ?? '';
+      final bioVal = json['bio'] ?? '';
+      final phoneVal = json['phone'];
+      final whatsappVal = json['whatsapp'];
+      final locationVal = json['location'];
+      final diamondsVal = json['diamonds'] ?? '0';
+      final tapCountVal = json['tapCount'] ?? 0;
+
+      final dynamic rawIsOnline = json['isOnline'];
+      final dynamic rawIsPremium = json['isPremium'];
+
+      final bool isOnlineVal = (rawIsOnline is bool) ? rawIsOnline : false;
+      final bool isPremiumVal = (rawIsPremium is bool) ? rawIsPremium : false;
+
+      debugPrint('[DEBUG-PROFILE] id: $idVal (${idVal?.runtimeType})');
+      debugPrint('[DEBUG-PROFILE] userId: $userIdVal (${userIdVal?.runtimeType})');
+      debugPrint('[DEBUG-PROFILE] name: $nameVal (${nameVal.runtimeType})');
+      debugPrint('[DEBUG-PROFILE] username: $usernameVal (${usernameVal.runtimeType})');
+      debugPrint('[DEBUG-PROFILE] tagline: $taglineVal (${taglineVal.runtimeType})');
+      debugPrint('[DEBUG-PROFILE] avatar: $avatarVal (${avatarVal.runtimeType})');
+      debugPrint('[DEBUG-PROFILE] bio: $bioVal (${bioVal.runtimeType})');
+      debugPrint('[DEBUG-PROFILE] phone: $phoneVal (${phoneVal?.runtimeType})');
+      debugPrint('[DEBUG-PROFILE] whatsapp: $whatsappVal (${whatsappVal?.runtimeType})');
+      debugPrint('[DEBUG-PROFILE] location: $locationVal (${locationVal?.runtimeType})');
+      debugPrint('[DEBUG-PROFILE] diamonds: $diamondsVal (${diamondsVal.runtimeType})');
+      debugPrint('[DEBUG-PROFILE] isOnlineVal: $isOnlineVal');
+      debugPrint('[DEBUG-PROFILE] isPremiumVal: $isPremiumVal');
+      debugPrint('[DEBUG-PROFILE] tapCountVal: $tapCountVal (${tapCountVal.runtimeType})');
+
+      final profileInstance = Profile(
+        id: idVal,
+        userId: userIdVal,
+        name: nameVal,
+        username: usernameVal,
+        tagline: taglineVal,
+        avatar: avatarVal,
+        isOnline: isOnlineVal,
+        bio: bioVal,
+        phone: phoneVal,
+        whatsapp: whatsappVal,
+        location: locationVal,
+        diamonds: diamondsVal,
+        isPremium: isPremiumVal,
+        tapCount: tapCountVal,
+        tags: tagsList.map((i) => Tag.fromJson(i)).toList(),
+        socials: socialsList.map((i) => SocialLink.fromJson(i)).toList(),
+      );
+      debugPrint('[DEBUG-PROFILE] Successfully constructed Profile instance!');
+      return profileInstance;
+    } catch (e, stackTrace) {
+      debugPrint('[JSON-DECODE-PROFILE] Constructor parsing failed: $e');
+      debugPrint('[JSON-DECODE-PROFILE] StackTrace: $stackTrace');
+      rethrow;
+    }
   }
 
   Map<String, dynamic> toJson() {
