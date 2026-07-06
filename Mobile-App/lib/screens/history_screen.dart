@@ -64,23 +64,23 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   Color _getEventColor(String? colorStr) {
-    if (colorStr == null) return Colors.indigoAccent;
-    if (colorStr.startsWith('var(')) return Colors.indigoAccent; // fallback for CSS vars
+    if (colorStr == null) return const Color(0xFF6366F1);
+    if (colorStr.startsWith('var(')) return const Color(0xFF6366F1); // fallback for CSS vars
     try {
       if (colorStr.startsWith('#')) {
         return Color(int.parse(colorStr.replaceFirst('#', '0xFF')));
       }
     } catch (_) {}
-    return Colors.indigoAccent;
+    return const Color(0xFF6366F1);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F0F16),
+      backgroundColor: const Color(0xFF06070D),
       body: RefreshIndicator(
         onRefresh: _fetchHistory,
-        color: Colors.indigoAccent,
+        color: const Color(0xFF6366F1),
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.all(16.0),
@@ -107,7 +107,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               if (_loading)
                 const Center(child: Padding(
                   padding: EdgeInsets.only(top: 40.0),
-                  child: CircularProgressIndicator(color: Colors.indigoAccent),
+                  child: CircularProgressIndicator(color: Color(0xFF6366F1)),
                 ))
               else if (_error != null)
                 Center(

@@ -84,7 +84,7 @@ class _ConnectionPermissionSheetState extends State<ConnectionPermissionSheet> {
       child: _loading
           ? const SizedBox(
               height: 200,
-              child: Center(child: CircularProgressIndicator(color: Colors.indigoAccent)),
+              child: Center(child: CircularProgressIndicator(color: Color(0xFF6366F1))),
             )
           : Column(
               mainAxisSize: MainAxisSize.min,
@@ -176,7 +176,7 @@ class _ConnectionPermissionSheetState extends State<ConnectionPermissionSheet> {
               color: const Color(0xFF6366f1).withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(icon, color: Colors.indigoAccent, size: 20),
+            child: Icon(icon, color: const Color(0xFF6366F1), size: 20),
           ),
           const SizedBox(width: 14),
           Expanded(

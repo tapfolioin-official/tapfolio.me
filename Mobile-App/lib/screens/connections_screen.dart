@@ -111,9 +111,9 @@ class _ConnectionsScreenState extends State<ConnectionsScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F0F16),
+      backgroundColor: const Color(0xFF06070D),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF141420),
+        backgroundColor: const Color(0xFF0F1122),
         elevation: 0,
         automaticallyImplyLeading: false,
         title: Row(
@@ -149,8 +149,8 @@ class _ConnectionsScreenState extends State<ConnectionsScreen>
         ],
         bottom: TabBar(
           controller: _tabController,
-          indicatorColor: Colors.indigoAccent,
-          labelColor: Colors.indigoAccent,
+          indicatorColor: const Color(0xFF6366F1),
+          labelColor: const Color(0xFF6366F1),
           unselectedLabelColor: Colors.white38,
           labelStyle: GoogleFonts.outfit(fontWeight: FontWeight.w600),
           tabs: [
@@ -173,13 +173,13 @@ class _ConnectionsScreenState extends State<ConnectionsScreen>
 
   Widget _buildPendingTab() {
     if (_loadingPending) {
-      return const Center(child: CircularProgressIndicator(color: Colors.indigoAccent));
+      return const Center(child: CircularProgressIndicator(color: Color(0xFF6366F1)));
     }
     if (_pending.isEmpty) {
       return _emptyState(Icons.inbox_outlined, 'No pending requests', 'When someone wants to connect, it\'ll show up here.');
     }
     return RefreshIndicator(
-      color: Colors.indigoAccent,
+      color: const Color(0xFF6366F1),
       onRefresh: _refresh,
       child: ListView.separated(
         padding: const EdgeInsets.all(16),
@@ -253,7 +253,7 @@ class _ConnectionsScreenState extends State<ConnectionsScreen>
                               const SizedBox(width: 10),
                               Text(
                                 'via NFC',
-                                style: GoogleFonts.outfit(color: Colors.indigoAccent, fontSize: 11, fontWeight: FontWeight.w600),
+                                style: GoogleFonts.outfit(color: const Color(0xFF6366F1), fontSize: 11, fontWeight: FontWeight.w600),
                               ),
                             ]
                           ],
@@ -339,13 +339,13 @@ class _ConnectionsScreenState extends State<ConnectionsScreen>
 
   Widget _buildConnectionsTab() {
     if (_loadingConnections) {
-      return const Center(child: CircularProgressIndicator(color: Colors.indigoAccent));
+      return const Center(child: CircularProgressIndicator(color: Color(0xFF6366F1)));
     }
     if (_connections.isEmpty) {
       return _emptyState(Icons.people_outline, 'No connections yet', 'Start connecting by sharing your Tapfolio link or NFC card.');
     }
     return RefreshIndicator(
-      color: Colors.indigoAccent,
+      color: const Color(0xFF6366F1),
       onRefresh: _refresh,
       child: ListView.separated(
         padding: const EdgeInsets.all(16),
@@ -394,7 +394,7 @@ class _ConnectionsScreenState extends State<ConnectionsScreen>
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (conn.via == 'nfc')
-                  const Icon(Icons.nfc, size: 16, color: Colors.indigoAccent),
+                  const Icon(Icons.nfc, size: 16, color: Color(0xFF6366F1)),
                 const SizedBox(width: 4),
                 const Icon(Icons.chevron_right, color: Colors.white24),
               ],
@@ -531,7 +531,7 @@ class _ConnectionsScreenState extends State<ConnectionsScreen>
   Widget _detailRow(IconData icon, String value, {bool isLink = false}) {
     return ListTile(
       contentPadding: EdgeInsets.zero,
-      leading: Icon(icon, color: Colors.indigoAccent, size: 20),
+      leading: Icon(icon, color: const Color(0xFF6366F1), size: 20),
       title: Text(value, style: GoogleFonts.outfit(color: Colors.white70, fontSize: 14)),
       onTap: isLink
           ? () => launchUrl(Uri.parse(value), mode: LaunchMode.externalApplication)

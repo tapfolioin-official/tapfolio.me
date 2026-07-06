@@ -109,9 +109,9 @@ class _MainNavigationShellState extends State<MainNavigationShell>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F0F16),
+      backgroundColor: const Color(0xFF06070D),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF141420),
+        backgroundColor: const Color(0xFF0F1122),
         elevation: 0,
         title: Row(
           children: [
@@ -128,7 +128,7 @@ class _MainNavigationShellState extends State<MainNavigationShell>
               style: GoogleFonts.outfit(
                 fontWeight: FontWeight.w400,
                 fontSize: 22,
-                color: Colors.indigoAccent,
+                color: const Color(0xFF6366F1),
               ),
             ),
           ],
@@ -209,57 +209,74 @@ class _MainNavigationShellState extends State<MainNavigationShell>
         index: _currentIndex,
         children: _screens,
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() => _currentIndex = index);
-          if (index == 3) _fetchPendingCount();
-        },
-        backgroundColor: const Color(0xFF141420),
-        selectedItemColor: Colors.indigoAccent,
-        unselectedItemColor: Colors.white38,
-        showUnselectedLabels: true,
-        type: BottomNavigationBarType.fixed,
-        selectedLabelStyle:
-            GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.w500),
-        unselectedLabelStyle: GoogleFonts.outfit(fontSize: 12),
-        items: [
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard_outlined),
-            activeIcon: Icon(Icons.dashboard),
-            label: 'Dashboard',
+      extendBody: true,
+      bottomNavigationBar: Container(
+        margin: const EdgeInsets.only(left: 16, right: 16, bottom: 20),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.4),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: BottomNavigationBar(
+            currentIndex: _currentIndex,
+            onTap: (index) {
+              setState(() => _currentIndex = index);
+              if (index == 3) _fetchPendingCount();
+            },
+            backgroundColor: const Color(0xFF0F1122).withValues(alpha: 0.95),
+            selectedItemColor: const Color(0xFF6366F1),
+            unselectedItemColor: Colors.white38,
+            showUnselectedLabels: true,
+            type: BottomNavigationBarType.fixed,
+            selectedLabelStyle:
+                GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.w600),
+            unselectedLabelStyle: GoogleFonts.outfit(fontSize: 11),
+            items: [
+              const BottomNavigationBarItem(
+                icon: Icon(Icons.dashboard_outlined),
+                activeIcon: Icon(Icons.dashboard),
+                label: 'Dashboard',
+              ),
+              const BottomNavigationBarItem(
+                icon: Icon(Icons.emoji_events_outlined),
+                activeIcon: Icon(Icons.emoji_events),
+                label: 'Leaderboard',
+              ),
+              const BottomNavigationBarItem(
+                icon: Icon(Icons.history_outlined),
+                activeIcon: Icon(Icons.history),
+                label: 'Logs',
+              ),
+              BottomNavigationBarItem(
+                icon: _pendingCount > 0
+                    ? Badge.count(
+                        count: _pendingCount,
+                        child: const Icon(Icons.people_outline),
+                      )
+                    : const Icon(Icons.people_outline),
+                activeIcon: _pendingCount > 0
+                    ? Badge.count(
+                        count: _pendingCount,
+                        child: const Icon(Icons.people),
+                      )
+                    : const Icon(Icons.people),
+                label: 'Connections',
+              ),
+              const BottomNavigationBarItem(
+                icon: Icon(Icons.nfc_outlined),
+                activeIcon: Icon(Icons.nfc),
+                label: 'Tap Profile',
+              ),
+            ],
           ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.emoji_events_outlined),
-            activeIcon: Icon(Icons.emoji_events),
-            label: 'Leaderboard',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.history_outlined),
-            activeIcon: Icon(Icons.history),
-            label: 'Logs',
-          ),
-          BottomNavigationBarItem(
-            icon: _pendingCount > 0
-                ? Badge.count(
-                    count: _pendingCount,
-                    child: const Icon(Icons.people_outline),
-                  )
-                : const Icon(Icons.people_outline),
-            activeIcon: _pendingCount > 0
-                ? Badge.count(
-                    count: _pendingCount,
-                    child: const Icon(Icons.people),
-                  )
-                : const Icon(Icons.people),
-            label: 'Connections',
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.nfc_outlined),
-            activeIcon: Icon(Icons.nfc),
-            label: 'Tap Profile',
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -316,7 +333,7 @@ class _AnimatedBadgeState extends State<_AnimatedBadge>
         decoration: BoxDecoration(
           color: Colors.redAccent,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: const Color(0xFF141420), width: 1.5),
+          border: Border.all(color: const Color(0xFF0F1122), width: 1.5),
         ),
         child: Text(
           label,

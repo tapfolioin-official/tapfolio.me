@@ -448,7 +448,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         decoration: InputDecoration(
           labelText: label,
           labelStyle: GoogleFonts.outfit(color: Colors.white54, fontSize: 14),
-          prefixIcon: Icon(icon, color: Colors.indigoAccent, size: 20),
+          prefixIcon: Icon(icon, color: Theme.of(context).primaryColor, size: 20),
           suffixIcon: suffixIcon,
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -474,10 +474,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 color: isCompleted
                     ? Colors.purple
                     : isActive
-                        ? Colors.indigoAccent
-                        : const Color(0xFF161824),
+                        ? Theme.of(context).primaryColor
+                        : const Color(0xFF0F1122),
                 border: Border.all(
-                  color: isActive ? Colors.indigoAccent : Colors.white10,
+                  color: isActive ? Theme.of(context).primaryColor : Colors.white10,
                 ),
               ),
               child: Center(
@@ -514,7 +514,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0b0c10),
+      backgroundColor: const Color(0xFF06070D),
       body: Stack(
         children: [
           // Ambient Glow Backgrounds
@@ -655,7 +655,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       const SizedBox(height: 12),
                                       Row(
                                         children: [
-                                          const Icon(Icons.people_outline, color: Colors.indigoAccent, size: 20),
+                                          Icon(Icons.people_outline, color: Theme.of(context).primaryColor, size: 20),
                                           const SizedBox(width: 12),
                                           Expanded(
                                             child: Text(
@@ -710,7 +710,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   height: 48,
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.indigoAccent,
+                                      backgroundColor: Theme.of(context).primaryColor,
                                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                     ),
                                     onPressed: () => setState(() => _step = 2),
@@ -732,7 +732,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         children: [
                                           TextSpan(
                                             text: 'Sign In',
-                                            style: GoogleFonts.outfit(color: Colors.indigoAccent, fontWeight: FontWeight.bold),
+                                            style: GoogleFonts.outfit(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
                                           ),
                                         ],
                                       ),
@@ -790,7 +790,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         height: 48,
                                         child: ElevatedButton(
                                           style: ElevatedButton.styleFrom(
-                                            backgroundColor: Colors.indigoAccent,
+                                            backgroundColor: Theme.of(context).primaryColor,
                                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                           ),
                                           onPressed: _isLoading ? null : _handleStep2Submit,
@@ -833,7 +833,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                           border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
                                           boxShadow: [
                                             BoxShadow(
-                                              color: Colors.indigoAccent.withValues(alpha: 0.1),
+                                              color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
                                               blurRadius: 20,
                                               spreadRadius: 2,
                                             ),
@@ -847,7 +847,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                               decoration: BoxDecoration(
                                                 shape: BoxShape.circle,
                                                 color: Colors.purple.withValues(alpha: 0.3),
-                                                border: Border.all(color: Colors.indigoAccent, width: 2),
+                                                border: Border.all(color: Theme.of(context).primaryColor, width: 2),
                                               ),
                                               child: Center(
                                                 child: Text(
@@ -863,7 +863,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                             ),
                                             Text(
                                               '@${_usernameController.text}',
-                                              style: GoogleFonts.outfit(fontSize: 13, color: Colors.indigoAccent, fontWeight: FontWeight.bold),
+                                              style: GoogleFonts.outfit(fontSize: 13, color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
                                             ),
                                             const SizedBox(height: 12),
                                             Text(
@@ -880,7 +880,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         height: 48,
                                         child: ElevatedButton(
                                           style: ElevatedButton.styleFrom(
-                                            backgroundColor: Colors.indigoAccent,
+                                            backgroundColor: Theme.of(context).primaryColor,
                                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                           ),
                                           onPressed: () => setState(() => _step = 4),
@@ -949,7 +949,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                             spacing: 8,
                                             children: _usernameSuggestions.map((s) => ActionChip(
                                               backgroundColor: Colors.white.withValues(alpha: 0.05),
-                                              label: Text(s, style: const TextStyle(color: Colors.indigoAccent, fontSize: 11)),
+                                              label: Text(s, style: TextStyle(color: Theme.of(context).primaryColor, fontSize: 11)),
                                               onPressed: () {
                                                 _usernameController.text = s;
                                                 setState(() {
@@ -969,7 +969,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   height: 48,
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.indigoAccent,
+                                      backgroundColor: Theme.of(context).primaryColor,
                                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                     ),
                                     onPressed: _isLoading || !_isUsernameAvailable ? null : _handleStep4Submit,
@@ -1070,7 +1070,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     decoration: InputDecoration(
                                       labelText: 'Bio (Optional)',
                                       labelStyle: GoogleFonts.outfit(color: Colors.white60, fontSize: 14),
-                                      prefixIcon: const Icon(Icons.info_outline, color: Colors.indigoAccent),
+                                      prefixIcon: Icon(Icons.info_outline, color: Theme.of(context).primaryColor),
                                       border: InputBorder.none,
                                       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                                     ),
@@ -1082,7 +1082,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   height: 48,
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.indigoAccent,
+                                      backgroundColor: Theme.of(context).primaryColor,
                                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                     ),
                                     onPressed: () {
@@ -1111,31 +1111,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   subtitle: const Text('Required', style: TextStyle(color: Colors.white38, fontSize: 11)),
                                   value: _shareName,
                                   onChanged: null, // Always checked & disabled
-                                  activeThumbColor: Colors.indigoAccent,
+                                  activeThumbColor: Theme.of(context).primaryColor,
                                 ),
                                 SwitchListTile(
                                   title: const Text('Email Address', style: TextStyle(color: Colors.white)),
                                   value: _shareEmail,
                                   onChanged: (val) => setState(() => _shareEmail = val),
-                                  activeThumbColor: Colors.indigoAccent,
+                                  activeThumbColor: Theme.of(context).primaryColor,
                                 ),
                                 SwitchListTile(
                                   title: const Text('Phone Number', style: TextStyle(color: Colors.white)),
                                   value: _sharePhone,
                                   onChanged: (val) => setState(() => _sharePhone = val),
-                                  activeThumbColor: Colors.indigoAccent,
+                                  activeThumbColor: Theme.of(context).primaryColor,
                                 ),
                                 SwitchListTile(
                                   title: const Text('WhatsApp', style: TextStyle(color: Colors.white)),
                                   value: _shareWhatsapp,
                                   onChanged: (val) => setState(() => _shareWhatsapp = val),
-                                  activeThumbColor: Colors.indigoAccent,
+                                  activeThumbColor: Theme.of(context).primaryColor,
                                 ),
                                 SwitchListTile(
                                   title: const Text('Location', style: TextStyle(color: Colors.white)),
                                   value: _shareLocation,
                                   onChanged: (val) => setState(() => _shareLocation = val),
-                                  activeThumbColor: Colors.indigoAccent,
+                                  activeThumbColor: Theme.of(context).primaryColor,
                                 ),
                                 const SizedBox(height: 24),
                                 SizedBox(
@@ -1143,7 +1143,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   height: 48,
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.indigoAccent,
+                                      backgroundColor: Theme.of(context).primaryColor,
                                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                     ),
                                     onPressed: () {
@@ -1193,7 +1193,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   height: 48,
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.indigoAccent,
+                                      backgroundColor: Theme.of(context).primaryColor,
                                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                     ),
                                     onPressed: _isLoading ? null : () => _handleFinalSubmit(skip: false),

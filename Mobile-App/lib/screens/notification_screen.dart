@@ -211,9 +211,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
     final hasUnread = _notifications.any((n) => !n.isRead);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0F0F16),
+      backgroundColor: const Color(0xFF06070D),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF141420),
+        backgroundColor: const Color(0xFF0F1122),
         elevation: 0,
         leading: BackButton(color: Colors.white70),
         title: Text(
@@ -231,7 +231,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
               child: Text(
                 'Mark all read',
                 style: GoogleFonts.outfit(
-                  color: Colors.indigoAccent,
+                  color: const Color(0xFF6366F1),
                   fontSize: 13,
                 ),
               ),
@@ -244,13 +244,13 @@ class _NotificationScreenState extends State<NotificationScreen> {
       ),
       body: _loading
           ? const Center(
-              child: CircularProgressIndicator(color: Colors.indigoAccent),
+              child: CircularProgressIndicator(color: Color(0xFF6366F1)),
             )
           : _notifications.isEmpty
               ? _buildEmptyState()
               : RefreshIndicator(
-                  color: Colors.indigoAccent,
-                  backgroundColor: const Color(0xFF161824),
+                  color: const Color(0xFF6366F1),
+                  backgroundColor: const Color(0xFF0F1122),
                   onRefresh: _load,
                   child: ListView.builder(
                     itemCount: _notifications.length,
@@ -270,13 +270,13 @@ class _NotificationScreenState extends State<NotificationScreen> {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: Colors.indigoAccent.withValues(alpha: 0.1),
+              color: const Color(0xFF6366F1).withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(
               Icons.notifications_outlined,
               size: 40,
-              color: Colors.indigoAccent,
+              color: Color(0xFF6366F1),
             ),
           ),
           const SizedBox(height: 20),
@@ -323,13 +323,13 @@ class _NotificationScreenState extends State<NotificationScreen> {
           margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           decoration: BoxDecoration(
             color: notif.isRead
-                ? const Color(0xFF141420)
+                ? const Color(0xFF0F1122)
                 : const Color(0xFF1A1A2E),
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: notif.isRead
                   ? Colors.white.withValues(alpha: 0.05)
-                  : Colors.indigoAccent.withValues(alpha: 0.3),
+                  : const Color(0xFF6366F1).withValues(alpha: 0.3),
               width: 1,
             ),
           ),
@@ -350,7 +350,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                           width: 10,
                           height: 10,
                           decoration: const BoxDecoration(
-                            color: Colors.indigoAccent,
+                            color: Color(0xFF6366F1),
                             shape: BoxShape.circle,
                           ),
                         ),
@@ -406,7 +406,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                               width: 24,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2.5,
-                                color: Colors.indigoAccent,
+                                color: Color(0xFF6366F1),
                               ),
                             ),
                           )
@@ -437,7 +437,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                 child: ElevatedButton(
                                   onPressed: () => _acceptRequest(notif),
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.indigoAccent,
+                                    backgroundColor: const Color(0xFF6366F1),
                                     foregroundColor: Colors.white,
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 8),

@@ -92,7 +92,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         return PopScope(
           canPop: !forceUpdate,
           child: AlertDialog(
-            backgroundColor: const Color(0xFF161824),
+            backgroundColor: const Color(0xFF0F1122),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
               side: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
@@ -111,7 +111,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Text(
                   'Version $versionName (Build $buildNumber)',
                   style: GoogleFonts.outfit(
-                    color: Colors.indigoAccent,
+                    color: const Color(0xFF6366F1),
                     fontWeight: FontWeight.bold,
                     fontSize: 15,
                   ),
@@ -141,7 +141,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     const Text(
                                       '• ',
                                       style: TextStyle(
-                                        color: Colors.indigoAccent,
+                                        color: Color(0xFF6366F1),
                                       ),
                                     ),
                                     Expanded(
@@ -186,7 +186,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.indigoAccent,
+                  backgroundColor: const Color(0xFF6366F1),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -549,7 +549,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       builder: (ctx) => StatefulBuilder(
         builder: (context, setModalState) {
           return AlertDialog(
-            backgroundColor: const Color(0xFF141420),
+            backgroundColor: const Color(0xFF0F1122),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
               side: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
@@ -868,7 +868,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             runSpacing: 8,
             children: [
               ...roleTags.map(
-                (tag) => _buildChip(tag.text, Colors.indigoAccent),
+                (tag) => _buildChip(tag.text, const Color(0xFF6366F1)),
               ),
               ...locationTags.map(
                 (tag) => _buildChip(tag.text, Colors.tealAccent),
@@ -1166,7 +1166,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 children: [
                   const Icon(
                     Icons.people,
-                    color: Colors.indigoAccent,
+                    color: Color(0xFF6366F1),
                     size: 24,
                   ),
                   const SizedBox(width: 14),
@@ -1243,7 +1243,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 const SizedBox(width: 8),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.indigoAccent,
+                    backgroundColor: const Color(0xFF6366F1),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -1290,13 +1290,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.indigoAccent.withValues(alpha: 0.2),
+                    color: const Color(0xFF6366F1).withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     '$_score / 100',
                     style: GoogleFonts.outfit(
-                      color: Colors.indigoAccent,
+                      color: const Color(0xFF6366F1),
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
                     ),
@@ -1310,7 +1310,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: LinearProgressIndicator(
                 value: _score / 100,
                 backgroundColor: Colors.white.withValues(alpha: 0.1),
-                color: Colors.indigoAccent,
+                color: const Color(0xFF6366F1),
                 minHeight: 12,
               ),
             ),
@@ -1350,7 +1350,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               Text(
                                 '+${item.points} pts',
                                 style: GoogleFonts.outfit(
-                                  color: Colors.indigoAccent,
+                                  color: const Color(0xFF6366F1),
                                   fontSize: 11,
                                 ),
                               ),
@@ -1487,7 +1487,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       onTap: _saving ? null : _pickAndUploadImage,
                       child: CircleAvatar(
                         radius: 18,
-                        backgroundColor: Colors.indigoAccent,
+                        backgroundColor: const Color(0xFF6366F1),
                         child: _saving
                             ? const SizedBox(
                                 width: 14,
@@ -1522,7 +1522,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.indigoAccent,
+                  backgroundColor: const Color(0xFF6366F1),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -1589,7 +1589,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
-                      dropdownColor: const Color(0xFF141420),
+                      dropdownColor: const Color(0xFF0F1122),
                       value: _tagType,
                       style: GoogleFonts.outfit(color: Colors.white),
                       onChanged: (String? newVal) {
@@ -1616,7 +1616,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 IconButton(
                   icon: const Icon(
                     Icons.add_circle,
-                    color: Colors.indigoAccent,
+                    color: Color(0xFF6366F1),
                     size: 36,
                   ),
                   onPressed: _saving ? null : _addTag,
@@ -1637,12 +1637,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   decoration: BoxDecoration(
                     color: isRole
-                        ? Colors.indigoAccent.withValues(alpha: 0.1)
+                        ? const Color(0xFF6366F1).withValues(alpha: 0.1)
                         : Colors.teal.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: isRole
-                          ? Colors.indigoAccent.withValues(alpha: 0.3)
+                          ? const Color(0xFF6366F1).withValues(alpha: 0.3)
                           : Colors.teal.withValues(alpha: 0.3),
                     ),
                   ),
@@ -1653,7 +1653,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         tag.text,
                         style: GoogleFonts.outfit(
                           color: isRole
-                              ? Colors.indigoAccent
+                              ? const Color(0xFF6366F1)
                               : Colors.tealAccent,
                           fontSize: 13,
                         ),
@@ -1698,7 +1698,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
-                      dropdownColor: const Color(0xFF141420),
+                      dropdownColor: const Color(0xFF0F1122),
                       value: _socialPlatform,
                       style: GoogleFonts.outfit(color: Colors.white),
                       onChanged: (String? newVal) {
@@ -1803,7 +1803,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 IconButton(
                   icon: const Icon(
                     Icons.add_circle,
-                    color: Colors.indigoAccent,
+                    color: Color(0xFF6366F1),
                     size: 36,
                   ),
                   onPressed: _saving ? null : _addSocial,
@@ -1890,7 +1890,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.indigoAccent,
+                  backgroundColor: const Color(0xFF6366F1),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -1974,13 +1974,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     if (_loading) {
       return const Center(
-        child: CircularProgressIndicator(color: Colors.indigoAccent),
+        child: CircularProgressIndicator(color: Color(0xFF6366F1)),
       );
     }
 
     if (_profile == null) {
       return Scaffold(
-        backgroundColor: const Color(0xFF0F0F16),
+        backgroundColor: const Color(0xFF06070D),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -2016,7 +2016,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   icon: const Icon(Icons.refresh_rounded),
                   label: const Text('Retry'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.indigoAccent,
+                    backgroundColor: const Color(0xFF6366F1),
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                     shape: RoundedRectangleBorder(
@@ -2039,7 +2039,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             _isEditing = !_isEditing;
           });
         },
-        backgroundColor: Colors.indigoAccent,
+        backgroundColor: const Color(0xFF6366F1),
         child: Icon(_isEditing ? Icons.visibility : Icons.edit),
       ),
       body: SafeArea(

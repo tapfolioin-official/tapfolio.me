@@ -80,9 +80,9 @@ class _ConnectScreenState extends State<ConnectScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F0F16),
+      backgroundColor: const Color(0xFF06070D),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF141420),
+        backgroundColor: const Color(0xFF0F1122),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white70),
@@ -94,7 +94,7 @@ class _ConnectScreenState extends State<ConnectScreen>
         ),
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator(color: Colors.indigoAccent))
+          ? const Center(child: CircularProgressIndicator(color: Color(0xFF6366F1)))
           : _error != null && _profileData == null
               ? _buildError()
               : _buildContent(),
@@ -112,7 +112,7 @@ class _ConnectScreenState extends State<ConnectScreen>
           const SizedBox(height: 24),
           TextButton(
             onPressed: _loadProfile,
-            child: Text('Retry', style: GoogleFonts.outfit(color: Colors.indigoAccent)),
+            child: Text('Retry', style: GoogleFonts.outfit(color: const Color(0xFF6366F1))),
           ),
         ],
       ),

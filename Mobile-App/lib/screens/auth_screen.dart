@@ -145,7 +145,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
         decoration: InputDecoration(
           labelText: label,
           labelStyle: GoogleFonts.outfit(color: Colors.white60),
-          prefixIcon: Icon(icon, color: Colors.indigoAccent),
+          prefixIcon: Icon(icon, color: const Color(0xFF6366F1)),
           suffixIcon: suffixIcon,
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -157,7 +157,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F0F16),
+      backgroundColor: const Color(0xFF06070D),
       body: Stack(
         children: [
           // Background Glows
@@ -185,7 +185,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
               height: 250,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.indigoAccent.withValues(alpha: 0.2),
+                color: const Color(0xFF6366F1).withValues(alpha: 0.2),
               ),
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
@@ -238,7 +238,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
                             // Tab Bar
                             TabBar(
                               controller: _tabController,
-                              indicatorColor: Colors.indigoAccent,
+                              indicatorColor: const Color(0xFF6366F1),
                               indicatorWeight: 3,
                               labelColor: Colors.white,
                               unselectedLabelColor: Colors.white38,
@@ -303,7 +303,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
                                               height: 50,
                                               child: ElevatedButton(
                                                 style: ElevatedButton.styleFrom(
-                                                  backgroundColor: Colors.indigoAccent,
+                                                  backgroundColor: const Color(0xFF6366F1),
                                                   shape: RoundedRectangleBorder(
                                                     borderRadius: BorderRadius.circular(12),
                                                   ),
@@ -391,7 +391,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
                                               height: 50,
                                               child: ElevatedButton(
                                                 style: ElevatedButton.styleFrom(
-                                                  backgroundColor: Colors.indigoAccent,
+                                                  backgroundColor: const Color(0xFF6366F1),
                                                   shape: RoundedRectangleBorder(
                                                     borderRadius: BorderRadius.circular(12),
                                                   ),

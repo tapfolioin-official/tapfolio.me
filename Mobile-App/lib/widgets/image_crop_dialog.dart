@@ -141,7 +141,7 @@ class _ImageCropDialogState extends State<ImageCropDialog> {
   Widget build(BuildContext context) {
     if (_loading) {
       return Dialog(
-        backgroundColor: const Color(0xFF141420),
+        backgroundColor: const Color(0xFF0F1122),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
           side: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
@@ -149,7 +149,7 @@ class _ImageCropDialogState extends State<ImageCropDialog> {
         child: const SizedBox(
           height: 200,
           child: Center(
-            child: CircularProgressIndicator(color: Colors.indigoAccent),
+            child: CircularProgressIndicator(color: Color(0xFF6366F1)),
           ),
         ),
       );
@@ -164,7 +164,7 @@ class _ImageCropDialogState extends State<ImageCropDialog> {
     final sliderVal = _scale.clamp(sliderMin, sliderMax);
 
     return Dialog(
-      backgroundColor: const Color(0xFF141420),
+      backgroundColor: const Color(0xFF0F1122),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
         side: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
@@ -238,7 +238,7 @@ class _ImageCropDialogState extends State<ImageCropDialog> {
                     value: sliderVal,
                     min: sliderMin,
                     max: sliderMax,
-                    activeColor: Colors.indigoAccent,
+                    activeColor: const Color(0xFF6366F1),
                     inactiveColor: Colors.white12,
                     onChanged: (val) {
                       setState(() {

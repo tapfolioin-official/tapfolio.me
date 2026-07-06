@@ -113,9 +113,9 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F0F16),
+      backgroundColor: const Color(0xFF06070D),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF141420),
+        backgroundColor: const Color(0xFF0F1122),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -295,7 +295,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen>
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(
-                        color: _confirmed ? Colors.red.shade400 : Colors.indigoAccent,
+                        color: _confirmed ? Colors.red.shade400 : const Color(0xFF6366F1),
                         width: 1.5,
                       ),
                     ),
@@ -368,7 +368,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen>
                   child: Text(
                     'Cancel — Keep My Account',
                     style: GoogleFonts.outfit(
-                      color: Colors.indigoAccent,
+                      color: const Color(0xFF6366F1),
                       fontWeight: FontWeight.w500,
                       fontSize: 14,
                     ),

@@ -119,7 +119,7 @@ class _ConnectionVisibilitySheetState extends State<ConnectionVisibilitySheet> {
       child: _loadingProfile
           ? const SizedBox(
               height: 250,
-              child: Center(child: CircularProgressIndicator(color: Colors.indigoAccent)),
+              child: Center(child: CircularProgressIndicator(color: Color(0xFF6366F1))),
             )
           : SingleChildScrollView(
               child: Column(
@@ -155,7 +155,7 @@ class _ConnectionVisibilitySheetState extends State<ConnectionVisibilitySheet> {
 
                   Text(
                     'CONTACT DETAILS',
-                    style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.indigoAccent, letterSpacing: 1.2),
+                    style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.bold, color: const Color(0xFF6366F1), letterSpacing: 1.2),
                   ),
                   const SizedBox(height: 8),
 
@@ -176,7 +176,7 @@ class _ConnectionVisibilitySheetState extends State<ConnectionVisibilitySheet> {
                     const SizedBox(height: 8),
                     Text(
                       'SOCIAL LINKS',
-                      style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.indigoAccent, letterSpacing: 1.2),
+                      style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.bold, color: const Color(0xFF6366F1), letterSpacing: 1.2),
                     ),
                     const SizedBox(height: 8),
                     ..._mySocials.map((link) {
@@ -240,7 +240,7 @@ class _ConnectionVisibilitySheetState extends State<ConnectionVisibilitySheet> {
     ValueChanged<bool> onChanged, {
     Color? iconColor,
   }) {
-    final effectiveIconColor = iconColor ?? Colors.indigoAccent;
+    final effectiveIconColor = iconColor ?? const Color(0xFF6366F1);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(

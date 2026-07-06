@@ -124,7 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
         decoration: InputDecoration(
           labelText: label,
           labelStyle: GoogleFonts.outfit(color: Colors.white60, fontSize: 14),
-          prefixIcon: Icon(icon, color: Colors.indigoAccent, size: 20),
+          prefixIcon: Icon(icon, color: Theme.of(context).primaryColor, size: 20),
           suffixIcon: suffixIcon,
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -136,7 +136,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0b0c10),
+      backgroundColor: const Color(0xFF06070D),
       body: Stack(
         children: [
           // Radial glow background effects

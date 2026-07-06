@@ -138,7 +138,7 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.search, color: Colors.indigoAccent),
+                    icon: const Icon(Icons.search, color: Color(0xFF6366F1)),
                     onPressed: () {
                       final val = int.tryParse(_searchController.text.trim());
                       if (val != null) {
@@ -156,7 +156,7 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
           ],
 
           if (_loading)
-            const Center(child: CircularProgressIndicator(color: Colors.indigoAccent))
+            const Center(child: CircularProgressIndicator(color: Color(0xFF6366F1)))
           else if (_error != null)
             Center(child: Text(_error!, style: const TextStyle(color: Colors.redAccent)))
           else if (_profile == null && widget.userId == null)
@@ -212,7 +212,7 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
                           ? const Color(0xFF10B981)
                           : _connectionStatus == 'pending'
                               ? const Color(0xFFf59e0b)
-                              : Colors.indigoAccent,
+                              : const Color(0xFF6366F1),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                     onPressed: _connecting || _connectionStatus == 'accepted' || _connectionStatus == 'pending' || _connectionStatus == 'blocked'

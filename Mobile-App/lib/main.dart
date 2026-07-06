@@ -116,15 +116,19 @@ class _MyAppState extends State<MyApp> {
       navigatorKey: navigatorKey,
       theme: ThemeData(
         brightness: Brightness.dark,
-        primaryColor: Colors.indigoAccent,
-        scaffoldBackgroundColor: const Color(0xFF0F0F16),
+        primaryColor: const Color(0xFF6366F1),
+        scaffoldBackgroundColor: const Color(0xFF06070D),
         textTheme: GoogleFonts.outfitTextTheme(
-          ThemeData.dark().textTheme,
+          ThemeData.dark().textTheme.apply(
+            bodyColor: Colors.white,
+            displayColor: Colors.white,
+          ),
         ),
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.indigoAccent,
-          brightness: Brightness.dark,
-          surface: const Color(0xFF0F0F16),
+        colorScheme: const ColorScheme.dark(
+          primary: Color(0xFF6366F1),
+          secondary: Color(0xFFD946EF),
+          surface: Color(0xFF0F1122),
+          error: Colors.redAccent,
         ),
       ),
       onGenerateRoute: (settings) {
@@ -176,7 +180,7 @@ class _MyAppState extends State<MyApp> {
       return const Scaffold(
         backgroundColor: Color(0xFF0F0F16),
         body: Center(
-          child: CircularProgressIndicator(color: Colors.indigoAccent),
+          child: CircularProgressIndicator(color: Color(0xFF6366F1)),
         ),
       );
     }

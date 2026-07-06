@@ -271,7 +271,7 @@ class _PublicProfileScreenState extends State<PublicProfileScreen>
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF161824),
+        backgroundColor: const Color(0xFF0F1122),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text('Sign in to Connect',
             style: GoogleFonts.outfit(
@@ -563,7 +563,7 @@ class _PublicProfileScreenState extends State<PublicProfileScreen>
                 padding: const EdgeInsets.all(3),
                 child: CircleAvatar(
                   radius: 57,
-                  backgroundColor: const Color(0xFF141420),
+                  backgroundColor: const Color(0xFF0F1122),
                   backgroundImage: NetworkImage(avatarUrl),
                   onBackgroundImageError: (_, _) {},
                 ),

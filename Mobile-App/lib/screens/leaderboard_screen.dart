@@ -82,10 +82,10 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F0F16),
+      backgroundColor: const Color(0xFF06070D),
       body: RefreshIndicator(
         onRefresh: _fetchLeaderboard,
-        color: Colors.indigoAccent,
+        color: const Color(0xFF6366F1),
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.all(16.0),
@@ -112,7 +112,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
               if (_loading)
                 const Center(child: Padding(
                   padding: EdgeInsets.only(top: 40.0),
-                  child: CircularProgressIndicator(color: Colors.indigoAccent),
+                  child: CircularProgressIndicator(color: Color(0xFF6366F1)),
                 ))
               else if (_error != null)
                 Center(
@@ -132,7 +132,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                   ),
                   child: Column(
                     children: [
-                      const Icon(Icons.emoji_events_outlined, size: 60, color: Colors.indigoAccent),
+                      const Icon(Icons.emoji_events_outlined, size: 60, color: Color(0xFF6366F1)),
                       const SizedBox(height: 16),
                       Text(
                         'No Qualified Profiles Yet',
@@ -227,11 +227,11 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                               // Score stats
                               Row(
                                 children: [
-                                  Icon(Icons.check_circle_outline, size: 14, color: Colors.indigoAccent),
+                                  Icon(Icons.check_circle_outline, size: 14, color: const Color(0xFF6366F1)),
                                   const SizedBox(width: 4),
                                   Text(
                                     '${profile.diamonds} Pts',
-                                    style: GoogleFonts.outfit(color: Colors.indigoAccent, fontSize: 12, fontWeight: FontWeight.bold),
+                                    style: GoogleFonts.outfit(color: const Color(0xFF6366F1), fontSize: 12, fontWeight: FontWeight.bold),
                                   ),
                                   const SizedBox(width: 12),
                                   Icon(Icons.bolt, size: 14, color: Colors.tealAccent),
@@ -254,9 +254,9 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                               context,
                               MaterialPageRoute(
                                 builder: (_) => Scaffold(
-                                  backgroundColor: const Color(0xFF0F0F16),
+                                  backgroundColor: const Color(0xFF06070D),
                                   appBar: AppBar(
-                                    backgroundColor: const Color(0xFF141420),
+                                    backgroundColor: const Color(0xFF0F1122),
                                     title: Text('Profile View', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
                                   ),
                                   body: ProfileViewScreen(userId: profile.userId),
