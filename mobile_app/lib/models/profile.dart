@@ -70,6 +70,7 @@ class Profile {
   });
 
   factory Profile.fromJson(Map<String, dynamic> json) {
+    debugPrint('[JSON-DECODE-PROFILE] raw input JSON: $json');
     var tagsList = json['tags'] as List? ?? [];
     var socialsList = json['socials'] as List? ?? [];
 
