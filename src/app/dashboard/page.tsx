@@ -1581,6 +1581,23 @@ export default function Dashboard() {
                                 <div className="w-full text-center flex flex-col gap-0.5 min-w-0">
                                   <span className="text-xs font-bold text-gray-800 truncate">{theme.name}</span>
                                   <span className="text-[10px] text-gray-400 font-medium truncate">{desc}</span>
+                                  {isSelected ? (
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        saveTheme();
+                                      }}
+                                      disabled={savingTheme}
+                                      className="mt-1.5 w-full py-1 bg-blue-600 hover:bg-blue-700 text-white font-bold text-[9px] rounded-lg transition-colors cursor-pointer shadow-sm flex items-center justify-center gap-0.5 uppercase tracking-wider"
+                                    >
+                                      <Check className="w-2.5 h-2.5" /> Save
+                                    </button>
+                                  ) : (
+                                    <span className="mt-1.5 text-[9px] text-blue-500 font-bold uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity">
+                                      Preview
+                                    </span>
+                                  )}
                                 </div>
                               </button>
                             );
@@ -1623,6 +1640,23 @@ export default function Dashboard() {
                                 <div className="w-full text-center flex flex-col gap-0.5 min-w-0">
                                   <span className="text-xs font-bold text-gray-800 truncate">{theme.name}</span>
                                   <span className="text-[10px] text-gray-400 font-medium truncate">{desc}</span>
+                                  {isSelected ? (
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        saveTheme();
+                                      }}
+                                      disabled={savingTheme}
+                                      className="mt-1.5 w-full py-1 bg-blue-600 hover:bg-blue-700 text-white font-bold text-[9px] rounded-lg transition-colors cursor-pointer shadow-sm flex items-center justify-center gap-0.5 uppercase tracking-wider"
+                                    >
+                                      <Check className="w-2.5 h-2.5" /> Save
+                                    </button>
+                                  ) : (
+                                    <span className="mt-1.5 text-[9px] text-blue-500 font-bold uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity">
+                                      Preview
+                                    </span>
+                                  )}
                                 </div>
                               </button>
                             );

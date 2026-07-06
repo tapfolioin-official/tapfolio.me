@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Tapfolio splash screen: dark #0F0F16 background with centered logo.
+    The ic_launcher_foreground vector is shown centered on the dark background.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Dark Tapfolio background -->
+    <item android:drawable="@color/colorBackground"/>
+
+    <!-- Centered Tapfolio logo mark -->
+    <item>
+        <bitmap
+            android:gravity="center"
+            android:src="@drawable/ic_launcher_foreground"/>
+    </item>
+</layer-list>

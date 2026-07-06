@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Network Security Configuration for Tapfolio.
+    - All traffic must use HTTPS (cleartext blocked by default on API 28+).
+    - Tapfolio API is hosted at tapfolio.me — TLS enforced.
+    - No cleartext domains are permitted in production.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <!-- Trust the default system CAs -->
+            <certificates src="system"/>
+        </trust-anchors>
+    </base-config>
+
+    <!-- Allow debug builds to connect to local dev server only -->
+    <debug-overrides>
+        <trust-anchors>
+            <certificates src="system"/>
+            <certificates src="user"/>
+        </trust-anchors>
+    </debug-overrides>
+</network-security-config>
