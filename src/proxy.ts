@@ -3,11 +3,27 @@ import type { NextRequest } from 'next/server';
 import { verifyJWT } from './lib/auth';
 
 export async function proxy(request: NextRequest) {
-  const token = request.cookies.get('pertap_jwt')?.value;
   const { pathname } = request.nextUrl;
-  console.log(`[PROXY] Intercepted path: ${pathname}`);
 
-  // 1. Handle dynamic /@username path rewriting
+  // 1. CORS Preflight Pre-emption
+  if (pathname.startsWith('/api/')) {
+    if (request.method === 'OPTIONS') {
+      const origin = request.headers.get('origin') || '*';
+      return new NextResponse(null, {
+        status: 204,
+        headers: {
+          'Access-Control-Allow-Credentials': 'true',
+          'Access-Control-Allow-Origin': origin,
+          'Access-Control-Allow-Methods': 'GET,DELETE,PATCH,POST,PUT,OPTIONS',
+          'Access-Control-Allow-Headers': 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Cookie, Authorization, X-Pertap-Token',
+        },
+      });
+    }
+  }
+
+  const token = request.cookies.get('pertap_jwt')?.value;
+
+  // 2. Handle dynamic /@username path rewriting
   if (pathname.startsWith('/@')) {
     const username = pathname.substring(2); // Remove /@
     if (username) {
@@ -17,7 +33,7 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // 2. Handle protected routes redirects
+  // 3. Handle protected routes redirects
   const isAuthRoute = pathname.startsWith('/login') || pathname.startsWith('/register');
   const isProtectedRoute = 
     pathname.startsWith('/dashboard') || 
@@ -46,7 +62,7 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // 3. Handle auth routes redirects if already logged in
+  // 4. Handle auth routes redirects if already logged in
   if (isAuthRoute && token) {
     const payload = await verifyJWT(token);
     if (payload) {
@@ -54,11 +70,22 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  return NextResponse.next();
+  const response = NextResponse.next();
+
+  // 5. Append CORS headers to dynamic API responses
+  if (pathname.startsWith('/api/')) {
+    const origin = request.headers.get('origin') || '*';
+    response.headers.set('Access-Control-Allow-Credentials', 'true');
+    response.headers.set('Access-Control-Allow-Origin', origin);
+    response.headers.set('Access-Control-Allow-Methods', 'GET,DELETE,PATCH,POST,PUT,OPTIONS');
+    response.headers.set('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Cookie, Authorization, X-Pertap-Token');
+  }
+
+  return response;
 }
 
 export const config = {
   matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)',
+    '/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)',
   ],
 };
