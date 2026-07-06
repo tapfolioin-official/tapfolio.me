@@ -58,8 +58,12 @@ class ApiService {
   // Set to true for production builds; false routes web through the local CORS proxy.
   // Tapfolio Production API
   static const String productionUrl = 'https://www.tapfolio.me';
+  static const String envApiUrl = String.fromEnvironment('API_URL');
 
   String get baseUrl {
+    if (envApiUrl.isNotEmpty) {
+      return envApiUrl;
+    }
     if (defaultTargetPlatform == TargetPlatform.android) {
       return 'http://192.168.1.2:3000';
     }

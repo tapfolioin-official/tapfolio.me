@@ -3,3 +3,8 @@
 Aurora
 Animated Gradient
 Add button to save selected theam 
+
+
+relese tapfolio :
+               flutter build apk --release \
+  --dart-define=API_URL=https://www.tapfolio.me
