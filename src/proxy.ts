@@ -31,6 +31,12 @@ export async function proxy(request: NextRequest) {
     }
     if (token) {
       request.cookies.set('pertap_jwt', token);
+      const existingCookie = request.headers.get('Cookie');
+      if (existingCookie) {
+        request.headers.set('Cookie', `${existingCookie}; pertap_jwt=${token}`);
+      } else {
+        request.headers.set('Cookie', `pertap_jwt=${token}`);
+      }
     }
   }
 
