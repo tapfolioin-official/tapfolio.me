@@ -1217,12 +1217,6 @@ export default function Dashboard() {
               >
                 Privacy & Sharing
               </button>
-              <button
-                onClick={() => setActiveTab('support')}
-                className={`flex-1 sm:flex-none px-6 py-2.5 text-sm font-semibold rounded-lg transition-all whitespace-nowrap ${activeTab === 'support' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
-              >
-                Support & Feedback
-              </button>
             </div>
 
             {/* OVERVIEW TAB */}
@@ -1336,19 +1330,6 @@ export default function Dashboard() {
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 overflow-x-auto whitespace-nowrap scrollbar-none flex gap-2">
                   {[
                     { id: 'profile', label: 'Profile Info' },
-                    { id: 'presets', label: 'Presets' },
-                    { id: 'colors', label: 'Colors' },
-                    { id: 'background', label: 'Backgrounds' },
-                    { id: 'fonts', label: 'Fonts' },
-                    { id: 'cards', label: 'Cards' },
-                    { id: 'buttons', label: 'Buttons' },
-                    { id: 'layout', label: 'Layout' },
-                    { id: 'avatar', label: 'Avatar & Cover' },
-                    { id: 'sections', label: 'Sections' },
-                    { id: 'socials', label: 'Social Icons' },
-                    { id: 'animations', label: 'Animations' },
-                    { id: 'marketplace', label: 'Marketplace' },
-                    { id: 'advanced', label: 'Advanced & WCAG' }
                   ].map((sub) => (
                     <button
                       key={sub.id}
@@ -1431,25 +1412,24 @@ export default function Dashboard() {
                           🏷️ Profile Tags
                         </h5>
                         <p className="text-xs text-gray-500 mb-4">Add keywords/tags to display on your public profile. For example: roles (e.g. Developer, Designer) or locations.</p>
-                        
+
                         {/* Tags list */}
                         <div className="flex flex-wrap gap-2 mb-4">
                           {tags.map((tag, idx) => (
-                            <span 
-                              key={idx} 
-                              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border ${
-                                tag.type === 'location' 
-                                  ? 'bg-purple-50 text-purple-700 border-purple-100' 
-                                  : 'bg-blue-50 text-blue-700 border-blue-100'
-                              }`}
+                            <span
+                              key={idx}
+                              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border ${tag.type === 'location'
+                                ? 'bg-purple-50 text-purple-700 border-purple-100'
+                                : 'bg-blue-50 text-blue-700 border-blue-100'
+                                }`}
                             >
                               <span className="opacity-60 uppercase text-[9px] tracking-wider font-bold">
                                 {tag.type}
                               </span>
                               <span className="font-bold text-gray-900">{tag.text}</span>
-                              <button 
-                                type="button" 
-                                onClick={() => handleRemoveTag(idx)} 
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveTag(idx)}
                                 className="text-gray-400 hover:text-red-600 font-bold focus:outline-none transition-colors cursor-pointer text-sm"
                               >
                                 &times;
@@ -1463,19 +1443,19 @@ export default function Dashboard() {
 
                         {/* Add tag form */}
                         <div className="flex flex-col sm:flex-row gap-3">
-                          <select 
-                            value={newTagType} 
-                            onChange={(e) => setNewTagType(e.target.value)} 
+                          <select
+                            value={newTagType}
+                            onChange={(e) => setNewTagType(e.target.value)}
                             className="px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 font-semibold outline-none focus:border-blue-500"
                           >
                             <option value="role">Role / Skill</option>
                             <option value="location">Location</option>
                           </select>
-                          <input 
-                            type="text" 
-                            placeholder="Tag text (e.g. Next.js, Austin TX)" 
-                            value={newTagText} 
-                            onChange={(e) => setNewTagText(e.target.value)} 
+                          <input
+                            type="text"
+                            placeholder="Tag text (e.g. Next.js, Austin TX)"
+                            value={newTagText}
+                            onChange={(e) => setNewTagText(e.target.value)}
                             className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 font-semibold outline-none focus:border-blue-500"
                             onKeyDown={(e) => {
                               if (e.key === 'Enter') {
@@ -1484,9 +1464,9 @@ export default function Dashboard() {
                               }
                             }}
                           />
-                          <button 
-                            type="button" 
-                            onClick={handleAddTag} 
+                          <button
+                            type="button"
+                            onClick={handleAddTag}
                             className="px-5 py-2.5 bg-gray-900 hover:bg-gray-800 text-white text-xs font-bold rounded-lg transition-colors cursor-pointer"
                           >
                             Add Tag

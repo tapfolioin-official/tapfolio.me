@@ -18,7 +18,6 @@ export async function GET() {
         ...p,
         score: parseInt(p.diamonds || '0', 10)
       }))
-      .filter((p: any) => p.score >= 60)
       .sort((a: any, b: any) => b.score - a.score);
 
     return NextResponse.json({

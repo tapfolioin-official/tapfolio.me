@@ -109,7 +109,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
               ),
               const SizedBox(height: 4),
               Text(
-                'Discover elite creators and professionals. Premium accounts with a profile score >= 60 qualify.',
+                'Discover elite creators and professionals. All premium accounts are ranked by diamonds.',
                 style: GoogleFonts.outfit(
                   color: Colors.white60,
                   fontSize: 14,
@@ -142,12 +142,12 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                       const Icon(Icons.emoji_events_outlined, size: 60, color: Color(0xFF6366F1)),
                       const SizedBox(height: 16),
                       Text(
-                        'No Qualified Profiles Yet',
+                        'No Premium Profiles Yet',
                         style: GoogleFonts.outfit(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        'Be the first to upgrade your profile and meet all checklist criteria to rank number one!',
+                        'Premium accounts will appear here ranked by their diamond score.',
                         style: GoogleFonts.outfit(color: Colors.white54, fontSize: 13),
                         textAlign: TextAlign.center,
                       ),

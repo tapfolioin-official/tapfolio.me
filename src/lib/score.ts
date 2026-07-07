@@ -62,6 +62,6 @@ export function calculateProfileScore(profile: any) {
   return {
     score,
     items,
-    qualifiesForLeaderboard: score >= 60 // Minimum criteria score is 60
+    qualifiesForLeaderboard: !!profile.isPremium // All premium profiles qualify
   };
 }

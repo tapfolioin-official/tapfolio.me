@@ -62,7 +62,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     _fetchProfile();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       debugPrint('[TRACE-DASHBOARD] postFrameCallback triggered.');
-      _checkForUpdates(silent: true);
       _fetchPendingCount();
       debugPrint('[TRACE-DASHBOARD] postFrameCallback completed.');
     });
@@ -1999,7 +1998,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // ========== MAIN BUILD ==========
   @override
   Widget build(BuildContext context) {
-    debugPrint('[TRACE-DASHBOARD] build() called. _loading = $_loading, _profile = ${_profile != null ? "present" : "null"}');
+    debugPrint(
+      '[TRACE-DASHBOARD] build() called. _loading = $_loading, _profile = ${_profile != null ? "present" : "null"}',
+    );
     if (_loading) {
       return const Center(
         child: CircularProgressIndicator(color: Color(0xFF6366F1)),
@@ -2064,6 +2065,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0F),
+      floatingActionButtonLocation: const _OffsetFABLocation(80),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           setState(() {
@@ -2080,5 +2082,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
       ),
     );
+  }
+}
+
+class _OffsetFABLocation extends FloatingActionButtonLocation {
+  final double offsetY;
+
+  const _OffsetFABLocation(this.offsetY);
+
+  @override
+  Offset getOffset(ScaffoldPrelayoutGeometry scaffoldGeometry) {
+    final Offset standardOffset =
+        FloatingActionButtonLocation.endFloat.getOffset(scaffoldGeometry);
+    return Offset(standardOffset.dx, standardOffset.dy - offsetY);
   }
 }

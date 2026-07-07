@@ -8,6 +8,7 @@ import '../models/pending_request.dart';
 import '../services/api_service.dart';
 import '../widgets/connection_permission_sheet.dart';
 import '../core/utils/color_parser.dart';
+import '../core/utils/image_helper.dart';
 import '../widgets/connection_visibility_sheet.dart';
 
 class ConnectionsScreen extends StatefulWidget {
@@ -200,10 +201,6 @@ class _ConnectionsScreenState extends State<ConnectionsScreen>
   }
 
   Widget _buildRequestCard(PendingRequest req) {
-    final avatarUrl = req.requesterAvatar.startsWith('http')
-        ? req.requesterAvatar
-        : 'https://www.tapfolio.me${req.requesterAvatar}';
-
     return ClipRRect(
       borderRadius: BorderRadius.circular(16),
       child: BackdropFilter(
@@ -222,7 +219,7 @@ class _ConnectionsScreenState extends State<ConnectionsScreen>
                 children: [
                   CircleAvatar(
                     radius: 26,
-                    backgroundImage: NetworkImage(avatarUrl),
+                    backgroundImage: getAvatarImage(req.requesterAvatar, _api.baseUrl),
                     backgroundColor: const Color(0xFF1a1a2e),
                   ),
                   const SizedBox(width: 14),
@@ -367,9 +364,6 @@ class _ConnectionsScreenState extends State<ConnectionsScreen>
 
   Widget _buildConnectionCard(Connection conn) {
     final other = conn.other;
-    final avatarUrl = other.avatar.startsWith('http')
-        ? other.avatar
-        : 'https://www.tapfolio.me${other.avatar}';
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(16),
@@ -386,7 +380,7 @@ class _ConnectionsScreenState extends State<ConnectionsScreen>
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             leading: CircleAvatar(
               radius: 26,
-              backgroundImage: NetworkImage(avatarUrl),
+              backgroundImage: getAvatarImage(other.avatar, _api.baseUrl),
               backgroundColor: const Color(0xFF1a1a2e),
             ),
             title: Text(
@@ -434,8 +428,7 @@ class _ConnectionsScreenState extends State<ConnectionsScreen>
             const SizedBox(height: 20),
             CircleAvatar(
               radius: 40,
-              backgroundImage: NetworkImage(other.avatar.startsWith('http')
-                  ? other.avatar : 'https://www.tapfolio.me${other.avatar}'),
+              backgroundImage: getAvatarImage(other.avatar, _api.baseUrl),
               backgroundColor: const Color(0xFF1a1a2e),
             ),
             const SizedBox(height: 14),

@@ -302,7 +302,7 @@ class ApiService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data != null && data['success'] == true) {
-          final list = data['history'] as List? ?? [];
+          final list = data['events'] as List? ?? [];
           return list.map((h) => HistoryEvent.fromJson(h as Map<String, dynamic>?)).toList();
         }
       }
