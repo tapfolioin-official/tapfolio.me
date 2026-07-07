@@ -32,8 +32,13 @@ class _MainNavigationShellState extends State<MainNavigationShell>
 
   late List<Widget> _screens;
 
+  _MainNavigationShellState() {
+    debugPrint('[TRACE-SHELL] State constructor called.');
+  }
+
   @override
   void initState() {
+    debugPrint('[TRACE-SHELL] initState() started.');
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _screens = [
@@ -43,11 +48,20 @@ class _MainNavigationShellState extends State<MainNavigationShell>
       const ConnectionsScreen(),
       const ProfileViewScreen(),
     ];
+    debugPrint('[TRACE-SHELL] Calling _fetchPendingCount()...');
     _fetchPendingCount();
+    debugPrint('[TRACE-SHELL] Calling _fetchUnreadCount()...');
     _fetchUnreadCount();
+    debugPrint('[TRACE-SHELL] Starting notification polling...');
     _startPolling();
     // Register push notification token on successful load/sign-in
-    PushNotificationService().registerToken();
+    debugPrint('[TRACE-SHELL] Registering PushNotificationService FCM token...');
+    try {
+      PushNotificationService().registerToken();
+    } catch (e, stack) {
+      debugPrint('[EXCEPTION] registerToken in shell initState failed: $e\n$stack');
+    }
+    debugPrint('[TRACE-SHELL] initState() completed.');
   }
 
   @override
@@ -166,6 +180,8 @@ class _MainNavigationShellState extends State<MainNavigationShell>
                 _stopPolling();
                 await _apiService.logout();
                 widget.onLogout();
+              } else if (value == 'diagnostics') {
+                Navigator.of(context).pushNamed('/diagnostics');
               } else if (value == 'delete_account') {
                 Navigator.of(context).push(
                   MaterialPageRoute(
@@ -180,6 +196,16 @@ class _MainNavigationShellState extends State<MainNavigationShell>
               }
             },
             itemBuilder: (context) => [
+              PopupMenuItem(
+                value: 'diagnostics',
+                child: Row(
+                  children: [
+                    const Icon(Icons.analytics_outlined, color: Colors.white70, size: 20),
+                    const SizedBox(width: 12),
+                    Text('Diagnostics', style: GoogleFonts.outfit(color: Colors.white)),
+                  ],
+                ),
+              ),
               PopupMenuItem(
                 value: 'logout',
                 child: Row(

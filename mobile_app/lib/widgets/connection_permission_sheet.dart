@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../models/profile.dart';
+import '../models/connection.dart';
 import '../services/api_service.dart';
 
 class ConnectionPermissionSheet extends StatefulWidget {

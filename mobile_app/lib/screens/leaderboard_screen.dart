@@ -1,7 +1,7 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/profile.dart';
+import '../core/utils/image_helper.dart';
 import '../services/api_service.dart';
 import 'profile_view_screen.dart';
 
@@ -18,10 +18,16 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   bool _loading = true;
   String? _error;
 
+  _LeaderboardScreenState() {
+    debugPrint('[TRACE-LEADERBOARD] State constructor called.');
+  }
+
   @override
   void initState() {
+    debugPrint('[TRACE-LEADERBOARD] initState() started.');
     super.initState();
     _fetchLeaderboard();
+    debugPrint('[TRACE-LEADERBOARD] initState() completed.');
   }
 
   Future<void> _fetchLeaderboard() async {
@@ -81,6 +87,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('[TRACE-LEADERBOARD] build() called.');
     return Scaffold(
       backgroundColor: const Color(0xFF06070D),
       body: RefreshIndicator(
@@ -178,9 +185,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                         CircleAvatar(
                           radius: 24,
                           backgroundColor: Colors.white10,
-                          backgroundImage: profile.avatar.startsWith('data:')
-                              ? MemoryImage(base64Decode(profile.avatar.split(',')[1]))
-                              : NetworkImage('${_apiService.baseUrl}${profile.avatar}') as ImageProvider,
+                          backgroundImage: getAvatarImage(profile.avatar, _apiService.baseUrl),
                         ),
                         const SizedBox(width: 12),
 

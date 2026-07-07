@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../models/connection.dart';
+import '../models/social_link.dart';
 import '../models/profile.dart';
+import '../core/utils/color_parser.dart';
 import '../services/api_service.dart';
 
 class ConnectionVisibilitySheet extends StatefulWidget {
@@ -182,7 +185,7 @@ class _ConnectionVisibilitySheetState extends State<ConnectionVisibilitySheet> {
                     ..._mySocials.map((link) {
                       if (link.id == null) return const SizedBox.shrink();
                       final isShared = _sharedSocialIds.contains(link.id);
-                      final cardColor = Color(int.parse(link.color.replaceFirst('#', '0xFF')));
+                      final cardColor = parseHexColor(link.color);
 
                       return _buildToggle(
                         link.platform,

@@ -1,240 +1,48 @@
 import 'dart:convert';
-import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:package_info_plus/package_info_plus.dart';
+import '../core/api/api_client.dart';
+import '../core/api/api_endpoints.dart';
+import '../core/storage/local_storage.dart';
+import '../models/user.dart';
 import '../models/profile.dart';
+import '../models/checklist_item.dart';
+import '../models/history_event.dart';
+import '../models/connection.dart';
+import '../models/pending_request.dart';
 import '../models/notification.dart';
-import 'client_stub.dart'
-    if (dart.library.html) 'client_web.dart'
-    as platform_client;
 
 class ApiService {
   static final ApiService _instance = ApiService._internal();
   factory ApiService() => _instance;
   ApiService._internal();
 
-  final http.Client _client = platform_client.getClient();
-  String? _jwtToken;
-  VoidCallback? onSessionExpired;
+  final ApiClient _apiClient = ApiClient();
+  final LocalStorage _storage = LocalStorage();
 
-  /// Safely parses JSON response. Returns null if invalid or empty.
-  Map<String, dynamic>? _safeJsonDecode(http.Response response) {
-    final body = response.body.trim();
-    if (body.isEmpty) return null;
-    final ct = response.headers['content-type'] ?? '';
-    if (!ct.contains('application/json') && !ct.contains('text/json')) {
-      debugPrint('[API] Non-JSON content-type: $ct — body prefix: ${body.substring(0, min(200, body.length))}');
-      return null;
-    }
-    try {
-      final decoded = jsonDecode(body);
-      if (decoded is Map<String, dynamic>) {
-        return decoded;
-      }
-      return null;
-    } catch (e) {
-      debugPrint('[API] JSON parse error: $e — body prefix: ${body.substring(0, min(200, body.length))}');
-      return null;
-    }
-  }
-
-  /// Converts technical exceptions into user-friendly error messages.
-  String _friendlyError(dynamic e) {
-    final msg = e.toString();
-    if (msg.contains('SocketException') || msg.contains('Failed host lookup')) {
-      return 'Unable to connect. Please check your internet connection.';
-    }
-    if (msg.contains('TimeoutException') || msg.contains('timeout')) {
-      return 'Connection timed out. Please try again.';
-    }
-    if (msg.contains('HandshakeException') || msg.contains('CERTIFICATE')) {
-      return 'Secure connection failed. Please try again.';
-    }
-    return 'Server temporarily unavailable. Please try again.';
-  }
-
-  // Set to true for production builds; false routes web through the local CORS proxy.
-  // Tapfolio Production API
-  static const String productionUrl = 'https://www.tapfolio.me';
-  static const String envApiUrl = String.fromEnvironment('API_URL');
-
-  String get baseUrl {
-    debugPrint('==============================');
-    debugPrint('API_URL define: $envApiUrl');
-    debugPrint('kDebugMode: $kDebugMode');
-    debugPrint('kIsWeb: $kIsWeb');
-    debugPrint('Base URL selected: ${envApiUrl.isNotEmpty ? envApiUrl : productionUrl}');
-    debugPrint('==============================');
-
-    if (envApiUrl.isNotEmpty) {
-      return envApiUrl;
-    }
-
-    if (kDebugMode) {
-      return 'http://192.168.1.2:3000';
-    }
-
-    return productionUrl;
-  }
+  String get baseUrl => _apiClient.baseUrl;
+  bool get isAuthenticated => _storage.isAuthenticated;
 
   Future<void> init() async {
-    final prefs = await SharedPreferences.getInstance();
-    _jwtToken = prefs.getString('pertap_jwt');
-
-    // For Web, if we successfully logged in before, set a dummy session token
-    if (kIsWeb && _jwtToken == null) {
-      if (prefs.getBool('pertap_logged_in') == true) {
-        _jwtToken = 'web_session';
-      }
-    }
-  }
-
-  bool get isAuthenticated => _jwtToken != null;
-
-  Map<String, String> _getHeaders() {
-    final headers = {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    };
-    if (_jwtToken != null && _jwtToken != 'web_session') {
-      headers['Cookie'] = 'pertap_jwt=$_jwtToken';
-      headers['Authorization'] = 'Bearer $_jwtToken';
-      headers['X-Pertap-Token'] = _jwtToken!;
-    }
-    return headers;
-  }
-
-  // Extract and persist the JWT from any response.
-  // On mobile: reads Set-Cookie header.
-  // On web via proxy: reads the X-Pertap-Token echo header.
-  Future<void> _updateToken(http.Response response) async {
-    String? token;
-
-    // 1. Try to read token from JSON body first (safest for mobile)
-    try {
-      final body = response.body.trim();
-      if (body.isNotEmpty) {
-        final decoded = jsonDecode(body);
-        if (decoded is Map<String, dynamic> && decoded['token'] != null) {
-          token = decoded['token'];
-        }
-      }
-    } catch (_) {}
-
-    // 2. Try the custom proxy echo header (works on web)
-    if (token == null || token.isEmpty) {
-      token = response.headers['x-pertap-token'];
-    }
-
-    // 3. Fall back to parsing Set-Cookie (works on mobile)
-    if (token == null || token.isEmpty) {
-      final rawCookie =
-          response.headers['set-cookie'] ?? response.headers['Set-Cookie'];
-      if (rawCookie != null) {
-        final match = RegExp(r'pertap_jwt=([^;]+)').firstMatch(rawCookie);
-        token = match?.group(1);
-      }
-    }
-
-    if (token != null && token.isNotEmpty) {
-      _jwtToken = token;
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('pertap_jwt', token);
-      if (kIsWeb) {
-        await prefs.setBool('pertap_logged_in', true);
-      }
-      debugPrint('[ApiService] JWT stored (len=${token.length})');
-    } else {
-      debugPrint('[ApiService] Warning: no JWT found in login response');
-    }
-  }
-
-  // Cross-platform helper to send requests with credentials (cookies) enabled
-  Future<http.Response> _sendRequest(
-    String method,
-    Uri url, {
-    bool authenticated = true,
-    Map<String, String>? headers,
-    Object? body,
-  }) async {
-    final startTime = DateTime.now();
-    final request = http.Request(method, url);
-
-    final finalHeaders = authenticated ? _getHeaders() : <String, String>{};
-    if (headers != null) {
-      finalHeaders.addAll(headers);
-    }
-    request.headers.addAll(finalHeaders);
-
-    if (body != null) {
-      if (body is String) {
-        request.body = body;
-      } else if (body is List<int>) {
-        request.bodyBytes = body;
-      } else if (body is Map<String, String>) {
-        request.bodyFields = body;
-      }
-    }
-
-    debugPrint('[API-REQ] ======= START REQUEST =======');
-    debugPrint('[API-REQ] Method: $method');
-    debugPrint('[API-REQ] URL: $url');
-    debugPrint('[API-REQ] Auth State: ${_jwtToken != null ? "Authenticated (Token len=${_jwtToken!.length})" : "Unauthenticated"}');
-    debugPrint('[API-REQ] Request Headers: $finalHeaders');
-    if (body != null) {
-      debugPrint('[API-REQ] Request Body: $body');
-    }
-
-    try {
-      final streamedResponse = await _client.send(request).timeout(const Duration(seconds: 15));
-      final response = await http.Response.fromStream(streamedResponse);
-      final duration = DateTime.now().difference(startTime);
-
-      debugPrint('[API-RESP] URL: $url');
-      debugPrint('[API-RESP] Status Code: ${response.statusCode}');
-      debugPrint('[API-RESP] Response Headers: ${response.headers}');
-      debugPrint('[API-RESP] Response Body: ${response.body}');
-      debugPrint('[API-RESP] Response Time: ${duration.inMilliseconds}ms');
-      debugPrint('[API-REQ] ======= END REQUEST =======');
-
-      return response;
-    } catch (e, stackTrace) {
-      final duration = DateTime.now().difference(startTime);
-      debugPrint('[API-RESP] ERROR: $e');
-      debugPrint('[API-RESP] StackTrace: $stackTrace');
-      debugPrint('[API-RESP] Response Time: ${duration.inMilliseconds}ms');
-      debugPrint('[API-REQ] ======= END REQUEST =======');
-      rethrow;
-    }
+    await _storage.init();
   }
 
   Future<Map<String, dynamic>> login(String email, String password) async {
     try {
-      final url = Uri.parse('$baseUrl/api/auth/login');
-      final response = await _sendRequest(
+      final response = await _apiClient.sendRequest(
         'POST',
-        url,
+        ApiEndpoints.login,
         authenticated: false,
-        headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'email': email, 'password': password}),
       );
 
-      final data = _safeJsonDecode(response);
-      if (data == null) {
-        return {'success': false, 'error': 'Invalid server response.'};
-      }
-      if (response.statusCode == 200 && data['success'] == true) {
-        // On all platforms: try to extract the JWT from the response.
-        // The proxy echoes it in X-Pertap-Token; mobile gets it via Set-Cookie.
-        await _updateToken(response);
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 && data != null && data['success'] == true) {
         return {'success': true, 'user': data['user']};
-      } else {
-        return {'success': false, 'error': data['error'] ?? 'Login failed'};
       }
+      return {'success': false, 'error': data?['error'] ?? 'Login failed.'};
     } catch (e) {
-      return {'success': false, 'error': _friendlyError(e)};
+      return {'success': false, 'error': e.toString()};
     }
   }
 
@@ -245,12 +53,10 @@ class ApiService {
     String password,
   ) async {
     try {
-      final url = Uri.parse('$baseUrl/api/auth/register');
-      final response = await _sendRequest(
+      final response = await _apiClient.sendRequest(
         'POST',
-        url,
+        ApiEndpoints.register,
         authenticated: false,
-        headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'name': name,
           'username': username,
@@ -259,22 +65,13 @@ class ApiService {
         }),
       );
 
-      final data = _safeJsonDecode(response);
-      if (data == null) {
-        return {'success': false, 'error': 'Invalid server response.'};
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 && data != null && data['success'] == true) {
+        return {'success': true, 'user': data['user']};
       }
-      if (response.statusCode == 201 && data['success'] == true) {
-        // Capture the JWT set by the server so subsequent authenticated calls work
-        await _updateToken(response);
-        return {'success': true, 'message': data['message'], 'user': data['user']};
-      } else {
-        return {
-          'success': false,
-          'error': data['error'] ?? 'Registration failed',
-        };
-      }
+      return {'success': false, 'error': data?['error'] ?? 'Registration failed.'};
     } catch (e) {
-      return {'success': false, 'error': _friendlyError(e)};
+      return {'success': false, 'error': e.toString()};
     }
   }
 
@@ -284,150 +81,102 @@ class ApiService {
     String? name,
   }) async {
     try {
-      final url = Uri.parse('$baseUrl/api/auth/google');
-      final response = await _sendRequest(
+      final response = await _apiClient.sendRequest(
         'POST',
-        url,
+        ApiEndpoints.googleLogin,
         authenticated: false,
-        headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'idToken': idToken,
-          'email': email,
-          'name': name,
+          'email': ?email,
+          'displayName': ?name,
         }),
       );
 
-      final data = _safeJsonDecode(response);
-      if (data == null) {
-        return {'success': false, 'error': 'Invalid server response.'};
-      }
-      if (response.statusCode == 200 && data['success'] == true) {
-        await _updateToken(response);
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 && data != null && data['success'] == true) {
         return {'success': true, 'user': data['user']};
-      } else {
-        return {
-          'success': false,
-          'error': data['error'] ?? 'Google login failed',
-        };
       }
+      return {'success': false, 'error': data?['error'] ?? 'Google login failed.'};
     } catch (e) {
-      return {'success': false, 'error': _friendlyError(e)};
+      return {'success': false, 'error': e.toString()};
     }
   }
 
-  Future<Map<String, dynamic>> checkUsernameAvailability(
-    String username,
-  ) async {
+  Future<Map<String, dynamic>> checkUsernameAvailability(String username) async {
     try {
-      final url = Uri.parse(
-        '$baseUrl/api/auth/username-check?username=${Uri.encodeComponent(username)}',
-      );
-      final response = await _sendRequest('GET', url, authenticated: false);
+      final path = '${ApiEndpoints.usernameCheck}?username=${Uri.encodeComponent(username)}';
+      final response = await _apiClient.sendRequest('GET', path, authenticated: false);
 
-      final data = _safeJsonDecode(response);
-      if (data == null) {
-        return {'success': false, 'error': 'Invalid server response.'};
-      }
-      if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 && data != null) {
         return {
           'success': true,
           'available': data['available'] ?? false,
           'suggestions': List<String>.from(data['suggestions'] ?? []),
         };
-      } else {
-        return {
-          'success': false,
-          'error': data['error'] ?? 'Username check failed',
-        };
       }
+      return {'success': false, 'error': data?['error'] ?? 'Username check failed.'};
     } catch (e) {
-      return {'success': false, 'error': _friendlyError(e)};
+      return {'success': false, 'error': e.toString()};
     }
   }
 
-  Future<Map<String, dynamic>> submitOnboarding(
-    Map<String, dynamic> payload,
-  ) async {
+  Future<Map<String, dynamic>> submitOnboarding(Map<String, dynamic> payload) async {
     try {
-      final url = Uri.parse('$baseUrl/api/profile/onboarding');
-      final response = await _sendRequest(
+      final response = await _apiClient.sendRequest(
         'PUT',
-        url,
+        ApiEndpoints.onboarding,
         body: jsonEncode(payload),
       );
 
-      final data = _safeJsonDecode(response);
-      if (data == null) {
-        return {'success': false, 'error': 'Invalid server response.'};
-      }
-      if (response.statusCode == 200 && data['success'] == true) {
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 && data != null && data['success'] == true) {
         return {'success': true};
-      } else {
-        return {
-          'success': false,
-          'error': data['error'] ?? 'Onboarding failed',
-        };
       }
+      return {'success': false, 'error': data?['error'] ?? 'Onboarding failed.'};
     } catch (e) {
-      return {'success': false, 'error': _friendlyError(e)};
+      return {'success': false, 'error': e.toString()};
     }
   }
 
   Future<Map<String, dynamic>> initProfile() async {
     try {
-      final url = Uri.parse('$baseUrl/api/profile/init');
-      final response = await _sendRequest('POST', url);
-
-      final data = _safeJsonDecode(response);
-      if (data == null) {
-        return {'success': false, 'error': 'Invalid server response.'};
-      }
-      if (response.statusCode == 200 && data['success'] == true) {
+      final response = await _apiClient.sendRequest('POST', ApiEndpoints.initProfile);
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 && data != null && data['success'] == true) {
         return {'success': true, 'profile': data['profile']};
-      } else {
-        return {
-          'success': false,
-          'error': data['error'] ?? 'Profile initialization failed',
-        };
       }
+      return {'success': false, 'error': data?['error'] ?? 'Profile init failed.'};
     } catch (e) {
-      return {'success': false, 'error': _friendlyError(e)};
+      return {'success': false, 'error': e.toString()};
     }
   }
 
   Future<void> logout() async {
     try {
-      final url = Uri.parse('$baseUrl/api/auth/logout');
-      await _sendRequest('GET', url).timeout(const Duration(seconds: 5));
+      if (isAuthenticated) {
+        await _apiClient.sendRequest('POST', ApiEndpoints.logout, retryCount: 0);
+      }
     } catch (_) {}
-    _jwtToken = null;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('pertap_jwt');
-    await prefs.remove('pertap_logged_in');
+    await _storage.clearJwtToken();
   }
 
   Future<User?> getMe() async {
     try {
-      final url = Uri.parse('$baseUrl/api/auth/me');
-      final response = await _sendRequest('GET', url);
-
+      final response = await _apiClient.sendRequest('GET', ApiEndpoints.me);
       if (response.statusCode == 200) {
-        final data = _safeJsonDecode(response);
+        final data = jsonDecode(response.body);
         if (data != null && data['success'] == true && data['user'] != null) {
-          return User.fromJson(data['user']);
+          return User.fromJson(data['user'] as Map<String, dynamic>?);
         }
       }
     } catch (e, stackTrace) {
-      debugPrint('getMe error: $e');
-      debugPrint('getMe StackTrace: $stackTrace');
+      debugPrint('[EXCEPTION] getMe error: $e\n$stackTrace');
     }
     return null;
   }
 
-  Future<Map<String, dynamic>?> getProfile({
-    int? userId,
-    int? profileId,
-  }) async {
+  Future<Map<String, dynamic>?> getProfile({int? userId, int? profileId}) async {
     try {
       String query = '';
       if (userId != null) {
@@ -435,19 +184,16 @@ class ApiService {
       } else if (profileId != null) {
         query = '?profileId=$profileId';
       }
-      final url = Uri.parse('$baseUrl/api/profile$query');
-      final response = await _sendRequest('GET', url);
 
+      final response = await _apiClient.sendRequest('GET', '${ApiEndpoints.profile}$query');
       if (response.statusCode == 200) {
-        final data = _safeJsonDecode(response);
+        final data = jsonDecode(response.body);
         if (data != null && data['success'] == true) {
-          final profile = Profile.fromJson(data['profile']);
+          final profile = Profile.fromJson(data['profile'] as Map<String, dynamic>?);
           final score = data['score'] as int? ?? 0;
           final qualifies = data['qualifiesForLeaderboard'] as bool? ?? false;
-          var itemsList = data['items'] as List? ?? [];
-          final checklist = itemsList
-              .map((i) => ChecklistItem.fromJson(i))
-              .toList();
+          final itemsList = data['items'] as List? ?? [];
+          final checklist = itemsList.map((i) => ChecklistItem.fromJson(i as Map<String, dynamic>?)).toList();
 
           return {
             'profile': profile,
@@ -458,35 +204,26 @@ class ApiService {
         }
       }
     } catch (e, stackTrace) {
-      debugPrint('getProfile error: $e');
-      debugPrint('getProfile StackTrace: $stackTrace');
+      debugPrint('[EXCEPTION] getProfile error: $e\n$stackTrace');
     }
     return null;
   }
 
-  Future<Map<String, dynamic>> updateProfile(
-    Map<String, dynamic> updateData,
-  ) async {
+  Future<Map<String, dynamic>> updateProfile(Map<String, dynamic> updateData) async {
     try {
-      final url = Uri.parse('$baseUrl/api/profile');
-      final response = await _sendRequest(
+      final response = await _apiClient.sendRequest(
         'PUT',
-        url,
+        ApiEndpoints.profile,
         body: jsonEncode(updateData),
       );
 
-      final data = _safeJsonDecode(response);
-      if (data == null) {
-        return {'success': false, 'error': 'Invalid server response.'};
-      }
-      if (response.statusCode == 200 && data['success'] == true) {
-        final profile = Profile.fromJson(data['profile']);
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 && data != null && data['success'] == true) {
+        final profile = Profile.fromJson(data['profile'] as Map<String, dynamic>?);
         final score = data['score'] as int? ?? 0;
         final qualifies = data['qualifiesForLeaderboard'] as bool? ?? false;
-        var itemsList = data['items'] as List? ?? [];
-        final checklist = itemsList
-            .map((i) => ChecklistItem.fromJson(i))
-            .toList();
+        final itemsList = data['items'] as List? ?? [];
+        final checklist = itemsList.map((i) => ChecklistItem.fromJson(i as Map<String, dynamic>?)).toList();
 
         return {
           'success': true,
@@ -495,453 +232,376 @@ class ApiService {
           'qualifiesForLeaderboard': qualifies,
           'checklist': checklist,
         };
-      } else {
-        return {'success': false, 'error': data['error'] ?? 'Update failed'};
       }
+      return {'success': false, 'error': data?['error'] ?? 'Profile update failed.'};
     } catch (e) {
-      return {'success': false, 'error': _friendlyError(e)};
+      return {'success': false, 'error': e.toString()};
     }
   }
 
-  Future<Map<String, dynamic>> uploadAvatar(
-    String base64Image,
-    String mimeType,
-  ) async {
+  Future<Map<String, dynamic>> uploadAvatar(String base64Image, String mimeType) async {
     try {
-      final url = Uri.parse('$baseUrl/api/upload');
-
-      var request = http.MultipartRequest('POST', url);
-      request.headers.addAll(_getHeaders());
+      final url = Uri.parse('$baseUrl${ApiEndpoints.upload}');
+      final request = http.MultipartRequest('POST', url);
+      
+      final headers = <String, String>{};
+      final token = _storage.jwtToken;
+      if (token != null && token.isNotEmpty) {
+        headers['Cookie'] = 'pertap_jwt=$token';
+        headers['Authorization'] = 'Bearer $token';
+        headers['X-Pertap-Token'] = token;
+      }
+      request.headers.addAll(headers);
 
       final bytes = base64Decode(base64Image);
       request.files.add(
         http.MultipartFile.fromBytes('file', bytes, filename: 'avatar.png'),
       );
 
-      final streamedResponse = await _client.send(request);
+      final streamedResponse = await request.send();
       final response = await http.Response.fromStream(streamedResponse);
 
-      final data = _safeJsonDecode(response);
-      if (data == null) {
-        return {'success': false, 'error': 'Invalid server response.'};
-      }
-      if (response.statusCode == 200 && data['success'] == true) {
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 && data != null && data['success'] == true) {
         return {'success': true, 'url': data['url']};
-      } else {
-        return {'success': false, 'error': data['error'] ?? 'Upload failed'};
       }
+      return {'success': false, 'error': data?['error'] ?? 'Avatar upload failed.'};
     } catch (e) {
-      return {'success': false, 'error': _friendlyError(e)};
+      return {'success': false, 'error': e.toString()};
     }
   }
 
-  Future<Map<String, dynamic>> tapProfile(int profileId) async {
+  Future<Map<String, dynamic>> tapProfile(int otherProfileId, String via) async {
     try {
-      final url = Uri.parse('$baseUrl/api/profile/tap');
-      final response = await _sendRequest(
+      final response = await _apiClient.sendRequest(
         'POST',
-        url,
-        authenticated: false,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'profileId': profileId}),
+        ApiEndpoints.tap,
+        body: jsonEncode({
+          'otherProfileId': otherProfileId,
+          'via': via,
+        }),
       );
 
-      final data = _safeJsonDecode(response);
-      if (data == null) {
-        return {'success': false, 'error': 'Invalid server response.'};
-      }
-      if (response.statusCode == 200 && data['success'] == true) {
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 && data != null) {
         return {
-          'success': true,
-          'profile': Profile.fromJson(data['profile']),
-          'score': data['score'],
+          'success': data['success'] ?? false,
+          'diamonds': data['diamonds']?.toString() ?? '0',
+          'score': data['score'] as int? ?? 0,
         };
-      } else {
-        return {'success': false, 'error': data['error'] ?? 'Tap failed'};
       }
+      return {'success': false, 'error': data?['error'] ?? 'Tap profile failed.'};
     } catch (e) {
-      return {'success': false, 'error': _friendlyError(e)};
+      return {'success': false, 'error': e.toString()};
     }
   }
 
   Future<List<HistoryEvent>> getHistory() async {
     try {
-      final url = Uri.parse('$baseUrl/api/history');
-      final response = await _sendRequest('GET', url);
-
+      final response = await _apiClient.sendRequest('GET', ApiEndpoints.history);
       if (response.statusCode == 200) {
-        final data = _safeJsonDecode(response);
-        if (data != null && data['success'] == true && data['events'] != null) {
-          var eventsList = data['events'] as List;
-          return eventsList.map((e) => HistoryEvent.fromJson(e)).toList();
+        final data = jsonDecode(response.body);
+        if (data != null && data['success'] == true) {
+          final list = data['history'] as List? ?? [];
+          return list.map((h) => HistoryEvent.fromJson(h as Map<String, dynamic>?)).toList();
         }
       }
-    } catch (e) {
-      debugPrint('getHistory error: $e');
+    } catch (e, stackTrace) {
+      debugPrint('[EXCEPTION] getHistory error: $e\n$stackTrace');
     }
     return [];
   }
 
   Future<List<Profile>> getLeaderboard() async {
     try {
-      final url = Uri.parse('$baseUrl/api/leaderboard');
-      final response = await _sendRequest('GET', url);
-
+      final response = await _apiClient.sendRequest('GET', ApiEndpoints.leaderboard);
       if (response.statusCode == 200) {
-        final data = _safeJsonDecode(response);
-        if (data != null && data['success'] == true && data['leaderboard'] != null) {
-          var leaderboardList = data['leaderboard'] as List;
-          return leaderboardList.map((p) => Profile.fromJson(p)).toList();
+        final data = jsonDecode(response.body);
+        if (data != null && data['success'] == true) {
+          final list = data['leaderboard'] as List? ?? [];
+          return list.map((p) => Profile.fromJson(p as Map<String, dynamic>?)).toList();
         }
       }
-    } catch (e) {
-      debugPrint('getLeaderboard error: $e');
+    } catch (e, stackTrace) {
+      debugPrint('[EXCEPTION] getLeaderboard error: $e\n$stackTrace');
     }
     return [];
   }
 
   Future<Map<String, dynamic>?> checkLatestVersion() async {
     try {
-      final url = Uri.parse('$baseUrl/api/version');
-      final response = await _client.get(url).timeout(const Duration(seconds: 5));
-
+      final response = await _apiClient.sendRequest('GET', ApiEndpoints.version, authenticated: false);
       if (response.statusCode == 200) {
-        final data = _safeJsonDecode(response);
+        final data = jsonDecode(response.body);
         if (data != null && data['success'] == true) {
-          final serverBuild = data['buildNumber'] as int;
-
-          final packageInfo = await PackageInfo.fromPlatform();
-          final localBuildStr = packageInfo.buildNumber;
-          final localBuild = int.tryParse(localBuildStr) ?? 0;
-
-          if (serverBuild > localBuild) {
-            return {
-              'versionName': data['versionName'],
-              'buildNumber': serverBuild,
-              'forceUpdate': data['forceUpdate'] ?? false,
-              'downloadUrl': data['downloadUrl'],
-              'changelog': data['changelog'] ?? [],
-            };
-          }
+          return data;
         }
       }
-    } catch (e) {
-      debugPrint('checkLatestVersion error: $e');
+    } catch (e, stackTrace) {
+      debugPrint('[EXCEPTION] checkLatestVersion error: $e\n$stackTrace');
     }
     return null;
   }
 
-  // ──────────────────────────────────────────────
-  // Connection APIs
-  // ──────────────────────────────────────────────
-
   Future<Map<String, dynamic>?> lookupUser(String username) async {
     try {
-      final url = Uri.parse(
-        '$baseUrl/api/connections/lookup?username=${Uri.encodeComponent(username)}',
-      );
-      final response = await _sendRequest('GET', url);
+      final path = '${ApiEndpoints.lookup}?username=${Uri.encodeComponent(username)}';
+      final response = await _apiClient.sendRequest('GET', path);
       if (response.statusCode == 200) {
-        final data = _safeJsonDecode(response);
-        if (data != null && data['success'] == true) return data;
-      } else if (response.statusCode == 401) {
-        return {'success': false, 'error': 'Session expired', 'statusCode': 401};
+        final data = jsonDecode(response.body);
+        if (data != null && data['success'] == true) {
+          return {
+            'profile': Profile.fromJson(data['profile'] as Map<String, dynamic>?),
+            'status': data['status'],
+          };
+        }
       }
-    } catch (e) {
-      debugPrint('lookupUser error: $e');
+    } catch (e, stackTrace) {
+      debugPrint('[EXCEPTION] lookupUser error: $e\n$stackTrace');
     }
     return null;
   }
 
   Future<Map<String, dynamic>> sendConnectionRequest(
-    String receiverUsername, {
-    String via = 'nfc',
+    String targetUsername, {
+    required String via,
   }) async {
     try {
-      final url = Uri.parse('$baseUrl/api/connections/request');
-      final response = await _sendRequest(
+      final response = await _apiClient.sendRequest(
         'POST',
-        url,
-        body: jsonEncode({'receiverUsername': receiverUsername, 'via': via}),
+        ApiEndpoints.connectionRequest,
+        body: jsonEncode({
+          'receiverUsername': targetUsername,
+          'via': via,
+        }),
       );
-      final data = _safeJsonDecode(response);
-      if (data == null) {
-        return {'success': false, 'error': 'Invalid server response.', 'statusCode': 500};
+
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 && data != null) {
+        return {
+          'success': data['success'] ?? false,
+          'status': data['status'],
+          'connectionId': data['connectionId'],
+        };
       }
-      if (response.statusCode == 200 && data['success'] == true) {
-        return {'success': true};
-      }
-      return {
-        'success': false,
-        'error': data['error'] ?? 'Request failed',
-        'status': data['status'],
-        'statusCode': response.statusCode,
-      };
+      return {'success': false, 'error': data?['error'] ?? 'Connection request failed.'};
     } catch (e) {
-      return {'success': false, 'error': _friendlyError(e), 'statusCode': 503};
+      return {'success': false, 'error': e.toString()};
     }
+  }
+
+  Future<Map<String, dynamic>> acceptRequest(int requestId, [ConnectionPermissionData? settings]) async {
+    return acceptConnection(requestId, settings);
+  }
+
+  Future<Map<String, dynamic>> rejectRequest(int requestId) async {
+    return rejectConnection(requestId);
   }
 
   Future<List<PendingRequest>> getPendingRequests() async {
     try {
-      final url = Uri.parse('$baseUrl/api/connections/requests');
-      final response = await _sendRequest('GET', url);
+      final response = await _apiClient.sendRequest('GET', ApiEndpoints.connectionRequests);
       if (response.statusCode == 200) {
-        final data = _safeJsonDecode(response);
+        final data = jsonDecode(response.body);
         if (data != null && data['success'] == true) {
           final list = data['requests'] as List? ?? [];
-          return list.map((r) => PendingRequest.fromJson(r)).toList();
+          return list.map((i) => PendingRequest.fromJson(i as Map<String, dynamic>?)).toList();
         }
       }
-    } catch (e) {
-      debugPrint('getPendingRequests error: $e');
-    }
+    } catch (_) {}
     return [];
   }
 
-  Future<Map<String, dynamic>> acceptRequest(int connectionId) async {
+  Future<Map<String, dynamic>> acceptConnection(int requestId, [ConnectionPermissionData? settings]) async {
     try {
-      final url = Uri.parse('$baseUrl/api/connections/accept');
-      final response = await _sendRequest(
+      final response = await _apiClient.sendRequest(
         'POST',
-        url,
-        body: jsonEncode({'connectionId': connectionId}),
+        ApiEndpoints.connectionAccept,
+        body: jsonEncode({
+          'requestId': requestId,
+          'settings': (settings ?? ConnectionPermissionData()).toJson(),
+        }),
       );
-      final data = _safeJsonDecode(response);
-      if (data == null) {
-        return {'success': false, 'error': 'Invalid server response.'};
-      }
-      if (response.statusCode == 200 && data['success'] == true) {
+
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 && data != null && data['success'] == true) {
         return {'success': true};
       }
-      return {'success': false, 'error': data['error'] ?? 'Accept failed'};
+      return {'success': false, 'error': data?['error'] ?? 'Accept request failed.'};
     } catch (e) {
-      return {'success': false, 'error': _friendlyError(e)};
+      return {'success': false, 'error': e.toString()};
     }
   }
 
-  Future<Map<String, dynamic>> rejectRequest(int connectionId) async {
+  Future<Map<String, dynamic>> rejectConnection(int requestId) async {
     try {
-      final url = Uri.parse('$baseUrl/api/connections/reject');
-      final response = await _sendRequest(
+      final response = await _apiClient.sendRequest(
         'POST',
-        url,
-        body: jsonEncode({'connectionId': connectionId}),
+        ApiEndpoints.connectionReject,
+        body: jsonEncode({'requestId': requestId}),
       );
-      final data = _safeJsonDecode(response);
-      if (data == null) {
-        return {'success': false, 'error': 'Invalid server response.'};
-      }
-      if (response.statusCode == 200 && data['success'] == true) {
+
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 && data != null && data['success'] == true) {
         return {'success': true};
       }
-      return {'success': false, 'error': data['error'] ?? 'Reject failed'};
+      return {'success': false, 'error': data?['error'] ?? 'Reject request failed.'};
     } catch (e) {
-      return {'success': false, 'error': _friendlyError(e)};
+      return {'success': false, 'error': e.toString()};
     }
   }
 
   Future<List<Connection>> getConnections() async {
     try {
-      final url = Uri.parse('$baseUrl/api/connections');
-      final response = await _sendRequest('GET', url);
+      final response = await _apiClient.sendRequest('GET', ApiEndpoints.connections);
       if (response.statusCode == 200) {
-        final data = _safeJsonDecode(response);
+        final data = jsonDecode(response.body);
         if (data != null && data['success'] == true) {
           final list = data['connections'] as List? ?? [];
-          return list.map((c) => Connection.fromJson(c)).toList();
+          return list.map((c) => Connection.fromJson(c as Map<String, dynamic>?)).toList();
         }
       }
-    } catch (e) {
-      debugPrint('getConnections error: $e');
-    }
+    } catch (_) {}
     return [];
   }
 
   Future<ConnectionPermissionData?> getSharingSettings() async {
     try {
-      final url = Uri.parse('$baseUrl/api/connections/settings');
-      final response = await _sendRequest('GET', url);
+      final response = await _apiClient.sendRequest('GET', ApiEndpoints.connectionSettings);
       if (response.statusCode == 200) {
-        final data = _safeJsonDecode(response);
-        if (data != null && data['success'] == true && data['settings'] != null) {
-          return ConnectionPermissionData.fromJson(data['settings']);
+        final data = jsonDecode(response.body);
+        if (data != null && data['success'] == true) {
+          return ConnectionPermissionData.fromJson(data['settings'] as Map<String, dynamic>?);
         }
       }
-    } catch (e) {
-      debugPrint('getSharingSettings error: $e');
-    }
+    } catch (_) {}
     return null;
   }
 
-  Future<Map<String, dynamic>> updateSharingSettings(
-    ConnectionPermissionData settings,
-  ) async {
+  Future<Map<String, dynamic>> saveSharingSettings(ConnectionPermissionData settings) async {
     try {
-      final url = Uri.parse('$baseUrl/api/connections/settings');
-      final response = await _sendRequest(
+      final response = await _apiClient.sendRequest(
         'PUT',
-        url,
-        body: jsonEncode(settings.toJson()),
+        ApiEndpoints.connectionSettings,
+        body: jsonEncode({'settings': settings.toJson()}),
       );
-      final data = _safeJsonDecode(response);
-      if (data == null) {
-        return {'success': false, 'error': 'Invalid server response.'};
-      }
-      if (response.statusCode == 200 && data['success'] == true) {
+
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 && data != null && data['success'] == true) {
         return {
           'success': true,
-          'settings': ConnectionPermissionData.fromJson(data['settings']),
+          'settings': ConnectionPermissionData.fromJson(data['settings'] as Map<String, dynamic>?),
         };
       }
-      return {'success': false, 'error': data['error'] ?? 'Update failed'};
+      return {'success': false, 'error': data?['error'] ?? 'Save settings failed.'};
     } catch (e) {
-      return {'success': false, 'error': _friendlyError(e)};
+      return {'success': false, 'error': e.toString()};
     }
   }
 
-  Future<Map<String, dynamic>> updateConnectionVisibility(
-    int connectionId,
-    ConnectionPermissionData settings,
-  ) async {
+  Future<Map<String, dynamic>> updateSharingSettings(ConnectionPermissionData settings) async {
+    return saveSharingSettings(settings);
+  }
+
+  Future<Map<String, dynamic>> updateConnectionVisibility(int connectionId, ConnectionPermissionData settings) async {
     try {
-      final url = Uri.parse('$baseUrl/api/connections/visibility');
-      final response = await _sendRequest(
+      final response = await _apiClient.sendRequest(
         'POST',
-        url,
-        body: jsonEncode({'connectionId': connectionId, ...settings.toJson()}),
+        ApiEndpoints.connectionVisibility,
+        body: jsonEncode({
+          'connectionId': connectionId,
+          ...settings.toJson(),
+        }),
       );
-      final data = _safeJsonDecode(response);
-      if (data == null) {
-        return {'success': false, 'error': 'Invalid server response.'};
-      }
-      if (response.statusCode == 200 && data['success'] == true) {
+
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 && data != null && data['success'] == true) {
         return {'success': true};
       }
-      return {'success': false, 'error': data['error'] ?? 'Update failed'};
+      return {'success': false, 'error': data?['error'] ?? 'Visibility update failed.'};
     } catch (e) {
-      return {'success': false, 'error': _friendlyError(e)};
+      return {'success': false, 'error': e.toString()};
     }
   }
 
-  // ──────────────────────────────────────────────
-  // Account Deletion (required by Google Play)
-  // ──────────────────────────────────────────────
-
-  /// Permanently deletes the user's account and all associated data.
-  /// After calling this, clear local storage and navigate to login.
   Future<Map<String, dynamic>> deleteAccount() async {
     try {
-      final url = Uri.parse('$baseUrl/api/auth/me');
-      final response = await _sendRequest('DELETE', url);
-
-      final data = _safeJsonDecode(response);
-      if (data == null) {
-        return {'success': false, 'error': 'Invalid server response.'};
-      }
-      if (response.statusCode == 200 && data['success'] == true) {
-        // Clear local credentials
-        _jwtToken = null;
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.clear();
+      final response = await _apiClient.sendRequest('DELETE', ApiEndpoints.me);
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 && data != null && data['success'] == true) {
+        await _storage.clearJwtToken();
         return {'success': true};
-      } else {
-        return {
-          'success': false,
-          'error': data['error'] ?? 'Account deletion failed',
-        };
       }
+      return {'success': false, 'error': data?['error'] ?? 'Account deletion failed.'};
     } catch (e) {
-      return {'success': false, 'error': _friendlyError(e)};
+      return {'success': false, 'error': e.toString()};
     }
   }
-  // ──────────────────────────────────────────────
-  // Notification APIs
-  // ──────────────────────────────────────────────
 
   Future<List<AppNotification>> getNotifications({bool unreadOnly = false}) async {
     try {
       final query = unreadOnly ? '?unread=true' : '';
-      final url = Uri.parse('$baseUrl/api/notifications$query');
-      final response = await _sendRequest('GET', url);
+      final response = await _apiClient.sendRequest('GET', '${ApiEndpoints.notifications}$query');
       if (response.statusCode == 200) {
-        final data = _safeJsonDecode(response);
+        final data = jsonDecode(response.body);
         if (data != null && data['success'] == true && data['notifications'] != null) {
           final list = data['notifications'] as List? ?? [];
-          return list.map((n) => AppNotification.fromJson(n)).toList();
+          return list.map((n) => AppNotification.fromJson(n as Map<String, dynamic>)).toList();
         }
       }
-    } catch (e) {
-      debugPrint('[ApiService] getNotifications error: $e');
-    }
+    } catch (_) {}
     return [];
   }
 
   Future<int> getUnreadNotificationCount() async {
     try {
-      final url = Uri.parse('$baseUrl/api/notifications/unread-count');
-      final response = await _sendRequest('GET', url);
+      final response = await _apiClient.sendRequest('GET', ApiEndpoints.unreadNotificationCount);
       if (response.statusCode == 200) {
-        final data = _safeJsonDecode(response);
+        final data = jsonDecode(response.body);
         if (data != null && data['success'] == true && data['count'] != null) {
-          return data['count'] as int;
+          return data['count'] as int? ?? 0;
         }
       }
-    } catch (e) {
-      debugPrint('[ApiService] getUnreadNotificationCount error: $e');
-    }
+    } catch (_) {}
     return 0;
   }
 
   Future<void> markNotificationRead(int id) async {
     try {
-      final url = Uri.parse('$baseUrl/api/notifications/read');
-      await _sendRequest('POST', url, body: jsonEncode({'id': id}));
-    } catch (e) {
-      debugPrint('[ApiService] markNotificationRead error: $e');
-    }
+      await _apiClient.sendRequest('POST', ApiEndpoints.readNotification, body: jsonEncode({'id': id}));
+    } catch (_) {}
   }
 
   Future<void> markAllNotificationsRead() async {
     try {
-      final url = Uri.parse('$baseUrl/api/notifications/read');
-      await _sendRequest('POST', url, body: jsonEncode({'all': true}));
-    } catch (e) {
-      debugPrint('[ApiService] markAllNotificationsRead error: $e');
-    }
+      await _apiClient.sendRequest('POST', ApiEndpoints.readNotification, body: jsonEncode({'all': true}));
+    } catch (_) {}
   }
 
   Future<void> deleteNotification(int id) async {
     try {
-      final url = Uri.parse('$baseUrl/api/notifications/$id');
-      await _sendRequest('DELETE', url);
-    } catch (e) {
-      debugPrint('[ApiService] deleteNotification error: $e');
-    }
+      await _apiClient.sendRequest('DELETE', '${ApiEndpoints.notifications}/$id');
+    } catch (_) {}
   }
 
   Future<Map<String, dynamic>> registerFcmToken(String fcmToken) async {
     try {
-      final url = Uri.parse('$baseUrl/api/notifications/register-token');
-      final response = await _sendRequest(
+      final response = await _apiClient.sendRequest(
         'POST',
-        url,
+        ApiEndpoints.fcmRegisterToken,
         body: jsonEncode({
           'fcmToken': fcmToken,
           'deviceType': defaultTargetPlatform == TargetPlatform.iOS ? 'ios' : 'android',
         }),
       );
 
-      final data = _safeJsonDecode(response);
-      if (data == null) {
-        return {'success': false, 'error': 'Invalid server response.'};
-      }
-      if (response.statusCode == 200 && data['success'] == true) {
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 && data != null && data['success'] == true) {
         return {'success': true};
       }
-      return {'success': false, 'error': data['error'] ?? 'Token registration failed'};
+      return {'success': false, 'error': data?['error'] ?? 'Token registration failed.'};
     } catch (e) {
-      return {'success': false, 'error': _friendlyError(e)};
+      return {'success': false, 'error': e.toString()};
     }
   }
 }

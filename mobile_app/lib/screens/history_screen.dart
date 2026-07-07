@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../models/profile.dart';
+import '../models/history_event.dart';
+import '../core/utils/color_parser.dart';
 import '../services/api_service.dart';
 
 class HistoryScreen extends StatefulWidget {
@@ -16,10 +17,16 @@ class _HistoryScreenState extends State<HistoryScreen> {
   bool _loading = true;
   String? _error;
 
+  _HistoryScreenState() {
+    debugPrint('[TRACE-HISTORY] State constructor called.');
+  }
+
   @override
   void initState() {
+    debugPrint('[TRACE-HISTORY] initState() started.');
     super.initState();
     _fetchHistory();
+    debugPrint('[TRACE-HISTORY] initState() completed.');
   }
 
   Future<void> _fetchHistory() async {
@@ -64,18 +71,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   Color _getEventColor(String? colorStr) {
-    if (colorStr == null) return const Color(0xFF6366F1);
-    if (colorStr.startsWith('var(')) return const Color(0xFF6366F1); // fallback for CSS vars
-    try {
-      if (colorStr.startsWith('#')) {
-        return Color(int.parse(colorStr.replaceFirst('#', '0xFF')));
-      }
-    } catch (_) {}
-    return const Color(0xFF6366F1);
+    return parseHexColor(colorStr);
   }
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('[TRACE-HISTORY] build() called.');
     return Scaffold(
       backgroundColor: const Color(0xFF06070D),
       body: RefreshIndicator(

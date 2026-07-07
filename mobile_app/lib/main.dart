@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'services/api_service.dart';
@@ -9,6 +10,7 @@ import 'screens/main_navigation_shell.dart';
 import 'screens/connect_screen.dart';
 import 'screens/connections_screen.dart';
 import 'screens/public_profile_screen.dart';
+import 'screens/diagnostics/diagnostics_screen.dart';
  
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
  
@@ -75,17 +77,20 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _checkInitialAuth() async {
+    debugPrint('[TRACE] _checkInitialAuth() started.');
     try {
       // Short-circuit: if no JWT is stored, we're definitely not authenticated
       if (!_apiService.isAuthenticated) {
-        debugPrint('[AUTH] No stored JWT — skipping getMe, showing login.');
+        debugPrint('[TRACE] _checkInitialAuth: No stored JWT — skipping getMe, showing login.');
         setState(() {
           _isAuthenticated = false;
           _checkingAuth = false;
         });
       } else {
+        debugPrint('[TRACE] _checkInitialAuth: JWT present, validating via getMe.');
         // Validate the stored JWT against the server
         final user = await _apiService.getMe();
+        debugPrint('[TRACE] _checkInitialAuth: getMe user result = ${user?.email}');
         if (mounted) {
           setState(() {
             _isAuthenticated = user != null;
@@ -93,13 +98,14 @@ class _MyAppState extends State<MyApp> {
           });
         }
         if (user != null) {
+          debugPrint('[TRACE] _checkInitialAuth: Valid user session found, calling registerToken.');
           PushNotificationService().registerToken();
         } else {
-          debugPrint('[AUTH] getMe returned null — JWT may be expired.');
+          debugPrint('[TRACE] _checkInitialAuth: getMe returned null — JWT may be expired.');
         }
       }
-    } catch (e) {
-      debugPrint('[AUTH] Initial check error: $e');
+    } catch (e, stack) {
+      debugPrint('[EXCEPTION] Initial check error: $e\n$stack');
       if (mounted) {
         setState(() {
           _isAuthenticated = false;
@@ -114,12 +120,14 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _handleLoginSuccess() {
+    debugPrint('[TRACE] _handleLoginSuccess() triggered. Rebuilding to show MainNavigationShell.');
     setState(() {
       _isAuthenticated = true;
     });
   }
 
   void _handleLogout() {
+    debugPrint('[TRACE] _handleLogout() triggered. Rebuilding to show LoginScreen.');
     setState(() {
       _isAuthenticated = false;
     });
@@ -178,12 +186,9 @@ class _MyAppState extends State<MyApp> {
             ),
           );
         }
-        // '/' — dashboard entry
-        if (settings.name == '/') {
+        if (settings.name == '/diagnostics') {
           return MaterialPageRoute(
-            builder: (_) => MainNavigationShell(
-              onLogout: _handleLogout,
-            ),
+            builder: (_) => const DiagnosticsScreen(),
           );
         }
         return null;

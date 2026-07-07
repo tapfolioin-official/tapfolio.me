@@ -17,7 +17,7 @@ class PushNotificationService {
   factory PushNotificationService() => _instance;
   PushNotificationService._internal();
 
-  final FirebaseMessaging _fcm = FirebaseMessaging.instance;
+  FirebaseMessaging get _fcm => FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
   final ApiService _apiService = ApiService();
 

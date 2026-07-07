@@ -1,3 +1,5 @@
+import '../core/utils/safe_cast.dart';
+
 class NotificationSender {
   final int id;
   final String name;
@@ -48,11 +50,11 @@ class AppNotification {
       type: json['type'] ?? 'system',
       title: json['title'] ?? '',
       message: json['message'] ?? '',
-      data: (json['data'] as Map<String, dynamic>?) ?? {},
+      data: asMap(json['data']) ?? {},
       isRead: json['isRead'] ?? false,
       createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
       sender: json['sender'] != null
-          ? NotificationSender.fromJson(json['sender'])
+          ? NotificationSender.fromJson(asMap(json['sender']) ?? {})
           : null,
     );
   }

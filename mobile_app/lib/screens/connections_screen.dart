@@ -3,9 +3,11 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../models/profile.dart';
+import '../models/connection.dart';
+import '../models/pending_request.dart';
 import '../services/api_service.dart';
 import '../widgets/connection_permission_sheet.dart';
+import '../core/utils/color_parser.dart';
 import '../widgets/connection_visibility_sheet.dart';
 
 class ConnectionsScreen extends StatefulWidget {
@@ -27,8 +29,13 @@ class _ConnectionsScreenState extends State<ConnectionsScreen>
 
   Timer? _refreshTimer;
 
+  _ConnectionsScreenState() {
+    debugPrint('[TRACE-CONNECTIONS] State constructor called.');
+  }
+
   @override
   void initState() {
+    debugPrint('[TRACE-CONNECTIONS] initState() started.');
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _refresh();
@@ -37,6 +44,7 @@ class _ConnectionsScreenState extends State<ConnectionsScreen>
     _refreshTimer = Timer.periodic(const Duration(seconds: 15), (_) {
       _silentRefresh();
     });
+    debugPrint('[TRACE-CONNECTIONS] initState() completed.');
   }
 
   @override
@@ -110,6 +118,7 @@ class _ConnectionsScreenState extends State<ConnectionsScreen>
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('[TRACE-CONNECTIONS] build() called.');
     return Scaffold(
       backgroundColor: const Color(0xFF06070D),
       appBar: AppBar(
@@ -456,7 +465,7 @@ class _ConnectionsScreenState extends State<ConnectionsScreen>
                 runSpacing: 8,
                 alignment: WrapAlignment.start,
                 children: other.socials.map((link) {
-                  final cardColor = Color(int.parse(link.color.replaceFirst('#', '0xFF')));
+                  final cardColor = parseHexColor(link.color);
                   return InkWell(
                     onTap: () => launchUrl(Uri.parse(link.url), mode: LaunchMode.externalApplication),
                     borderRadius: BorderRadius.circular(12),

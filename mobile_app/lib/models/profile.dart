@@ -1,36 +1,6 @@
 import 'package:flutter/foundation.dart';
-
-class User {
-  final int id;
-  final String name;
-  final String email;
-  final Profile? profile;
-
-  User({
-    required this.id,
-    required this.name,
-    required this.email,
-    this.profile,
-  });
-
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      id: json['id'],
-      name: json['name'],
-      email: json['email'],
-      profile: json['profile'] != null ? Profile.fromJson(json['profile']) : null,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'email': email,
-      'profile': profile?.toJson(),
-    };
-  }
-}
+import 'tag.dart';
+import 'social_link.dart';
 
 class Profile {
   final int id;
@@ -71,71 +41,49 @@ class Profile {
     debugPrint('[PROFILE-CONSTRUCTOR-BODY] Successfully entered constructor body!');
   }
 
-  factory Profile.fromJson(Map<String, dynamic> json) {
-    debugPrint('[JSON-DECODE-PROFILE] raw input JSON: $json');
-    var tagsList = json['tags'] as List? ?? [];
-    var socialsList = json['socials'] as List? ?? [];
-
-    try {
-      final idVal = json['id'];
-      final userIdVal = json['userId'];
-      final nameVal = json['name'] ?? '';
-      final usernameVal = json['username'] ?? '';
-      final taglineVal = json['tagline'] ?? '';
-      final avatarVal = json['avatar'] ?? '';
-      final bioVal = json['bio'] ?? '';
-      final phoneVal = json['phone'];
-      final whatsappVal = json['whatsapp'];
-      final locationVal = json['location'];
-      final diamondsVal = json['diamonds'] ?? '0';
-      final tapCountVal = json['tapCount'] ?? 0;
-
-      final dynamic rawIsOnline = json['isOnline'];
-      final dynamic rawIsPremium = json['isPremium'];
-
-      final bool isOnlineVal = (rawIsOnline is bool) ? rawIsOnline : false;
-      final bool isPremiumVal = (rawIsPremium is bool) ? rawIsPremium : false;
-
-      debugPrint('[DEBUG-PROFILE] id: $idVal (${idVal?.runtimeType})');
-      debugPrint('[DEBUG-PROFILE] userId: $userIdVal (${userIdVal?.runtimeType})');
-      debugPrint('[DEBUG-PROFILE] name: $nameVal (${nameVal.runtimeType})');
-      debugPrint('[DEBUG-PROFILE] username: $usernameVal (${usernameVal.runtimeType})');
-      debugPrint('[DEBUG-PROFILE] tagline: $taglineVal (${taglineVal.runtimeType})');
-      debugPrint('[DEBUG-PROFILE] avatar: $avatarVal (${avatarVal.runtimeType})');
-      debugPrint('[DEBUG-PROFILE] bio: $bioVal (${bioVal.runtimeType})');
-      debugPrint('[DEBUG-PROFILE] phone: $phoneVal (${phoneVal?.runtimeType})');
-      debugPrint('[DEBUG-PROFILE] whatsapp: $whatsappVal (${whatsappVal?.runtimeType})');
-      debugPrint('[DEBUG-PROFILE] location: $locationVal (${locationVal?.runtimeType})');
-      debugPrint('[DEBUG-PROFILE] diamonds: $diamondsVal (${diamondsVal.runtimeType})');
-      debugPrint('[DEBUG-PROFILE] isOnlineVal: $isOnlineVal');
-      debugPrint('[DEBUG-PROFILE] isPremiumVal: $isPremiumVal');
-      debugPrint('[DEBUG-PROFILE] tapCountVal: $tapCountVal (${tapCountVal.runtimeType})');
-
-      final profileInstance = Profile(
-        id: idVal,
-        userId: userIdVal,
-        name: nameVal,
-        username: usernameVal,
-        tagline: taglineVal,
-        avatar: avatarVal,
-        isOnline: isOnlineVal,
-        bio: bioVal,
-        phone: phoneVal,
-        whatsapp: whatsappVal,
-        location: locationVal,
-        diamonds: diamondsVal,
-        isPremium: isPremiumVal,
-        tapCount: tapCountVal,
-        tags: tagsList.map((i) => Tag.fromJson(i)).toList(),
-        socials: socialsList.map((i) => SocialLink.fromJson(i)).toList(),
+  factory Profile.fromJson(Map<String, dynamic>? json) {
+    if (json == null) {
+      return Profile(
+        id: 0,
+        userId: 0,
+        name: '',
+        username: '',
+        tagline: "Let's connect!",
+        avatar: '/profile_avatar.png',
+        isOnline: true,
+        bio: 'I design meaningful experiences.',
+        diamonds: '0',
+        isPremium: false,
+        tapCount: 0,
+        tags: const [],
+        socials: const [],
       );
-      debugPrint('[DEBUG-PROFILE] Successfully constructed Profile instance!');
-      return profileInstance;
-    } catch (e, stackTrace) {
-      debugPrint('[JSON-DECODE-PROFILE] Constructor parsing failed: $e');
-      debugPrint('[JSON-DECODE-PROFILE] StackTrace: $stackTrace');
-      rethrow;
     }
+
+    final tagsList = json['tags'] as List? ?? [];
+    final socialsList = json['socials'] as List? ?? [];
+
+    final rawIsOnline = json['isOnline'];
+    final rawIsPremium = json['isPremium'];
+
+    return Profile(
+      id: json['id'] as int? ?? 0,
+      userId: json['userId'] as int? ?? 0,
+      name: json['name'] as String? ?? '',
+      username: json['username'] as String? ?? '',
+      tagline: json['tagline'] as String? ?? "Let's connect!",
+      avatar: json['avatar'] as String? ?? '/profile_avatar.png',
+      isOnline: (rawIsOnline is bool) ? rawIsOnline : true,
+      bio: json['bio'] as String? ?? 'I design meaningful experiences.',
+      phone: json['phone'] as String?,
+      whatsapp: json['whatsapp'] as String?,
+      location: json['location'] as String?,
+      diamonds: json['diamonds'] as String? ?? '0',
+      isPremium: (rawIsPremium is bool) ? rawIsPremium : false,
+      tapCount: json['tapCount'] as int? ?? 0,
+      tags: tagsList.map((i) => Tag.fromJson(i as Map<String, dynamic>?)).toList(),
+      socials: socialsList.map((i) => SocialLink.fromJson(i as Map<String, dynamic>?)).toList(),
+    );
   }
 
   Map<String, dynamic> toJson() {
@@ -157,295 +105,5 @@ class Profile {
       'tags': tags.map((i) => i.toJson()).toList(),
       'socials': socials.map((i) => i.toJson()).toList(),
     };
-  }
-}
-
-class Tag {
-  final int? id;
-  final String text;
-  final String type; // "role" | "location"
-
-  Tag({
-    this.id,
-    required this.text,
-    required this.type,
-  });
-
-  factory Tag.fromJson(Map<String, dynamic> json) {
-    return Tag(
-      id: json['id'],
-      text: json['text'] ?? '',
-      type: json['type'] ?? 'role',
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      if (id != null) 'id': id,
-      'text': text,
-      'type': type,
-    };
-  }
-}
-
-class SocialLink {
-  final int? id;
-  final String platform;
-  final String handle;
-  final String url;
-  final String icon;
-  final String color;
-
-  SocialLink({
-    this.id,
-    required this.platform,
-    required this.handle,
-    required this.url,
-    required this.icon,
-    required this.color,
-  });
-
-  factory SocialLink.fromJson(Map<String, dynamic> json) {
-    return SocialLink(
-      id: json['id'],
-      platform: json['platform'] ?? '',
-      handle: json['handle'] ?? '',
-      url: json['url'] ?? '',
-      icon: json['icon'] ?? '',
-      color: json['color'] ?? '',
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      if (id != null) 'id': id,
-      'platform': platform,
-      'handle': handle,
-      'url': url,
-      'icon': icon,
-      'color': color,
-    };
-  }
-}
-
-class HistoryEvent {
-  final int id;
-  final String action;
-  final String details;
-  final String? icon;
-  final String? color;
-  final String createdAt;
-
-  HistoryEvent({
-    required this.id,
-    required this.action,
-    required this.details,
-    this.icon,
-    this.color,
-    required this.createdAt,
-  });
-
-  factory HistoryEvent.fromJson(Map<String, dynamic> json) {
-    return HistoryEvent(
-      id: json['id'],
-      action: json['action'] ?? '',
-      details: json['details'] ?? '',
-      icon: json['icon'],
-      color: json['color'],
-      createdAt: json['createdAt'] ?? '',
-    );
-  }
-}
-
-class ChecklistItem {
-  final String id;
-  final String label;
-  final int points;
-  final bool completed;
-  final String description;
-
-  ChecklistItem({
-    required this.id,
-    required this.label,
-    required this.points,
-    required this.completed,
-    required this.description,
-  });
-
-  factory ChecklistItem.fromJson(Map<String, dynamic> json) {
-    return ChecklistItem(
-      id: json['id'] ?? '',
-      label: json['label'] ?? '',
-      points: json['points'] ?? 0,
-      completed: json['completed'] ?? false,
-      description: json['description'] ?? '',
-    );
-  }
-}
-
-class ConnectionPermissionData {
-  final bool shareName;
-  final bool shareEmail;
-  final bool sharePhone;
-  final bool shareWhatsapp;
-  final bool shareLocation;
-  final List<int> sharedSocialIds;
-
-  ConnectionPermissionData({
-    this.shareName = true,
-    this.shareEmail = true,
-    this.sharePhone = false,
-    this.shareWhatsapp = true,
-    this.shareLocation = false,
-    this.sharedSocialIds = const [],
-  });
-
-  factory ConnectionPermissionData.fromJson(Map<String, dynamic> json) {
-    var socialIdsList = json['sharedSocialIds'] as List? ?? [];
-    return ConnectionPermissionData(
-      shareName: json['shareName'] ?? true,
-      shareEmail: json['shareEmail'] ?? true,
-      sharePhone: json['sharePhone'] ?? false,
-      shareWhatsapp: json['shareWhatsapp'] ?? true,
-      shareLocation: json['shareLocation'] ?? false,
-      sharedSocialIds: socialIdsList.map((id) => id as int).toList(),
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-        'shareName': shareName,
-        'shareEmail': shareEmail,
-        'sharePhone': sharePhone,
-        'shareWhatsapp': shareWhatsapp,
-        'shareLocation': shareLocation,
-        'sharedSocialIds': sharedSocialIds,
-      };
-}
-
-class ConnectionOther {
-  final int userId;
-  final String? name;
-  final String avatar;
-  final String tagline;
-  final String? email;
-  final String? phone;
-  final String? whatsapp;
-  final String? location;
-  final int? profileId;
-  final List<Tag> tags;
-  final List<SocialLink> socials;
-
-  ConnectionOther({
-    required this.userId,
-    this.name,
-    required this.avatar,
-    required this.tagline,
-    this.email,
-    this.phone,
-    this.whatsapp,
-    this.location,
-    this.profileId,
-    required this.tags,
-    required this.socials,
-  });
-
-  factory ConnectionOther.fromJson(Map<String, dynamic> json) {
-    var tagsList = json['tags'] as List? ?? [];
-    var socialsList = json['socials'] as List? ?? [];
-    return ConnectionOther(
-      userId: json['userId'],
-      name: json['name'],
-      avatar: json['avatar'] ?? '/profile_avatar.png',
-      tagline: json['tagline'] ?? '',
-      email: json['email'],
-      phone: json['phone'],
-      whatsapp: json['whatsapp'],
-      location: json['location'],
-      profileId: json['profileId'],
-      tags: tagsList.map((t) => Tag.fromJson(t)).toList(),
-      socials: socialsList.map((s) => SocialLink.fromJson(s)).toList(),
-    );
-  }
-}
-
-class Connection {
-  final int id;
-  final String via;
-  final DateTime connectedAt;
-  final ConnectionOther other;
-  final ConnectionPermissionData? permissions;
-  final ConnectionPermissionData? myPermissions;
-
-  Connection({
-    required this.id,
-    required this.via,
-    required this.connectedAt,
-    required this.other,
-    this.permissions,
-    this.myPermissions,
-  });
-
-  factory Connection.fromJson(Map<String, dynamic> json) {
-    return Connection(
-      id: json['id'],
-      via: json['via'] ?? 'link',
-      connectedAt: DateTime.tryParse(json['connectedAt'] ?? '') ?? DateTime.now(),
-      other: ConnectionOther.fromJson(json['other']),
-      permissions: json['permissions'] != null
-          ? ConnectionPermissionData.fromJson(json['permissions'])
-          : null,
-      myPermissions: json['myPermissions'] != null
-          ? ConnectionPermissionData.fromJson(json['myPermissions'])
-          : null,
-    );
-  }
-}
-
-class PendingRequest {
-  final int id;
-  final String via;
-  final DateTime createdAt;
-  final int requesterUserId;
-  final String requesterName;
-  final String requesterAvatar;
-  final String requesterTagline;
-  final int? requesterProfileId;
-  final String requesterDiamonds;
-  final int requesterConnectionCount;
-  final int requesterTapCount;
-  final List<Tag> requesterTags;
-
-  PendingRequest({
-    required this.id,
-    required this.via,
-    required this.createdAt,
-    required this.requesterUserId,
-    required this.requesterName,
-    required this.requesterAvatar,
-    required this.requesterTagline,
-    this.requesterProfileId,
-    required this.requesterDiamonds,
-    required this.requesterConnectionCount,
-    required this.requesterTapCount,
-    required this.requesterTags,
-  });
-
-  factory PendingRequest.fromJson(Map<String, dynamic> json) {
-    final r = json['requester'] as Map<String, dynamic>;
-    var tagsList = r['tags'] as List? ?? [];
-    return PendingRequest(
-      id: json['id'],
-      via: json['via'] ?? 'link',
-      createdAt: DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now(),
-      requesterUserId: r['userId'],
-      requesterName: r['name'] ?? '',
-      requesterAvatar: r['avatar'] ?? '/profile_avatar.png',
-      requesterTagline: r['tagline'] ?? '',
-      requesterProfileId: r['profileId'],
-      requesterDiamonds: r['diamonds'] ?? '0',
-      requesterConnectionCount: r['connectionCount'] ?? 0,
-      requesterTapCount: r['tapCount'] ?? 0,
-      requesterTags: tagsList.map((t) => Tag.fromJson(t)).toList(),
-    );
   }
 }

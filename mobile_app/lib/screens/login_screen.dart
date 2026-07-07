@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import '../core/storage/local_storage.dart';
 import '../services/api_service.dart';
 import 'register_screen.dart';
 
@@ -34,14 +35,47 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  // Helper to log key session details upon successful login
+  void _logAuthSuccess() {
+    try {
+      final token = LocalStorage().jwtToken ?? '';
+      debugPrint('[TRACE-AUTH] Login successful details:');
+      debugPrint('[TRACE-AUTH] - Base URL: ${_apiService.baseUrl}');
+      debugPrint('[TRACE-AUTH] - JWT length: ${token.length}');
+      debugPrint('[TRACE-AUTH] - Cookie header structure: pertap_jwt=${token.length > 10 ? token.substring(0, 10) + "..." : token}');
+    } catch (e) {
+      debugPrint('[TRACE-AUTH] Error printing success log: $e');
+    }
+  }
+
   // Idempotent login resolver: runs initProfile in background before triggering success
   Future<void> _handlePostLogin() async {
-    await _apiService.initProfile();
-    widget.onLoginSuccess();
+    debugPrint('[TRACE-AUTH] _handlePostLogin() started.');
+    try {
+      // Trace profile initialization
+      debugPrint('[TRACE-AUTH] Calling _apiService.initProfile()...');
+      final result = await _apiService.initProfile();
+      debugPrint('[TRACE-AUTH] initProfile response: $result');
+
+      // Trace session verification
+      debugPrint('[TRACE-AUTH] Calling _apiService.getMe()...');
+      final user = await _apiService.getMe();
+      debugPrint('[TRACE-AUTH] getMe verification: ${user != null ? "Success (${user.email})" : "Failed"}');
+    } catch (e, stack) {
+      debugPrint('[EXCEPTION] _handlePostLogin setup failed: $e\n$stack');
+    } finally {
+      if (mounted) {
+        debugPrint('[TRACE-AUTH] Navigation trigger: calling widget.onLoginSuccess().');
+        widget.onLoginSuccess();
+      } else {
+        debugPrint('[TRACE-AUTH] Navigation skipped: LoginScreen widget is unmounted.');
+      }
+    }
   }
 
   // Handle native Google Sign-In with development mock fallback
   Future<void> _handleGoogleSignIn() async {
+    debugPrint('[TRACE-AUTH] _handleGoogleSignIn() pressed.');
     setState(() {
       _isLoading = true;
       _errorMessage = null;
@@ -50,36 +84,42 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       final GoogleSignInAccount? account = await _googleSignIn.signIn();
       if (account != null) {
+        debugPrint('[TRACE-AUTH] Google Sign-In account selected: ${account.email}');
         final GoogleSignInAuthentication auth = await account.authentication;
+        debugPrint('[TRACE-AUTH] Sending Google Login API request...');
         final res = await _apiService.googleLogin(
           auth.idToken ?? 'mock_token',
           email: account.email,
           name: account.displayName,
         );
 
+        debugPrint('[TRACE-AUTH] Google Login API response: $res');
         if (res['success'] == true) {
+          _logAuthSuccess();
           await _handlePostLogin();
         } else {
           setState(() {
+            _isLoading = false;
             _errorMessage = res['error'];
           });
         }
       } else {
-        // User cancelled
+        debugPrint('[TRACE-AUTH] Google Sign-In cancelled by user.');
         setState(() {
           _isLoading = false;
         });
       }
-    } catch (e) {
+    } catch (e, stack) {
       setState(() {
         _isLoading = false;
-        _errorMessage = 'Google Sign-In failed. Please try again.';
+        _errorMessage = 'Google Sign-In failed: ${e.toString()}';
       });
-      debugPrint('Google Sign-In Error: $e');
+      debugPrint('[EXCEPTION] Google Sign-In Error: $e\n$stack');
     }
   }
 
   Future<void> _handleEmailLogin() async {
+    debugPrint('[TRACE-AUTH] _handleEmailLogin() pressed.');
     if (!_formKey.currentState!.validate()) return;
 
     setState(() {
@@ -87,18 +127,29 @@ class _LoginScreenState extends State<LoginScreen> {
       _errorMessage = null;
     });
 
-    final res = await _apiService.login(
-      _emailController.text.trim(),
-      _passwordController.text,
-    );
+    try {
+      debugPrint('[TRACE-AUTH] Sending Email Login API request for: ${_emailController.text.trim()}');
+      final res = await _apiService.login(
+        _emailController.text.trim(),
+        _passwordController.text,
+      );
 
-    if (res['success'] == true) {
-      await _handlePostLogin();
-    } else {
+      debugPrint('[TRACE-AUTH] Email Login API response: $res');
+      if (res['success'] == true) {
+        _logAuthSuccess();
+        await _handlePostLogin();
+      } else {
+        setState(() {
+          _isLoading = false;
+          _errorMessage = res['error'];
+        });
+      }
+    } catch (e, stack) {
       setState(() {
         _isLoading = false;
-        _errorMessage = res['error'];
+        _errorMessage = 'Email login failed: ${e.toString()}';
       });
+      debugPrint('[EXCEPTION] Email Login Error: $e\n$stack');
     }
   }
 

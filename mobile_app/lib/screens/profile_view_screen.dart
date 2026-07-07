@@ -1,7 +1,8 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/profile.dart';
+import '../core/utils/color_parser.dart';
+import '../core/utils/image_helper.dart';
 import '../services/api_service.dart';
 
 class ProfileViewScreen extends StatefulWidget {
@@ -25,13 +26,19 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
   bool _connected = false;
   String? _connectionStatus;
 
+  _ProfileViewScreenState() {
+    debugPrint('[TRACE-PROFILEVIEW] State constructor called.');
+  }
+
   @override
   void initState() {
+    debugPrint('[TRACE-PROFILEVIEW] initState() started.');
     super.initState();
     _userId = widget.userId;
     if (_userId != null) {
       _loadProfile(_userId!);
     }
+    debugPrint('[TRACE-PROFILEVIEW] initState() completed.');
   }
 
   @override
@@ -109,6 +116,7 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('[TRACE-PROFILEVIEW] build() called.');
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -182,10 +190,7 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
                 // Header (Avatar, name, tagline)
                 CircleAvatar(
                   radius: 50,
-                  backgroundColor: Colors.white10,
-                  backgroundImage: _profile!.avatar.startsWith('data:')
-                      ? MemoryImage(base64Decode(_profile!.avatar.split(',')[1]))
-                      : NetworkImage('${_apiService.baseUrl}${_profile!.avatar}') as ImageProvider,
+                  backgroundImage: getAvatarImage(_profile!.avatar, _apiService.baseUrl),
                 ),
                 const SizedBox(height: 16),
                 Text(
@@ -314,7 +319,7 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
                   ),
                   const SizedBox(height: 12),
                   ..._profile!.socials.map((link) {
-                    final cardColor = Color(int.parse(link.color.replaceFirst('#', '0xFF')));
+                    final cardColor = parseHexColor(link.color);
                     return Container(
                       margin: const EdgeInsets.only(bottom: 12),
                       padding: const EdgeInsets.all(16),

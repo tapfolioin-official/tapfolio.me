@@ -5,7 +5,10 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../models/profile.dart';
+import '../models/user.dart';
+import '../models/tag.dart';
+import '../models/social_link.dart';
+import '../core/utils/color_parser.dart';
 import '../services/api_service.dart';
 
 /// Public-facing profile screen shown when an NFC card is tapped.
@@ -712,13 +715,7 @@ class _PublicProfileScreenState extends State<PublicProfileScreen>
   }
 
   Widget _buildSocialRow(SocialLink social) {
-    Color platformColor;
-    try {
-      platformColor =
-          Color(int.parse(social.color.replaceFirst('#', '0xFF')));
-    } catch (_) {
-      platformColor = const Color(0xFF6366f1);
-    }
+    Color platformColor = parseHexColor(social.color);
 
     return GestureDetector(
       onTap: () async {

@@ -6,6 +6,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../models/profile.dart';
+import '../models/tag.dart';
+import '../models/social_link.dart';
+import '../models/checklist_item.dart';
+import '../core/utils/color_parser.dart';
+import '../core/utils/image_helper.dart';
 import '../services/api_service.dart';
 import '../widgets/image_crop_dialog.dart';
 
@@ -45,14 +50,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final _socialHandleController = TextEditingController();
   final _socialUrlController = TextEditingController();
 
+  _DashboardScreenState() {
+    debugPrint('[TRACE-DASHBOARD] State constructor called.');
+  }
+
   @override
   void initState() {
+    debugPrint('[TRACE-DASHBOARD] initState() started.');
     super.initState();
+    debugPrint('[TRACE-DASHBOARD] Calling _fetchProfile()...');
     _fetchProfile();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      debugPrint('[TRACE-DASHBOARD] postFrameCallback triggered.');
       _checkForUpdates(silent: true);
       _fetchPendingCount();
+      debugPrint('[TRACE-DASHBOARD] postFrameCallback completed.');
     });
+    debugPrint('[TRACE-DASHBOARD] initState() completed.');
   }
 
   Future<void> _fetchPendingCount() async {
@@ -192,7 +206,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                 ),
                 onPressed: () async {
-                  final uri = Uri.parse(downloadUrl);
+                  final String fullDownloadUrl = downloadUrl.startsWith('/')
+                      ? '${_apiService.baseUrl}$downloadUrl'
+                      : downloadUrl;
+                  final uri = Uri.parse(fullDownloadUrl);
                   if (await canLaunchUrl(uri)) {
                     await launchUrl(uri, mode: LaunchMode.externalApplication);
                   } else {
@@ -200,7 +217,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
-                          'Could not open download link: $downloadUrl',
+                          'Could not open download link: $fullDownloadUrl',
                         ),
                       ),
                     );
@@ -603,7 +620,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.05),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.1),
+                    ),
                   ),
                   child: Row(
                     children: [
@@ -730,10 +749,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // ========== NEW PROFILE CARD BUILDER ==========
   Widget _buildProfileCard() {
     final profile = _profile!;
-    final avatarUrl = profile.avatar.startsWith('data:')
-        ? MemoryImage(base64Decode(profile.avatar.split(',')[1]))
-        : NetworkImage('${_apiService.baseUrl}${profile.avatar}')
-              as ImageProvider;
+    final avatarUrl = getAvatarImage(profile.avatar, _apiService.baseUrl);
 
     // Separate role tags, location tags, and other tags
     final roleTags = profile.tags.where((t) => t.type == 'role').toList();
@@ -1069,10 +1085,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
         child: Row(
           children: [
-            _buildSocialIcon(
-              social.icon,
-              Color(int.parse(social.color.replaceFirst('#', '0xFF'))),
-            ),
+            _buildSocialIcon(social.icon, parseHexColor(social.color)),
             const SizedBox(width: 12),
             Text(
               social.handle.isNotEmpty ? social.handle : social.url,
@@ -1178,11 +1191,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
               child: Row(
                 children: [
-                  const Icon(
-                    Icons.people,
-                    color: Color(0xFF6366F1),
-                    size: 24,
-                  ),
+                  const Icon(Icons.people, color: Color(0xFF6366F1), size: 24),
                   const SizedBox(width: 14),
                   Expanded(
                     child: Column(
@@ -1485,14 +1494,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   CircleAvatar(
                     radius: 50,
                     backgroundColor: Colors.white10,
-                    backgroundImage: profile.avatar.startsWith('data:')
-                        ? MemoryImage(
-                            base64Decode(profile.avatar.split(',')[1]),
-                          )
-                        : NetworkImage(
-                                '${_apiService.baseUrl}${profile.avatar}',
-                              )
-                              as ImageProvider,
+                    backgroundImage: getAvatarImage(
+                      profile.avatar,
+                      _apiService.baseUrl,
+                    ),
                   ),
                   Positioned(
                     bottom: 0,
@@ -1576,7 +1581,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.04),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.08),
+                      ),
                     ),
                     child: TextField(
                       controller: _tagController,
@@ -1599,7 +1606,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.04),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.08),
+                    ),
                   ),
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
@@ -1708,7 +1717,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.04),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.08),
+                    ),
                   ),
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
@@ -1769,7 +1780,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.04),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.08),
+                      ),
                     ),
                     child: TextField(
                       controller: _socialHandleController,
@@ -1796,7 +1809,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.04),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.08),
+                      ),
                     ),
                     child: TextField(
                       controller: _socialUrlController,
@@ -1827,9 +1842,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             const SizedBox(height: 16),
             ...List.generate(profile.socials.length, (idx) {
               final link = profile.socials[idx];
-              final cardColor = Color(
-                int.parse(link.color.replaceFirst('#', '0xFF')),
-              );
+              final cardColor = parseHexColor(link.color);
               return Container(
                 margin: const EdgeInsets.only(bottom: 8),
                 padding: const EdgeInsets.symmetric(
@@ -1986,6 +1999,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // ========== MAIN BUILD ==========
   @override
   Widget build(BuildContext context) {
+    debugPrint('[TRACE-DASHBOARD] build() called. _loading = $_loading, _profile = ${_profile != null ? "present" : "null"}');
     if (_loading) {
       return const Center(
         child: CircularProgressIndicator(color: Color(0xFF6366F1)),
@@ -2032,7 +2046,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF6366F1),
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
