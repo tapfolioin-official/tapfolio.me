@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Script from 'next/script';
+import { ROUTES } from '@/config/routes';
 import styles from './page.module.css';
 
 // Preset avatar options
@@ -144,7 +145,7 @@ export default function RegisterPage() {
     localStorage.removeItem('pendingIntent');
     sessionStorage.removeItem('auth_intent');
 
-    router.push('/dashboard');
+    router.push(ROUTES.DASHBOARD);
     router.refresh();
   };
 
@@ -163,9 +164,9 @@ export default function RegisterPage() {
       if (!res.ok) throw new Error(data.error || 'Google Signup failed.');
 
       if (data.user && !data.user.profileReady) {
-        router.push('/onboarding');
+        router.push(ROUTES.ONBOARDING);
       } else {
-        router.push('/dashboard');
+        router.push(ROUTES.DASHBOARD);
       }
     } catch (err: any) {
       setError(err.message || 'Google Sign-In failed.');
@@ -227,9 +228,9 @@ export default function RegisterPage() {
       
       setSuccess('Registered successfully with Google!');
       if (data.user && !data.user.profileReady) {
-        router.push('/onboarding');
+        router.push(ROUTES.ONBOARDING);
       } else {
-        router.push('/dashboard');
+        router.push(ROUTES.DASHBOARD);
       }
     } catch (err: any) {
       setError(err.message || 'Google Auth failed.');

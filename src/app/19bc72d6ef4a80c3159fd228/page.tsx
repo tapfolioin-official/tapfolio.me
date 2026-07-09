@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { ROUTES } from '@/config/routes';
 import styles from './page.module.css';
 
 export default function OnboardingPage() {
@@ -49,14 +50,14 @@ export default function OnboardingPage() {
       try {
         const res = await fetch('/api/profile');
         if (!res.ok) {
-          router.push('/login');
+          router.push(ROUTES.LOGIN);
           return;
         }
         const data = await res.json();
         if (data.success && data.profile) {
           // If already completed onboarding, go directly to dashboard
           if (data.profile.user?.profileReady) {
-            router.push('/dashboard');
+            router.push(ROUTES.DASHBOARD);
             return;
           }
           setName(data.profile.name || '');
@@ -66,7 +67,7 @@ export default function OnboardingPage() {
         }
       } catch (err) {
         console.error('Failed to load profile details:', err);
-        router.push('/login');
+        router.push(ROUTES.LOGIN);
       } finally {
         setLoading(false);
       }
@@ -247,7 +248,7 @@ export default function OnboardingPage() {
       if (!res.ok) throw new Error(data.error || 'Failed to finalize profile.');
 
       setSuccess('Welcome to Tapfolio! Redirecting...');
-      router.push('/dashboard');
+      router.push(ROUTES.DASHBOARD);
       router.refresh();
     } catch (err: any) {
       setError(err.message || 'Something went wrong. Please try again.');

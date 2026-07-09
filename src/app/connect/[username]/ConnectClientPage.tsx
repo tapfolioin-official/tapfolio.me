@@ -13,6 +13,7 @@ interface ConnectClientPageProps {
     avatar: string;
     isPremium: boolean;
     tagline: string;
+    portfolioUrl?: string;
   };
   isLoggedIn: boolean;
   previewTheme?: any; // For live preview panel in dashboard
@@ -501,10 +502,18 @@ export default function ConnectClientPage({
         );
 
       case 'portfolio':
+        const targetPortfolio = profile.portfolioUrl || activeProfileData?.portfolioUrl || '';
+        const isStaticTemplate = username === 'abhinand' || username === 'nibras';
+        const finalPortfolioUrl = targetPortfolio || (isStaticTemplate ? `/portfolio/${username}` : '');
+        
+        if (!finalPortfolioUrl) return null;
+
         return (
           <div className={styles.accordionRow} key="portfolio">
             <a
-              href={`/portfolio/${username}`}
+              href={finalPortfolioUrl}
+              target={finalPortfolioUrl.startsWith('http') ? '_blank' : undefined}
+              rel={finalPortfolioUrl.startsWith('http') ? 'noopener noreferrer' : undefined}
               className="flex items-center justify-between w-full p-4 font-semibold text-sm hover:bg-gray-50/5 transition-colors no-underline text-[var(--theme-text,#111827)]"
             >
               <span>View Interactive Portfolio Showcase</span>

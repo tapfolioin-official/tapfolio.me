@@ -20,7 +20,8 @@ export default async function ConnectRedirectPage({
       avatar: true,
       tagline: true,
       userId: true,
-      isPremium: true,   // <-- this was missing
+      isPremium: true,
+      portfolioUrl: true,
     },
   });
 
@@ -51,6 +52,7 @@ export default async function ConnectRedirectPage({
           avatar: profile.avatar,
           isPremium: profile.isPremium ?? false,
           tagline: profile.tagline ?? '',
+          portfolioUrl: profile.portfolioUrl ?? '',
         }}
         isLoggedIn={loggedInUser !== null}
       />

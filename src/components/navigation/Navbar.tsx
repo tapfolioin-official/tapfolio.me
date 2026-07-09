@@ -2,6 +2,7 @@
 
 import React from "react";
 import { ChevronRight } from "lucide-react";
+import { ROUTES } from "@/config/routes";
 
 export default function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
@@ -104,14 +105,14 @@ export default function Navbar() {
         
         {isLoggedIn ? (
           <a
-            href="/dashboard"
+            href={ROUTES.DASHBOARD}
             className="inline-flex items-center justify-center px-6 h-[50px] bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 transition-all cursor-pointer shadow-md text-sm"
           >
             Dashboard
           </a>
         ) : (
           <a
-            href="/login"
+            href={ROUTES.LOGIN}
             className="inline-flex items-center justify-center px-6 h-[50px] bg-gray-900 text-white font-semibold rounded-full hover:bg-blue-600 transition-all cursor-pointer shadow-md text-sm"
           >
             Login to Dashboard

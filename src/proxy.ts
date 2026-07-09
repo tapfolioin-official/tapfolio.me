@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { verifyJWT } from './lib/auth';
+import { ROUTES } from './config/routes';
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -51,23 +52,24 @@ export async function proxy(request: NextRequest) {
   }
 
   // 3. Handle protected routes redirects
-  const isAuthRoute = pathname.startsWith('/login') || pathname.startsWith('/register');
+  const isAuthRoute = pathname.startsWith(ROUTES.LOGIN) || pathname.startsWith(ROUTES.REGISTER);
   const isProtectedRoute = 
-    pathname.startsWith('/dashboard') || 
-    pathname.startsWith('/history') || 
-    pathname.startsWith('/leaderboard') || 
-    pathname.startsWith('/onboarding') ||
-    pathname.startsWith('/admin');
+    pathname.startsWith(ROUTES.DASHBOARD) || 
+    pathname.startsWith(ROUTES.HISTORY) || 
+    pathname.startsWith(ROUTES.LEADERBOARD) || 
+    pathname.startsWith(ROUTES.ONBOARDING) ||
+    pathname.startsWith('/admin') ||
+    pathname.startsWith(ROUTES.CONNECTIONS); // Added connections to protection map explicitly just in case
 
   if (isProtectedRoute) {
     if (!token) {
-      const loginUrl = new URL('/login', request.url);
+      const loginUrl = new URL(ROUTES.LOGIN, request.url);
       loginUrl.searchParams.set('redirect', pathname);
       return NextResponse.redirect(loginUrl);
     }
     const payload = await verifyJWT(token);
     if (!payload) {
-      const response = NextResponse.redirect(new URL('/login', request.url));
+      const response = NextResponse.redirect(new URL(ROUTES.LOGIN, request.url));
       response.cookies.delete('pertap_jwt');
       return response;
     }
@@ -75,7 +77,7 @@ export async function proxy(request: NextRequest) {
     // Role-based authorization for administrative console paths
     if (pathname.startsWith('/admin') && payload.email !== 'nibrasulhaqqamini@gmail.com') {
       console.warn(`[PROXY] Access denied to /admin for user: ${payload.email}`);
-      return NextResponse.redirect(new URL('/dashboard', request.url));
+      return NextResponse.redirect(new URL(ROUTES.DASHBOARD, request.url));
     }
   }
 
@@ -83,7 +85,7 @@ export async function proxy(request: NextRequest) {
   if (isAuthRoute && token) {
     const payload = await verifyJWT(token);
     if (payload) {
-      return NextResponse.redirect(new URL('/dashboard', request.url));
+      return NextResponse.redirect(new URL(ROUTES.DASHBOARD, request.url));
     }
   }
 

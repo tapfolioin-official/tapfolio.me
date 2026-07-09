@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { ROUTES } from '@/config/routes';
 import Header from '@/components/Header';
 import LoadingScreen from '@/components/LoadingScreen';
 
@@ -71,7 +72,7 @@ export default function LeaderboardPage() {
               <div className="text-4xl mb-4">🏆</div>
               <h3 className="text-lg font-bold text-gray-900">No Qualified Profiles Yet</h3>
               <p className="text-gray-500 text-sm mt-2 max-w-sm mb-6">Be the first to upgrade your profile and meet all checklist criteria to rank number one!</p>
-              <Link href="/dashboard" className="px-6 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-colors">
+              <Link href={ROUTES.DASHBOARD} className="px-6 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-colors">
                 Complete Checklist in Dashboard
               </Link>
             </div>

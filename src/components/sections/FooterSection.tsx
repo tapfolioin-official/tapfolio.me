@@ -19,19 +19,19 @@ export default function FooterSection() {
           <div>
             <h4 className="font-bold text-gray-900 mb-4">Products</h4>
             <ul className="space-y-3 text-sm text-gray-500">
-              <li><a href="#" className="hover:text-blue-600 transition-colors">TapFolio PVC</a></li>
-              <li><a href="#" className="hover:text-blue-600 transition-colors">TapFolio Metal</a></li>
-              <li><a href="#" className="hover:text-blue-600 transition-colors">TapFolio Team</a></li>
-              <li><a href="#" className="hover:text-blue-600 transition-colors">Custom Enterprise</a></li>
+              <li><a href="/#products" className="hover:text-blue-600 transition-colors">TapFolio PVC</a></li>
+              <li><a href="/#products" className="hover:text-blue-600 transition-colors">TapFolio Metal</a></li>
+              <li><a href="/#products" className="hover:text-blue-600 transition-colors">TapFolio Team</a></li>
+              <li><a href="/#order" className="hover:text-blue-600 transition-colors">Custom Enterprise</a></li>
             </ul>
           </div>
 
           <div>
             <h4 className="font-bold text-gray-900 mb-4">Software</h4>
             <ul className="space-y-3 text-sm text-gray-500">
-              <li><a href="#" className="hover:text-blue-600 transition-colors">Profile Builder</a></li>
-              <li><a href="#" className="hover:text-blue-600 transition-colors">Analytics Dashboard</a></li>
-              <li><a href="#" className="hover:text-blue-600 transition-colors">Lead Capture</a></li>
+              <li><a href="/#technology" className="hover:text-blue-600 transition-colors">Profile Builder</a></li>
+              <li><a href="/#technology" className="hover:text-blue-600 transition-colors">Analytics Dashboard</a></li>
+              <li><a href="/#technology" className="hover:text-blue-600 transition-colors">Lead Capture</a></li>
               <li><a href="/docs" className="hover:text-blue-600 transition-colors font-semibold text-blue-600">Developer API Docs</a></li>
             </ul>
           </div>
@@ -39,10 +39,10 @@ export default function FooterSection() {
           <div>
             <h4 className="font-bold text-gray-900 mb-4">Company</h4>
             <ul className="space-y-3 text-sm text-gray-500">
-              <li><a href="#" className="hover:text-blue-600 transition-colors">About Us</a></li>
-              <li><a href="#" className="hover:text-blue-600 transition-colors">Customer Success</a></li>
-              <li><a href="#" className="hover:text-blue-600 transition-colors">Privacy & Security</a></li>
-              <li><a href="#" className="hover:text-blue-600 transition-colors">Contact</a></li>
+              <li><a href="/about" className="hover:text-blue-600 transition-colors">About Us</a></li>
+              <li><a href="/customer-success" className="hover:text-blue-600 transition-colors">Customer Success</a></li>
+              <li><a href="/privacy" className="hover:text-blue-600 transition-colors">Privacy & Security</a></li>
+              <li><a href="/contact" className="hover:text-blue-600 transition-colors">Contact</a></li>
             </ul>
           </div>
         </div>
@@ -52,9 +52,9 @@ export default function FooterSection() {
             © 2026 TapFolio Inc. All rights reserved.
           </div>
           <div className="flex gap-6">
-            <a href="#" className="hover:text-gray-900 transition-colors">Terms of Service</a>
-            <a href="#" className="hover:text-gray-900 transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-gray-900 transition-colors">Cookie Policy</a>
+            <a href="/terms" className="hover:text-gray-900 transition-colors">Terms of Service</a>
+            <a href="/privacy" className="hover:text-gray-900 transition-colors">Privacy Policy</a>
+            <a href="/privacy" className="hover:text-gray-900 transition-colors">Cookie Policy</a>
           </div>
         </div>
 

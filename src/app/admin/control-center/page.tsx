@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { ROUTES } from '@/config/routes';
 import styles from './page.module.css';
 
 interface Task {
@@ -384,7 +385,7 @@ export default function ControlCenter() {
         </nav>
 
         <div style={{ marginTop: 'auto' }}>
-          <button className={styles.secondaryBtn} style={{ width: '100%' }} onClick={() => router.push('/dashboard')}>
+          <button className={styles.secondaryBtn} style={{ width: '100%' }} onClick={() => router.push(ROUTES.DASHBOARD)}>
             Back to User Console
           </button>
         </div>

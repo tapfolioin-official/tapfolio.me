@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Script from 'next/script';
+import { ROUTES } from '@/config/routes';
 import styles from './page.module.css';
 
 function LoginFormContent() {
@@ -67,7 +68,7 @@ function LoginFormContent() {
     const redirectParam = searchParams.get('redirect');
     const intentParam = searchParams.get('intent');
     
-    let targetRedirect = '/dashboard';
+    let targetRedirect: string = ROUTES.DASHBOARD;
 
     if (redirectParam) {
       targetRedirect = redirectParam;
@@ -131,7 +132,7 @@ function LoginFormContent() {
       if (!res.ok) throw new Error(data.error || 'Google Sign-In failed.');
 
       if (data.user && !data.user.profileReady) {
-        router.push('/onboarding');
+        router.push(ROUTES.ONBOARDING);
       } else {
         setMessage('Google Sign-In Successful! Redirecting...');
         resolveRedirect();
@@ -192,7 +193,7 @@ function LoginFormContent() {
       }
 
       if (data.user && !data.user.profileReady) {
-        router.push('/onboarding');
+        router.push(ROUTES.ONBOARDING);
       } else {
         setMessage('Google Login Successful! Redirecting...');
         resolveRedirect();

@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { ArrowLeft, BookOpen, Terminal, Code, Cpu, ShieldCheck, Sparkles, Copy, Check } from 'lucide-react';
 import Link from 'next/link';
+import { ROUTES } from '@/config/routes';
 
 export default function DocsPage() {
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -36,7 +37,7 @@ export default function DocsPage() {
           </Link>
           <span className="font-bold text-lg text-white">Tapfolio <span className="text-blue-500 text-sm font-semibold ml-1.5 px-2.5 py-0.5 bg-blue-500/10 border border-blue-500/20 rounded-full">Developer Docs v1.0</span></span>
         </div>
-        <Link href="/dashboard" className="px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-bold text-sm hover:shadow-lg hover:shadow-blue-500/20 transition-all">
+        <Link href={ROUTES.DASHBOARD} className="px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-bold text-sm hover:shadow-lg hover:shadow-blue-500/20 transition-all">
           Go to Dashboard
         </Link>
       </header>

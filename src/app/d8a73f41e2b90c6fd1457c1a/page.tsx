@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { ROUTES } from '@/config/routes';
 import Header from '@/components/Header';
 import LoadingScreen from '@/components/LoadingScreen';
 import ImageCropModal from '@/components/ImageCropModal';
@@ -351,6 +352,7 @@ export default function Dashboard() {
   const [phone, setPhone] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
   const [location, setLocation] = useState('');
+  const [portfolioUrl, setPortfolioUrl] = useState('');
 
   // 🔐 Password fields (new)
   const [currentPassword, setCurrentPassword] = useState('');
@@ -418,7 +420,7 @@ export default function Dashboard() {
       const res = await fetch('/api/profile');
       // If not authenticated, redirect to login
       if (res.status === 401 || res.status === 400) {
-        router.replace('/login?redirect=/dashboard');
+        router.replace(`${ROUTES.LOGIN}?redirect=${ROUTES.DASHBOARD}`);
         return;
       }
       if (!res.ok) {
@@ -437,6 +439,7 @@ export default function Dashboard() {
         setPhone(data.profile.phone || '');
         setWhatsapp(data.profile.whatsapp || '');
         setLocation(data.profile.location || '');
+        setPortfolioUrl(data.profile.portfolioUrl || '');
         setTags(data.profile.tags || []);
         setSocials(data.profile.socials || []);
         setScore(data.score ?? 0);
@@ -812,6 +815,7 @@ export default function Dashboard() {
         phone,
         whatsapp,
         location,
+        portfolioUrl,
         tags,
         socials,
       };
@@ -1397,6 +1401,10 @@ export default function Dashboard() {
                           <div>
                             <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">WhatsApp</label>
                             <input type="tel" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none transition-all text-gray-900 text-sm font-semibold" placeholder="+123456789" />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">Portfolio Link</label>
+                            <input type="url" value={portfolioUrl} onChange={(e) => setPortfolioUrl(e.target.value)} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none transition-all text-gray-900 text-sm font-semibold" placeholder="https://yourportfolio.com" />
                           </div>
                         </div>
                       </div>
@@ -3006,7 +3014,28 @@ export default function Dashboard() {
                 ) : (
                   <div>
                     {loadingProjects ? (
-                      <div className="text-center py-10 text-gray-500 text-sm">Loading projects...</div>
+                      <div className="flex flex-col gap-4">
+                        {[1, 2, 3].map((i) => (
+                          <div key={i} className="relative overflow-hidden border border-gray-100 rounded-2xl p-5 flex items-center gap-4">
+                            {/* Thumbnail skeleton */}
+                            <div className="w-14 h-14 rounded-xl bg-gray-100 shrink-0" style={{ animation: `shimmer 1.8s ease-in-out ${i * 0.15}s infinite` }} />
+                            {/* Text skeletons */}
+                            <div className="flex-1 flex flex-col gap-2.5">
+                              <div className="h-4 w-2/5 rounded-full bg-gray-100" style={{ animation: `shimmer 1.8s ease-in-out ${i * 0.15 + 0.05}s infinite` }} />
+                              <div className="h-3 w-3/4 rounded-full bg-gray-50" style={{ animation: `shimmer 1.8s ease-in-out ${i * 0.15 + 0.1}s infinite` }} />
+                            </div>
+                            {/* Action skeleton */}
+                            <div className="w-8 h-8 rounded-lg bg-gray-50 shrink-0" style={{ animation: `shimmer 1.8s ease-in-out ${i * 0.15 + 0.15}s infinite` }} />
+                            <style>{`
+                              @keyframes shimmer {
+                                0%, 100% { opacity: 0.4; }
+                                50% { opacity: 1; }
+                              }
+                            `}</style>
+                          </div>
+                        ))}
+                        <p className="text-center text-xs text-gray-400 pt-1 tracking-wide">Loading projects…</p>
+                      </div>
                     ) : projects.length === 0 ? (
                       <div className="text-center py-12 border border-dashed border-gray-200 rounded-2xl flex flex-col items-center gap-4">
                         <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-500 text-xl font-bold"><svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg></div>
@@ -3210,7 +3239,8 @@ export default function Dashboard() {
                         name: name || 'Your Name',
                         avatar: avatar || '/profile_avatar.png',
                         isPremium: isPremium,
-                        tagline: tagline || 'Tagline'
+                        tagline: tagline || 'Tagline',
+                        portfolioUrl: portfolioUrl
                       }}
                       isLoggedIn={false}
                       previewTheme={themeSettings}
@@ -3219,7 +3249,8 @@ export default function Dashboard() {
                         socials,
                         location,
                         bio,
-                        projects
+                        projects,
+                        portfolioUrl
                       }}
                     />
                   ) : (
@@ -3247,7 +3278,7 @@ export default function Dashboard() {
                       <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                     </svg>
                     <span className="font-medium text-slate-700 truncate tracking-wide">
-                      {profile?.username ? `phi.vercel.app/${profile.username}` : 'phi.vercel.app'}
+                      {profile?.username ? `${typeof window !== 'undefined' ? window.location.host : 'tapfolio.me'}/@${profile.username}` : (typeof window !== 'undefined' ? window.location.host : 'tapfolio.me')}
                     </span>
                     {/* Refresh icon */}
                     <svg className="w-3 h-3 text-gray-450 hover:text-gray-900 cursor-pointer shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">

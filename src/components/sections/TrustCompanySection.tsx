@@ -19,18 +19,18 @@ export default function TrustCompanySection() {
 
           <div className="space-y-8">
             <div className="flex items-center gap-6">
-              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop" alt="Founder" className="w-16 h-16 rounded-full grayscale" />
+              <img src="/nibras.png" alt="Mohammed Nibrasul Haqq" className="w-16 h-16 rounded-full object-cover" />
               <div>
-                <h4 className="font-bold text-gray-900 text-lg">Alex Sterling</h4>
-                <span className="text-blue-600 text-sm font-medium">Founder & CEO</span>
+                <h4 className="font-bold text-gray-900 text-lg">Mohammed Nibrasul Haqq</h4>
+                <span className="text-blue-600 text-sm font-medium">Co-founder & CEO</span>
               </div>
             </div>
             
             <div className="flex items-center gap-6">
-              <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&h=150&fit=crop" alt="Co-Founder" className="w-16 h-16 rounded-full grayscale" />
+              <img src="/abhinand.png" alt="Abhinand" className="w-16 h-16 rounded-full object-cover" />
               <div>
-                <h4 className="font-bold text-gray-900 text-lg">Sarah Jenkins</h4>
-                <span className="text-blue-600 text-sm font-medium">Co-Founder & Head of Product</span>
+                <h4 className="font-bold text-gray-900 text-lg">Abhinand</h4>
+                <span className="text-blue-600 text-sm font-medium">Co-founder & CTO</span>
               </div>
             </div>
           </div>
