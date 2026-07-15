@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, after } from 'next/server';
 import prisma from '@/lib/db';
 import { generateOTP, hashOTP } from '@/lib/otp';
 import { sendVerificationEmail } from '@/lib/email';
@@ -95,11 +95,13 @@ export async function POST(request: Request) {
     // Log the request (omit OTP value)
     console.log(`[OTP] Verification code requested for email=${email}`);
 
-    // 6. Send the branded email (or logs fallback)
-    const emailSent = await sendVerificationEmail(email, otp);
-    if (!emailSent) {
-      return NextResponse.json({ error: 'Failed to send verification email. Please try again.' }, { status: 500 });
-    }
+    // 6. Send the branded email (or logs fallback) after response finishes
+    after(async () => {
+      const emailSent = await sendVerificationEmail(email, otp);
+      if (!emailSent) {
+        console.error(`Background SMTP email delivery failed for ${email}`);
+      }
+    });
 
     return NextResponse.json({
       success: true,

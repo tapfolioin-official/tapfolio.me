@@ -93,31 +93,43 @@ function getVerificationEmailHtml(otp: string): string {
   `;
 }
 
+let cachedTransporter: any = null;
+
+function getTransporter() {
+  if (cachedTransporter) return cachedTransporter;
+
+  const smtpUser = process.env.SMTP_USER || 'tapfolio.in@gmail.com';
+  const smtpPass = process.env.SMTP_PASS; // App Password (e.g. Gmail App Password)
+  const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
+  const smtpPort = parseInt(process.env.SMTP_PORT || '587');
+
+  if (smtpPass) {
+    cachedTransporter = nodemailer.createTransport({
+      host: smtpHost,
+      port: smtpPort,
+      secure: smtpPort === 465, // Use SSL/TLS for port 465, STARTTLS for port 587
+      auth: {
+        user: smtpUser,
+        pass: smtpPass.replace(/\s+/g, ''),
+      },
+    });
+    return cachedTransporter;
+  }
+  return null;
+}
+
 /**
  * Sends the verification code to the target email.
  * Supports SMTP (Nodemailer), Resend API, and falls back to terminal console logs.
  */
 export async function sendVerificationEmail(email: string, otp: string): Promise<boolean> {
   const smtpUser = process.env.SMTP_USER || 'tapfolio.in@gmail.com';
-  const smtpPass = process.env.SMTP_PASS; // App Password (e.g. Gmail App Password)
-  const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
-  const smtpPort = parseInt(process.env.SMTP_PORT || '587');
-  
   const resendApiKey = process.env.RESEND_API_KEY;
 
   // 1. SMTP Mode (Gmail/tapfolio.in@gmail.com app passwords)
-  if (smtpPass) {
+  const transporter = getTransporter();
+  if (transporter) {
     try {
-      const transporter = nodemailer.createTransport({
-        host: smtpHost,
-        port: smtpPort,
-        secure: smtpPort === 465, // Use SSL/TLS for port 465, STARTTLS for port 587
-        auth: {
-          user: smtpUser,
-          pass: smtpPass.replace(/\s+/g, ''),
-        },
-      });
-
       await transporter.sendMail({
         from: `"Tapfolio Verification" <${smtpUser}>`,
         to: email,

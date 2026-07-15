@@ -552,6 +552,45 @@
   to { transform: rotate(360deg); }
 }
 
+.forgotLink {
+  font-size: 0.85rem;
+  color: var(--accent-glow-secondary);
+  font-weight: 500;
+  transition: color var(--transition-fast);
+  text-decoration: none;
+}
+
+.forgotLink:hover {
+  color: var(--text-primary);
+  text-decoration: underline;
+}
+
+.secondaryBtn {
+  margin-top: 0.5rem;
+  padding: 0.9rem;
+  border-radius: 10px;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.secondaryBtn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.secondaryBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* RESPONSIVE DESIGN */
 @media (max-width: 900px) {
   .container {
