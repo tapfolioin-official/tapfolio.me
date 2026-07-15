@@ -114,7 +114,7 @@ export async function sendVerificationEmail(email: string, otp: string): Promise
         secure: smtpPort === 465, // Use SSL/TLS for port 465, STARTTLS for port 587
         auth: {
           user: smtpUser,
-          pass: smtpPass,
+          pass: smtpPass.replace(/\s+/g, ''),
         },
       });
 
