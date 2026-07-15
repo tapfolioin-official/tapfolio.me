@@ -40,6 +40,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'User with this email already exists.' }, { status: 400 });
     }
 
+    // Check email verification status
+    const verification = await prisma.emailVerification.findUnique({ where: { email } });
+    if (!verification || !verification.verified) {
+      return NextResponse.json({ error: 'Email address has not been verified. Please verify your email first.' }, { status: 400 });
+    }
+
     const passwordHash = await bcrypt.hash(password, 10);
 
     // Create minimal user
@@ -50,6 +56,9 @@ export async function POST(request: Request) {
         passwordHash
       }
     });
+
+    // Delete verification record on success to prevent reuse
+    await prisma.emailVerification.delete({ where: { email } }).catch(() => {});
 
     // Run user setup synchronously to guarantee profile readiness before redirection
     let profile = null;

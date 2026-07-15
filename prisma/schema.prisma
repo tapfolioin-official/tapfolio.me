@@ -241,6 +241,20 @@ model DevNote {
   @@map("dev_notes")
 }
 
+model EmailVerification {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  otpHash      String
+  expiresAt    DateTime
+  attempts     Int      @default(0)
+  requestCount Int      @default(1)
+  verified     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("email_verifications")
+}
+
 model Project {
   id               Int          @id @default(autoincrement())
   profileId        Int

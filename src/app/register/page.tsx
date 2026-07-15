@@ -7,6 +7,9 @@ import Script from 'next/script';
 import { ROUTES } from '@/config/routes';
 import styles from './page.module.css';
 
+import { OTPInput } from '@/components/auth/OTPInput';
+import { OTPTimer } from '@/components/auth/OTPTimer';
+
 // Preset avatar options
 const AVATAR_PRESETS = [
   '/presets/grad1.png',
@@ -21,7 +24,7 @@ export default function RegisterPage() {
   const router = useRouter();
 
   // Step state
-  const [step, setStep] = useState<1 | 2 | 3 | 4 | 5 | 6 | 7>(1);
+  const [step, setStep] = useState<1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9>(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -31,6 +34,12 @@ export default function RegisterPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+
+  // Step 8: OTP Verification
+  const [otpValue, setOtpValue] = useState('');
+  const [otpVerifying, setOtpVerifying] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
+  const [otpError, setOtpError] = useState('');
 
   // Step 4: Username Customization
   const [username, setUsername] = useState('');
@@ -238,8 +247,85 @@ export default function RegisterPage() {
     }
   };
 
-  // Step 2 Form Handler (Create account only, username is auto-generated)
+  // Step 2 Form Handler: Request OTP code
   const handleStep2Submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+
+    try {
+      const res = await fetch('/api/auth/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to send verification code.');
+      }
+
+      setStep(8); // Transition to OTP Verification Screen
+    } catch (err: any) {
+      setError(err.message || 'Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Helper to handle OTP Verification
+  const handleOtpVerify = async (code: string) => {
+    setOtpVerifying(true);
+    setOtpError('');
+
+    try {
+      const res = await fetch('/api/auth/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, otp: code }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Verification failed.');
+      }
+
+      setOtpVerified(true);
+      
+      setTimeout(() => {
+        setStep(9); // Transition to Set Password screen
+      }, 1000);
+    } catch (err: any) {
+      setOtpError(err.message || 'Verification failed.');
+      setOtpValue(''); // Clear OTP inputs on error
+    } finally {
+      setOtpVerifying(false);
+    }
+  };
+
+  // Helper to handle Resending OTP
+  const handleResendOtp = async () => {
+    setError('');
+    setOtpError('');
+    try {
+      const res = await fetch('/api/auth/resend-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to resend code.');
+      }
+    } catch (err: any) {
+      setOtpError(err.message || 'Failed to resend code.');
+      throw err;
+    }
+  };
+
+  // Step 9 Form Handler: Create account and log in
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
@@ -270,7 +356,7 @@ export default function RegisterPage() {
 
       // Preset the auto-generated username for customization
       setUsername(regData.user.username);
-      setStep(3); // Go directly to First Success Moment!
+      setStep(3); // Go to celebration!
     } catch (err: any) {
       setError(err.message || 'Something went wrong. Please try again.');
     } finally {
@@ -514,13 +600,15 @@ export default function RegisterPage() {
             </div>
           )}
 
-          {/* STEP 2: CREATE ACCOUNT (Email setup, Name/Email/Pass only) */}
+          {/* STEP 2: CREATE ACCOUNT (Email & Name setup) */}
           {step === 2 && (
             <form onSubmit={handleStep2Submit} className={styles.form}>
               <div className={styles.authHeader}>
                 <h2>Create Account</h2>
                 <p>Register to go live instantly</p>
               </div>
+
+              {error && <div className={styles.errorBanner}>{error}</div>}
 
               <div className={styles.inputGroup}>
                 <label htmlFor="name">Full Name</label>
@@ -547,6 +635,77 @@ export default function RegisterPage() {
                   disabled={loading}
                 />
               </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className={styles.submitBtn}
+              >
+                {loading ? 'Sending Code...' : 'Continue'}
+              </button>
+            </form>
+          )}
+
+          {/* STEP 8: OTP EMAIL VERIFICATION */}
+          {step === 8 && (
+            <div className={styles.form} style={{ width: '100%' }}>
+              <div className={styles.authHeader} style={{ textAlign: 'center' }}>
+                <h2>Verify your Email</h2>
+                <p>We've sent a verification code to <br/><strong style={{ color: '#F8FAFC' }}>{email}</strong></p>
+              </div>
+
+              {otpError && <div className={styles.errorBanner} style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#EF4444', border: '1px solid rgba(239, 68, 68, 0.2)', padding: '10px', borderRadius: '6px', fontSize: '0.85rem', marginBottom: '15px', textAlign: 'center' }}>{otpError}</div>}
+
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '20px 0' }}>
+                {otpVerified ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '2.5rem', color: '#10B981', animation: 'scaleUp 0.3s ease-out' }}>✅</span>
+                    <span style={{ color: '#10B981', fontWeight: 'bold', fontSize: '0.95rem' }}>Email Verified!</span>
+                  </div>
+                ) : otpVerifying ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px' }}>
+                    <div className={styles.spinner} style={{ borderTopColor: '#3B82F6', width: '30px', height: '30px' }}></div>
+                    <span style={{ color: '#94A3B8', fontSize: '0.85rem' }}>Verifying security code...</span>
+                  </div>
+                ) : (
+                  <>
+                    <OTPInput
+                      length={6}
+                      value={otpValue}
+                      onChange={setOtpValue}
+                      onComplete={handleOtpVerify}
+                      disabled={otpVerifying}
+                    />
+                    <OTPTimer
+                      initialSeconds={60}
+                      onResend={handleResendOtp}
+                      disabled={otpVerifying}
+                    />
+                  </>
+                )}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setStep(2)}
+                className={styles.secondaryBtn}
+                disabled={otpVerifying || otpVerified}
+                style={{ width: '100%', marginTop: '10px' }}
+              >
+                Back to Edit Email
+              </button>
+            </div>
+          )}
+
+          {/* STEP 9: CHOOSE PASSWORD */}
+          {step === 9 && (
+            <form onSubmit={handlePasswordSubmit} className={styles.form}>
+              <div className={styles.authHeader}>
+                <h2>Set Password</h2>
+                <p>Choose a secure password to complete your account</p>
+              </div>
+
+              {error && <div className={styles.errorBanner}>{error}</div>}
 
               <div className={styles.inputGroup}>
                 <label htmlFor="password">Password</label>
@@ -588,7 +747,7 @@ export default function RegisterPage() {
                 disabled={loading || password.length < 6}
                 className={styles.submitBtn}
               >
-                {loading ? 'Creating Account...' : 'Create Account'}
+                {loading ? 'Finishing Setup...' : 'Complete Sign Up'}
               </button>
             </form>
           )}
