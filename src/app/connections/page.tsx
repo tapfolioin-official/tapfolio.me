@@ -77,7 +77,7 @@ interface OwnProfile {
 }
 
 export default function ConnectionsPage() {
-  const [activeTab, setActiveTab] = useState<'requests' | 'connections'>('requests');
+  const [activeTab, setActiveTab] = useState<'connections' | 'requests'>('connections');
   const [requests, setRequests] = useState<PendingRequest[]>([]);
   const [connections, setConnections] = useState<Connection[]>([]);
   const [ownProfile, setOwnProfile] = useState<OwnProfile | null>(null);

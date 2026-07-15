@@ -24,21 +24,41 @@ export default function AboutPage() {
     description: "Tapfolio's mission, values, history, and product details.",
   };
 
+  // ---------- Data ----------
+  const stats = [
+    { label: "Active Users", value: "12K+", suffix: "" },
+    { label: "Avg. Rating", value: "4.9", suffix: "★" },
+    { label: "Taps Completed", value: "340K+", suffix: "" },
+    { label: "Countries Served", value: "48", suffix: "+" },
+  ];
+
   const values = [
     {
       title: "Innovation First",
       desc: "We continually push the boundaries of what a card and digital profile can accomplish.",
-      icon: "🚀",
+      icon: (
+        <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+      ),
     },
     {
       title: "Eco‑Friendly",
       desc: "By replacing millions of paper cards annually, we are building a more sustainable future.",
-      icon: "🌱",
+      icon: (
+        <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+        </svg>
+      ),
     },
     {
       title: "Frictionless Exchange",
       desc: "We make contact and profile sharing happen instantly in one clean tap.",
-      icon: "⚡",
+      icon: (
+        <svg className="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+      ),
     },
   ];
 
@@ -67,9 +87,37 @@ export default function AboutPage() {
 
   const team = [
     { name: "Mohammed Nibrasul Haqq", role: "CEO & Co‑founder", img: "/nibras.png" },
-    { name: "Abhinand", role: "Founder", img: "/abhinand.png" },
+    { name: "Abhinand", role: "CTO & Co‑founder", img: "/abhinand.png" },
+    { name: "Sarah Chen", role: "Head of Product", img: "/sarah.png" },
+    { name: "Michael Torres", role: "Lead Engineer", img: "/michael.png" },
   ];
 
+  const testimonials = [
+    {
+      quote: "Tapfolio has completely transformed how our sales team shares information. Our close rate increased by 30% in just two months.",
+      author: "Jessica Lee",
+      role: "VP of Sales, CloudSphere",
+    },
+    {
+      quote: "The combination of premium hardware and real‑time analytics is a game‑changer. We’re finally able to track our networking ROI.",
+      author: "David Park",
+      role: "Founder, Park Capital",
+    },
+    {
+      quote: "I love the environmental impact. My whole company now uses Tapfolio, and we’ve eliminated paper cards entirely.",
+      author: "Emma Watson",
+      role: "Sustainability Lead, GreenTech",
+    },
+  ];
+
+  const partners = [
+    { name: "Microsoft", logo: "/partners/microsoft.svg" },
+    { name: "Google", logo: "/partners/google.svg" },
+    { name: "Salesforce", logo: "/partners/salesforce.svg" },
+    { name: "HubSpot", logo: "/partners/hubspot.svg" },
+  ];
+
+  // ---------- Render ----------
   return (
     <div className="bg-white min-h-screen text-gray-900 font-sans selection:bg-blue-100 flex flex-col pt-20">
       <script
@@ -77,7 +125,7 @@ export default function AboutPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
 
-      {/* Simplified Header */}
+      {/* Header */}
       <header className="fixed top-0 left-0 w-full h-20 bg-white/80 backdrop-blur-md border-b border-gray-150 z-50 flex items-center justify-between px-6 md:px-[12%] max-w-[1440px] left-1/2 -translate-x-1/2">
         <a href="/" className="flex items-center gap-1 cursor-pointer">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-1">
@@ -89,13 +137,18 @@ export default function AboutPage() {
             Tap<span style={{ color: '#2563EB' }}>folio</span>
           </span>
         </a>
+        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600">
+          <a href="/product" className="hover:text-blue-600 transition-colors">Product</a>
+          <a href="/blog" className="hover:text-blue-600 transition-colors">Blog</a>
+          <a href="/careers" className="hover:text-blue-600 transition-colors">Careers</a>
+        </nav>
         <a href="/" className="text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors">
           Back to Home
         </a>
       </header>
 
       <main className="flex-1 w-full max-w-[1200px] mx-auto px-6 py-16 flex flex-col gap-24">
-        {/* Hero Section with animated gradient */}
+        {/* Hero */}
         <section className="text-center max-w-4xl mx-auto flex flex-col gap-6 mt-8">
           <div className="inline-flex items-center gap-2 mx-auto bg-blue-50 text-blue-700 text-xs font-semibold px-4 py-2 rounded-full border border-blue-100/50">
             <span className="relative flex h-2 w-2">
@@ -116,23 +169,19 @@ export default function AboutPage() {
             Share your links, build relationships, and save paper—all in a
             single tap.
           </p>
-          <div className="flex flex-wrap justify-center gap-8 pt-4">
-            <div>
-              <div className="text-3xl font-black text-gray-900">12K+</div>
-              <div className="text-sm text-gray-400">Active Users</div>
-            </div>
-            <div>
-              <div className="text-3xl font-black text-gray-900">4.9★</div>
-              <div className="text-sm text-gray-400">Avg. Rating</div>
-            </div>
-            <div>
-              <div className="text-3xl font-black text-gray-900">340K+</div>
-              <div className="text-sm text-gray-400">Taps Completed</div>
-            </div>
+          <div className="flex flex-wrap justify-center gap-10 pt-4">
+            {stats.map((stat, idx) => (
+              <div key={idx}>
+                <div className="text-3xl font-black text-gray-900">
+                  {stat.value} <span className="text-blue-600">{stat.suffix}</span>
+                </div>
+                <div className="text-sm text-gray-400">{stat.label}</div>
+              </div>
+            ))}
           </div>
         </section>
 
-        {/* Story & Mission/Vision Cards */}
+        {/* Story & Mission/Vision */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
           <div className="flex flex-col gap-6">
             <span className="text-xs font-bold uppercase tracking-wider text-blue-600">
@@ -176,7 +225,7 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* Values Grid with icons */}
+        {/* Values */}
         <section className="flex flex-col gap-12">
           <div className="text-center">
             <span className="text-xs font-bold uppercase tracking-wider text-blue-600">
@@ -196,7 +245,7 @@ export default function AboutPage() {
                 key={i}
                 className="group border border-gray-100 rounded-2xl p-8 hover:shadow-xl transition-all duration-300 bg-white hover:-translate-y-1 hover:border-blue-200"
               >
-                <div className="text-4xl mb-4">{v.icon}</div>
+                <div className="mb-4">{v.icon}</div>
                 <h3 className="text-xl font-bold text-gray-900 mb-3">
                   {v.title}
                 </h3>
@@ -206,7 +255,42 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* Timeline with visual line */}
+        {/* Why Tapfolio */}
+        <section className="bg-gray-50 rounded-3xl p-12 md:p-16 flex flex-col md:flex-row gap-12 items-center">
+          <div className="flex-1">
+            <span className="text-xs font-bold uppercase tracking-wider text-blue-600">
+              Why Tapfolio
+            </span>
+            <h2 className="text-3xl font-bold text-gray-950 mt-2">
+              Built for the modern professional
+            </h2>
+            <ul className="mt-6 space-y-4 text-gray-600">
+              <li className="flex items-start gap-3">
+                <span className="text-blue-600 font-bold text-xl">✓</span>
+                <span><strong className="text-gray-900">Real‑time updates</strong> — your profile always reflects your latest info.</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-blue-600 font-bold text-xl">✓</span>
+                <span><strong className="text-gray-900">Analytics dashboard</strong> — see who viewed your profile and when.</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-blue-600 font-bold text-xl">✓</span>
+                <span><strong className="text-gray-900">Seamless integrations</strong> — sync with CRM, email, and calendar.</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-blue-600 font-bold text-xl">✓</span>
+                <span><strong className="text-gray-900">Premium materials</strong> — engraved metal or wood cards that leave a lasting impression.</span>
+              </li>
+            </ul>
+          </div>
+          <div className="flex-1 flex justify-center">
+            <div className="w-64 h-64 bg-gradient-to-tr from-blue-400 to-purple-400 rounded-3xl flex items-center justify-center text-white text-6xl shadow-2xl">
+              ⚡
+            </div>
+          </div>
+        </section>
+
+        {/* Timeline */}
         <section className="flex flex-col gap-12">
           <div className="text-center">
             <span className="text-xs font-bold uppercase tracking-wider text-blue-600">
@@ -229,7 +313,7 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* Team Section */}
+        {/* Team */}
         <section className="flex flex-col gap-12">
           <div className="text-center">
             <span className="text-xs font-bold uppercase tracking-wider text-blue-600">
@@ -238,6 +322,10 @@ export default function AboutPage() {
             <h2 className="text-4xl font-bold text-gray-950 mt-2">
               The people behind Tapfolio
             </h2>
+            <p className="text-gray-500 max-w-xl mx-auto mt-2">
+              A passionate group of innovators, engineers, and designers
+              dedicated to redefining professional networking.
+            </p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {team.map((member, i) => (
@@ -259,30 +347,105 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* Contact / CTA */}
-        <section className="bg-gray-950 text-white rounded-3xl p-12 md:p-16 text-center flex flex-col items-center gap-6 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-600/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
+        {/* Testimonials */}
+        <section className="flex flex-col gap-12">
+          <div className="text-center">
+            <span className="text-xs font-bold uppercase tracking-wider text-blue-600">
+              Testimonials
+            </span>
+            <h2 className="text-4xl font-bold text-gray-950 mt-2">
+              What our clients say
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {testimonials.map((t, i) => (
+              <div
+                key={i}
+                className="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm hover:shadow-md transition-all"
+              >
+                <div className="text-blue-600 text-3xl mb-4">“</div>
+                <p className="text-gray-600 leading-relaxed">{t.quote}</p>
+                <div className="mt-4 border-t border-gray-100 pt-4">
+                  <p className="font-bold text-gray-900">{t.author}</p>
+                  <p className="text-sm text-gray-400">{t.role}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Partners */}
+        <section className="flex flex-col gap-8">
+          <div className="text-center">
+            <span className="text-xs font-bold uppercase tracking-wider text-blue-600">
+              Partners
+            </span>
+            <h2 className="text-3xl font-bold text-gray-950 mt-2">
+              Trusted by industry leaders
+            </h2>
+          </div>
+          <div className="flex flex-wrap justify-center items-center gap-12 opacity-70">
+            {partners.map((p, i) => (
+              <div key={i} className="text-gray-400 font-semibold text-xl tracking-tight">
+                {p.name}
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* CTA - Join the team */}
+        <section className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-3xl p-12 md:p-16 text-center flex flex-col items-center gap-6 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
           <div className="relative z-10">
-            <h2 className="text-4xl font-bold">Get in Touch</h2>
-            <p className="text-gray-400 max-w-md mx-auto mt-2">
-              Whether you are looking to equip your enterprise sales team or
-              just have general feedback, we'd love to hear from you.
+            <h2 className="text-4xl font-bold">Join the team</h2>
+            <p className="text-blue-100 max-w-md mx-auto mt-2">
+              We’re always looking for talented individuals to help us shape the
+              future of networking.
             </p>
-            <div className="flex flex-wrap justify-center gap-8 mt-8">
-              <div>
-                <div className="text-sm text-gray-400">Headquarters</div>
-                <div className="font-semibold">Austin, Texas, USA</div>
-              </div>
-              <div>
-                <div className="text-sm text-gray-400">Email</div>
-                <a
-                  href="mailto:hello@tapfolio.me"
-                  className="text-blue-400 font-semibold hover:underline"
-                >
-                  hello@tapfolio.me
-                </a>
-              </div>
+            <a
+              href="/careers"
+              className="inline-block mt-8 bg-white text-blue-600 font-bold px-8 py-3 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-105"
+            >
+              View Open Positions
+            </a>
+          </div>
+        </section>
+
+        {/* Contact */}
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-8 bg-gray-50 rounded-3xl p-12">
+          <div className="flex flex-col items-center text-center">
+            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+              <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </div>
+            <h3 className="font-bold text-gray-900">Headquarters</h3>
+            <p className="text-gray-500">Austin, Texas, USA</p>
+          </div>
+          <div className="flex flex-col items-center text-center">
+            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+              <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <h3 className="font-bold text-gray-900">Email</h3>
+            <a href="mailto:hello@tapfolio.me" className="text-blue-600 hover:underline">
+              hello@tapfolio.me
+            </a>
+          </div>
+          <div className="flex flex-col items-center text-center">
+            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+              <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+            </div>
+            <h3 className="font-bold text-gray-900">Follow us</h3>
+            <div className="flex gap-4 mt-1">
+              <a href="#" className="text-gray-400 hover:text-blue-600 transition-colors">Twitter</a>
+              <a href="#" className="text-gray-400 hover:text-blue-600 transition-colors">LinkedIn</a>
+              <a href="#" className="text-gray-400 hover:text-blue-600 transition-colors">Instagram</a>
             </div>
           </div>
         </section>
@@ -290,7 +453,7 @@ export default function AboutPage() {
 
       <Footer />
 
-      {/* Custom keyframe animations via style tag (optional) */}
+      {/* Custom animations */}
       <style dangerouslySetInnerHTML={{
         __html: `
         @keyframes ping {

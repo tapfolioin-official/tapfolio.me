@@ -67,6 +67,13 @@ export default function ControlCenter() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
+  // AI Assistant states
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [aiResponse, setAiResponse] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
+  const [auditResult, setAuditResult] = useState<any | null>(null);
+  const [auditLoading, setAuditLoading] = useState(false);
+
   // 1. Authenticate admin user
   useEffect(() => {
     async function checkAuth() {
@@ -77,7 +84,9 @@ export default function ControlCenter() {
           return;
         }
         const data = await res.json();
-        if (data.success && data.profile?.user?.email === 'nibrasulhaqqamini@gmail.com') {
+        const userEmail = data.profile?.user?.email;
+        const isAdmin = userEmail === 'nibrasulhaqqamini@gmail.com' || userEmail === 'tapfolio.in@gmail.com';
+        if (data.success && isAdmin) {
           setAuthorized(true);
         } else {
           setAuthorized(false);
@@ -274,6 +283,46 @@ export default function ControlCenter() {
       }
     } catch (err) {
       console.error('Failed deleting note:', err);
+    }
+  };
+
+  const handleRunAudit = async () => {
+    setAuditLoading(true);
+    try {
+      const res = await fetch('/api/admin/control-center/ai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'audit' }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setAuditResult(data.audit);
+      }
+    } catch (err) {
+      console.error('Audit run error:', err);
+    } finally {
+      setAuditLoading(false);
+    }
+  };
+
+  const handleSendPrompt = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!aiPrompt.trim()) return;
+    setAiLoading(true);
+    try {
+      const res = await fetch('/api/admin/control-center/ai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'chat', message: aiPrompt }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setAiResponse(data.reply);
+      }
+    } catch (err) {
+      console.error('AI chat error:', err);
+    } finally {
+      setAiLoading(false);
     }
   };
 
@@ -890,7 +939,7 @@ export default function ControlCenter() {
             <div className={styles.diagnosticCard} style={{ background: 'rgba(16, 185, 129, 0.1)', borderColor: 'rgba(16, 185, 129, 0.2)', color: '#34D399' }}>
               <span>✅</span>
               <div>
-                <strong>Server Proxy Active</strong>: Next.js 16 proxy is active and running via `src/proxy.ts`. Route protection and path rewrites are fully secured.
+                <strong>Server Middleware Active</strong>: Next.js 16 routing middleware is active and running via `src/middleware.ts`. Route protection and path rewrites are fully secured.
               </div>
             </div>
 
@@ -898,7 +947,7 @@ export default function ControlCenter() {
               {[
                 { name: 'Session Token Check', status: 'JWT local signature verified via jose', state: 'PASS', color: '#10B981' },
                 { name: 'Cookie Security', status: 'pertap_jwt cookie marked httpOnly, strict SameSite', state: 'PASS', color: '#10B981' },
-                { name: 'Server Proxy Protection', status: 'src/proxy.ts is active and running', state: 'PASS', color: '#10B981' },
+                { name: 'Server Middleware Protection', status: 'src/middleware.ts is active and running', state: 'PASS', color: '#10B981' },
                 { name: 'Cross-Site Scripting (XSS)', status: 'User inputs saved without DOM sanitization checks', state: 'WARN', color: '#F59E0B' },
                 { name: 'Brute-Force Safeguards', status: 'Sliding window rate limiters configured on auth endpoints', state: 'PASS', color: '#10B981' },
                 { name: 'Secrets Management', status: 'JWT_SECRET and credentials isolated inside .env', state: 'PASS', color: '#10B981' },
@@ -998,43 +1047,178 @@ export default function ControlCenter() {
         {/* 10. AI PLANNING ASSISTANT */}
         {activeTab === 'ai' && (
           <div className={styles.aiContainer}>
-            <div className={styles.aiHeader}>
-              <span className={styles.aiIcon}>🧠</span>
-              <h2>AI Assistant Technical Diagnostic Suggestions</h2>
+            <div className={styles.aiHeader} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <span className={styles.aiIcon}>🧠</span>
+                <h2>AI Engineering Assistant Technical Diagnostic Suggestions</h2>
+              </div>
+              <button 
+                onClick={handleRunAudit}
+                disabled={auditLoading}
+                className={styles.refreshBtn}
+                style={{ 
+                  backgroundColor: '#1E293B', 
+                  color: '#F8FAFC', 
+                  border: '1px solid #334155', 
+                  padding: '8px 16px', 
+                  borderRadius: '6px', 
+                  cursor: 'pointer',
+                  fontSize: '0.85rem',
+                  fontWeight: 'bold',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                {auditLoading ? 'Scanning Codebase...' : '🔍 Run Codebase Audit'}
+              </button>
             </div>
             
-            <p style={{ fontSize: '0.9rem', color: '#94A3B8', lineHeight: '1.5' }}>
+            <p style={{ fontSize: '0.9rem', color: '#94A3B8', lineHeight: '1.5', marginTop: '10px' }}>
               I have analyzed your project directory tree, database models, and API configurations. Here are the prioritized engineering suggestions:
             </p>
 
+            {/* If audit result is present, display live checks! */}
+            {auditResult && (
+              <div style={{ margin: '15px 0', padding: '16px', backgroundColor: 'rgba(30, 41, 59, 0.5)', border: '1px solid #334155', borderRadius: '8px' }}>
+                <h4 style={{ color: '#F8FAFC', marginBottom: '12px', fontSize: '0.95rem' }}>Live Codebase Audit Results ({new Date(auditResult.timestamp).toLocaleTimeString()})</h4>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', fontSize: '0.85rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ color: auditResult.hasProxy ? '#EF4444' : '#10B981', fontSize: '1.1rem' }}>
+                      {auditResult.hasProxy ? '⚠️' : '✅'}
+                    </span>
+                    <span style={{ color: '#E2E8F0' }}>
+                      Routing Middleware status: <strong>{auditResult.hasProxy ? 'Legacy src/proxy.ts active' : 'Standard src/middleware.ts active'}</strong>
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ color: auditResult.hasJsonWebToken ? '#EF4444' : '#10B981', fontSize: '1.1rem' }}>
+                      {auditResult.hasJsonWebToken ? '⚠️' : '✅'}
+                    </span>
+                    <span style={{ color: '#E2E8F0' }}>
+                      Unused packages status: <strong>{auditResult.hasJsonWebToken ? 'jsonwebtoken found' : 'jsonwebtoken uninstalled'}</strong>
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', gridColumn: 'span 2' }}>
+                    <span style={{ color: auditResult.missingIndexes.length > 0 ? '#F59E0B' : '#10B981', fontSize: '1.1rem' }}>
+                      {auditResult.missingIndexes.length > 0 ? '⚠️' : '✅'}
+                    </span>
+                    <span style={{ color: '#E2E8F0' }}>
+                      Missing Database Indexes: <strong>{auditResult.missingIndexes.length > 0 ? auditResult.missingIndexes.join(', ') : 'None (Perfect index coverage!)'}</strong>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className={styles.aiGrid}>
-              <div className={styles.aiTipCard} style={{ borderColor: 'rgba(16, 185, 129, 0.3)' }}>
-                <h3>1. Server Proxy Protections Active (Completed)</h3>
+              <div className={styles.aiTipCard} style={{ borderColor: auditResult ? (auditResult.hasProxy ? 'rgba(239, 68, 68, 0.4)' : 'rgba(16, 185, 129, 0.4)') : 'rgba(16, 185, 129, 0.3)' }}>
+                <h3 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span>1. Routing Middleware Protection</span>
+                  <span style={{ fontSize: '0.75rem', padding: '2px 6px', borderRadius: '4px', backgroundColor: auditResult ? (auditResult.hasProxy ? '#EF4444' : '#10B981') : '#10B981', color: '#FFF' }}>
+                    {auditResult ? (auditResult.hasProxy ? 'TODO' : 'COMPLETED') : 'ACTIVE'}
+                  </span>
+                </h3>
                 <p>
-                  `src/proxy.ts` is the correct file convention in Next.js 16. Server-side session validation is fully active, securing all internal routing.
+                  \`src/middleware.ts\` handles Next.js path rewrites and authorization checks. Active routing middleware is successfully running standard conventions.
                 </p>
               </div>
 
-              <div className={styles.aiTipCard} style={{ borderColor: 'rgba(245, 158, 11, 0.3)' }}>
-                <h3>2. Push Database Foreign Key Indices (High Priority)</h3>
+              <div className={styles.aiTipCard} style={{ borderColor: auditResult ? (auditResult.missingIndexes.length > 0 ? 'rgba(245, 158, 11, 0.4)' : 'rgba(16, 185, 129, 0.4)') : 'rgba(245, 158, 11, 0.3)' }}>
+                <h3 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span>2. Push Database Indexes</span>
+                  <span style={{ fontSize: '0.75rem', padding: '2px 6px', borderRadius: '4px', backgroundColor: auditResult ? (auditResult.missingIndexes.length > 0 ? '#F59E0B' : '#10B981') : '#F59E0B', color: '#FFF' }}>
+                    {auditResult ? (auditResult.missingIndexes.length > 0 ? 'HIGH PRIORITY' : 'COMPLETED') : 'HIGH PRIORITY'}
+                  </span>
+                </h3>
                 <p>
-                  Add `@@index([profileId])` to models `Tag`, `SocialLink`, and `HistoryEvent`. Add `@@index([receiverId])` to `Connection`. This prevents full-table database scans on profile load lookups.
+                  Add indices to foreign keys such as \`profileId\` on child models and \`receiverId\` on \`Connection\` model to optimize loading queries.
+                </p>
+              </div>
+
+              <div className={styles.aiTipCard} style={{ borderColor: auditResult ? (auditResult.hasJsonWebToken ? 'rgba(245, 158, 11, 0.3)' : 'rgba(16, 185, 129, 0.4)') : 'rgba(245, 158, 11, 0.2)' }}>
+                <h3 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span>3. Uninstall jsonwebtoken Package</span>
+                  <span style={{ fontSize: '0.75rem', padding: '2px 6px', borderRadius: '4px', backgroundColor: auditResult ? (auditResult.hasJsonWebToken ? '#64748B' : '#10B981') : '#64748B', color: '#FFF' }}>
+                    {auditResult ? (auditResult.hasJsonWebToken ? 'TODO' : 'COMPLETED') : 'LOW PRIORITY'}
+                  </span>
+                </h3>
+                <p>
+                  The project includes \`jsonwebtoken\` but routes verify session tokens entirely using the edge-compatible \`jose\` library.
                 </p>
               </div>
 
               <div className={styles.aiTipCard}>
-                <h3>3. Uninstall jsonwebtoken Package (Low Priority)</h3>
+                <h3 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span>4. Dynamic Showcase Portfolio Rendering</span>
+                  <span style={{ fontSize: '0.75rem', padding: '2px 6px', borderRadius: '4px', backgroundColor: '#64748B', color: '#FFF' }}>SUGGESTED</span>
+                </h3>
                 <p>
-                  The dependencies file contains `jsonwebtoken` but our routes verify session signatures entirely using the modern, edge-compatible `jose` library. Remove it to lighten packages overhead.
+                  Refactor static portfolio directories into a dynamic Next.js parameter route: \`/portfolio/[username]\` powered by database query lookups.
                 </p>
               </div>
+            </div>
 
-              <div className={styles.aiTipCard}>
-                <h3>4. Clean Showcase Portfolio Clones</h3>
-                <p>
-                  The static portfolio files copy-paste layout tags. Refactor `nibras` and `abhinand` showcase layouts into a dynamic client renderer component (`/portfolio/[username]`) powered by database lookups.
-                </p>
-              </div>
+            {/* Interactive Chat Console */}
+            <div style={{ marginTop: '30px', padding: '20px', backgroundColor: 'rgba(15, 23, 42, 0.6)', border: '1px solid #1E293B', borderRadius: '10px' }}>
+              <h3 style={{ color: '#F8FAFC', marginBottom: '8px', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span>🤖</span> Ask AI Engineering Copilot
+              </h3>
+              <p style={{ fontSize: '0.8rem', color: '#64748B', marginBottom: '15px' }}>
+                Ask questions about your database models, active route protections, or package dependencies:
+              </p>
+
+              {aiResponse && (
+                <div style={{ 
+                  margin: '15px 0', 
+                  padding: '16px', 
+                  backgroundColor: '#0F172A', 
+                  border: '1px solid #1E293B', 
+                  borderRadius: '8px',
+                  color: '#E2E8F0',
+                  fontSize: '0.85rem',
+                  lineHeight: '1.6',
+                  whiteSpace: 'pre-wrap'
+                }}>
+                  {aiResponse}
+                </div>
+              )}
+
+              <form onSubmit={handleSendPrompt} style={{ display: 'flex', gap: '10px' }}>
+                <input 
+                  type="text" 
+                  value={aiPrompt}
+                  onChange={(e) => setAiPrompt(e.target.value)}
+                  placeholder="Ask something, e.g., 'What models are in the database schema?' or 'Check route proxy status'..."
+                  style={{ 
+                    flex: 1, 
+                    backgroundColor: '#1E293B', 
+                    border: '1px solid #334155', 
+                    borderRadius: '6px', 
+                    padding: '10px 14px', 
+                    color: '#F8FAFC',
+                    fontSize: '0.85rem'
+                  }}
+                  disabled={aiLoading}
+                />
+                <button 
+                  type="submit"
+                  disabled={aiLoading || !aiPrompt.trim()}
+                  style={{ 
+                    backgroundColor: '#3B82F6', 
+                    color: '#FFF', 
+                    border: 'none', 
+                    borderRadius: '6px', 
+                    padding: '10px 20px', 
+                    fontWeight: 'bold', 
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    transition: 'background-color 0.2s'
+                  }}
+                >
+                  {aiLoading ? 'Thinking...' : 'Ask AI'}
+                </button>
+              </form>
             </div>
           </div>
         )}

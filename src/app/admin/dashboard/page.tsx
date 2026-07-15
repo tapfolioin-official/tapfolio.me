@@ -134,8 +134,8 @@ export default function AdminDashboard() {
         <MetricCard
           icon="👥"
           label="Total Users"
-          value={loading ? undefined : kpis?.totalUsers}
-          formatter={(v) => v.toLocaleString()}
+          value={loading ? undefined : (kpis?.totalUsers ?? 0)}
+          formatter={(v) => (v ?? 0).toLocaleString()}
           footer={
             <span className={styles.metricTrendUp}>
               +{loading ? '…' : kpis?.todayUsers} today
@@ -148,8 +148,8 @@ export default function AdminDashboard() {
         <MetricCard
           icon="⭐"
           label="Premium Users"
-          value={loading ? undefined : kpis?.premiumUsers}
-          formatter={(v) => v.toLocaleString()}
+          value={loading ? undefined : (kpis?.premiumUsers ?? 0)}
+          formatter={(v) => (v ?? 0).toLocaleString()}
           footer={
             <span className={styles.metricTrendUp}>
               {loading
@@ -165,8 +165,8 @@ export default function AdminDashboard() {
         <MetricCard
           icon="📈"
           label="Growth (weekly)"
-          value={loading ? undefined : kpis?.growth}
-          formatter={(v) => `${v > 0 ? '+' : ''}${v}%`}
+          value={loading ? undefined : (kpis?.growth ?? 0)}
+          formatter={(v) => `${(v ?? 0) > 0 ? '+' : ''}${v ?? 0}%`}
           footer={
             <span
               className={
@@ -185,8 +185,8 @@ export default function AdminDashboard() {
         <MetricCard
           icon="🖼️"
           label="Portfolios"
-          value={loading ? undefined : kpis?.totalProfiles}
-          formatter={(v) => v.toLocaleString()}
+          value={loading ? undefined : (kpis?.totalProfiles ?? 0)}
+          formatter={(v) => (v ?? 0).toLocaleString()}
           loading={loading}
         />
 
@@ -194,8 +194,8 @@ export default function AdminDashboard() {
         <MetricCard
           icon="🗂️"
           label="Projects"
-          value={loading ? undefined : kpis?.totalProjects}
-          formatter={(v) => v.toLocaleString()}
+          value={loading ? undefined : (kpis?.totalProjects ?? 0)}
+          formatter={(v) => (v ?? 0).toLocaleString()}
           loading={loading}
         />
 
@@ -203,8 +203,8 @@ export default function AdminDashboard() {
         <MetricCard
           icon="👆"
           label="Total Taps"
-          value={loading ? undefined : kpis?.totalTaps}
-          formatter={(v) => v.toLocaleString()}
+          value={loading ? undefined : (kpis?.totalTaps ?? 0)}
+          formatter={(v) => (v ?? 0).toLocaleString()}
           footer={
             <span className={styles.metricTrendUp}>
               NFC profile connections
@@ -217,8 +217,8 @@ export default function AdminDashboard() {
         <MetricCard
           icon="💬"
           label="Support Queue"
-          value={loading ? undefined : kpis?.openTickets}
-          formatter={(v) => v.toString()}
+          value={loading ? undefined : (kpis?.openTickets ?? 0)}
+          formatter={(v) => (v ?? 0).toString()}
           footer={
             <span
               className={
@@ -237,8 +237,8 @@ export default function AdminDashboard() {
         <MetricCard
           icon="🚨"
           label="Pending Reports"
-          value={loading ? undefined : kpis?.pendingReports}
-          formatter={(v) => v.toString()}
+          value={loading ? undefined : (kpis?.pendingReports ?? 0)}
+          formatter={(v) => (v ?? 0).toString()}
           footer={
             <span
               className={

@@ -1,0 +1,84 @@
+/* Custom styles for the Invoice Printer module */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+
+.font-serif-premium {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+/* Custom styling for the A4 Preview Container on Screen */
+.a4-container {
+  width: 100%;
+  max-width: 210mm;
+  min-height: 297mm;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+}
+
+/* Print Optimization Styles */
+@media print {
+  /* Force background colors and graphics to print */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Set A4 Page Setup */
+  @page {
+    size: A4 portrait;
+    margin: 15mm 15mm 15mm 15mm;
+  }
+
+  /* Global print rules */
+  body, html {
+    background: #ffffff !important;
+    color: #000000 !important;
+    width: 210mm;
+    height: 297mm;
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    font-size: 12px;
+  }
+
+  /* Hide UI elements */
+  .no-print {
+    display: none !important;
+  }
+
+  /* Style print area to span full page */
+  .print-area {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: transparent !important;
+  }
+
+  /* Page break logic */
+  tr {
+    page-break-inside: avoid !important;
+  }
+
+  img {
+    max-height: 2.5cm !important;
+    page-break-inside: avoid !important;
+  }
+
+  .page-break {
+    page-break-before: always !important;
+  }
+
+  /* Custom overrides for printing */
+  .a4-container {
+    min-height: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+}

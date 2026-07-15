@@ -15,7 +15,16 @@ async function verifyAdmin() {
     where: { id: payload.userId }
   });
 
-  if (!user || user.email !== process.env.ADMIN_EMAIL) {
+  if (!user) {
+    return null;
+  }
+
+  const isAdminEmail = 
+    user.email === 'nibrasulhaqqamini@gmail.com' || 
+    user.email === 'tapfolio.in@gmail.com' ||
+    user.email === process.env.ADMIN_EMAIL;
+
+  if (!isAdminEmail) {
     return null;
   }
 

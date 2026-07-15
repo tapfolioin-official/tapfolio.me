@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 import { verifyJWT } from './lib/auth';
 import { ROUTES } from './config/routes';
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // 1. CORS Preflight Pre-emption
@@ -59,8 +59,9 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith(ROUTES.LEADERBOARD) || 
     pathname.startsWith(ROUTES.ONBOARDING) ||
     pathname.startsWith('/admin') ||
+    pathname.startsWith('/invoice-printer') ||
     pathname.startsWith(ROUTES.CONNECTIONS); // Added connections to protection map explicitly just in case
-
+ 
   if (isProtectedRoute) {
     if (!token) {
       const loginUrl = new URL(ROUTES.LOGIN, request.url);
@@ -74,9 +75,15 @@ export async function proxy(request: NextRequest) {
       return response;
     }
 
-    // Role-based authorization for administrative console paths
-    if (pathname.startsWith('/admin') && payload.email !== 'nibrasulhaqqamini@gmail.com') {
-      console.warn(`[PROXY] Access denied to /admin for user: ${payload.email}`);
+    // Role-based authorization for administrative console paths and invoice printer
+    const isAdminPath = pathname.startsWith('/admin') || pathname.startsWith('/invoice-printer');
+    const isAdminEmail = 
+      payload.email === 'nibrasulhaqqamini@gmail.com' || 
+      payload.email === 'tapfolio.in@gmail.com' ||
+      (process.env.ADMIN_EMAIL && payload.email === process.env.ADMIN_EMAIL);
+
+    if (isAdminPath && !isAdminEmail) {
+      console.warn(`[PROXY] Access denied to admin-only path ${pathname} for user: ${payload.email}`);
       return NextResponse.redirect(new URL(ROUTES.DASHBOARD, request.url));
     }
   }

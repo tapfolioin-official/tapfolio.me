@@ -6,7 +6,12 @@ async function verifyAdmin(request: NextRequest) {
   const token = request.cookies.get('pertap_jwt')?.value;
   if (!token) return null;
   const payload = await verifyJWT(token);
-  if (!payload || payload.email !== 'nibrasulhaqqamini@gmail.com') return null;
+  if (!payload) return null;
+  const isAdminEmail = 
+    payload.email === 'nibrasulhaqqamini@gmail.com' || 
+    payload.email === 'tapfolio.in@gmail.com' ||
+    (process.env.ADMIN_EMAIL && payload.email === process.env.ADMIN_EMAIL);
+  if (!isAdminEmail) return null;
   return payload;
 }
 

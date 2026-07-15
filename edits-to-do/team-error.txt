@@ -8,3 +8,5 @@ Add button to save selected theam
 relese tapfolio :
                flutter build apk --release \
   --dart-define=API_URL=https://www.tapfolio.me
+
+  First analyse full project and cleen if any unwanded and duplicate files or codes

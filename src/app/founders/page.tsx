@@ -33,7 +33,7 @@ export default function FoundersPage() {
       url: "https://www.tapfolio.me/portfolio/nibras",
       vision: " frictionless, memorable, and green professional networking for the world.",
       experience: "Senior Software Engineer & Tech Lead specializing in web architectures and scalable direct matching ecosystems.",
-      sameAs: ["https://linkedin.com/in/mohammednibrashaqq", "https://github.com/nibrashaqq"]
+      sameAs: ["https://www.linkedin.com/in/mohammed-nibrasul-haqq-8267162ba/", "https://github.com/nibrasul"]
     },
     {
       name: "Abhinand",
@@ -43,7 +43,7 @@ export default function FoundersPage() {
       url: "https://www.tapfolio.me/portfolio/abhinand",
       vision: "Bridging the gap between the physical medium and the real-time digital connection hub.",
       experience: "Lead Systems Architect with deep experience designing hardware integrations, real-time sync systems, and responsive designs.",
-      sameAs: ["https://linkedin.com/in/abhinand", "https://github.com/abhinand"]
+      sameAs: ["https://www.linkedin.com/in/abhinand-ks-428387332/", "#"]
     }
   ];
 
