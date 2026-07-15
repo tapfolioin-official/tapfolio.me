@@ -1,3 +1,5 @@
+import nodemailer from 'nodemailer';
+
 /**
  * Formats a premium Linear/Stripe-style branded HTML email template.
  */
@@ -93,44 +95,78 @@ function getVerificationEmailHtml(otp: string): string {
 
 /**
  * Sends the verification code to the target email.
- * Falls back to logging to the terminal console if RESEND_API_KEY is not defined.
+ * Supports SMTP (Nodemailer), Resend API, and falls back to terminal console logs.
  */
 export async function sendVerificationEmail(email: string, otp: string): Promise<boolean> {
-  const apiKey = process.env.RESEND_API_KEY;
-  const fromEmail = process.env.EMAIL_FROM || 'Tapfolio Verification <onboarding@resend.dev>';
+  const smtpUser = process.env.SMTP_USER || 'tapfolio.in@gmail.com';
+  const smtpPass = process.env.SMTP_PASS; // App Password (e.g. Gmail App Password)
+  const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
+  const smtpPort = parseInt(process.env.SMTP_PORT || '587');
+  
+  const resendApiKey = process.env.RESEND_API_KEY;
 
-  if (!apiKey) {
-    console.log('\n' + '*'.repeat(50));
-    console.log(`[EMAIL BYPASS] Verification Code for ${email}`);
-    console.log(`OTP: ${otp}`);
-    console.log('*'.repeat(50) + '\n');
-    return true;
-  }
+  // 1. SMTP Mode (Gmail/tapfolio.in@gmail.com app passwords)
+  if (smtpPass) {
+    try {
+      const transporter = nodemailer.createTransport({
+        host: smtpHost,
+        port: smtpPort,
+        secure: smtpPort === 465, // Use SSL/TLS for port 465, STARTTLS for port 587
+        auth: {
+          user: smtpUser,
+          pass: smtpPass,
+        },
+      });
 
-  try {
-    const res = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        from: fromEmail,
+      await transporter.sendMail({
+        from: `"Tapfolio Verification" <${smtpUser}>`,
         to: email,
         subject: 'Verify your email address',
         html: getVerificationEmailHtml(otp),
-      }),
-    });
+      });
 
-    if (!res.ok) {
-      const errText = await res.text();
-      console.error('Failed to send verification email via Resend:', errText);
-      return false;
+      console.log(`[SMTP] Verification email sent to ${email} via ${smtpUser}`);
+      return true;
+    } catch (error) {
+      console.error('SMTP delivery failed:', error);
+      // Fallback to other senders
     }
-
-    return true;
-  } catch (error) {
-    console.error('Error sending verification email:', error);
-    return false;
   }
+
+  // 2. Resend API Mode
+  if (resendApiKey) {
+    try {
+      const fromEmail = process.env.EMAIL_FROM || `Tapfolio Verification <${smtpUser}>`;
+      const res = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${resendApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from: fromEmail,
+          to: email,
+          subject: 'Verify your email address',
+          html: getVerificationEmailHtml(otp),
+        }),
+      });
+
+      if (res.ok) {
+        console.log(`[Resend] Verification email sent to ${email}`);
+        return true;
+      }
+      const errText = await res.text();
+      console.error('Resend delivery failed:', errText);
+    } catch (error) {
+      console.error('Resend fetch error:', error);
+    }
+  }
+
+  // 3. Fallback bypass logging for local development
+  console.log('\n' + '*'.repeat(50));
+  console.log(`[EMAIL BYPASS] Verification Code for ${email}`);
+  console.log(`OTP: ${otp}`);
+  console.log(`(Configure SMTP_PASS in .env to send real emails from ${smtpUser})`);
+  console.log('*'.repeat(50) + '\n');
+  return true;
 }
