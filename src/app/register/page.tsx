@@ -40,6 +40,7 @@ export default function RegisterPage() {
   const [otpVerifying, setOtpVerifying] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
   const [otpError, setOtpError] = useState('');
+  const [devOtpBypass, setDevOtpBypass] = useState('');
 
   // Step 4: Username Customization
   const [username, setUsername] = useState('');
@@ -265,6 +266,12 @@ export default function RegisterPage() {
         throw new Error(data.error || 'Failed to send verification code.');
       }
 
+      if (data.otpBypass) {
+        setDevOtpBypass(data.otpBypass);
+      } else {
+        setDevOtpBypass('');
+      }
+
       setStep(8); // Transition to OTP Verification Screen
     } catch (err: any) {
       setError(err.message || 'Something went wrong. Please try again.');
@@ -317,6 +324,12 @@ export default function RegisterPage() {
 
       if (!res.ok) {
         throw new Error(data.error || 'Failed to resend code.');
+      }
+
+      if (data.otpBypass) {
+        setDevOtpBypass(data.otpBypass);
+      } else {
+        setDevOtpBypass('');
       }
     } catch (err: any) {
       setOtpError(err.message || 'Failed to resend code.');
@@ -655,6 +668,12 @@ export default function RegisterPage() {
               </div>
 
               {otpError && <div className={styles.errorBanner} style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#EF4444', border: '1px solid rgba(239, 68, 68, 0.2)', padding: '10px', borderRadius: '6px', fontSize: '0.85rem', marginBottom: '15px', textAlign: 'center' }}>{otpError}</div>}
+
+              {devOtpBypass && (
+                <div style={{ backgroundColor: 'rgba(59, 130, 246, 0.1)', color: '#60A5FA', border: '1px solid rgba(59, 130, 246, 0.2)', padding: '10px', borderRadius: '6px', fontSize: '0.85rem', marginBottom: '15px', textAlign: 'center' }}>
+                  <strong>[Dev Mode Bypass]</strong> Verification code is: <strong>{devOtpBypass}</strong>
+                </div>
+              )}
 
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', margin: '20px 0' }}>
                 {otpVerified ? (
