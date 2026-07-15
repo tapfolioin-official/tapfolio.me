@@ -162,11 +162,6 @@ export async function sendVerificationEmail(email: string, otp: string): Promise
     }
   }
 
-  // 3. Fallback bypass logging for local development
-  console.log('\n' + '*'.repeat(50));
-  console.log(`[EMAIL BYPASS] Verification Code for ${email}`);
-  console.log(`OTP: ${otp}`);
-  console.log(`(Configure SMTP_PASS in .env to send real emails from ${smtpUser})`);
-  console.log('*'.repeat(50) + '\n');
-  return true;
+  console.error(`[Email Error] No email provider configured, or all delivery attempts failed for email=${email}`);
+  return false;
 }

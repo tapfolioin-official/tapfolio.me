@@ -101,16 +101,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Failed to send verification email. Please try again.' }, { status: 500 });
     }
 
-    const responsePayload: any = {
+    return NextResponse.json({
       success: true,
       message: 'Verification code sent successfully.'
-    };
-
-    if (process.env.NODE_ENV !== 'production' && !process.env.RESEND_API_KEY) {
-      responsePayload.otpBypass = otp;
-    }
-
-    return NextResponse.json(responsePayload);
+    });
   } catch (error: any) {
     console.error('Send OTP error:', error);
     return NextResponse.json({ error: 'Something went wrong.' }, { status: 500 });
