@@ -351,8 +351,8 @@ class ApiService {
         final data = jsonDecode(response.body);
         if (data != null && data['success'] == true) {
           return {
-            'profile': Profile.fromJson(data['profile'] as Map<String, dynamic>?),
-            'status': data['status'],
+            'profile': data['profile'] as Map<String, dynamic>?,
+            'connectionStatus': data['connectionStatus'],
           };
         }
       }
