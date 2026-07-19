@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'theme_customizer_screen.dart';
+import 'theme_studio/theme_studio_screen.dart';
 
 void main() {
   runApp(
     const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: ThemeCustomizerScreen(isPremium: true),
+      home: ThemeStudioScreen(isPremium: true),
     ),
   );
 }

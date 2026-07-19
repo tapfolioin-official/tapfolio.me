@@ -13,7 +13,7 @@ import '../core/utils/color_parser.dart';
 import '../core/utils/image_helper.dart';
 import '../services/api_service.dart';
 import '../widgets/image_crop_dialog.dart';
-import 'theme_customizer_screen.dart';
+import 'theme_studio/theme_studio_screen.dart';
 
 
 class DashboardScreen extends StatefulWidget {
@@ -1265,7 +1265,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => ThemeCustomizerScreen(
+                      builder: (_) => ThemeStudioScreen(
                         isPremium: profile.isPremium,
                       ),
                     ),

@@ -1,0 +1,155 @@
+import 'package:flutter/material.dart' hide CardTheme, ButtonTheme;
+import '../models/theme_preset.dart';
+import '../models/theme_models.dart';
+
+class PresetService {
+  static List<ThemePreset> getPresets() {
+    return [
+      ThemePreset(
+        id: 'midnight_pro',
+        label: 'Midnight Pro',
+        category: 'Minimal Dark',
+        colors: [const Color(0xFF0f172a), const Color(0xFF1e293b)],
+        premium: false,
+        settings: ThemeSettings.defaultValue().copyWith(
+          background: BackgroundTheme(
+            type: 'solid',
+            value: '#0f172a',
+            brightness: 0.8,
+            blur: 0.0,
+            overlayOpacity: 0.3,
+          ),
+          buttons: ButtonTheme(
+            style: 'gradient',
+            radius: '12px',
+            height: '44px',
+            shadow: 'none',
+            border: 'none',
+            padding: '12px 24px',
+            iconPosition: 'left',
+            animation: 'scale',
+          ),
+          avatar: AvatarTheme(
+            shape: 'circle',
+            border: '2px solid #3b82f6',
+            shadow: 'none',
+            glow: 'none',
+            gradientBorder: false,
+            size: 80.0,
+            alignment: 'center',
+            animation: 'none',
+          ),
+        ),
+      ),
+      ThemePreset(
+        id: 'aurora_mesh',
+        label: 'Aurora Mesh',
+        category: 'Creative Mesh',
+        colors: [const Color(0xFF14b8a6), const Color(0xFF6366f1)],
+        premium: true,
+        settings: ThemeSettings.defaultValue().copyWith(
+          background: BackgroundTheme(
+            type: 'aurora',
+            value: '',
+            brightness: 0.8,
+            blur: 0.0,
+            overlayOpacity: 0.3,
+          ),
+          buttons: ButtonTheme(
+            style: 'gradient',
+            radius: '100px',
+            height: '44px',
+            shadow: 'none',
+            border: 'none',
+            padding: '12px 24px',
+            iconPosition: 'left',
+            animation: 'ripple',
+          ),
+          avatar: AvatarTheme(
+            shape: 'circle',
+            border: '2px solid #ffffff',
+            shadow: 'none',
+            glow: 'glow',
+            gradientBorder: true,
+            size: 80.0,
+            alignment: 'center',
+            animation: 'rotating_ring',
+          ),
+        ),
+      ),
+      ThemePreset(
+        id: 'clean_slate',
+        label: 'Clean Slate',
+        category: 'Minimal Light',
+        colors: [const Color(0xFFf8fafc), const Color(0xFFe2e8f0)],
+        premium: false,
+        settings: ThemeSettings.defaultValue().copyWith(
+          background: BackgroundTheme(
+            type: 'solid',
+            value: '#f8fafc',
+            brightness: 0.8,
+            blur: 0.0,
+            overlayOpacity: 0.3,
+          ),
+          buttons: ButtonTheme(
+            style: 'outlined',
+            radius: '8px',
+            height: '44px',
+            shadow: 'none',
+            border: '2px solid #0f172a',
+            padding: '12px 24px',
+            iconPosition: 'left',
+            animation: 'none',
+          ),
+          avatar: AvatarTheme(
+            shape: 'rounded',
+            border: '1px solid #e2e8f0',
+            shadow: 'none',
+            glow: 'none',
+            gradientBorder: false,
+            size: 80.0,
+            alignment: 'center',
+            animation: 'none',
+          ),
+          layout: LayoutTheme(style: 'minimal'),
+        ),
+      ),
+      ThemePreset(
+        id: 'ocean_glass',
+        label: 'Ocean Glass',
+        category: 'Glassmorphism',
+        colors: [const Color(0xFF0ea5e9), const Color(0xFF6366f1)],
+        premium: true,
+        settings: ThemeSettings.defaultValue().copyWith(
+          background: BackgroundTheme(
+            type: 'animated_gradient',
+            value: '',
+            brightness: 0.8,
+            blur: 0.0,
+            overlayOpacity: 0.3,
+          ),
+          buttons: ButtonTheme(
+            style: 'ghost',
+            radius: '100px',
+            height: '44px',
+            shadow: 'none',
+            border: 'none',
+            padding: '12px 24px',
+            iconPosition: 'left',
+            animation: 'none',
+          ),
+          avatar: AvatarTheme(
+            shape: 'circle',
+            border: '2px solid #0ea5e9',
+            shadow: 'none',
+            glow: 'none',
+            gradientBorder: false,
+            size: 80.0,
+            alignment: 'center',
+            animation: 'pulse',
+          ),
+        ),
+      ),
+    ];
+  }
+}
