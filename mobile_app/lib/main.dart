@@ -154,7 +154,25 @@ class _MyAppState extends State<MyApp> {
       title: 'Tapfolio',
       debugShowCheckedModeBanner: false,
       navigatorKey: navigatorKey,
+      themeMode: ThemeMode.system,
       theme: ThemeData(
+        brightness: Brightness.light,
+        primaryColor: const Color(0xFF6366F1),
+        scaffoldBackgroundColor: const Color(0xFFF3F4F6),
+        textTheme: GoogleFonts.outfitTextTheme(
+          ThemeData.light().textTheme.apply(
+            bodyColor: const Color(0xFF1F2937),
+            displayColor: const Color(0xFF111827),
+          ),
+        ),
+        colorScheme: const ColorScheme.light(
+          primary: Color(0xFF6366F1),
+          secondary: Color(0xFFD946EF),
+          surface: Colors.white,
+          error: Colors.redAccent,
+        ),
+      ),
+      darkTheme: ThemeData(
         brightness: Brightness.dark,
         primaryColor: const Color(0xFF6366F1),
         scaffoldBackgroundColor: const Color(0xFF06070D),

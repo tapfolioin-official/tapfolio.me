@@ -36,6 +36,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
   int _pendingCount = 0;
   bool _isEditing = false; // Toggle between view and edit
 
+  bool get _isLight => Theme.of(context).brightness == Brightness.light;
+  Color get _textColor => _isLight ? const Color(0xFF1F2937) : Colors.white;
+  Color get _subtitleColor => _isLight ? const Color(0xFF4B5563) : Colors.white70;
+  Color get _cardBg => _isLight ? Colors.white : Colors.white.withValues(alpha: 0.05);
+  Color get _cardBorder => _isLight ? Colors.black12 : Colors.white10;
+
   // Controllers
   final _nameController = TextEditingController();
   final _taglineController = TextEditingController();
@@ -797,7 +803,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               Text(
                 'tapfolio',
                 style: GoogleFonts.outfit(
-                  color: Colors.white,
+                  color: _textColor,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1.2,
@@ -806,7 +812,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               Text(
                 '$_score',
                 style: GoogleFonts.outfit(
-                  color: Colors.white70,
+                  color: _subtitleColor,
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
                 ),
@@ -819,7 +825,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           Text(
             'Hey, iam ${profile.name}',
             style: GoogleFonts.outfit(
-              color: Colors.white,
+              color: _textColor,
               fontSize: 28,
               fontWeight: FontWeight.bold,
             ),
@@ -828,7 +834,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           Text(
             "Let's connect!",
             style: GoogleFonts.outfit(
-              color: Colors.white70,
+              color: _subtitleColor,
               fontSize: 18,
               fontWeight: FontWeight.w400,
             ),
@@ -914,7 +920,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             Text(
               profile.bio,
               style: GoogleFonts.outfit(
-                color: Colors.white70,
+                color: _subtitleColor,
                 fontSize: 16,
                 height: 1.5,
               ),
@@ -925,7 +931,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           Text(
             'Connect with me',
             style: GoogleFonts.outfit(
-              color: Colors.white,
+              color: _textColor,
               fontSize: 18,
               fontWeight: FontWeight.w600,
             ),
@@ -945,7 +951,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             Text(
               'Chat with me',
               style: GoogleFonts.outfit(
-                color: Colors.white,
+                color: _textColor,
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
               ),
@@ -959,7 +965,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           Text(
             'Download My CV / Resume',
             style: GoogleFonts.outfit(
-              color: Colors.white,
+              color: _textColor,
               fontSize: 16,
               fontWeight: FontWeight.w600,
             ),
@@ -984,7 +990,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             Text(
               'Portfolio Link',
               style: GoogleFonts.outfit(
-                color: Colors.white,
+                color: _textColor,
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),
@@ -1010,7 +1016,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             Text(
               'Behance',
               style: GoogleFonts.outfit(
-                color: Colors.white,
+                color: _textColor,
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),
@@ -1038,7 +1044,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               'Design is not just what it looks like,\nit\'s how it connects.',
               textAlign: TextAlign.center,
               style: GoogleFonts.outfit(
-                color: Colors.white70,
+                color: _subtitleColor,
                 fontSize: 14,
                 fontStyle: FontStyle.italic,
                 height: 1.6,
@@ -1081,9 +1087,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.03),
+          color: _cardBg,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+          border: Border.all(color: _cardBorder),
         ),
         child: Row(
           children: [
@@ -1092,13 +1098,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
             Text(
               social.handle.isNotEmpty ? social.handle : social.url,
               style: GoogleFonts.outfit(
-                color: Colors.white70,
+                color: _subtitleColor,
                 fontSize: 15,
                 fontWeight: FontWeight.w500,
               ),
             ),
             const Spacer(),
-            const Icon(Icons.chevron_right, color: Colors.white24, size: 18),
+            Icon(Icons.chevron_right, color: _subtitleColor.withValues(alpha: 0.35), size: 18),
           ],
         ),
       ),
@@ -1142,17 +1148,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.04),
+        color: _cardBg,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+        border: Border.all(color: _cardBorder),
       ),
       child: TextButton.icon(
         onPressed: onPressed,
-        icon: Icon(icon, color: Colors.white70, size: 20),
+        icon: Icon(icon, color: _subtitleColor, size: 20),
         label: Text(
           label,
           style: GoogleFonts.outfit(
-            color: Colors.white70,
+            color: _subtitleColor,
             fontSize: 15,
             fontWeight: FontWeight.w500,
           ),
@@ -2043,9 +2049,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
       margin: const EdgeInsets.only(bottom: 24),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.03),
+        color: _cardBg,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+        border: Border.all(color: _cardBorder),
       ),
       child: Column(crossAxisAlignment: crossAxisAlignment, children: children),
     );
@@ -2062,7 +2068,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         Text(
           label,
           style: GoogleFonts.outfit(
-            color: Colors.white70,
+            color: _subtitleColor,
             fontSize: 14,
             fontWeight: FontWeight.w500,
           ),
@@ -2070,14 +2076,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
         const SizedBox(height: 6),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.04),
+            color: _cardBg,
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+            border: Border.all(color: _cardBorder),
           ),
           child: TextField(
             controller: controller,
             maxLines: maxLines,
-            style: GoogleFonts.outfit(color: Colors.white),
+            style: GoogleFonts.outfit(color: _textColor),
             decoration: const InputDecoration(
               border: InputBorder.none,
               contentPadding: EdgeInsets.symmetric(

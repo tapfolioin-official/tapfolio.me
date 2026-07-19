@@ -10,6 +10,8 @@ import 'delete_account_screen.dart';
 import 'notification_screen.dart';
 import '../services/api_service.dart';
 import '../services/push_notification_service.dart';
+import '../models/profile.dart';
+import '../features/card_export/dialog/share_card_dialog.dart';
 
 class MainNavigationShell extends StatefulWidget {
   final VoidCallback onLogout;
@@ -120,12 +122,61 @@ class _MainNavigationShellState extends State<MainNavigationShell>
     });
   }
 
+  Future<void> _onSharePressed() async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator(color: Color(0xFF6366F1))),
+    );
+
+    try {
+      final res = await _apiService.getProfile();
+      if (mounted) Navigator.pop(context); // Close loading dialog
+
+      if (res != null && res['profile'] != null) {
+        final profile = res['profile'] as Profile;
+        final publicLink = '${_apiService.baseUrl}/connect/${profile.username}';
+        
+        if (mounted) {
+          ShareCardDialog.show(
+            context,
+            name: profile.name,
+            tagline: profile.tagline,
+            avatar: profile.avatar,
+            profileUrl: publicLink,
+            baseUrl: _apiService.baseUrl,
+            isPremium: profile.isPremium,
+          );
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to load profile for sharing.')),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        Navigator.pop(context); // Close loading dialog if crashed
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error loading profile: $e')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isLight = Theme.of(context).brightness == Brightness.light;
+    final scaffoldBg = isLight ? const Color(0xFFF3F4F6) : const Color(0xFF06070D);
+    final appBarBg = isLight ? Colors.white : const Color(0xFF0F1122);
+    final logoTextColor = isLight ? const Color(0xFF111827) : Colors.white;
+    final iconColor = isLight ? const Color(0xFF374151) : Colors.white70;
+
     return Scaffold(
-      backgroundColor: const Color(0xFF06070D),
+      backgroundColor: scaffoldBg,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0F1122),
+        backgroundColor: appBarBg,
         elevation: 0,
         title: Row(
           children: [
@@ -134,7 +185,7 @@ class _MainNavigationShellState extends State<MainNavigationShell>
               style: GoogleFonts.outfit(
                 fontWeight: FontWeight.bold,
                 fontSize: 22,
-                color: Colors.white,
+                color: logoTextColor,
               ),
             ),
             Text(
@@ -157,8 +208,8 @@ class _MainNavigationShellState extends State<MainNavigationShell>
                 clipBehavior: Clip.none,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.notifications_outlined,
-                        color: Colors.white70),
+                    icon: Icon(Icons.notifications_outlined,
+                        color: iconColor),
                     onPressed: _openNotifications,
                   ),
                   if (_unreadNotifCount > 0)
@@ -171,10 +222,15 @@ class _MainNavigationShellState extends State<MainNavigationShell>
               ),
             ),
           ),
+          // ── Share button ──
+          IconButton(
+            icon: Icon(Icons.share_rounded, color: iconColor),
+            onPressed: _onSharePressed,
+          ),
           // ── More menu ──
           PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert, color: Colors.white70),
-            color: const Color(0xFF1A1A2E),
+            icon: Icon(Icons.more_vert, color: iconColor),
+            color: isLight ? Colors.white : const Color(0xFF1A1A2E),
             onSelected: (value) async {
               if (value == 'logout') {
                 _stopPolling();
@@ -195,39 +251,43 @@ class _MainNavigationShellState extends State<MainNavigationShell>
                 );
               }
             },
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                value: 'diagnostics',
-                child: Row(
-                  children: [
-                    const Icon(Icons.analytics_outlined, color: Colors.white70, size: 20),
-                    const SizedBox(width: 12),
-                    Text('Diagnostics', style: GoogleFonts.outfit(color: Colors.white)),
-                  ],
+            itemBuilder: (context) {
+              final popupTextColor = isLight ? const Color(0xFF1F2937) : Colors.white;
+              final popupIconColor = isLight ? const Color(0xFF4B5563) : Colors.white70;
+              return [
+                PopupMenuItem(
+                  value: 'diagnostics',
+                  child: Row(
+                    children: [
+                      Icon(Icons.analytics_outlined, color: popupIconColor, size: 20),
+                      const SizedBox(width: 12),
+                      Text('Diagnostics', style: GoogleFonts.outfit(color: popupTextColor)),
+                    ],
+                  ),
                 ),
-              ),
-              PopupMenuItem(
-                value: 'logout',
-                child: Row(
-                  children: [
-                    const Icon(Icons.logout, color: Colors.white70, size: 20),
-                    const SizedBox(width: 12),
-                    Text('Sign Out', style: GoogleFonts.outfit(color: Colors.white)),
-                  ],
+                PopupMenuItem(
+                  value: 'logout',
+                  child: Row(
+                    children: [
+                      Icon(Icons.logout, color: popupIconColor, size: 20),
+                      const SizedBox(width: 12),
+                      Text('Sign Out', style: GoogleFonts.outfit(color: popupTextColor)),
+                    ],
+                  ),
                 ),
-              ),
-              PopupMenuItem(
-                value: 'delete_account',
-                child: Row(
-                  children: [
-                    Icon(Icons.delete_forever, color: Colors.red.shade400, size: 20),
-                    const SizedBox(width: 12),
-                    Text('Delete Account',
-                        style: GoogleFonts.outfit(color: Colors.red.shade400)),
-                  ],
+                PopupMenuItem(
+                  value: 'delete_account',
+                  child: Row(
+                    children: [
+                      Icon(Icons.delete_forever, color: Colors.red.shade400, size: 20),
+                      const SizedBox(width: 12),
+                      Text('Delete Account',
+                          style: GoogleFonts.outfit(color: Colors.red.shade400)),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ];
+            },
           ),
         ],
       ),
