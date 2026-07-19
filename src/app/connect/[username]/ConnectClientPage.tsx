@@ -21,7 +21,7 @@ interface ConnectClientPageProps {
 }
 
 // Particles background component for Space/Particles themes
-function ParticlesBackground() {
+function ParticlesBackground({ isPreview }: { isPreview?: boolean }) {
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -31,8 +31,9 @@ function ParticlesBackground() {
     if (!ctx) return;
 
     let animationFrameId: number;
-    let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
+    const container = canvas.parentElement;
+    let width = (canvas.width = isPreview && container ? container.clientWidth : window.innerWidth);
+    let height = (canvas.height = isPreview && container ? container.clientHeight : window.innerHeight);
 
     const particles: { x: number; y: number; size: number; speedX: number; speedY: number; opacity: number }[] = [];
     const count = 40;
@@ -49,10 +50,10 @@ function ParticlesBackground() {
     }
 
     const handleResize = () => {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
+      width = canvas.width = isPreview && container ? container.clientWidth : window.innerWidth;
+      height = canvas.height = isPreview && container ? container.clientHeight : window.innerHeight;
     };
-    window.addEventListener('resize', handleResize);
+    if (!isPreview) window.addEventListener('resize', handleResize);
 
     const animate = () => {
       ctx.clearRect(0, 0, width, height);
@@ -76,11 +77,17 @@ function ParticlesBackground() {
 
     return () => {
       cancelAnimationFrame(animationFrameId);
-      window.removeEventListener('resize', handleResize);
+      if (!isPreview) window.removeEventListener('resize', handleResize);
     };
-  }, []);
+  }, [isPreview]);
 
-  return <canvas ref={canvasRef} className={styles.particlesCanvas} />;
+  return (
+    <canvas
+      ref={canvasRef}
+      className={styles.particlesCanvas}
+      style={isPreview ? { position: 'absolute' } : undefined}
+    />
+  );
 }
 
 // Cursor Glow component
@@ -647,17 +654,35 @@ export default function ConnectClientPage({
       }}
     >
       {/* ─── Premium Background Rendering ─── */}
-      {bgType === 'aurora' && <div className={styles.auroraBg} />}
-      {bgType === 'animated_gradient' && <div className={styles.animatedGradientBg} />}
-      {bgType === 'particles' && <ParticlesBackground />}
+      {bgType === 'aurora' && (
+        <div
+          className={styles.auroraBg}
+          style={previewTheme ? { position: 'absolute' } : undefined}
+        />
+      )}
+      {bgType === 'animated_gradient' && (
+        <div
+          className={styles.animatedGradientBg}
+          style={previewTheme ? { position: 'absolute' } : undefined}
+        />
+      )}
+      {bgType === 'particles' && <ParticlesBackground isPreview={!!previewTheme} />}
       {bgType === 'video' && bgValue && (
-        <video src={bgValue} autoPlay loop muted playsInline className={styles.videoBg} />
+        <video
+          src={bgValue}
+          autoPlay
+          loop
+          muted
+          playsInline
+          className={styles.videoBg}
+          style={previewTheme ? { position: 'absolute' } : undefined}
+        />
       )}
       {bgType === 'image' && bgValue && (
         <>
           <div
             style={{
-              position: 'fixed',
+              position: previewTheme ? 'absolute' : 'fixed',
               top: 0,
               left: 0,
               right: 0,
@@ -670,7 +695,7 @@ export default function ConnectClientPage({
           />
           <div
             style={{
-              position: 'fixed',
+              position: previewTheme ? 'absolute' : 'fixed',
               top: 0,
               left: 0,
               right: 0,

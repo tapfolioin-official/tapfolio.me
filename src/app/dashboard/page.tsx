@@ -2850,7 +2850,7 @@ export default function Dashboard() {
                   </div>
 
                   {/* Scrollable Smartphone Screen Area */}
-                  <div className="flex-1 overflow-y-auto scrollbar-none relative bg-gray-50">
+                  <div className="flex-1 overflow-hidden overflow-y-auto scrollbar-none relative bg-gray-50 isolate" style={{ contain: 'layout paint' }}>
                     {themeSettings ? (
                       <ConnectClientPage
                         username={profile?.username || ''}
