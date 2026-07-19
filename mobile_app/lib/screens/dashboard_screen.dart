@@ -14,6 +14,7 @@ import '../core/utils/image_helper.dart';
 import '../services/api_service.dart';
 import '../widgets/image_crop_dialog.dart';
 import 'theme_studio/theme_studio_screen.dart';
+import '../features/card_export/dialog/share_card_dialog.dart';
 
 
 class DashboardScreen extends StatefulWidget {
@@ -1352,6 +1353,38 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF6366F1),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+                onPressed: () {
+                  ShareCardDialog.show(
+                    context,
+                    name: profile.name,
+                    tagline: profile.tagline,
+                    avatar: profile.avatar,
+                    profileUrl: publicLink,
+                    baseUrl: _apiService.baseUrl,
+                    isPremium: profile.isPremium,
+                  );
+                },
+                icon: const Icon(Icons.share_rounded, color: Colors.white, size: 18),
+                label: Text(
+                  'Share or Download Card',
+                  style: GoogleFonts.outfit(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
             ),
           ],
         ),
