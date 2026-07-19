@@ -189,8 +189,12 @@ class _ThemeCustomizerScreenState extends State<ThemeCustomizerScreen>
         _saving = false;
         _successMsg = res['success'] == true ? 'Theme saved!' : (res['error'] ?? 'Failed.');
         _errorMsg = res['success'] == true ? null : _successMsg;
-        if (res['success'] == true) _errorMsg = null;
-        else { _errorMsg = _successMsg; _successMsg = null; }
+        if (res['success'] == true) {
+          _errorMsg = null;
+        } else {
+          _errorMsg = _successMsg;
+          _successMsg = null;
+        }
       });
       Future.delayed(const Duration(seconds: 3), () {
         if (mounted) setState(() { _successMsg = null; _errorMsg = null; });

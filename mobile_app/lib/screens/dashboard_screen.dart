@@ -13,6 +13,8 @@ import '../core/utils/color_parser.dart';
 import '../core/utils/image_helper.dart';
 import '../services/api_service.dart';
 import '../widgets/image_crop_dialog.dart';
+import 'theme_customizer_screen.dart';
+
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -1219,6 +1221,68 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
             ),
           ),
+
+        // Customize Theme Card
+        _buildGlassCard(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Customize Theme 🎨',
+                        style: GoogleFonts.outfit(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Change colors, background, layouts & more',
+                        style: GoogleFonts.outfit(color: Colors.white60, fontSize: 13),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF6366F1),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => ThemeCustomizerScreen(
+                        isPremium: profile.isPremium,
+                      ),
+                    ),
+                  ).then((_) => _fetchProfile());
+                },
+                icon: const Icon(Icons.palette_outlined, color: Colors.white),
+                label: Text(
+                  'Open Theme Customizer',
+                  style: GoogleFonts.outfit(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
 
         // Public NFC Link Card
         _buildGlassCard(
