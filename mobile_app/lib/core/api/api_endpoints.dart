@@ -13,7 +13,12 @@ class ApiEndpoints {
   static const String history = '/api/history';
   static const String leaderboard = '/api/leaderboard';
   static const String version = '/api/version';
-  
+
+  // Theme / Customizer
+  static const String theme = '/api/profile/theme';
+  static const String themeReset = '/api/profile/theme/reset';
+  static const String themeMarketplace = '/api/profile/theme/marketplace';
+
   static const String lookup = '/api/connections/lookup';
   static const String connectionRequest = '/api/connections/request';
   static const String connectionRequests = '/api/connections/requests';
@@ -22,7 +27,7 @@ class ApiEndpoints {
   static const String connections = '/api/connections';
   static const String connectionSettings = '/api/connections/settings';
   static const String connectionVisibility = '/api/connections/visibility';
-  
+
   static const String notifications = '/api/notifications';
   static const String unreadNotificationCount = '/api/notifications/unread-count';
   static const String readNotification = '/api/notifications/read';

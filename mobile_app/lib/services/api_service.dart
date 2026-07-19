@@ -604,4 +604,127 @@ class ApiService {
       return {'success': false, 'error': e.toString()};
     }
   }
+
+  // ─── Theme / Customizer ───────────────────────────────────────────────────
+
+  Future<Map<String, dynamic>> getTheme() async {
+    try {
+      final response = await _apiClient.sendRequest('GET', ApiEndpoints.theme);
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 && data != null && data['success'] == true) {
+        return {'success': true, 'theme': data['theme']};
+      }
+      return {'success': false, 'error': data?['error'] ?? 'Failed to load theme.'};
+    } catch (e) {
+      return {'success': false, 'error': e.toString()};
+    }
+  }
+
+  Future<Map<String, dynamic>> saveTheme(Map<String, dynamic> settings) async {
+    try {
+      final response = await _apiClient.sendRequest(
+        'POST',
+        ApiEndpoints.theme,
+        body: jsonEncode({'settings': settings}),
+      );
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 && data != null && data['success'] == true) {
+        return {'success': true, 'theme': data['theme']};
+      }
+      return {'success': false, 'error': data?['error'] ?? 'Failed to save theme.'};
+    } catch (e) {
+      return {'success': false, 'error': e.toString()};
+    }
+  }
+
+  Future<Map<String, dynamic>> resetTheme() async {
+    try {
+      final response = await _apiClient.sendRequest('POST', ApiEndpoints.themeReset);
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 && data != null && data['success'] == true) {
+        return {'success': true, 'theme': data['theme']};
+      }
+      return {'success': false, 'error': data?['error'] ?? 'Failed to reset theme.'};
+    } catch (e) {
+      return {'success': false, 'error': e.toString()};
+    }
+  }
+
+  Future<Map<String, dynamic>> getMarketplaceThemes({String filter = 'trending'}) async {
+    try {
+      final response = await _apiClient.sendRequest(
+        'GET',
+        '${ApiEndpoints.themeMarketplace}?filter=$filter',
+      );
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 && data != null && data['success'] == true) {
+        return {'success': true, 'themes': data['themes']};
+      }
+      return {'success': false, 'themes': []};
+    } catch (e) {
+      return {'success': false, 'themes': []};
+    }
+  }
+
+  Future<Map<String, dynamic>> publishMarketplaceTheme(
+    String name,
+    Map<String, dynamic> settings,
+  ) async {
+    try {
+      final response = await _apiClient.sendRequest(
+        'POST',
+        ApiEndpoints.themeMarketplace,
+        body: jsonEncode({'action': 'publish', 'themeName': name, 'settings': settings}),
+      );
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 && data != null && data['success'] == true) {
+        return {'success': true};
+      }
+      return {'success': false, 'error': data?['error'] ?? 'Failed to publish.'};
+    } catch (e) {
+      return {'success': false, 'error': e.toString()};
+    }
+  }
+
+  Future<Map<String, dynamic>> installMarketplaceTheme(int themeId) async {
+    try {
+      final response = await _apiClient.sendRequest(
+        'POST',
+        ApiEndpoints.themeMarketplace,
+        body: jsonEncode({'action': 'install', 'themeId': themeId}),
+      );
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 && data != null && data['success'] == true) {
+        return {'success': true, 'theme': data['theme']};
+      }
+      return {'success': false, 'error': data?['error'] ?? 'Failed to install.'};
+    } catch (e) {
+      return {'success': false, 'error': e.toString()};
+    }
+  }
+
+  Future<bool> likeMarketplaceTheme(int themeId) async {
+    try {
+      final response = await _apiClient.sendRequest(
+        'POST',
+        ApiEndpoints.themeMarketplace,
+        body: jsonEncode({'action': 'like', 'themeId': themeId}),
+      );
+      return response.statusCode == 200;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<bool> deleteMarketplaceTheme(int themeId) async {
+    try {
+      final response = await _apiClient.sendRequest(
+        'DELETE',
+        '${ApiEndpoints.themeMarketplace}?themeId=$themeId',
+      );
+      return response.statusCode == 200;
+    } catch (_) {
+      return false;
+    }
+  }
 }

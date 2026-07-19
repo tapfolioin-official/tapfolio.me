@@ -11,9 +11,9 @@ import 'screens/connect_screen.dart';
 import 'screens/connections_screen.dart';
 import 'screens/public_profile_screen.dart';
 import 'screens/diagnostics/diagnostics_screen.dart';
- 
+
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
- 
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -22,7 +22,9 @@ void main() async {
 
   // Global Flutter Error Catcher
   FlutterError.onError = (details) {
-    debugPrint('[FLUTTER CRITICAL ERROR] Exception: ${details.exceptionAsString()}');
+    debugPrint(
+      '[FLUTTER CRITICAL ERROR] Exception: ${details.exceptionAsString()}',
+    );
     debugPrint('[FLUTTER CRITICAL ERROR] StackTrace: ${details.stack}');
   };
 
@@ -57,14 +59,14 @@ void main() async {
     debugPrint('[MAIN] DeepLinkService captureInitialLink error: $e');
   }
 }
- 
+
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
- 
+
   @override
   State<MyApp> createState() => _MyAppState();
 }
- 
+
 class _MyAppState extends State<MyApp> {
   final ApiService _apiService = ApiService();
   bool _checkingAuth = true;
@@ -81,16 +83,22 @@ class _MyAppState extends State<MyApp> {
     try {
       // Short-circuit: if no JWT is stored, we're definitely not authenticated
       if (!_apiService.isAuthenticated) {
-        debugPrint('[TRACE] _checkInitialAuth: No stored JWT — skipping getMe, showing login.');
+        debugPrint(
+          '[TRACE] _checkInitialAuth: No stored JWT — skipping getMe, showing login.',
+        );
         setState(() {
           _isAuthenticated = false;
           _checkingAuth = false;
         });
       } else {
-        debugPrint('[TRACE] _checkInitialAuth: JWT present, validating via getMe.');
+        debugPrint(
+          '[TRACE] _checkInitialAuth: JWT present, validating via getMe.',
+        );
         // Validate the stored JWT against the server
         final user = await _apiService.getMe();
-        debugPrint('[TRACE] _checkInitialAuth: getMe user result = ${user?.email}');
+        debugPrint(
+          '[TRACE] _checkInitialAuth: getMe user result = ${user?.email}',
+        );
         if (mounted) {
           setState(() {
             _isAuthenticated = user != null;
@@ -98,10 +106,14 @@ class _MyAppState extends State<MyApp> {
           });
         }
         if (user != null) {
-          debugPrint('[TRACE] _checkInitialAuth: Valid user session found, calling registerToken.');
+          debugPrint(
+            '[TRACE] _checkInitialAuth: Valid user session found, calling registerToken.',
+          );
           PushNotificationService().registerToken();
         } else {
-          debugPrint('[TRACE] _checkInitialAuth: getMe returned null — JWT may be expired.');
+          debugPrint(
+            '[TRACE] _checkInitialAuth: getMe returned null — JWT may be expired.',
+          );
         }
       }
     } catch (e, stack) {
@@ -120,14 +132,18 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _handleLoginSuccess() {
-    debugPrint('[TRACE] _handleLoginSuccess() triggered. Rebuilding to show MainNavigationShell.');
+    debugPrint(
+      '[TRACE] _handleLoginSuccess() triggered. Rebuilding to show MainNavigationShell.',
+    );
     setState(() {
       _isAuthenticated = true;
     });
   }
 
   void _handleLogout() {
-    debugPrint('[TRACE] _handleLogout() triggered. Rebuilding to show LoginScreen.');
+    debugPrint(
+      '[TRACE] _handleLogout() triggered. Rebuilding to show LoginScreen.',
+    );
     setState(() {
       _isAuthenticated = false;
     });
@@ -170,9 +186,7 @@ class _MyAppState extends State<MyApp> {
           );
         }
         if (settings.name == '/connections') {
-          return MaterialPageRoute(
-            builder: (_) => const ConnectionsScreen(),
-          );
+          return MaterialPageRoute(builder: (_) => const ConnectionsScreen());
         }
         if (settings.name == '/login') {
           return MaterialPageRoute(
@@ -187,9 +201,7 @@ class _MyAppState extends State<MyApp> {
           );
         }
         if (settings.name == '/diagnostics') {
-          return MaterialPageRoute(
-            builder: (_) => const DiagnosticsScreen(),
-          );
+          return MaterialPageRoute(builder: (_) => const DiagnosticsScreen());
         }
         return null;
       },
