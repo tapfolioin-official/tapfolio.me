@@ -128,3 +128,42 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Something went wrong.' }, { status: 500 });
   }
 }
+
+// DELETE /api/profile/theme/marketplace?themeId=xxx
+// Removes a marketplace theme — only the owner can delete.
+export async function DELETE(request: Request) {
+  try {
+    const userId = await getAuthenticatedUserId();
+    if (!userId) {
+      return NextResponse.json({ error: 'Not authenticated.' }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const themeIdRaw = searchParams.get('themeId');
+    const themeId = themeIdRaw ? parseInt(themeIdRaw, 10) : null;
+
+    if (!themeId || isNaN(themeId)) {
+      return NextResponse.json({ error: 'Valid themeId is required.' }, { status: 400 });
+    }
+
+    // Verify the theme belongs to the requesting user
+    const theme = await prisma.profileTheme.findUnique({
+      where: { id: themeId }
+    });
+
+    if (!theme) {
+      return NextResponse.json({ error: 'Theme not found.' }, { status: 404 });
+    }
+
+    if (theme.userId !== userId) {
+      return NextResponse.json({ error: 'You can only delete your own published themes.' }, { status: 403 });
+    }
+
+    await prisma.profileTheme.delete({ where: { id: themeId } });
+
+    return NextResponse.json({ success: true });
+  } catch (error: any) {
+    console.error('Marketplace DELETE error:', error);
+    return NextResponse.json({ error: 'Something went wrong.' }, { status: 500 });
+  }
+}
