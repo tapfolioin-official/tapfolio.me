@@ -204,6 +204,20 @@ export default function ConnectClientPage({
   const activeTheme = previewTheme || activeProfileData?.theme;
   const activeFont = activeTheme?.typography?.fontFamily;
 
+  // Layout presets configuration
+  const layoutStyle = activeTheme?.layout?.style || 'centered';
+  const layoutAlignment = activeTheme?.layout?.alignment || 'center';
+
+  const computedAlignment = layoutStyle === 'centered' ? 'center' : 
+                            (layoutStyle === 'business' || layoutStyle === 'modern') ? 'left' : 
+                            layoutAlignment;
+
+  const avatarSize = layoutStyle === 'minimal' ? '70px' : 
+                     layoutStyle === 'compact' ? '60px' : 
+                     '80px';
+
+  const avatarTransform = layoutStyle === 'creative' ? 'rotate(-3deg) scale(1.05)' : undefined;
+
   useEffect(() => {
     if (!activeFont) return;
     const fontId = `google-font-${activeFont.toLowerCase().replace(/\s+/g, '-')}`;
@@ -343,15 +357,60 @@ export default function ConnectClientPage({
 
     // Cover
     let coverBg = 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)';
-    if (cover.type === 'solid') coverBg = cover.value || colors.primary || '#014BAA';
-    if (cover.type === 'gradient') coverBg = cover.value || `linear-gradient(135deg, ${colors.primary || '#014BAA'} 0%, ${colors.accent || '#1D9BF0'} 100%)`;
-    if (cover.type === 'image') coverBg = `url(${cover.value}) center/cover no-repeat`;
+    const bgOverlayOpacity = background.overlayOpacity !== undefined ? background.overlayOpacity : 0.3;
+    const coverOverlayOpacity = Math.min(bgOverlayOpacity + 0.25, 0.8);
+
+    if (background.type === 'image' && background.value) {
+      coverBg = `linear-gradient(rgba(0, 0, 0, ${coverOverlayOpacity}), rgba(0, 0, 0, ${coverOverlayOpacity + 0.15})), url(${background.value})`;
+    } else if (cover.type === 'solid') {
+      coverBg = cover.value || colors.primary || '#014BAA';
+    } else if (cover.type === 'gradient') {
+      coverBg = cover.value || `linear-gradient(135deg, ${colors.primary || '#014BAA'} 0%, ${colors.accent || '#1D9BF0'} 100%)`;
+    } else if (cover.type === 'image') {
+      coverBg = `linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.65)), url(${cover.value})`;
+    }
+
+    let coverBorder = '1px solid transparent';
+    if (background.type === 'image' && background.value) {
+      coverBorder = '1px solid rgba(255, 255, 255, 0.15)';
+    }
+
+    let bgTextColor = colors.text || '#111827';
+    let bgTextColorMuted = colors.mutedText || '#6b7280';
+    if (background.type === 'image' || background.type === 'video' || background.type === 'particles' || background.type === 'aurora') {
+      bgTextColor = '#ffffff';
+      bgTextColorMuted = 'rgba(255, 255, 255, 0.7)';
+    }
 
     let cardHoverTransform = 'translateY(-3px)';
     let cardHoverShadow = '0 12px 24px -8px rgba(0, 0, 0, 0.12)';
     if (cards.style === 'minimal' || cards.style === 'flat') {
       cardHoverTransform = 'none';
       cardHoverShadow = 'none';
+    }
+
+    let cardBorderRadius = cards.borderRadius || '1.5rem';
+    let cardPadding = cards.padding || '1.5rem';
+    let cardSpacing = cards.spacing || '1.5rem';
+    let profileWidth = layout.profileWidth || '640px';
+    let layoutSpacing = layout.spacing || '2rem';
+
+    if (layout.style === 'minimal') {
+      profileWidth = '480px';
+      layoutSpacing = '1rem';
+      cardPadding = '1rem';
+      cardSpacing = '0.75rem';
+    } else if (layout.style === 'compact') {
+      profileWidth = '520px';
+      layoutSpacing = '0.75rem';
+      cardPadding = '0.75rem';
+      cardSpacing = '0.5rem';
+    } else if (layout.style === 'business') {
+      profileWidth = '720px';
+      layoutSpacing = '2rem';
+    } else if (layout.style === 'creative') {
+      profileWidth = '600px';
+      cardBorderRadius = '2rem 0.5rem 2rem 0.5rem';
     }
 
     return {
@@ -375,13 +434,13 @@ export default function ConnectClientPage({
       '--theme-letter-spacing': typography.letterSpacing,
       '--theme-line-height': typography.lineHeight,
 
-      '--theme-card-border-radius': cards.borderRadius,
+      '--theme-card-border-radius': cardBorderRadius,
       '--theme-card-shadow': cards.style === 'minimal' || cards.style === 'flat' ? 'none' : cards.shadow,
       '--theme-card-border': cards.style === 'minimal' ? 'none' : cards.border,
       '--theme-card-opacity': cards.opacity,
       '--theme-card-blur': cards.style === 'glass' ? cards.blur || '10px' : '0px',
-      '--theme-card-padding': cards.padding,
-      '--theme-card-spacing': cards.spacing,
+      '--theme-card-padding': cardPadding,
+      '--theme-card-spacing': cardSpacing,
       '--theme-card-hover-transform': cardHoverTransform,
       '--theme-card-hover-shadow': cardHoverShadow,
 
@@ -392,15 +451,21 @@ export default function ConnectClientPage({
       '--theme-button-height': buttons.height,
       '--theme-button-hover-transform': buttons.animation === 'hover_lift' ? 'translateY(-2px)' : 'none',
 
-      '--theme-profile-width': layout.profileWidth,
+      '--theme-profile-width': profileWidth,
       '--theme-content-width': layout.contentWidth,
-      '--theme-layout-spacing': layout.spacing,
+      '--theme-layout-spacing': layoutSpacing,
 
       '--theme-avatar-radius': avatarRadius,
       '--theme-avatar-border': avatar.border,
       '--theme-avatar-shadow': avatar.glow === 'glow' ? `0 0 20px ${colors.primary || '#014BAA'}` : avatar.shadow,
 
-      '--theme-cover-bg': cover.type === 'none' ? 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)' : coverBg,
+      '--theme-cover-bg': (background.type === 'image' && background.value) ? coverBg :
+                          cover.type === 'none' ? 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)' : coverBg,
+      '--theme-heading-color': '#ffffff',
+      '--theme-heading-color-muted': 'rgba(255, 255, 255, 0.7)',
+      '--theme-cover-border': coverBorder,
+      '--theme-bg-text-color': bgTextColor,
+      '--theme-bg-text-color-muted': bgTextColorMuted,
 
       '--theme-social-icon-size': socialIcons.size,
       '--theme-social-icon-spacing': socialIcons.spacing
@@ -482,7 +547,7 @@ export default function ConnectClientPage({
         if (socials.length === 0) return null;
         return (
           <div className={styles.socialSection} key="socials">
-            <div className={styles.socialGrid} style={{ gridTemplateColumns: activeTheme?.layout?.style === 'compact' ? 'repeat(3, 1fr)' : 'repeat(3, 1fr)' }}>
+            <div className={styles.socialGrid} style={{ gridTemplateColumns: activeTheme?.layout?.style === 'compact' ? 'repeat(4, 1fr)' : 'repeat(3, 1fr)' }}>
               {socials.map((link: any, idx: number) => (
                 <a
                   key={link.id || `${link.platform}-${idx}`}
@@ -528,7 +593,7 @@ export default function ConnectClientPage({
         const projects = activeProfileData?.projects || [];
         return (
           <div className={styles.socialSection} key="projects">
-            <h4 className="text-xs uppercase tracking-wider font-bold mb-3 px-1 text-[var(--theme-muted-text)]">Featured Projects</h4>
+            <h4 className="text-xs uppercase tracking-wider font-bold mb-3 px-1 text-[var(--theme-bg-text-color-muted)]">Featured Projects</h4>
             <div className="flex flex-col gap-3">
               {projects.length > 0 ? (
                 projects.map((proj: any) => (
@@ -576,8 +641,8 @@ export default function ConnectClientPage({
       className={`${styles.wrapper} ${entranceClass}`}
       style={{
         ...getThemeStyles(),
-        alignItems: activeTheme?.layout?.alignment === 'left' ? 'flex-start' :
-                    activeTheme?.layout?.alignment === 'right' ? 'flex-end' : 'center',
+        alignItems: computedAlignment === 'left' ? 'flex-start' :
+                    computedAlignment === 'right' ? 'flex-end' : 'center',
         minHeight: previewTheme ? '100%' : '100vh',
       }}
     >
@@ -589,24 +654,40 @@ export default function ConnectClientPage({
         <video src={bgValue} autoPlay loop muted playsInline className={styles.videoBg} />
       )}
       {bgType === 'image' && bgValue && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            zIndex: 0,
-            background: `url(${bgValue}) center/cover no-repeat`,
-            pointerEvents: 'none'
-          }}
-        />
+        <>
+          <div
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: 0,
+              background: `url(${bgValue}) center/cover no-repeat`,
+              filter: `brightness(${activeTheme?.background?.brightness ?? 0.8})`,
+              pointerEvents: 'none'
+            }}
+          />
+          <div
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: 0,
+              backdropFilter: `blur(${activeTheme?.background?.blur || '0px'})`,
+              background: `rgba(0, 0, 0, ${activeTheme?.background?.overlayOpacity ?? 0.3})`,
+              pointerEvents: 'none'
+            }}
+          />
+        </>
       )}
 
       {/* ─── Cursor Glow Effect ─── */}
       {activeTheme?.animations?.cursorGlow && <CursorGlow />}
 
-      <div style={{ width: '100%', maxWidth: activeTheme?.layout?.profileWidth || '640px', zIndex: 1 }}>
+      <div style={{ width: '100%', maxWidth: 'var(--theme-profile-width, 640px)', zIndex: 1 }}>
         {/* ─── Hero Banner ─── */}
         <div className={styles.heroBanner}>
           <div className={styles.heroContent}>
@@ -614,15 +695,20 @@ export default function ConnectClientPage({
             <div
               className={styles.profileRow}
               style={{
-                flexDirection: activeTheme?.layout?.alignment === 'center' ? 'column' : 'row',
+                flexDirection: computedAlignment === 'center' ? 'column' : 'row',
                 alignItems: 'center',
-                textAlign: activeTheme?.layout?.alignment === 'center' ? 'center' : 'left'
+                textAlign: computedAlignment === 'center' ? 'center' : 'left'
               }}
             >
               <img
                 src={profile.avatar || '/profile_avatar.png'}
                 alt={profile.name}
                 className={`${styles.heroAvatar} ${activeTheme?.avatar?.glow === 'glow' ? styles.heroAvatarGlow : ''}`}
+                style={{
+                  width: avatarSize,
+                  height: avatarSize,
+                  transform: avatarTransform
+                }}
               />
               <div className={styles.profileInfo}>
                 <h1 className={styles.heroName}>
@@ -641,7 +727,7 @@ export default function ConnectClientPage({
                   <div
                     className={styles.heroLocation}
                     style={{
-                      justifyContent: activeTheme?.layout?.alignment === 'center' ? 'center' : 'flex-start'
+                      justifyContent: computedAlignment === 'center' ? 'center' : 'flex-start'
                     }}
                   >
                     <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -658,7 +744,7 @@ export default function ConnectClientPage({
             <div
               className={styles.heroActions}
               style={{
-                justifyContent: activeTheme?.layout?.alignment === 'center' ? 'center' : 'flex-start'
+                justifyContent: computedAlignment === 'center' ? 'center' : 'flex-start'
               }}
             >
               <button className={styles.saveContactBtn} onClick={handleSaveContact}>

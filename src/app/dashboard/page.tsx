@@ -731,6 +731,78 @@ export default function Dashboard() {
     setCropImageSrc(null);
   };
 
+  const handleBgImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    setSaving(true);
+    try {
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.success) {
+        setThemeSettings({
+          ...themeSettings,
+          background: {
+            ...themeSettings.background,
+            value: data.url
+          }
+        });
+        setSuccess('Background image uploaded successfully!');
+        setTimeout(() => setSuccess(''), 3000);
+      } else {
+        throw new Error(data.error || 'Upload failed');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Upload error');
+      setTimeout(() => setError(''), 5000);
+    } finally {
+      setSaving(false);
+      e.target.value = '';
+    }
+  };
+
+  const handleThemeCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    setSaving(true);
+    try {
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.success) {
+        setThemeSettings({
+          ...themeSettings,
+          cover: {
+            ...themeSettings.cover,
+            value: data.url
+          }
+        });
+        setSuccess('Cover image uploaded successfully!');
+        setTimeout(() => setSuccess(''), 3000);
+      } else {
+        throw new Error(data.error || 'Upload failed');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Upload error');
+      setTimeout(() => setError(''), 5000);
+    } finally {
+      setSaving(false);
+      e.target.value = '';
+    }
+  };
+
   const handleAddTag = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTagText.trim()) return;
@@ -1331,26 +1403,51 @@ export default function Dashboard() {
               <div className="flex flex-col gap-6">
 
                 {/* Category Nav Tabs */}
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 overflow-x-auto whitespace-nowrap scrollbar-none flex gap-2">
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 overflow-x-auto whitespace-nowrap scrollbar-none flex gap-1 shrink-0">
                   {[
                     { id: 'profile', label: 'Profile Info' },
-                  ].map((sub) => (
-                    <button
-                      key={sub.id}
-                      type="button"
-                      onClick={() => setThemeSubTab(sub.id as any)}
-                      className={`px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer ${themeSubTab === sub.id
-                        ? 'bg-gray-900 text-white shadow-sm'
-                        : 'bg-gray-50 text-gray-500 hover:text-gray-900 hover:bg-gray-100'
+                    { id: 'presets', label: 'Theme Presets' },
+                    { id: 'background', label: 'Background' },
+                    { id: 'buttons', label: 'Buttons' },
+                    { id: 'layout', label: 'Layout' },
+                    { id: 'avatar', label: 'Avatar Shape' },
+                    { id: 'sections', label: 'Custom Sections' },
+                    { id: 'animations', label: 'Animations' },
+                    { id: 'marketplace', label: 'Theme Market' }
+                  ].map((sub) => {
+                    const isTabPremium = ['background', 'buttons', 'layout', 'avatar', 'sections', 'animations', 'marketplace'].includes(sub.id);
+                    const isLocked = isTabPremium && !isPremium;
+                    
+                    return (
+                      <button
+                        key={sub.id}
+                        type="button"
+                        onClick={() => {
+                          if (isLocked) {
+                            setShowPaymentModal(true);
+                          } else {
+                            setThemeSubTab(sub.id as any);
+                          }
+                        }}
+                        className={`px-4 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer shrink-0 flex items-center gap-1.5 ${
+                          themeSubTab === sub.id
+                            ? 'bg-gray-900 text-white shadow-sm'
+                            : 'bg-gray-50 text-gray-500 hover:text-gray-900 hover:bg-gray-100'
                         }`}
-                    >
-                      {sub.label}
-                    </button>
-                  ))}
+                      >
+                        {sub.label}
+                        {isLocked && (
+                          <svg className="w-3.5 h-3.5 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
 
                 {/* Configurator Card Container */}
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8 flex flex-col gap-6">
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8 flex flex-col gap-6 lg:max-h-[calc(100vh-375px)] lg:overflow-y-auto scrollbar-none lg:pr-1">
 
                   {/* SUB-TAB 1: Profile Info */}
                   {themeSubTab === 'profile' && (
@@ -1549,9 +1646,8 @@ export default function Dashboard() {
                             const isSelected = themeSettings && themeSettings.colors.primary === theme.settings.colors.primary && themeSettings.colors.background === theme.settings.colors.background;
                             const desc = THEME_DESCRIPTIONS[theme.name] || 'Creative template style';
                             return (
-                              <button
+                              <div
                                 key={theme.name}
-                                type="button"
                                 onClick={() => {
                                   setThemeSettings(theme.settings);
                                   setSuccess(`Theme presets for "${theme.name}" loaded!`);
@@ -1587,7 +1683,7 @@ export default function Dashboard() {
                                     </span>
                                   )}
                                 </div>
-                              </button>
+                              </div>
                             );
                           })}
                         </div>
@@ -1603,9 +1699,8 @@ export default function Dashboard() {
                             const isSelected = themeSettings && themeSettings.colors.primary === theme.settings.colors.primary && themeSettings.colors.background === theme.settings.colors.background;
                             const desc = THEME_DESCRIPTIONS[theme.name] || 'Premium coordinates';
                             return (
-                              <button
+                              <div
                                 key={theme.name}
-                                type="button"
                                 onClick={() => {
                                   setThemeSettings(theme.settings);
                                   setSuccess(`Premium Theme "${theme.name}" applied!`);
@@ -1646,7 +1741,7 @@ export default function Dashboard() {
                                     </span>
                                   )}
                                 </div>
-                              </button>
+                              </div>
                             );
                           })}
                         </div>
@@ -1654,66 +1749,7 @@ export default function Dashboard() {
                     </div>
                   )}
 
-                  {/* SUB-TAB 3: Colors */}
-                  {themeSubTab === 'colors' && (
-                    <div className="flex flex-col gap-6">
-                      <div className="pb-3 border-b border-gray-100">
-                        <h4 className="text-lg font-bold text-gray-900">Custom Colors</h4>
-                        <p className="text-xs text-gray-500 mt-1">Design a unique palette. Contrast checks will calculate in real time under the Advanced tab.</p>
-                      </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {[
-                          { label: 'Primary Brand Color', key: 'primary' },
-                          { label: 'Secondary/Muted', key: 'secondary' },
-                          { label: 'Accent Highlights', key: 'accent' },
-                          { label: 'Success (Verified/Online)', key: 'success' },
-                          { label: 'Warning Highlights', key: 'warning' },
-                          { label: 'Danger Color', key: 'danger' },
-                          { label: 'Wrapper Background', key: 'background' },
-                          { label: 'Card Surface', key: 'surface' },
-                          { label: 'Main Text Color', key: 'text' },
-                          { label: 'Muted Subtext Color', key: 'mutedText' },
-                          { label: 'Border Lines', key: 'border' },
-                          { label: 'Shadow Tone', key: 'shadow' }
-                        ].map((col) => (
-                          <div key={col.key} className="flex flex-col gap-1">
-                            <span className="text-xs font-semibold text-gray-700">{col.label}</span>
-                            <div className="flex gap-2">
-                              <input
-                                type="color"
-                                value={themeSettings.colors?.[col.key] || '#111827'}
-                                onChange={(e) => {
-                                  setThemeSettings({
-                                    ...themeSettings,
-                                    colors: {
-                                      ...themeSettings.colors,
-                                      [col.key]: e.target.value
-                                    }
-                                  });
-                                }}
-                                className="w-10 h-9 p-0.5 border border-gray-200 rounded-lg cursor-pointer bg-transparent"
-                              />
-                              <input
-                                type="text"
-                                value={themeSettings.colors?.[col.key] || '#111827'}
-                                onChange={(e) => {
-                                  setThemeSettings({
-                                    ...themeSettings,
-                                    colors: {
-                                      ...themeSettings.colors,
-                                      [col.key]: e.target.value
-                                    }
-                                  });
-                                }}
-                                className="flex-1 px-3 py-1.5 border border-gray-200 rounded-lg text-sm font-mono text-gray-900"
-                              />
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
 
                   {/* SUB-TAB 4: Backgrounds */}
                   {themeSubTab === 'background' && (
@@ -1832,20 +1868,121 @@ export default function Dashboard() {
                       )}
 
                       {themeSettings.background?.type === 'image' && (
-                        <div className="flex flex-col gap-2">
-                          <label className="text-xs font-semibold text-gray-700">Background Image Link</label>
-                          <input
-                            type="text"
-                            value={themeSettings.background?.value || ''}
-                            onChange={(e) => {
-                              setThemeSettings({
-                                ...themeSettings,
-                                background: { ...themeSettings.background, value: e.target.value }
-                              });
-                            }}
-                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
-                            placeholder="https://images.unsplash.com/photo-1557683316-973673baf926"
-                          />
+                        <div className="flex flex-col gap-3">
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-700 mb-1">Background Image Link or Upload</label>
+                            <div className="flex gap-2">
+                              <input
+                                type="text"
+                                value={themeSettings.background?.value || ''}
+                                onChange={(e) => {
+                                  setThemeSettings({
+                                    ...themeSettings,
+                                    background: { ...themeSettings.background, value: e.target.value }
+                                  });
+                                }}
+                                className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+                                placeholder="https://images.unsplash.com/photo-1557683316-973673baf926"
+                              />
+                              <label className="cursor-pointer shrink-0 inline-flex items-center justify-center px-4 py-2 text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors border border-blue-200">
+                                Upload
+                                <input 
+                                  type="file" 
+                                  accept="image/*" 
+                                  className="hidden" 
+                                  onChange={handleBgImageUpload} 
+                                />
+                              </label>
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-400 uppercase mb-2">Preset Images</label>
+                            <div className="grid grid-cols-4 gap-2">
+                              {[
+                                'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=500', // Modern Abstract Glass
+                                'https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=500', // Violet Gradient Mesh
+                                'https://images.unsplash.com/photo-1531315630201-bb15abeb1653?q=80&w=500', // Deep Space Northern Lights
+                                'https://images.unsplash.com/photo-1604871000636-074fa5117945?q=80&w=500'  // Vibrant Paint Abstract
+                              ].map((imgUrl, idx) => (
+                                <button
+                                  key={idx}
+                                  type="button"
+                                  onClick={() => {
+                                    setThemeSettings({
+                                      ...themeSettings,
+                                      background: { ...themeSettings.background, value: imgUrl }
+                                    });
+                                  }}
+                                  className={`h-12 border rounded-lg cursor-pointer overflow-hidden shadow-sm hover:scale-[1.04] transition-all duration-200 ${themeSettings.background?.value === imgUrl ? 'border-blue-500 ring-2 ring-blue-500/20' : 'border-gray-200'}`}
+                                >
+                                  <img src={imgUrl} alt={`Preset ${idx + 1}`} className="w-full h-full object-cover" />
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3 pt-3 border-t border-gray-100">
+                            <div>
+                              <label className="block text-xs font-semibold text-gray-700 mb-1">
+                                Background Blur ({themeSettings.background?.blur || '0px'})
+                              </label>
+                              <input
+                                type="range"
+                                min="0"
+                                max="20"
+                                step="1"
+                                value={parseInt(themeSettings.background?.blur) || 0}
+                                onChange={(e) => {
+                                  setThemeSettings({
+                                    ...themeSettings,
+                                    background: { ...themeSettings.background, blur: `${e.target.value}px` }
+                                  });
+                                }}
+                                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600 mt-1"
+                              />
+                            </div>
+                            
+                            <div>
+                              <label className="block text-xs font-semibold text-gray-700 mb-1">
+                                Overlay Opacity ({Math.round((themeSettings.background?.overlayOpacity ?? 0.3) * 100)}%)
+                              </label>
+                              <input
+                                type="range"
+                                min="0"
+                                max="0.9"
+                                step="0.05"
+                                value={themeSettings.background?.overlayOpacity !== undefined ? themeSettings.background?.overlayOpacity : 0.3}
+                                onChange={(e) => {
+                                  setThemeSettings({
+                                    ...themeSettings,
+                                    background: { ...themeSettings.background, overlayOpacity: parseFloat(e.target.value) }
+                                  });
+                                }}
+                                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600 mt-1"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block text-xs font-semibold text-gray-700 mb-1">
+                                Brightness ({Math.round((themeSettings.background?.brightness ?? 0.8) * 100)}%)
+                              </label>
+                              <input
+                                type="range"
+                                min="0.2"
+                                max="1.2"
+                                step="0.05"
+                                value={themeSettings.background?.brightness !== undefined ? themeSettings.background?.brightness : 0.8}
+                                onChange={(e) => {
+                                  setThemeSettings({
+                                    ...themeSettings,
+                                    background: { ...themeSettings.background, brightness: parseFloat(e.target.value) }
+                                  });
+                                }}
+                                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600 mt-1"
+                              />
+                            </div>
+                          </div>
                         </div>
                       )}
 
@@ -1869,208 +2006,6 @@ export default function Dashboard() {
                     </div>
                   )}
 
-                  {/* SUB-TAB 5: Fonts */}
-                  {themeSubTab === 'fonts' && (
-                    <div className="flex flex-col gap-6">
-                      <div className="pb-3 border-b border-gray-100">
-                        <h4 className="text-lg font-bold text-gray-900">Typography Setup</h4>
-                        <p className="text-xs text-gray-500 mt-1">Personalize text properties. Selected Google Web Fonts will fetch dynamically.</p>
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-semibold text-gray-700 mb-1.5">Font Family</label>
-                        <select
-                          value={themeSettings.typography?.fontFamily || 'Outfit'}
-                          onChange={(e) => {
-                            setThemeSettings({
-                              ...themeSettings,
-                              typography: { ...themeSettings.typography, fontFamily: e.target.value }
-                            });
-                          }}
-                          className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 outline-none"
-                        >
-                          <option>Outfit</option>
-                          <option>Inter</option>
-                          <option>Poppins</option>
-                          <option>Roboto</option>
-                          <option>Montserrat</option>
-                          <option>DM Sans</option>
-                        </select>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Heading Size (rem/px)</label>
-                          <input
-                            type="text"
-                            value={themeSettings.typography?.headingSize || '1.5rem'}
-                            onChange={(e) => {
-                              setThemeSettings({
-                                ...themeSettings,
-                                typography: { ...themeSettings.typography, headingSize: e.target.value }
-                              });
-                            }}
-                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Body Size (rem/px)</label>
-                          <input
-                            type="text"
-                            value={themeSettings.typography?.bodySize || '0.95rem'}
-                            onChange={(e) => {
-                              setThemeSettings({
-                                ...themeSettings,
-                                typography: { ...themeSettings.typography, bodySize: e.target.value }
-                              });
-                            }}
-                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Letter Spacing</label>
-                          <input
-                            type="text"
-                            value={themeSettings.typography?.letterSpacing || 'normal'}
-                            onChange={(e) => {
-                              setThemeSettings({
-                                ...themeSettings,
-                                typography: { ...themeSettings.typography, letterSpacing: e.target.value }
-                              });
-                            }}
-                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
-                            placeholder="normal or 1px"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Line Height</label>
-                          <input
-                            type="text"
-                            value={themeSettings.typography?.lineHeight || '1.5'}
-                            onChange={(e) => {
-                              setThemeSettings({
-                                ...themeSettings,
-                                typography: { ...themeSettings.typography, lineHeight: e.target.value }
-                              });
-                            }}
-                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
-                            placeholder="1.5 or 1.6"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* SUB-TAB 6: Cards */}
-                  {themeSubTab === 'cards' && (
-                    <div className="flex flex-col gap-6">
-                      <div className="pb-3 border-b border-gray-100">
-                        <h4 className="text-lg font-bold text-gray-900">Tile & Card Styles</h4>
-                        <p className="text-xs text-gray-500 mt-1">Configure layout cards (social links, accordions, project blocks) styling properties.</p>
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-bold text-gray-400 uppercase mb-3">Card Style Mode</label>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                          {['flat', 'rounded', 'floating', 'glass', 'minimal', 'modern'].map((cardStyle) => (
-                            <button
-                              key={cardStyle}
-                              type="button"
-                              onClick={() => {
-                                setThemeSettings({
-                                  ...themeSettings,
-                                  cards: {
-                                    ...themeSettings.cards,
-                                    style: cardStyle,
-                                    border: cardStyle === 'glass' ? '1px solid rgba(255,255,255,0.3)' :
-                                      cardStyle === 'minimal' ? 'none' : '1px solid #e5e7eb',
-                                    shadow: cardStyle === 'floating' ? '0 12px 28px rgba(0,0,0,0.06)' :
-                                      cardStyle === 'modern' ? '0 8px 30px rgba(0,0,0,0.03)' :
-                                        cardStyle === 'minimal' || cardStyle === 'flat' ? 'none' : '0 4px 12px rgba(0,0,0,0.02)'
-                                  }
-                                });
-                              }}
-                              className={`px-4 py-2 text-xs font-semibold rounded-lg border capitalize transition-all cursor-pointer ${themeSettings.cards?.style === cardStyle
-                                ? 'border-blue-600 bg-blue-50 text-blue-700 font-bold'
-                                : 'border-gray-200 hover:bg-gray-50 text-gray-600'
-                                }`}
-                            >
-                              {cardStyle}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Border Radius (e.g. 1rem)</label>
-                          <input
-                            type="text"
-                            value={themeSettings.cards?.borderRadius || '1rem'}
-                            onChange={(e) => {
-                              setThemeSettings({
-                                ...themeSettings,
-                                cards: { ...themeSettings.cards, borderRadius: e.target.value }
-                              });
-                            }}
-                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Border Value</label>
-                          <input
-                            type="text"
-                            value={themeSettings.cards?.border || '1px solid #e5e7eb'}
-                            onChange={(e) => {
-                              setThemeSettings({
-                                ...themeSettings,
-                                cards: { ...themeSettings.cards, border: e.target.value }
-                              });
-                            }}
-                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-xs font-semibold text-gray-700 mb-1">Card Opacity ({themeSettings.cards?.opacity ?? 1.0})</label>
-                          <input
-                            type="range"
-                            min="0.1"
-                            max="1"
-                            step="0.05"
-                            value={themeSettings.cards?.opacity !== undefined ? themeSettings.cards?.opacity : 1}
-                            onChange={(e) => {
-                              setThemeSettings({
-                                ...themeSettings,
-                                cards: { ...themeSettings.cards, opacity: parseFloat(e.target.value) }
-                              });
-                            }}
-                            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600 mt-2"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-gray-700 mb-1">Backdrop Blur Strength (Glass mode)</label>
-                          <input
-                            type="text"
-                            value={themeSettings.cards?.blur || '0px'}
-                            onChange={(e) => {
-                              setThemeSettings({
-                                ...themeSettings,
-                                cards: { ...themeSettings.cards, blur: e.target.value }
-                              });
-                            }}
-                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
-                            placeholder="10px"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  )}
 
                   {/* SUB-TAB 7: Buttons */}
                   {themeSubTab === 'buttons' && (
@@ -2104,53 +2039,6 @@ export default function Dashboard() {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Button Radius (e.g. 100px)</label>
-                          <input
-                            type="text"
-                            value={themeSettings.buttons?.radius || '100px'}
-                            onChange={(e) => {
-                              setThemeSettings({
-                                ...themeSettings,
-                                buttons: { ...themeSettings.buttons, radius: e.target.value }
-                              });
-                            }}
-                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Height (e.g. 44px)</label>
-                          <input
-                            type="text"
-                            value={themeSettings.buttons?.height || '44px'}
-                            onChange={(e) => {
-                              setThemeSettings({
-                                ...themeSettings,
-                                buttons: { ...themeSettings.buttons, height: e.target.value }
-                              });
-                            }}
-                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Button Hover Anim</label>
-                          <select
-                            value={themeSettings.buttons?.animation || 'hover_lift'}
-                            onChange={(e) => {
-                              setThemeSettings({
-                                ...themeSettings,
-                                buttons: { ...themeSettings.buttons, animation: e.target.value }
-                              });
-                            }}
-                            className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 outline-none"
-                          >
-                            <option value="hover_lift">Lift Up</option>
-                            <option value="button_ripple">Ripple (Highlight)</option>
-                            <option value="none">None</option>
-                          </select>
-                        </div>
-                      </div>
                     </div>
                   )}
 
@@ -2190,164 +2078,68 @@ export default function Dashboard() {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Profile Container Width</label>
-                          <input
-                            type="text"
-                            value={themeSettings.layout?.profileWidth || '640px'}
-                            onChange={(e) => {
-                              setThemeSettings({
-                                ...themeSettings,
-                                layout: { ...themeSettings.layout, profileWidth: e.target.value }
-                              });
-                            }}
-                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Section Spacing</label>
-                          <input
-                            type="text"
-                            value={themeSettings.layout?.spacing || '1.5rem'}
-                            onChange={(e) => {
-                              setThemeSettings({
-                                ...themeSettings,
-                                layout: { ...themeSettings.layout, spacing: e.target.value }
-                              });
-                            }}
-                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Content Alignment</label>
-                          <select
-                            value={themeSettings.layout?.alignment || 'center'}
-                            onChange={(e) => {
-                              setThemeSettings({
-                                ...themeSettings,
-                                layout: { ...themeSettings.layout, alignment: e.target.value }
-                              });
-                            }}
-                            className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 outline-none"
-                          >
-                            <option value="center">Centered</option>
-                            <option value="left">Left Aligned</option>
-                            <option value="right">Right Aligned</option>
-                          </select>
-                        </div>
-                      </div>
                     </div>
                   )}
 
-                  {/* SUB-TAB 9: Avatar & Cover */}
                   {themeSubTab === 'avatar' && (
                     <div className="flex flex-col gap-6">
                       <div className="pb-3 border-b border-gray-100">
-                        <h4 className="text-lg font-bold text-gray-900">Avatar & Cover Banner</h4>
-                        <p className="text-xs text-gray-500 mt-1">Configure user photo frame shapes and cover hero banners styling.</p>
+                        <h4 className="text-lg font-bold text-gray-900">Avatar Frame Styling</h4>
+                        <p className="text-xs text-gray-500 mt-1">Configure user photo frame shapes and custom border designs.</p>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
                         {/* Avatar Setup */}
-                        <div>
-                          <h5 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Avatar Shape</h5>
-                          <div className="grid grid-cols-3 gap-2">
-                            {['circle', 'rounded', 'square'].map((sh) => (
-                              <button
-                                key={sh}
-                                type="button"
-                                onClick={() => {
-                                  setThemeSettings({
-                                    ...themeSettings,
-                                    avatar: { ...themeSettings.avatar, shape: sh }
-                                  });
-                                }}
-                                className={`px-3 py-2 text-xs font-semibold rounded-lg border capitalize transition-all cursor-pointer ${themeSettings.avatar?.shape === sh
-                                  ? 'border-blue-600 bg-blue-50 text-blue-700 font-bold'
-                                  : 'border-gray-200 hover:bg-gray-50 text-gray-600'
-                                  }`}
-                              >
-                                {sh}
-                              </button>
-                            ))}
-                          </div>
-                          <div className="mt-4 flex flex-col gap-3">
-                            <div>
-                              <label className="block text-xs font-semibold text-gray-700 mb-1">Border Value</label>
-                              <input
-                                type="text"
-                                value={themeSettings.avatar?.border || '3px solid rgba(255,255,255,0.2)'}
-                                onChange={(e) => {
-                                  setThemeSettings({
-                                    ...themeSettings,
-                                    avatar: { ...themeSettings.avatar, border: e.target.value }
-                                  });
-                                }}
-                                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
-                              />
-                            </div>
-                            <div className="flex items-center justify-between">
-                              <span className="text-xs font-semibold text-gray-700">Avatar Border Glow</span>
-                              <input
-                                type="checkbox"
-                                checked={themeSettings.avatar?.glow === 'glow'}
-                                onChange={(e) => {
-                                  setThemeSettings({
-                                    ...themeSettings,
-                                    avatar: { ...themeSettings.avatar, glow: e.target.checked ? 'glow' : 'none' }
-                                  });
-                                }}
-                                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                              />
-                            </div>
-                          </div>
+                        <h5 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Avatar Shape</h5>
+                        <div className="grid grid-cols-3 gap-2">
+                          {['circle', 'rounded', 'square'].map((sh) => (
+                            <button
+                              key={sh}
+                              type="button"
+                              onClick={() => {
+                                setThemeSettings({
+                                  ...themeSettings,
+                                  avatar: { ...themeSettings.avatar, shape: sh }
+                                });
+                              }}
+                              className={`px-3 py-2 text-xs font-semibold rounded-lg border capitalize transition-all cursor-pointer ${themeSettings.avatar?.shape === sh
+                                ? 'border-blue-600 bg-blue-50 text-blue-700 font-bold'
+                                : 'border-gray-200 hover:bg-gray-50 text-gray-600'
+                                }`}
+                            >
+                              {sh}
+                            </button>
+                          ))}
                         </div>
-
-                        {/* Cover Setup */}
-                        <div>
-                          <h5 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Cover Banner Type</h5>
-                          <div className="grid grid-cols-2 gap-2">
-                            {['none', 'solid', 'gradient', 'image'].map((cov) => (
-                              <button
-                                key={cov}
-                                type="button"
-                                onClick={() => {
-                                  setThemeSettings({
-                                    ...themeSettings,
-                                    cover: {
-                                      ...themeSettings.cover,
-                                      type: cov,
-                                      value: cov === 'solid' ? '#0f172a' :
-                                        cov === 'gradient' ? 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)' : ''
-                                    }
-                                  });
-                                }}
-                                className={`px-3 py-2 text-xs font-semibold rounded-lg border capitalize transition-all cursor-pointer ${themeSettings.cover?.type === cov
-                                  ? 'border-blue-600 bg-blue-50 text-blue-700 font-bold'
-                                  : 'border-gray-200 hover:bg-gray-50 text-gray-600'
-                                  }`}
-                              >
-                                {cov}
-                              </button>
-                            ))}
+                        <div className="mt-4 flex flex-col gap-3">
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-700 mb-1">Border Value</label>
+                            <input
+                              type="text"
+                              value={themeSettings.avatar?.border || '3px solid rgba(255,255,255,0.2)'}
+                              onChange={(e) => {
+                                setThemeSettings({
+                                  ...themeSettings,
+                                  avatar: { ...themeSettings.avatar, border: e.target.value }
+                                });
+                              }}
+                              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
+                            />
                           </div>
-                          {themeSettings.cover?.type !== 'none' && (
-                            <div className="mt-4">
-                              <label className="block text-xs font-semibold text-gray-700 mb-1">Cover Value (Color, gradient, or Image Link)</label>
-                              <input
-                                type="text"
-                                value={themeSettings.cover?.value || ''}
-                                onChange={(e) => {
-                                  setThemeSettings({
-                                    ...themeSettings,
-                                    cover: { ...themeSettings.cover, value: e.target.value }
-                                  });
-                                }}
-                                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
-                              />
-                            </div>
-                          )}
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-semibold text-gray-700">Avatar Border Glow</span>
+                            <input
+                              type="checkbox"
+                              checked={themeSettings.avatar?.glow === 'glow'}
+                              onChange={(e) => {
+                                setThemeSettings({
+                                  ...themeSettings,
+                                  avatar: { ...themeSettings.avatar, glow: e.target.checked ? 'glow' : 'none' }
+                                });
+                              }}
+                              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -2436,89 +2228,7 @@ export default function Dashboard() {
                         })}
                       </div>
                     </div>
-                  )}
-
-                  {/* SUB-TAB 11: Social Icons */}
-                  {themeSubTab === 'socials' && (
-                    <div className="flex flex-col gap-6">
-                      <div className="pb-3 border-b border-gray-100">
-                        <h4 className="text-lg font-bold text-gray-900">Social Grid & Icons</h4>
-                        <p className="text-xs text-gray-500 mt-1">Adjust size, border layouts, spacing, and hover animations of social links.</p>
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-bold text-gray-400 uppercase mb-3">Icon Frame Style</label>
-                        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-                          {['circle', 'outline', 'minimal', 'rounded', 'filled'].map((iconStyle) => (
-                            <button
-                              key={iconStyle}
-                              type="button"
-                              onClick={() => {
-                                setThemeSettings({
-                                  ...themeSettings,
-                                  socialIcons: { ...themeSettings.socialIcons, style: iconStyle }
-                                });
-                              }}
-                              className={`px-2 py-2 text-xs font-semibold rounded-lg border capitalize transition-all cursor-pointer ${themeSettings.socialIcons?.style === iconStyle
-                                ? 'border-blue-600 bg-blue-50 text-blue-700 font-bold'
-                                : 'border-gray-200 hover:bg-gray-50 text-gray-600'
-                                }`}
-                            >
-                              {iconStyle}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Icon Size (px)</label>
-                          <input
-                            type="text"
-                            value={themeSettings.socialIcons?.size || '24px'}
-                            onChange={(e) => {
-                              setThemeSettings({
-                                ...themeSettings,
-                                socialIcons: { ...themeSettings.socialIcons, size: e.target.value }
-                              });
-                            }}
-                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Grid Spacing</label>
-                          <input
-                            type="text"
-                            value={themeSettings.socialIcons?.spacing || '0.75rem'}
-                            onChange={(e) => {
-                              setThemeSettings({
-                                ...themeSettings,
-                                socialIcons: { ...themeSettings.socialIcons, spacing: e.target.value }
-                              });
-                            }}
-                            className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-gray-700 mb-1.5">Hover Effect</label>
-                          <select
-                            value={themeSettings.socialIcons?.hover || 'scale'}
-                            onChange={(e) => {
-                              setThemeSettings({
-                                ...themeSettings,
-                                socialIcons: { ...themeSettings.socialIcons, hover: e.target.value }
-                              });
-                            }}
-                            className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 outline-none"
-                          >
-                            <option value="scale">Scale Up</option>
-                            <option value="lift">Lift Up</option>
-                            <option value="none">None</option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                   )}
 
                   {/* SUB-TAB 12: Animations */}
                   {themeSubTab === 'animations' && (
@@ -2649,96 +2359,6 @@ export default function Dashboard() {
                     </div>
                   )}
 
-                  {/* SUB-TAB 14: Advanced, JSON & WCAG checks */}
-                  {themeSubTab === 'advanced' && (
-                    <div className="flex flex-col gap-6">
-
-                      {/* Accessibility Contrast Checker */}
-                      <div>
-                        <div className="pb-3 border-b border-gray-100 mb-4">
-                          <h4 className="text-lg font-bold text-gray-900 flex items-center gap-1.5">
-                            <ShieldAlert className="w-5 h-5 text-blue-600" /> WCAG Color Contrast Validator
-                          </h4>
-                          <p className="text-xs text-gray-500 mt-1">Automatic real-time relative luminance checking to meet WCAG AA requirements (4.5:1).</p>
-                        </div>
-
-                        <div className="space-y-3.5">
-                          {[
-                            {
-                              label: 'Main Text color vs Page Background',
-                              color1: themeSettings.colors?.text || '#111827',
-                              color2: themeSettings.background?.type === 'solid' ? themeSettings.background?.value || '#f0f2f8' : '#ffffff'
-                            },
-                            {
-                              label: 'Main Text color vs Card Surface background',
-                              color1: themeSettings.colors?.text || '#111827',
-                              color2: themeSettings.colors?.surface || '#ffffff'
-                            },
-                            {
-                              label: 'Action Button text color vs Action Button background',
-                              color1: '#ffffff',
-                              color2: themeSettings.colors?.primary || '#014BAA'
-                            }
-                          ].map((test, index) => {
-                            const ratio = calculateContrastRatio(test.color1, test.color2);
-                            const rating = ratio >= 7 ? { label: 'AAA Pass (Excellent)', cls: 'bg-green-50 text-green-700 border-green-200' } :
-                              ratio >= 4.5 ? { label: 'AA Pass (Good)', cls: 'bg-green-50 text-green-600 border-green-100' } :
-                                ratio >= 3 ? { label: 'Large Text Pass', cls: 'bg-yellow-50 text-yellow-600 border-yellow-200' } :
-                                  { label: 'Fail (Low Contrast)', cls: 'bg-red-50 text-red-600 border-red-200' };
-
-                            return (
-                              <div key={index} className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3.5 bg-gray-50 border border-gray-200 rounded-xl gap-2">
-                                <div>
-                                  <span className="block text-xs font-bold text-gray-800">{test.label}</span>
-                                  <span className="text-[10px] font-mono text-gray-400 uppercase mt-0.5">Colors: {test.color1} / {test.color2}</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <span className="text-xs font-mono font-black text-gray-800">{ratio.toFixed(2)}:1</span>
-                                  <span className={`px-2.5 py-1 text-[10px] font-black rounded-lg border uppercase tracking-wider ${rating.cls}`}>
-                                    {rating.label}
-                                  </span>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-
-                      {/* Import / Export JSON */}
-                      <div className="border-t border-gray-100 pt-5">
-                        <h4 className="text-sm font-bold text-gray-900 mb-2 flex items-center gap-1">
-                          <Layers className="w-4 h-4" /> Theme Import / Export (theme.json)
-                        </h4>
-                        <p className="text-xs text-gray-500 mb-3">Copy this settings configuration payload to backup, share, or import theme setups.</p>
-                        <textarea
-                          value={importJson}
-                          onChange={(e) => setImportJson(e.target.value)}
-                          rows={6}
-                          className="w-full p-3.5 bg-gray-900 text-gray-200 font-mono text-xs rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                        <div className="flex flex-wrap gap-2 mt-3 justify-end">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              navigator.clipboard.writeText(importJson);
-                              setSuccess('JSON copied to clipboard!');
-                              setTimeout(() => setSuccess(''), 2500);
-                            }}
-                            className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl transition-colors cursor-pointer"
-                          >
-                            Copy Config
-                          </button>
-                          <button
-                            type="button"
-                            onClick={handleImportTheme}
-                            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-colors cursor-pointer"
-                          >
-                            Import config
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
 
                   {/* Unified Customize Theme Save block (Always visible for theme config tabs) */}
                   {themeSubTab !== 'profile' && (
@@ -3195,105 +2815,107 @@ export default function Dashboard() {
 
           {/* RIGHT COLUMN - LIVE PREVIEW */}
           {activeTab === 'customizer' && (
-            <div className="lg:col-span-5 relative flex flex-col items-center">
-              <div className="text-[10px] text-gray-400 uppercase tracking-widest font-black mb-3.5 flex items-center gap-1.5">
-                <Smartphone className="w-3.5 h-3.5 text-gray-400 animate-pulse" /> Your Live Tapfolio Showcase
-              </div>
+            <div className="lg:col-span-5 self-stretch">
+              <div className="lg:sticky lg:top-28 flex flex-col items-center">
+                <div className="text-[10px] text-gray-400 uppercase tracking-widest font-black mb-3.5 flex items-center gap-1.5">
+                  <Smartphone className="w-3.5 h-3.5 text-gray-400 animate-pulse" /> Your Live Tapfolio Showcase
+                </div>
 
-              {/* Smartphone Frame mockup */}
-              <div className="w-[310px] h-[580px] sm:w-[335px] sm:h-[650px] rounded-[40px] border-[10px] border-gray-900 shadow-2xl overflow-hidden bg-gray-100 relative sticky top-28 flex flex-col">
-                {/* Speaker Notch */}
-                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 h-3.5 w-24 bg-gray-900 rounded-b-xl z-30" />
+                {/* Smartphone Frame mockup */}
+                <div className="w-[310px] h-[580px] sm:w-[335px] sm:h-[650px] rounded-[40px] border-[10px] border-gray-900 shadow-2xl overflow-hidden bg-gray-100 relative flex flex-col">
+                  {/* Speaker Notch */}
+                  <div className="absolute top-0 left-1/2 transform -translate-x-1/2 h-3.5 w-24 bg-gray-900 rounded-b-xl z-30" />
 
-                {/* iPhone Status Bar */}
-                <div className="h-9 bg-slate-900 text-white flex items-center justify-between px-5 text-[11px] font-semibold select-none z-20 shrink-0 font-sans">
-                  <span>12:48</span>
-                  <div className="flex items-center gap-1.5">
-                    {/* Cellular Signal Bars */}
-                    <div className="flex items-end gap-[1.5px] h-2">
-                      <div className="w-[2.5px] h-[3px] bg-white rounded-sm" />
-                      <div className="w-[2.5px] h-[5px] bg-white rounded-sm" />
-                      <div className="w-[2.5px] h-[7px] bg-white rounded-sm" />
-                      <div className="w-[2.5px] h-[8.5px] bg-white rounded-sm" />
+                  {/* iPhone Status Bar */}
+                  <div className="h-9 bg-slate-900 text-white flex items-center justify-between px-5 text-[11px] font-semibold select-none z-20 shrink-0 font-sans">
+                    <span>12:48</span>
+                    <div className="flex items-center gap-1.5">
+                      {/* Cellular Signal Bars */}
+                      <div className="flex items-end gap-[1.5px] h-2">
+                        <div className="w-[2.5px] h-[3px] bg-white rounded-sm" />
+                        <div className="w-[2.5px] h-[5px] bg-white rounded-sm" />
+                        <div className="w-[2.5px] h-[7px] bg-white rounded-sm" />
+                        <div className="w-[2.5px] h-[8.5px] bg-white rounded-sm" />
+                      </div>
+                      {/* Wifi Icon */}
+                      <svg className="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                        <path d="M12 20h.01M8.5 16.5a5 5 0 0 1 7 0M5 13a10 10 0 0 1 14 0M1.5 9.5a15 15 0 0 1 21 0" strokeLinecap="round" />
+                      </svg>
+                      {/* Battery Icon */}
+                      <div className="w-5 h-2.5 border border-white/60 rounded-[3px] p-[1.5px] flex items-center relative">
+                        <div className="w-3.5 h-full bg-white rounded-[1.5px]" />
+                        <div className="w-[1.5px] h-1.5 bg-white/60 absolute -right-[2.5px] top-[1.5px] rounded-r-[1px]" />
+                      </div>
                     </div>
-                    {/* Wifi Icon */}
-                    <svg className="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                      <path d="M12 20h.01M8.5 16.5a5 5 0 0 1 7 0M5 13a10 10 0 0 1 14 0M1.5 9.5a15 15 0 0 1 21 0" strokeLinecap="round" />
-                    </svg>
-                    {/* Battery Icon */}
-                    <div className="w-5 h-2.5 border border-white/60 rounded-[3px] p-[1.5px] flex items-center relative">
-                      <div className="w-3.5 h-full bg-white rounded-[1.5px]" />
-                      <div className="w-[1.5px] h-1.5 bg-white/60 absolute -right-[2.5px] top-[1.5px] rounded-r-[1px]" />
+                  </div>
+
+                  {/* Scrollable Smartphone Screen Area */}
+                  <div className="flex-1 overflow-y-auto scrollbar-none relative bg-gray-50">
+                    {themeSettings ? (
+                      <ConnectClientPage
+                        username={profile?.username || ''}
+                        profile={{
+                          id: profile?.id || 0,
+                          userId: profile?.userId || 0,
+                          name: name || 'Your Name',
+                          avatar: avatar || '/profile_avatar.png',
+                          isPremium: isPremium,
+                          tagline: tagline || 'Tagline',
+                          portfolioUrl: portfolioUrl
+                        }}
+                        isLoggedIn={false}
+                        previewTheme={themeSettings}
+                        previewProfileData={{
+                          tags,
+                          socials,
+                          location,
+                          bio,
+                          projects,
+                          portfolioUrl
+                        }}
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-xs text-gray-400 animate-pulse">Loading visual showcase...</div>
+                    )}
+                  </div>
+
+                  {/* Safari-style Address Bar at Bottom */}
+                  <div className="bg-slate-100/95 backdrop-blur-md border-t border-slate-200/50 py-2 px-4 flex items-center justify-between gap-3 text-gray-700 select-none z-20 shrink-0 font-sans">
+                    <div className="flex gap-4">
+                      {/* Back Arrow */}
+                      <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                      </svg>
+                      {/* Forward Arrow */}
+                      <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                      </svg>
                     </div>
-                  </div>
-                </div>
 
-                {/* Scrollable Smartphone Screen Area */}
-                <div className="flex-1 overflow-y-auto scrollbar-none relative bg-gray-50">
-                  {themeSettings ? (
-                    <ConnectClientPage
-                      username={profile?.username || ''}
-                      profile={{
-                        id: profile?.id || 0,
-                        userId: profile?.userId || 0,
-                        name: name || 'Your Name',
-                        avatar: avatar || '/profile_avatar.png',
-                        isPremium: isPremium,
-                        tagline: tagline || 'Tagline',
-                        portfolioUrl: portfolioUrl
-                      }}
-                      isLoggedIn={false}
-                      previewTheme={themeSettings}
-                      previewProfileData={{
-                        tags,
-                        socials,
-                        location,
-                        bio,
-                        projects,
-                        portfolioUrl
-                      }}
-                    />
-                  ) : (
-                    <div className="flex items-center justify-center h-full text-xs text-gray-400 animate-pulse">Loading visual showcase...</div>
-                  )}
-                </div>
+                    {/* URL Input mock */}
+                    <div className="flex-1 bg-white border border-slate-200/80 rounded-lg px-2.5 py-1 flex items-center justify-between text-[11px] text-gray-800 shadow-sm gap-1.5">
+                      {/* Lock icon */}
+                      <svg className="w-2.5 h-2.5 text-gray-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                      </svg>
+                      <span className="font-medium text-slate-700 truncate tracking-wide">
+                        {profile?.username ? `${typeof window !== 'undefined' ? window.location.host : 'tapfolio.me'}/@${profile.username}` : (typeof window !== 'undefined' ? window.location.host : 'tapfolio.me')}
+                      </span>
+                      {/* Refresh icon */}
+                      <svg className="w-3 h-3 text-gray-450 hover:text-gray-900 cursor-pointer shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                      </svg>
+                    </div>
 
-                {/* Safari-style Address Bar at Bottom */}
-                <div className="bg-slate-100/95 backdrop-blur-md border-t border-slate-200/50 py-2 px-4 flex items-center justify-between gap-3 text-gray-700 select-none z-20 shrink-0 font-sans">
-                  <div className="flex gap-4">
-                    {/* Back Arrow */}
-                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-                    </svg>
-                    {/* Forward Arrow */}
-                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    {/* Options/More icon */}
+                    <svg className="w-4 h-4 text-gray-500 hover:text-gray-900 cursor-pointer shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM18 10a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
                   </div>
 
-                  {/* URL Input mock */}
-                  <div className="flex-1 bg-white border border-slate-200/80 rounded-lg px-2.5 py-1 flex items-center justify-between text-[11px] text-gray-800 shadow-sm gap-1.5">
-                    {/* Lock icon */}
-                    <svg className="w-2.5 h-2.5 text-gray-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="font-medium text-slate-700 truncate tracking-wide">
-                      {profile?.username ? `${typeof window !== 'undefined' ? window.location.host : 'tapfolio.me'}/@${profile.username}` : (typeof window !== 'undefined' ? window.location.host : 'tapfolio.me')}
-                    </span>
-                    {/* Refresh icon */}
-                    <svg className="w-3 h-3 text-gray-450 hover:text-gray-900 cursor-pointer shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-                    </svg>
-                  </div>
-
-                  {/* Options/More icon */}
-                  <svg className="w-4 h-4 text-gray-500 hover:text-gray-900 cursor-pointer shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM18 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                  </svg>
                 </div>
 
               </div>
-
             </div>
           )}
 

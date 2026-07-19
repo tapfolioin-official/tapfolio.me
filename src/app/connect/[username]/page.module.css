@@ -39,7 +39,10 @@
   box-shadow: var(--theme-card-shadow, 0 20px 40px -12px rgba(0, 0, 0, 0.25));
   position: relative;
   overflow: hidden;
-  border: var(--theme-card-border, 1px solid transparent);
+  border: var(--theme-cover-border, var(--theme-card-border, 1px solid transparent));
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
   backdrop-filter: blur(var(--theme-card-blur, 0px));
   opacity: var(--theme-card-opacity, 1);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -348,12 +351,12 @@
 
 .footerText {
   font-size: 0.8rem;
-  color: var(--secondary-text);
+  color: var(--theme-bg-text-color-muted, var(--secondary-text));
 }
 
 .footerText span {
   font-weight: 700;
-  color: var(--primary-text);
+  color: var(--theme-bg-text-color, var(--primary-text));
 }
 
 .footerCta {
