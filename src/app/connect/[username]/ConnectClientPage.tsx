@@ -183,15 +183,14 @@ export default function ConnectClientPage({
   const [aboutOpen, setAboutOpen] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
   const [showAppRedirectModal, setShowAppRedirectModal] = useState(false);
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
 
   useEffect(() => {
     // Only redirect to mobile app if not inside preview dashboard
     const isMobile = /android|iphone|ipad|ipod/i.test(navigator.userAgent);
+    setIsMobileDevice(isMobile);
     if (isMobile && !previewTheme) {
-      const hasAsked = typeof window !== 'undefined' ? sessionStorage.getItem('asked_app_redirect') : null;
-      if (!hasAsked) {
-        setShowAppRedirectModal(true);
-      }
+      setShowAppRedirectModal(true);
     }
 
     async function loadPublicData() {
@@ -717,6 +716,24 @@ export default function ConnectClientPage({
       {activeTheme?.animations?.cursorGlow && <CursorGlow />}
 
       <div style={{ width: '100%', maxWidth: 'var(--theme-profile-width, 640px)', zIndex: 1 }}>
+        {/* ─── Top App Banner ─── */}
+        {isMobileDevice && !previewTheme && (
+          <div className={styles.topAppBanner}>
+            <div className={styles.topAppBannerLeft}>
+              <span className={styles.topAppBannerLogo}>Tapfolio App</span>
+              <span className={styles.topAppBannerSub}>Open this profile in our app</span>
+            </div>
+            <button 
+              className={styles.topAppBannerButton}
+              onClick={() => {
+                window.location.href = `tapfolio://connect/${username}`;
+              }}
+            >
+              Open
+            </button>
+          </div>
+        )}
+
         {/* ─── Hero Banner ─── */}
         <div className={styles.heroBanner}>
           <div className={styles.heroContent}>

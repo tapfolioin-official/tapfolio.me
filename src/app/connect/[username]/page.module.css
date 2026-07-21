@@ -660,3 +660,56 @@
     transform: scale(1);
   }
 }
+
+/* ─── Top App Banner ─── */
+.topAppBanner {
+  width: 100%;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--theme-card-border-radius, 1rem);
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--theme-card-shadow, 0 4px 12px rgba(0, 0, 0, 0.02));
+  margin-bottom: var(--theme-card-spacing, 1rem);
+  position: relative;
+  z-index: 10;
+  backdrop-filter: blur(var(--theme-card-blur, 0px));
+}
+
+.topAppBannerLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+}
+
+.topAppBannerLogo {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--primary-text);
+}
+
+.topAppBannerSub {
+  font-size: 0.75rem;
+  color: var(--secondary-text);
+}
+
+.topAppBannerButton {
+  background: var(--brand-blue);
+  color: #ffffff;
+  border: none;
+  border-radius: 100px;
+  padding: 0.4rem 1.2rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(1, 75, 170, 0.15);
+}
+
+.topAppBannerButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(1, 75, 170, 0.25);
+}
