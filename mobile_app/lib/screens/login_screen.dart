@@ -161,21 +161,22 @@ class _LoginScreenState extends State<LoginScreen> {
     Widget? suffixIcon,
     String? Function(String?)? validator,
   }) {
+    final isLight = Theme.of(context).brightness == Brightness.light;
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.04),
+        color: isLight ? const Color(0xFFF9FAFB) : Colors.white.withValues(alpha: 0.04),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+        border: Border.all(color: isLight ? Colors.black12 : Colors.white.withValues(alpha: 0.08)),
       ),
       child: TextFormField(
         controller: controller,
         obscureText: obscureText,
-        style: GoogleFonts.outfit(color: Colors.white),
+        style: GoogleFonts.outfit(color: isLight ? const Color(0xFF111827) : Colors.white),
         validator: validator,
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: GoogleFonts.outfit(color: Colors.white60, fontSize: 14),
+          labelStyle: GoogleFonts.outfit(color: isLight ? const Color(0xFF4B5563) : Colors.white60, fontSize: 14),
           prefixIcon: Icon(icon, color: Theme.of(context).primaryColor, size: 20),
           suffixIcon: suffixIcon,
           border: InputBorder.none,
@@ -187,8 +188,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isLight = Theme.of(context).brightness == Brightness.light;
+    final scaffoldBg = isLight ? const Color(0xFFF3F4F6) : const Color(0xFF06070D);
+    final cardBg = isLight ? Colors.white : Colors.white.withValues(alpha: 0.02);
+    final cardBorder = isLight ? Colors.black12 : Colors.white.withValues(alpha: 0.06);
+    final textColor = isLight ? const Color(0xFF111827) : Colors.white;
+    final subtitleColor = isLight ? const Color(0xFF4B5563) : Colors.white60;
+
     return Scaffold(
-      backgroundColor: const Color(0xFF06070D),
+      backgroundColor: scaffoldBg,
       body: Stack(
         children: [
           // Radial glow background effects
@@ -200,7 +208,7 @@ class _LoginScreenState extends State<LoginScreen> {
               height: 350,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.indigo.withValues(alpha: 0.15),
+                color: Colors.indigo.withValues(alpha: isLight ? 0.08 : 0.15),
               ),
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 90, sigmaY: 90),
@@ -216,7 +224,7 @@ class _LoginScreenState extends State<LoginScreen> {
               height: 300,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.purple.withValues(alpha: 0.12),
+                color: Colors.purple.withValues(alpha: isLight ? 0.06 : 0.12),
               ),
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 90, sigmaY: 90),
@@ -238,7 +246,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: GoogleFonts.outfit(
                         fontSize: 44,
                         fontWeight: FontWeight.w800,
-                        color: Colors.white,
+                        color: textColor,
                         letterSpacing: -1.5,
                       ),
                     ),
@@ -247,7 +255,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       'Your identity. One tap away.',
                       style: GoogleFonts.outfit(
                         fontSize: 15,
-                        color: Colors.white60,
+                        color: subtitleColor,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -261,9 +269,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(24),
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.02),
+                            color: cardBg,
                             borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+                            border: Border.all(color: cardBorder),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -273,7 +281,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 style: GoogleFonts.outfit(
                                   fontSize: 22,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                                  color: textColor,
                                 ),
                               ),
                               const SizedBox(height: 4),
@@ -281,7 +289,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 'Sign in to continue your connections',
                                 style: GoogleFonts.outfit(
                                   fontSize: 13,
-                                  color: Colors.white54,
+                                  color: subtitleColor,
                                 ),
                               ),
                               const SizedBox(height: 24),
@@ -310,12 +318,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                 height: 48,
                                 child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.white,
+                                    backgroundColor: isLight ? const Color(0xFFF3F4F6) : Colors.white,
                                     foregroundColor: const Color(0xFF1f2937),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10),
                                     ),
-                                    elevation: 2,
+                                    elevation: isLight ? 0 : 2,
                                   ),
                                   onPressed: _isLoading ? null : _handleGoogleSignIn,
                                   child: Row(
@@ -332,6 +340,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         style: GoogleFonts.outfit(
                                           fontWeight: FontWeight.w700,
                                           fontSize: 14,
+                                          color: const Color(0xFF1F2937),
                                         ),
                                       ),
                                     ],
@@ -344,20 +353,20 @@ class _LoginScreenState extends State<LoginScreen> {
                               // Divider
                               Row(
                                 children: [
-                                  Expanded(child: Divider(color: Colors.white.withValues(alpha: 0.08))),
+                                  Expanded(child: Divider(color: isLight ? Colors.black12 : Colors.white.withValues(alpha: 0.08))),
                                   Padding(
                                     padding: const EdgeInsets.symmetric(horizontal: 12),
                                     child: Text(
                                       'OR EMAIL LOGIN',
                                       style: GoogleFonts.outfit(
                                         fontSize: 10,
-                                        color: Colors.white30,
+                                        color: isLight ? Colors.black26 : Colors.white30,
                                         fontWeight: FontWeight.w700,
                                         letterSpacing: 1.2,
                                       ),
                                     ),
                                   ),
-                                  Expanded(child: Divider(color: Colors.white.withValues(alpha: 0.08))),
+                                  Expanded(child: Divider(color: isLight ? Colors.black12 : Colors.white.withValues(alpha: 0.08))),
                                 ],
                               ),
 
@@ -383,7 +392,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       suffixIcon: IconButton(
                                         icon: Icon(
                                           _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                                          color: Colors.white54,
+                                          color: subtitleColor,
                                           size: 20,
                                         ),
                                         onPressed: () {
@@ -451,7 +460,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   },
                                   child: RichText(
                                     text: TextSpan(
-                                      style: GoogleFonts.outfit(color: Colors.white54, fontSize: 13),
+                                      style: GoogleFonts.outfit(color: subtitleColor, fontSize: 13),
                                       children: [
                                         const TextSpan(text: 'New to Tapfolio? '),
                                         TextSpan(

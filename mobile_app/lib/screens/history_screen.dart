@@ -17,6 +17,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
   bool _loading = true;
   String? _error;
 
+  bool get _isLight => Theme.of(context).brightness == Brightness.light;
+  Color get _textColor => _isLight ? const Color(0xFF1F2937) : Colors.white;
+  Color get _subtitleColor => _isLight ? const Color(0xFF4B5563) : Colors.white60;
+  Color get _cardBg => _isLight ? Colors.white : Colors.white.withValues(alpha: 0.03);
+  Color get _cardBorder => _isLight ? Colors.black12 : Colors.white.withValues(alpha: 0.06);
+
   _HistoryScreenState() {
     debugPrint('[TRACE-HISTORY] State constructor called.');
   }
@@ -78,7 +84,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
   Widget build(BuildContext context) {
     debugPrint('[TRACE-HISTORY] build() called.');
     return Scaffold(
-      backgroundColor: const Color(0xFF06070D),
+      backgroundColor: _isLight ? const Color(0xFFF3F4F6) : const Color(0xFF06070D),
       body: RefreshIndicator(
         onRefresh: _fetchHistory,
         color: const Color(0xFF6366F1),
@@ -91,7 +97,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               Text(
                 'Connection Logs',
                 style: GoogleFonts.outfit(
-                  color: Colors.white,
+                  color: _textColor,
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
@@ -100,7 +106,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               Text(
                 'Monitor active engagement on your profile. See when and how users connect with your card.',
                 style: GoogleFonts.outfit(
-                  color: Colors.white60,
+                  color: _subtitleColor,
                   fontSize: 14,
                 ),
               ),
@@ -122,9 +128,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.03),
+                    color: _cardBg,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+                    border: Border.all(color: _cardBorder),
                   ),
                   child: Column(
                     children: [
@@ -132,12 +138,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       const SizedBox(height: 16),
                       Text(
                         'No Interaction Events',
-                        style: GoogleFonts.outfit(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                        style: GoogleFonts.outfit(color: _textColor, fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 6),
                       Text(
                         'Your NFC card has not been scanned or tapped by other users yet.',
-                        style: GoogleFonts.outfit(color: Colors.white54, fontSize: 13),
+                        style: GoogleFonts.outfit(color: _subtitleColor, fontSize: 13),
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -176,7 +182,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               Container(
                                 width: 2,
                                 height: 50,
-                                color: Colors.white10,
+                                color: _cardBorder,
                               ),
                           ],
                         ),
@@ -188,9 +194,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             margin: const EdgeInsets.only(bottom: 16),
                             padding: const EdgeInsets.all(14),
                             decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.03),
+                              color: _cardBg,
                               borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+                              border: Border.all(color: _cardBorder),
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -201,7 +207,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                     Text(
                                       event.action,
                                       style: GoogleFonts.outfit(
-                                        color: Colors.white,
+                                        color: _textColor,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 15,
                                       ),
@@ -209,7 +215,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                     Text(
                                       _formatDateTime(event.createdAt),
                                       style: GoogleFonts.outfit(
-                                        color: Colors.white38,
+                                        color: _subtitleColor.withValues(alpha: 0.6),
                                         fontSize: 10,
                                       ),
                                     ),
@@ -219,7 +225,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                 Text(
                                   event.details,
                                   style: GoogleFonts.outfit(
-                                    color: Colors.white70,
+                                    color: _subtitleColor,
                                     fontSize: 13,
                                   ),
                                 ),

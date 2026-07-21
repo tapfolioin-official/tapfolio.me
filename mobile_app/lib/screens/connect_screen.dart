@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../services/api_service.dart';
@@ -24,6 +23,12 @@ class _ConnectScreenState extends State<ConnectScreen>
   Map<String, dynamic>? _profileData;
   String? _connectionStatus;
   String? _error;
+
+  bool get _isLight => Theme.of(context).brightness == Brightness.light;
+  Color get _textColor => _isLight ? const Color(0xFF1F2937) : Colors.white;
+  Color get _subtitleColor => _isLight ? const Color(0xFF4B5563) : Colors.white60;
+  Color get _cardBg => _isLight ? Colors.white : Colors.white.withValues(alpha: 0.03);
+  Color get _cardBorder => _isLight ? Colors.black12 : Colors.white.withValues(alpha: 0.06);
 
   late AnimationController _avatarController;
   late Animation<double> _avatarAnim;
@@ -80,17 +85,17 @@ class _ConnectScreenState extends State<ConnectScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF06070D),
+      backgroundColor: _isLight ? const Color(0xFFF3F4F6) : const Color(0xFF06070D),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0F1122),
+        backgroundColor: _isLight ? Colors.white : const Color(0xFF0F1122),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white70),
+          icon: Icon(Icons.arrow_back_ios_new, color: _textColor),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
           'Connect',
-          style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.w600),
+          style: GoogleFonts.outfit(color: _textColor, fontWeight: FontWeight.w600),
         ),
       ),
       body: _loading
@@ -106,9 +111,9 @@ class _ConnectScreenState extends State<ConnectScreen>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.person_off_outlined, size: 64, color: Colors.white30),
+          Icon(Icons.person_off_outlined, size: 64, color: _subtitleColor.withValues(alpha: 0.5)),
           const SizedBox(height: 16),
-          Text(_error!, style: GoogleFonts.outfit(color: Colors.white54, fontSize: 16)),
+          Text(_error!, style: GoogleFonts.outfit(color: _subtitleColor, fontSize: 16)),
           const SizedBox(height: 24),
           TextButton(
             onPressed: _loadProfile,
@@ -158,7 +163,7 @@ class _ConnectScreenState extends State<ConnectScreen>
                 backgroundImage: NetworkImage(
                   avatar.startsWith('http') ? avatar : 'https://www.tapfolio.me$avatar',
                 ),
-                backgroundColor: const Color(0xFF1a1a2e),
+                backgroundColor: _cardBorder,
               ),
             ),
           ),
@@ -171,7 +176,7 @@ class _ConnectScreenState extends State<ConnectScreen>
             style: GoogleFonts.outfit(
               fontSize: 26,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: _textColor,
             ),
           ),
 
@@ -180,7 +185,7 @@ class _ConnectScreenState extends State<ConnectScreen>
             Text(
               tagline,
               textAlign: TextAlign.center,
-              style: GoogleFonts.outfit(fontSize: 14, color: Colors.white54, fontStyle: FontStyle.italic),
+              style: GoogleFonts.outfit(fontSize: 14, color: _subtitleColor, fontStyle: FontStyle.italic),
             ),
           ],
 
@@ -189,11 +194,11 @@ class _ConnectScreenState extends State<ConnectScreen>
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.location_on, size: 14, color: Colors.white54),
+                Icon(Icons.location_on, size: 14, color: _subtitleColor),
                 const SizedBox(width: 4),
                 Text(
                   location,
-                  style: GoogleFonts.outfit(fontSize: 13, color: Colors.white54),
+                  style: GoogleFonts.outfit(fontSize: 13, color: _subtitleColor),
                 ),
               ],
             ),
@@ -220,7 +225,7 @@ class _ConnectScreenState extends State<ConnectScreen>
                 ),
                 child: Text(
                   '${t.type == 'location' ? '📍 ' : '⚙️ '}${t.text}',
-                  style: GoogleFonts.outfit(fontSize: 12, color: Colors.white70),
+                  style: GoogleFonts.outfit(fontSize: 12, color: _textColor),
                 ),
               )).toList(),
             ),
@@ -230,20 +235,17 @@ class _ConnectScreenState extends State<ConnectScreen>
             const SizedBox(height: 24),
             ClipRRect(
               borderRadius: BorderRadius.circular(16),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.04),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
-                  ),
-                  child: Text(
-                    bio,
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.outfit(fontSize: 14, color: Colors.white60, height: 1.6),
-                  ),
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: _cardBg,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: _cardBorder),
+                ),
+                child: Text(
+                  bio,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.outfit(fontSize: 14, color: _subtitleColor, height: 1.6),
                 ),
               ),
             ),

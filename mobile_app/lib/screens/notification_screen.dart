@@ -21,6 +21,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
   List<AppNotification> _notifications = [];
   bool _loading = true;
 
+  bool get _isLight => Theme.of(context).brightness == Brightness.light;
+  Color get _textColor => _isLight ? const Color(0xFF1F2937) : Colors.white;
+  Color get _subtitleColor => _isLight ? const Color(0xFF4B5563) : Colors.white60;
+  Color get _cardBorder => _isLight ? Colors.black12 : Colors.white.withValues(alpha: 0.06);
+
   // Track which notifications are being actioned (accept/reject) to show per-card loading
   final Set<int> _processingIds = {};
 
@@ -211,15 +216,15 @@ class _NotificationScreenState extends State<NotificationScreen> {
     final hasUnread = _notifications.any((n) => !n.isRead);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF06070D),
+      backgroundColor: _isLight ? const Color(0xFFF3F4F6) : const Color(0xFF06070D),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0F1122),
+        backgroundColor: _isLight ? Colors.white : const Color(0xFF0F1122),
         elevation: 0,
-        leading: BackButton(color: Colors.white70),
+        leading: BackButton(color: _textColor),
         title: Text(
           'Notifications',
           style: GoogleFonts.outfit(
-            color: Colors.white,
+            color: _textColor,
             fontWeight: FontWeight.w600,
             fontSize: 18,
           ),
@@ -237,7 +242,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
               ),
             ),
           IconButton(
-            icon: const Icon(Icons.refresh_rounded, color: Colors.white70),
+            icon: Icon(Icons.refresh_rounded, color: _isLight ? const Color(0xFF374151) : Colors.white70),
             onPressed: _load,
           ),
         ],
@@ -250,7 +255,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
               ? _buildEmptyState()
               : RefreshIndicator(
                   color: const Color(0xFF6366F1),
-                  backgroundColor: const Color(0xFF0F1122),
+                  backgroundColor: _isLight ? Colors.white : const Color(0xFF0F1122),
                   onRefresh: _load,
                   child: ListView.builder(
                     itemCount: _notifications.length,
@@ -283,7 +288,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
           Text(
             'No notifications yet',
             style: GoogleFonts.outfit(
-              color: Colors.white,
+              color: _textColor,
               fontSize: 18,
               fontWeight: FontWeight.w600,
             ),
@@ -293,7 +298,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
             "We'll notify you whenever someone\nconnects with you.",
             textAlign: TextAlign.center,
             style: GoogleFonts.outfit(
-              color: Colors.white38,
+              color: _subtitleColor,
               fontSize: 14,
               height: 1.5,
             ),
@@ -323,12 +328,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
           margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           decoration: BoxDecoration(
             color: notif.isRead
-                ? const Color(0xFF0F1122)
-                : const Color(0xFF1A1A2E),
+                ? (_isLight ? Colors.white : const Color(0xFF0F1122))
+                : (_isLight ? const Color(0xFFEEF2F6) : const Color(0xFF1A1A2E)),
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: notif.isRead
-                  ? Colors.white.withValues(alpha: 0.05)
+                  ? _cardBorder
                   : const Color(0xFF6366F1).withValues(alpha: 0.3),
               width: 1,
             ),
@@ -369,7 +374,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                             child: Text(
                               notif.title,
                               style: GoogleFonts.outfit(
-                                color: Colors.white,
+                                color: _textColor,
                                 fontWeight: notif.isRead
                                     ? FontWeight.w400
                                     : FontWeight.w600,
@@ -380,7 +385,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                           Text(
                             _timeAgo(notif.createdAt),
                             style: GoogleFonts.outfit(
-                              color: Colors.white38,
+                              color: _subtitleColor.withValues(alpha: 0.6),
                               fontSize: 11,
                             ),
                           ),
@@ -391,7 +396,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       Text(
                         notif.message,
                         style: GoogleFonts.outfit(
-                          color: Colors.white60,
+                          color: _subtitleColor,
                           fontSize: 13,
                           height: 1.4,
                         ),
@@ -417,9 +422,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                 child: OutlinedButton(
                                   onPressed: () => _rejectRequest(notif),
                                   style: OutlinedButton.styleFrom(
-                                    foregroundColor: Colors.white54,
-                                    side: const BorderSide(
-                                        color: Colors.white24),
+                                    foregroundColor: _subtitleColor,
+                                    side: BorderSide(
+                                        color: _cardBorder),
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 8),
                                     shape: RoundedRectangleBorder(

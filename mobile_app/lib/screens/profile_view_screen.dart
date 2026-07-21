@@ -26,6 +26,12 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
   bool _connected = false;
   String? _connectionStatus;
 
+  bool get _isLight => Theme.of(context).brightness == Brightness.light;
+  Color get _textColor => _isLight ? const Color(0xFF1F2937) : Colors.white;
+  Color get _subtitleColor => _isLight ? const Color(0xFF4B5563) : Colors.white60;
+  Color get _cardBg => _isLight ? Colors.white : Colors.white.withValues(alpha: 0.04);
+  Color get _cardBorder => _isLight ? Colors.black12 : Colors.white.withValues(alpha: 0.08);
+
   _ProfileViewScreenState() {
     debugPrint('[TRACE-PROFILEVIEW] State constructor called.');
   }
@@ -104,9 +110,9 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.04),
+        color: _cardBg,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+        border: Border.all(color: _cardBorder),
       ),
       child: Column(
         children: children,
@@ -126,9 +132,9 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
             Container(
               margin: const EdgeInsets.only(bottom: 24),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.04),
+                color: _isLight ? const Color(0xFFF9FAFB) : Colors.white.withValues(alpha: 0.04),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                border: Border.all(color: _cardBorder),
               ),
               child: Row(
                 children: [
@@ -136,12 +142,12 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
                     child: TextField(
                       controller: _searchController,
                       keyboardType: TextInputType.number,
-                      style: GoogleFonts.outfit(color: Colors.white),
-                      decoration: const InputDecoration(
+                      style: GoogleFonts.outfit(color: _textColor),
+                      decoration: InputDecoration(
                         hintText: 'Enter User ID to view profile',
-                        hintStyle: TextStyle(color: Colors.white30),
+                        hintStyle: TextStyle(color: _subtitleColor.withValues(alpha: 0.5)),
                         border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 16),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                       ),
                     ),
                   ),
@@ -173,11 +179,11 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
                 padding: const EdgeInsets.only(top: 40.0),
                 child: Column(
                   children: [
-                    const Icon(Icons.nfc_outlined, size: 80, color: Colors.white24),
+                    Icon(Icons.nfc_outlined, size: 80, color: _subtitleColor.withValues(alpha: 0.25)),
                     const SizedBox(height: 16),
                     Text(
                       'Search a user above, or tap a user in the Leaderboard to view their card.',
-                      style: GoogleFonts.outfit(color: Colors.white38, fontSize: 14),
+                      style: GoogleFonts.outfit(color: _subtitleColor, fontSize: 14),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -195,13 +201,13 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
                 const SizedBox(height: 16),
                 Text(
                   _profile!.name,
-                  style: GoogleFonts.outfit(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                  style: GoogleFonts.outfit(color: _textColor, fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 if (_profile!.tagline.isNotEmpty) ...[
                   const SizedBox(height: 4),
                   Text(
                     _profile!.tagline,
-                    style: GoogleFonts.outfit(color: Colors.white70, fontSize: 15),
+                    style: GoogleFonts.outfit(color: _subtitleColor, fontSize: 15),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -241,11 +247,11 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.bolt, color: Colors.tealAccent, size: 16),
+                    const Icon(Icons.bolt, color: Colors.teal, size: 16),
                     const SizedBox(width: 4),
                     Text(
                       '${_profile!.tapCount} total connections',
-                      style: GoogleFonts.outfit(color: Colors.white54, fontSize: 13),
+                      style: GoogleFonts.outfit(color: _subtitleColor, fontSize: 13),
                     ),
                   ],
                 ),
@@ -255,12 +261,12 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.02),
+                    color: _isLight ? const Color(0xFFF9FAFB) : Colors.white.withValues(alpha: 0.02),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     '“Design is not just what it looks like, it’s how it connects.”',
-                    style: GoogleFonts.outfit(color: Colors.white38, fontSize: 12, fontStyle: FontStyle.italic),
+                    style: GoogleFonts.outfit(color: _subtitleColor.withValues(alpha: 0.7), fontSize: 12, fontStyle: FontStyle.italic),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -272,7 +278,7 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       'About',
-                      style: GoogleFonts.outfit(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                      style: GoogleFonts.outfit(color: _textColor, fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -280,7 +286,7 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       _profile!.bio,
-                      style: GoogleFonts.outfit(color: Colors.white70, fontSize: 14, height: 1.4),
+                      style: GoogleFonts.outfit(color: _subtitleColor, fontSize: 14, height: 1.4),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -295,12 +301,12 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
                     children: _profile!.tags.map((t) {
                       final isLoc = t.type == 'location';
                       return Chip(
-                        backgroundColor: Colors.white.withValues(alpha: 0.05),
-                        side: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+                        backgroundColor: _isLight ? const Color(0xFFF3F4F6) : Colors.white.withValues(alpha: 0.05),
+                        side: BorderSide(color: _cardBorder),
                         avatar: Text(isLoc ? '📍' : '⚙️'),
                         label: Text(
                           t.text,
-                          style: GoogleFonts.outfit(color: Colors.white70, fontSize: 12),
+                          style: GoogleFonts.outfit(color: _textColor, fontSize: 12),
                         ),
                       );
                     }).toList(),
@@ -314,7 +320,7 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       'Links',
-                      style: GoogleFonts.outfit(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                      style: GoogleFonts.outfit(color: _textColor, fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -324,7 +330,7 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
                       margin: const EdgeInsets.only(bottom: 12),
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.02),
+                        color: _isLight ? const Color(0xFFF9FAFB) : Colors.white.withValues(alpha: 0.02),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: cardColor.withValues(alpha: 0.3)),
                       ),
@@ -336,11 +342,11 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
                             children: [
                               Text(
                                 link.platform,
-                                style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold),
+                                style: GoogleFonts.outfit(color: _textColor, fontWeight: FontWeight.bold),
                               ),
                               Text(
                                 link.handle,
-                                style: GoogleFonts.outfit(color: Colors.white38, fontSize: 12),
+                                style: GoogleFonts.outfit(color: _subtitleColor, fontSize: 12),
                               ),
                             ],
                           ),

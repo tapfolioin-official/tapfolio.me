@@ -18,6 +18,12 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   bool _loading = true;
   String? _error;
 
+  bool get _isLight => Theme.of(context).brightness == Brightness.light;
+  Color get _textColor => _isLight ? const Color(0xFF1F2937) : Colors.white;
+  Color get _subtitleColor => _isLight ? const Color(0xFF4B5563) : Colors.white60;
+  Color get _cardBg => _isLight ? Colors.white : Colors.white.withValues(alpha: 0.03);
+  Color get _cardBorder => _isLight ? Colors.black12 : Colors.white.withValues(alpha: 0.06);
+
   _LeaderboardScreenState() {
     debugPrint('[TRACE-LEADERBOARD] State constructor called.');
   }
@@ -89,7 +95,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   Widget build(BuildContext context) {
     debugPrint('[TRACE-LEADERBOARD] build() called.');
     return Scaffold(
-      backgroundColor: const Color(0xFF06070D),
+      backgroundColor: _isLight ? const Color(0xFFF3F4F6) : const Color(0xFF06070D),
       body: RefreshIndicator(
         onRefresh: _fetchLeaderboard,
         color: const Color(0xFF6366F1),
@@ -102,7 +108,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
               Text(
                 'Tapfolio Leaderboard',
                 style: GoogleFonts.outfit(
-                  color: Colors.white,
+                  color: _textColor,
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
@@ -111,7 +117,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
               Text(
                 'Discover elite creators and professionals. All premium accounts are ranked by diamonds.',
                 style: GoogleFonts.outfit(
-                  color: Colors.white60,
+                  color: _subtitleColor,
                   fontSize: 14,
                 ),
               ),
@@ -133,9 +139,9 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.03),
+                    color: _cardBg,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+                    border: Border.all(color: _cardBorder),
                   ),
                   child: Column(
                     children: [
@@ -143,12 +149,12 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                       const SizedBox(height: 16),
                       Text(
                         'No Premium Profiles Yet',
-                        style: GoogleFonts.outfit(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                        style: GoogleFonts.outfit(color: _textColor, fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 6),
                       Text(
                         'Premium accounts will appear here ranked by their diamond score.',
-                        style: GoogleFonts.outfit(color: Colors.white54, fontSize: 13),
+                        style: GoogleFonts.outfit(color: _subtitleColor, fontSize: 13),
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -163,7 +169,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                     margin: const EdgeInsets.only(bottom: 16),
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.03),
+                      color: _cardBg,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
                         color: rank == 1
@@ -172,7 +178,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                                 ? const Color(0xFF94A3B8).withValues(alpha: 0.4)
                                 : rank == 3
                                     ? const Color(0xFFB45309).withValues(alpha: 0.4)
-                                    : Colors.white.withValues(alpha: 0.06),
+                                    : _cardBorder,
                       ),
                     ),
                     child: Row(
@@ -184,7 +190,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                         // Avatar
                         CircleAvatar(
                           radius: 24,
-                          backgroundColor: Colors.white10,
+                          backgroundColor: _cardBorder,
                           backgroundImage: getAvatarImage(profile.avatar, _apiService.baseUrl),
                         ),
                         const SizedBox(width: 12),
@@ -200,7 +206,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                                     child: Text(
                                       profile.name,
                                       style: GoogleFonts.outfit(
-                                        color: Colors.white,
+                                        color: _textColor,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16,
                                       ),
@@ -224,7 +230,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                               const SizedBox(height: 2),
                               Text(
                                 profile.tagline,
-                                style: GoogleFonts.outfit(color: Colors.white60, fontSize: 12),
+                                style: GoogleFonts.outfit(color: _subtitleColor, fontSize: 12),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -253,16 +259,18 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
 
                         // Action button
                         IconButton(
-                          icon: const Icon(Icons.arrow_forward_ios, color: Colors.white38, size: 18),
+                          icon: Icon(Icons.arrow_forward_ios, color: _subtitleColor.withValues(alpha: 0.5), size: 18),
                           onPressed: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (_) => Scaffold(
-                                  backgroundColor: const Color(0xFF06070D),
+                                  backgroundColor: _isLight ? const Color(0xFFF3F4F6) : const Color(0xFF06070D),
                                   appBar: AppBar(
-                                    backgroundColor: const Color(0xFF0F1122),
-                                    title: Text('Profile View', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
+                                    backgroundColor: _isLight ? Colors.white : const Color(0xFF0F1122),
+                                    title: Text('Profile View', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: _textColor)),
+                                    iconTheme: IconThemeData(color: _textColor),
+                                    elevation: 0,
                                   ),
                                   body: ProfileViewScreen(userId: profile.userId),
                                 ),

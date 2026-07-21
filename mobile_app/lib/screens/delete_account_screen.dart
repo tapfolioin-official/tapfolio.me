@@ -30,6 +30,12 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen>
   String? _errorMessage;
   bool _confirmed = false;
 
+  bool get _isLight => Theme.of(context).brightness == Brightness.light;
+  Color get _textColor => _isLight ? const Color(0xFF1F2937) : Colors.white;
+  Color get _subtitleColor => _isLight ? const Color(0xFF4B5563) : Colors.white60;
+  Color get _cardBg => _isLight ? Colors.white : Colors.white.withValues(alpha: 0.03);
+  Color get _cardBorder => _isLight ? Colors.black12 : Colors.white.withValues(alpha: 0.06);
+
   late final AnimationController _shakeController;
   late final Animation<double> _shakeAnim;
 
@@ -124,7 +130,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen>
         title: Text(
           'Delete Account',
           style: GoogleFonts.outfit(
-            color: Colors.white,
+            color: _textColor,
             fontWeight: FontWeight.w600,
             fontSize: 18,
           ),
@@ -141,7 +147,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen>
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.red.shade900.withValues(alpha: 0.3),
+                  color: Colors.red.shade900.withValues(alpha: _isLight ? 0.08 : 0.3),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: Colors.red.shade700, width: 1),
                 ),
@@ -151,12 +157,12 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen>
                     Row(
                       children: [
                         Icon(Icons.warning_amber_rounded,
-                            color: Colors.red.shade400, size: 24),
+                            color: Colors.red.shade700, size: 24),
                         const SizedBox(width: 10),
                         Text(
                           'Permanent Action',
                           style: GoogleFonts.outfit(
-                            color: Colors.red.shade400,
+                            color: Colors.red.shade700,
                             fontWeight: FontWeight.bold,
                             fontSize: 17,
                           ),
@@ -167,7 +173,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen>
                     Text(
                       'Deleting your account will permanently remove:',
                       style: GoogleFonts.outfit(
-                        color: Colors.white70,
+                        color: _isLight ? const Color(0xFF991B1B) : Colors.white70,
                         fontSize: 14,
                       ),
                     ),
@@ -185,13 +191,13 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Icon(Icons.remove_circle_outline,
-                                color: Colors.red.shade400, size: 16),
+                                color: Colors.red.shade700, size: 16),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
                                 item,
                                 style: GoogleFonts.outfit(
-                                  color: Colors.white60,
+                                  color: _isLight ? const Color(0xFF7F1D1D) : Colors.white60,
                                   fontSize: 13,
                                 ),
                               ),
@@ -210,10 +216,10 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen>
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1A1A2E),
+                  color: _cardBg,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.08),
+                    color: _cardBorder,
                   ),
                 ),
                 child: Column(
@@ -222,7 +228,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen>
                     Text(
                       'What happens next',
                       style: GoogleFonts.outfit(
-                        color: Colors.white,
+                        color: _textColor,
                         fontWeight: FontWeight.w600,
                         fontSize: 15,
                       ),
@@ -231,19 +237,23 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen>
                     _InfoRow(
                       icon: Icons.lock_clock_outlined,
                       text: 'Your data will be deleted immediately.',
+                      subtitleColor: _subtitleColor,
                     ),
                     _InfoRow(
                       icon: Icons.link_off,
                       text:
                           'Anyone who has your NFC card link will see an error.',
+                      subtitleColor: _subtitleColor,
                     ),
                     _InfoRow(
                       icon: Icons.no_accounts_outlined,
                       text: 'You will be signed out of all devices.',
+                      subtitleColor: _subtitleColor,
                     ),
                     _InfoRow(
                       icon: Icons.restore_from_trash_outlined,
                       text: 'This action cannot be undone.',
+                      subtitleColor: _subtitleColor,
                     ),
                   ],
                 ),
@@ -255,7 +265,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen>
               Text(
                 'To confirm, type DELETE below:',
                 style: GoogleFonts.outfit(
-                  color: Colors.white70,
+                  color: _textColor,
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                 ),
@@ -270,7 +280,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen>
                 child: TextField(
                   controller: _confirmController,
                   style: GoogleFonts.outfit(
-                    color: Colors.white,
+                    color: _textColor,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 2,
                     fontSize: 16,
@@ -279,18 +289,18 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen>
                   decoration: InputDecoration(
                     hintText: 'DELETE',
                     hintStyle: GoogleFonts.outfit(
-                      color: Colors.white24,
+                      color: _subtitleColor.withValues(alpha: 0.4),
                       letterSpacing: 2,
                     ),
                     filled: true,
-                    fillColor: const Color(0xFF1A1A2E),
+                    fillColor: _isLight ? const Color(0xFFE5E7EB) : const Color(0xFF1A1A2E),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+                      borderSide: BorderSide(color: _cardBorder),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+                      borderSide: BorderSide(color: _cardBorder),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -327,7 +337,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen>
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor:
-                        _confirmed ? Colors.red.shade700 : const Color(0xFF2A2A3E),
+                        _confirmed ? Colors.red.shade700 : (_isLight ? const Color(0xFFE5E7EB) : const Color(0xFF2A2A3E)),
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
@@ -351,7 +361,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen>
                             fontSize: 15,
                             color: _confirmed
                                 ? Colors.white
-                                : Colors.white38,
+                                : (_isLight ? Colors.black38 : Colors.white38),
                           ),
                         ),
                 ),
@@ -384,7 +394,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen>
                   'If you have concerns about your data, contact us at\nsupport@tapfolio.me',
                   textAlign: TextAlign.center,
                   style: GoogleFonts.outfit(
-                    color: Colors.white30,
+                    color: _subtitleColor,
                     fontSize: 12,
                   ),
                 ),
@@ -400,7 +410,8 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen>
 class _InfoRow extends StatelessWidget {
   final IconData icon;
   final String text;
-  const _InfoRow({required this.icon, required this.text});
+  final Color subtitleColor;
+  const _InfoRow({required this.icon, required this.text, required this.subtitleColor});
 
   @override
   Widget build(BuildContext context) {
@@ -409,13 +420,13 @@ class _InfoRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: Colors.white38, size: 16),
+          Icon(icon, color: subtitleColor.withValues(alpha: 0.5), size: 16),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
               text,
               style: GoogleFonts.outfit(
-                color: Colors.white54,
+                color: subtitleColor,
                 fontSize: 13,
               ),
             ),

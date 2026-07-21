@@ -14,26 +14,30 @@ class BrandingFooter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cleanUrl = profileUrl.replaceFirst(RegExp(r'^https?://'), '');
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
+        // URL
         Text(
           cleanUrl,
           style: GoogleFonts.outfit(
             color: Colors.white38,
-            fontSize: 12,
+            fontSize: 11,
             fontWeight: FontWeight.w500,
+            letterSpacing: 0.2,
           ),
         ),
+
         if (!removeBranding) ...[
-          const SizedBox(height: 8),
+          const SizedBox(height: 3),
           Text(
-            'Powered by Tapfolio',
+            'One Tap. Endless Connections.',
             style: GoogleFonts.outfit(
-              color: Colors.white24,
-              fontSize: 10,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.0,
+              color: Colors.white.withValues(alpha: 0.20),
+              fontSize: 9,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.8,
             ),
           ),
         ],

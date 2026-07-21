@@ -24,6 +24,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isLoading = false;
   String? _errorMessage;
 
+  bool get _isLight => Theme.of(context).brightness == Brightness.light;
+  Color get _textColor => _isLight ? const Color(0xFF111827) : Colors.white;
+  Color get _subtitleColor => _isLight ? const Color(0xFF4B5563) : Colors.white60;
+  Color get _cardBorder => _isLight ? Colors.black12 : Colors.white.withValues(alpha: 0.06);
+
   // Step 2: Account Creation
   final _formKey2 = GlobalKey<FormState>();
   final _nameController = TextEditingController();
@@ -437,18 +442,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.04),
+        color: _isLight ? const Color(0xFFF9FAFB) : Colors.white.withValues(alpha: 0.04),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+        border: Border.all(color: _cardBorder),
       ),
       child: TextFormField(
         controller: controller,
         obscureText: obscureText,
-        style: GoogleFonts.outfit(color: Colors.white),
+        style: GoogleFonts.outfit(color: _textColor),
         validator: validator,
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: GoogleFonts.outfit(color: Colors.white54, fontSize: 14),
+          labelStyle: GoogleFonts.outfit(color: _subtitleColor, fontSize: 14),
           prefixIcon: Icon(icon, color: Theme.of(context).primaryColor, size: 20),
           suffixIcon: suffixIcon,
           border: InputBorder.none,
@@ -476,16 +481,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ? Colors.purple
                     : isActive
                         ? Theme.of(context).primaryColor
-                        : const Color(0xFF0F1122),
+                        : (_isLight ? Colors.white : const Color(0xFF0F1122)),
                 border: Border.all(
-                  color: isActive ? Theme.of(context).primaryColor : Colors.white10,
+                  color: isActive ? Theme.of(context).primaryColor : _cardBorder,
                 ),
               ),
               child: Center(
                 child: Text(
                   '$stepNum',
                   style: TextStyle(
-                    color: isActive || isCompleted ? Colors.white : Colors.white38,
+                    color: isActive || isCompleted ? Colors.white : _subtitleColor.withValues(alpha: 0.5),
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
                   ),
@@ -501,7 +506,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               stepNum == 5 ? 'Bio' :
               stepNum == 6 ? 'Privacy' : 'Social',
               style: TextStyle(
-                color: isActive ? Colors.white : Colors.white30,
+                color: isActive ? _textColor : _subtitleColor.withValues(alpha: 0.5),
                 fontSize: 8,
                 fontWeight: FontWeight.w600,
               ),
@@ -515,7 +520,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF06070D),
+      backgroundColor: _isLight ? const Color(0xFFF3F4F6) : const Color(0xFF06070D),
       body: Stack(
         children: [
           // Ambient Glow Backgrounds

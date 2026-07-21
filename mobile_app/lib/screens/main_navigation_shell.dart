@@ -138,6 +138,7 @@ class _MainNavigationShellState extends State<MainNavigationShell>
         final publicLink = '${_apiService.baseUrl}/connect/${profile.username}';
         
         if (mounted) {
+
           ShareCardDialog.show(
             context,
             name: profile.name,
@@ -146,6 +147,10 @@ class _MainNavigationShellState extends State<MainNavigationShell>
             profileUrl: publicLink,
             baseUrl: _apiService.baseUrl,
             isPremium: profile.isPremium,
+            isOnline: profile.isOnline,
+            location: profile.location,
+            bio: profile.bio,
+            tags: profile.tags,
           );
         }
       } else {
@@ -316,9 +321,9 @@ class _MainNavigationShellState extends State<MainNavigationShell>
               setState(() => _currentIndex = index);
               if (index == 3) _fetchPendingCount();
             },
-            backgroundColor: const Color(0xFF0F1122).withValues(alpha: 0.95),
+            backgroundColor: isLight ? Colors.white.withValues(alpha: 0.95) : const Color(0xFF0F1122).withValues(alpha: 0.95),
             selectedItemColor: const Color(0xFF6366F1),
-            unselectedItemColor: Colors.white38,
+            unselectedItemColor: isLight ? Colors.black38 : Colors.white38,
             showUnselectedLabels: true,
             type: BottomNavigationBarType.fixed,
             selectedLabelStyle:
@@ -419,7 +424,10 @@ class _AnimatedBadgeState extends State<_AnimatedBadge>
         decoration: BoxDecoration(
           color: Colors.redAccent,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: const Color(0xFF0F1122), width: 1.5),
+          border: Border.all(
+            color: Theme.of(context).brightness == Brightness.light ? Colors.white : const Color(0xFF0F1122),
+            width: 1.5,
+          ),
         ),
         child: Text(
           label,

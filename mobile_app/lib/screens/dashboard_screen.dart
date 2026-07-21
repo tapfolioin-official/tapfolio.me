@@ -41,6 +41,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Color get _subtitleColor => _isLight ? const Color(0xFF4B5563) : Colors.white70;
   Color get _cardBg => _isLight ? Colors.white : Colors.white.withValues(alpha: 0.05);
   Color get _cardBorder => _isLight ? Colors.black12 : Colors.white10;
+  Color get _inputBg => _isLight ? const Color(0xFFF3F4F6) : Colors.white.withValues(alpha: 0.04);
+  Color get _inputBorder => _isLight ? Colors.black12 : Colors.white.withValues(alpha: 0.08);
+  Color get _hintColor => _isLight ? Colors.black38 : Colors.white24;
+  Color get _dropdownBg => _isLight ? Colors.white : const Color(0xFF0F1122);
 
   // Controllers
   final _nameController = TextEditingController();
@@ -1242,7 +1246,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       Text(
                         'Customize Theme 🎨',
                         style: GoogleFonts.outfit(
-                          color: Colors.white,
+                          color: _textColor,
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
@@ -1250,7 +1254,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       const SizedBox(height: 4),
                       Text(
                         'Change colors, background, layouts & more',
-                        style: GoogleFonts.outfit(color: Colors.white60, fontSize: 13),
+                        style: GoogleFonts.outfit(color: _subtitleColor, fontSize: 13),
                       ),
                     ],
                   ),
@@ -1297,7 +1301,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             Text(
               'Share NFC Card',
               style: GoogleFonts.outfit(
-                color: Colors.white,
+                color: _textColor,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -1305,7 +1309,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             const SizedBox(height: 4),
             Text(
               'Link programmed to your physical tag.',
-              style: GoogleFonts.outfit(color: Colors.white60, fontSize: 13),
+              style: GoogleFonts.outfit(color: _subtitleColor, fontSize: 13),
             ),
             const SizedBox(height: 12),
             Row(
@@ -1317,16 +1321,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       vertical: 10,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.04),
+                      color: _inputBg,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.08),
+                        color: _inputBorder,
                       ),
                     ),
                     child: Text(
                       publicLink,
                       style: GoogleFonts.outfit(
-                        color: Colors.white70,
+                        color: _subtitleColor,
                         fontSize: 13,
                       ),
                       overflow: TextOverflow.ellipsis,
@@ -1372,6 +1376,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
                 onPressed: () {
+
                   ShareCardDialog.show(
                     context,
                     name: profile.name,
@@ -1380,6 +1385,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     profileUrl: publicLink,
                     baseUrl: _apiService.baseUrl,
                     isPremium: profile.isPremium,
+                    isOnline: profile.isOnline,
+                    location: profile.location,
+                    bio: profile.bio,
+                    tags: profile.tags,
                   );
                 },
                 icon: const Icon(Icons.share_rounded, color: Colors.white, size: 18),
@@ -1404,7 +1413,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Text(
                   'Profile Score',
                   style: GoogleFonts.outfit(
-                    color: Colors.white,
+                    color: _textColor,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -1434,7 +1443,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               borderRadius: BorderRadius.circular(6),
               child: LinearProgressIndicator(
                 value: _score / 100,
-                backgroundColor: Colors.white.withValues(alpha: 0.1),
+                backgroundColor: _isLight ? Colors.black.withValues(alpha: 0.05) : Colors.white.withValues(alpha: 0.1),
                 color: const Color(0xFF6366F1),
                 minHeight: 12,
               ),
@@ -1452,7 +1461,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           : Icons.radio_button_unchecked,
                       color: item.completed
                           ? const Color(0xFF10B981)
-                          : Colors.white38,
+                          : (_isLight ? Colors.black38 : Colors.white38),
                       size: 20,
                     ),
                     const SizedBox(width: 12),
@@ -1466,8 +1475,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 item.label,
                                 style: GoogleFonts.outfit(
                                   color: item.completed
-                                      ? Colors.white
-                                      : Colors.white60,
+                                      ? _textColor
+                                      : _subtitleColor,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -1484,7 +1493,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           Text(
                             item.description,
                             style: GoogleFonts.outfit(
-                              color: Colors.white38,
+                              color: _isLight ? Colors.black45 : Colors.white38,
                               fontSize: 12,
                             ),
                           ),
@@ -1527,7 +1536,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       Text(
                         'Your profile subscription is active! Reach 60 pts to join the public rankings.',
                         style: GoogleFonts.outfit(
-                          color: Colors.white70,
+                          color: _subtitleColor,
                           fontSize: 14,
                         ),
                       ),
@@ -1539,7 +1548,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       Text(
                         'Tapfolio Premium',
                         style: GoogleFonts.outfit(
-                          color: Colors.white,
+                          color: _textColor,
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
@@ -1548,7 +1557,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       Text(
                         'Upgrade to premium to display your profile in the global leaderboard.',
                         style: GoogleFonts.outfit(
-                          color: Colors.white60,
+                          color: _subtitleColor,
                           fontSize: 13,
                         ),
                       ),
@@ -1583,7 +1592,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             Text(
               'Edit Profile details',
               style: GoogleFonts.outfit(
-                color: Colors.white,
+                color: _textColor,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -1595,7 +1604,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 children: [
                   CircleAvatar(
                     radius: 50,
-                    backgroundColor: Colors.white10,
+                    backgroundColor: _isLight ? Colors.black.withValues(alpha: 0.05) : Colors.white10,
                     backgroundImage: getAvatarImage(
                       profile.avatar,
                       _apiService.baseUrl,
@@ -1670,7 +1679,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             Text(
               'Skills & Location Tags',
               style: GoogleFonts.outfit(
-                color: Colors.white,
+                color: _textColor,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -1681,20 +1690,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.04),
+                      color: _inputBg,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.08),
+                        color: _inputBorder,
                       ),
                     ),
                     child: TextField(
                       controller: _tagController,
-                      style: GoogleFonts.outfit(color: Colors.white),
-                      decoration: const InputDecoration(
+                      style: GoogleFonts.outfit(color: _textColor),
+                      decoration: InputDecoration(
                         hintText: 'Tag name',
-                        hintStyle: TextStyle(color: Colors.white24),
+                        hintStyle: TextStyle(color: _hintColor),
                         border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(
+                        contentPadding: const EdgeInsets.symmetric(
                           horizontal: 12,
                           vertical: 10,
                         ),
@@ -1706,17 +1715,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.04),
+                    color: _inputBg,
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.08),
+                      color: _inputBorder,
                     ),
                   ),
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
-                      dropdownColor: const Color(0xFF0F1122),
+                      dropdownColor: _dropdownBg,
                       value: _tagType,
-                      style: GoogleFonts.outfit(color: Colors.white),
+                      style: GoogleFonts.outfit(color: _textColor),
                       onChanged: (String? newVal) {
                         if (newVal != null) {
                           setState(() {
@@ -1786,10 +1795,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       const SizedBox(width: 4),
                       GestureDetector(
                         onTap: _saving ? null : () => _removeTag(idx),
-                        child: const Icon(
+                        child: Icon(
                           Icons.close,
                           size: 14,
-                          color: Colors.white54,
+                          color: _isLight ? Colors.black54 : Colors.white54,
                         ),
                       ),
                     ],
@@ -1806,7 +1815,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             Text(
               'Social Profiles',
               style: GoogleFonts.outfit(
-                color: Colors.white,
+                color: _textColor,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -1817,17 +1826,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.04),
+                    color: _inputBg,
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.08),
+                      color: _inputBorder,
                     ),
                   ),
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
-                      dropdownColor: const Color(0xFF0F1122),
+                      dropdownColor: _dropdownBg,
                       value: _socialPlatform,
-                      style: GoogleFonts.outfit(color: Colors.white),
+                      style: GoogleFonts.outfit(color: _textColor),
                       onChanged: (String? newVal) {
                         if (newVal != null) {
                           setState(() {
@@ -1880,20 +1889,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.04),
+                      color: _inputBg,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.08),
+                        color: _inputBorder,
                       ),
                     ),
                     child: TextField(
                       controller: _socialHandleController,
-                      style: GoogleFonts.outfit(color: Colors.white),
-                      decoration: const InputDecoration(
+                      style: GoogleFonts.outfit(color: _textColor),
+                      decoration: InputDecoration(
                         hintText: 'Handle',
-                        hintStyle: TextStyle(color: Colors.white24),
+                        hintStyle: TextStyle(color: _hintColor),
                         border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(
+                        contentPadding: const EdgeInsets.symmetric(
                           horizontal: 12,
                           vertical: 10,
                         ),
@@ -1909,20 +1918,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.04),
+                      color: _inputBg,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.08),
+                        color: _inputBorder,
                       ),
                     ),
                     child: TextField(
                       controller: _socialUrlController,
-                      style: GoogleFonts.outfit(color: Colors.white),
-                      decoration: const InputDecoration(
+                      style: GoogleFonts.outfit(color: _textColor),
+                      decoration: InputDecoration(
                         hintText: 'URL (e.g. github.com/username)',
-                        hintStyle: TextStyle(color: Colors.white24),
+                        hintStyle: TextStyle(color: _hintColor),
                         border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(
+                        contentPadding: const EdgeInsets.symmetric(
                           horizontal: 12,
                           vertical: 10,
                         ),
@@ -1952,7 +1961,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   vertical: 10,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.02),
+                  color: _isLight ? const Color(0xFFF9FAFB) : Colors.white.withValues(alpha: 0.02),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: cardColor.withValues(alpha: 0.2)),
                 ),
@@ -1973,13 +1982,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         Text(
                           '${link.platform}: ',
                           style: GoogleFonts.outfit(
-                            color: Colors.white70,
+                            color: _subtitleColor,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
                           link.handle,
-                          style: GoogleFonts.outfit(color: Colors.white),
+                          style: GoogleFonts.outfit(color: _textColor),
                         ),
                       ],
                     ),
@@ -2004,7 +2013,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             Text(
               'Application Update',
               style: GoogleFonts.outfit(
-                color: Colors.white,
+                color: _textColor,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -2012,7 +2021,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             const SizedBox(height: 4),
             Text(
               'Check if you are running the latest version of Tapfolio.',
-              style: GoogleFonts.outfit(color: Colors.white60, fontSize: 13),
+              style: GoogleFonts.outfit(color: _subtitleColor, fontSize: 13),
             ),
             const SizedBox(height: 14),
             SizedBox(
@@ -2076,9 +2085,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
         const SizedBox(height: 6),
         Container(
           decoration: BoxDecoration(
-            color: _cardBg,
+            color: _inputBg,
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: _cardBorder),
+            border: Border.all(color: _inputBorder),
           ),
           child: TextField(
             controller: controller,
@@ -2167,7 +2176,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0F),
+      backgroundColor: _isLight ? const Color(0xFFF3F4F6) : const Color(0xFF0A0A0F),
       floatingActionButtonLocation: const _OffsetFABLocation(80),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
