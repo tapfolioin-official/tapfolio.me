@@ -353,6 +353,8 @@ export default function Dashboard() {
   const [whatsapp, setWhatsapp] = useState('');
   const [location, setLocation] = useState('');
   const [portfolioUrl, setPortfolioUrl] = useState('');
+  const [resumeUrl, setResumeUrl] = useState('');
+  const [uploadingResume, setUploadingResume] = useState(false);
 
   // 🔐 Password fields (new)
   const [currentPassword, setCurrentPassword] = useState('');
@@ -440,6 +442,7 @@ export default function Dashboard() {
         setWhatsapp(data.profile.whatsapp || '');
         setLocation(data.profile.location || '');
         setPortfolioUrl(data.profile.portfolioUrl || '');
+        setResumeUrl(data.profile.resumeUrl || '');
         setTags(data.profile.tags || []);
         setSocials(data.profile.socials || []);
         setScore(data.score ?? 0);
@@ -753,6 +756,36 @@ export default function Dashboard() {
     setCropImageSrc(null);
   };
 
+  const handleResumeUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    setUploadingResume(true);
+    setError('');
+    try {
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.success) {
+        setResumeUrl(data.url);
+        setSuccess('Resume uploaded successfully! Save your profile to finalize.');
+        setTimeout(() => setSuccess(''), 3000);
+      } else {
+        throw new Error(data.error || 'Resume upload failed');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Resume upload error');
+      setTimeout(() => setError(''), 5000);
+    } finally {
+      setUploadingResume(false);
+    }
+  };
+
   const handleBgImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -910,6 +943,7 @@ export default function Dashboard() {
         whatsapp,
         location,
         portfolioUrl,
+        resumeUrl,
         tags,
         socials,
       };
@@ -1525,6 +1559,43 @@ export default function Dashboard() {
                             <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">Portfolio Link</label>
                             <input type="url" value={portfolioUrl} onChange={(e) => setPortfolioUrl(e.target.value)} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none transition-all text-gray-900 text-sm font-semibold" placeholder="https://yourportfolio.com" />
                           </div>
+
+                          <div className="col-span-1 md:col-span-2 bg-gray-50/70 p-4 border border-gray-200 rounded-xl space-y-3">
+                            <label className="block text-xs font-bold text-gray-800 uppercase tracking-wider flex items-center justify-between">
+                              <span>📄 Resume / CV (Upload or URL)</span>
+                              {uploadingResume && <span className="text-blue-600 text-xs font-semibold animate-pulse">Uploading file...</span>}
+                            </label>
+                            <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+                              <input
+                                type="url"
+                                value={resumeUrl}
+                                onChange={(e) => setResumeUrl(e.target.value)}
+                                className="flex-1 px-4 py-2 bg-white border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none transition-all text-gray-900 text-sm font-semibold"
+                                placeholder="https://drive.google.com/your-resume.pdf"
+                              />
+                              <label className="px-4 py-2 bg-blue-600 text-white font-bold text-xs rounded-lg hover:bg-blue-700 transition-colors cursor-pointer flex items-center justify-center gap-1.5 shadow-sm whitespace-nowrap">
+                                <Upload className="w-3.5 h-3.5" />
+                                {uploadingResume ? 'Uploading...' : 'Upload PDF/Doc'}
+                                <input
+                                  type="file"
+                                  accept=".pdf,.doc,.docx,image/*"
+                                  onChange={handleResumeUpload}
+                                  className="hidden"
+                                  disabled={uploadingResume}
+                                />
+                              </label>
+                            </div>
+                            {resumeUrl && (
+                              <div className="flex items-center justify-between text-xs bg-white px-3 py-2 border border-gray-200 rounded-lg text-gray-700 font-medium">
+                                <a href={resumeUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline flex items-center gap-1.5 truncate">
+                                  <span>📄 View Uploaded Resume</span>
+                                </a>
+                                <button type="button" onClick={() => setResumeUrl('')} className="text-red-500 hover:text-red-700 text-xs font-semibold ml-2">
+                                  Remove
+                                </button>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
 
@@ -1636,6 +1707,7 @@ export default function Dashboard() {
                             <option>GitHub</option>
                             <option>Instagram</option>
                             <option>Facebook</option>
+                            <option>YouTube</option>
                             <option>Website</option>
                           </select>
                           <input type="text" placeholder="Handle/Label" value={newHandle} onChange={(e) => setNewHandle(e.target.value)} className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 font-semibold outline-none focus:border-blue-500" />
@@ -2898,7 +2970,9 @@ export default function Dashboard() {
                           avatar: avatar || '/profile_avatar.png',
                           isPremium: isPremium,
                           tagline: tagline || 'Tagline',
-                          portfolioUrl: portfolioUrl
+                          portfolioUrl: portfolioUrl,
+                          resumeUrl: resumeUrl,
+                          whatsapp: whatsapp
                         }}
                         isLoggedIn={false}
                         previewTheme={themeSettings}
@@ -2908,7 +2982,9 @@ export default function Dashboard() {
                           location,
                           bio,
                           projects,
-                          portfolioUrl
+                          portfolioUrl,
+                          resumeUrl,
+                          whatsapp
                         }}
                       />
                     ) : (

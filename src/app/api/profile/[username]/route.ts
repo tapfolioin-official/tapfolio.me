@@ -58,6 +58,8 @@ export async function GET(
           connectionCount: profile.user?.connectionCount ?? 0,
           tags: profile.tags,
           socials: profile.socials,
+          portfolioUrl: profile.portfolioUrl,
+          resumeUrl: profile.resumeUrl,
           projects: profile.projects,
           theme: profile.user?.profileThemes?.[0]?.settings || null,
         },

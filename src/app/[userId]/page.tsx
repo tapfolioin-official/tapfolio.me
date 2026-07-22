@@ -96,9 +96,31 @@ export default async function PublicProfile({ params }: { params: Promise<{ user
     s.platform.toLowerCase() === 'website' || s.platform.toLowerCase() === 'portfolio'
   );
 
-  const filteredSocials = profile.socials?.filter((s: any) =>
+  const rawSocials = profile.socials?.filter((s: any) =>
     s.platform.toLowerCase() !== 'website' && s.platform.toLowerCase() !== 'portfolio'
   ) || [];
+
+  const filteredSocials = [...rawSocials];
+  if (profile.whatsapp && profile.whatsapp.trim()) {
+    const hasWa = filteredSocials.some((s: any) => s.platform.toLowerCase().includes('whatsapp'));
+    if (!hasWa) {
+      const trimmedWa = profile.whatsapp.trim();
+      const waUrl = (trimmedWa.startsWith('http://') || trimmedWa.startsWith('https://'))
+        ? trimmedWa
+        : `https://wa.me/${trimmedWa.replace(/\D/g, '')}`;
+      if (waUrl) {
+        filteredSocials.push({
+          id: 0,
+          profileId: profile.id,
+          platform: 'WhatsApp',
+          handle: profile.whatsapp,
+          url: waUrl,
+          icon: 'whatsapp',
+          color: '#25d366'
+        });
+      }
+    }
+  }
 
   const roleTags = profile.tags?.filter((t: any) => t.type === 'role' || t.type === 'skill') || [];
   const locationText = profile.location || '';
@@ -210,10 +232,17 @@ export default async function PublicProfile({ params }: { params: Promise<{ user
                     <a href={`tel:${profile.phone}`} className={styles.contactValue}>{profile.phone}</a>
                   </div>
                 )}
-                {profile.whatsapp && (
+                {profile.whatsapp && profile.whatsapp.trim() && (
                   <div className={styles.contactItem}>
                     <span className={styles.contactLabel}>💬 WhatsApp</span>
-                    <a href={`https://wa.me/${profile.whatsapp.replace(/\+/g, '')}`} className={styles.contactValue}>{profile.whatsapp}</a>
+                    <a
+                      href={profile.whatsapp.trim().startsWith('http') ? profile.whatsapp.trim() : `https://wa.me/${profile.whatsapp.trim().replace(/\D/g, '')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={styles.contactValue}
+                    >
+                      {profile.whatsapp}
+                    </a>
                   </div>
                 )}
                 {profile.user.email && (
@@ -236,6 +265,20 @@ export default async function PublicProfile({ params }: { params: Promise<{ user
                     <span className={styles.contactValue}>{locationText}</span>
                   </div>
                 )}
+              </div>
+            </div>
+          )}
+
+          {profile.resumeUrl && profile.resumeUrl.trim() && (
+            <div className={styles.contactBlock}>
+              <h2>Resume / CV</h2>
+              <div className={styles.contactGrid}>
+                <div className={styles.contactItem}>
+                  <span className={styles.contactLabel}>📄 Resume Document</span>
+                  <a href={profile.resumeUrl.trim()} target="_blank" rel="noopener noreferrer" className={styles.contactValue} style={{ color: '#2563eb', fontWeight: 600 }}>
+                    View Resume / CV ↗
+                  </a>
+                </div>
               </div>
             </div>
           )}

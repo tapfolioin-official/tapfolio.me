@@ -101,7 +101,7 @@ export function drawProfileScreen(
 
   // 5. Social Links Panel (Scroll 2)
   const socialY = contentY + 70;
-  const socialPlatforms = ["LinkedIn", "Twitter", "Instagram", "GitHub"];
+  const socialPlatforms = ["LinkedIn", "Twitter", "Instagram", "GitHub", "YouTube"];
   const buttonW = 380;
   const buttonH = 48;
   const gap = 14;

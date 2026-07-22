@@ -65,6 +65,8 @@ export async function PUT(request: Request) {
         return { icon: 'instagram', color: '#e1306c' };
       } else if (lower.includes('facebook')) {
         return { icon: 'facebook', color: '#1877f2' };
+      } else if (lower.includes('youtube')) {
+        return { icon: 'youtube', color: '#ff0000' };
       } else if (lower.includes('whatsapp')) {
         return { icon: 'whatsapp', color: '#25d366' };
       } else {

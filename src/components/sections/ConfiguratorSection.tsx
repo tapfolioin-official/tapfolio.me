@@ -20,6 +20,7 @@ export default function ConfiguratorSection() {
     linkedin: "in/johndoe",
     x: "johndoe_design",
     instagram: "johndoe.creates",
+    youtube: "@johndoe",
     whatsapp: "+15550192834",
     meetingLink: "calendly.com/johndoe",
     profileTheme: "dark" as "light" | "dark",

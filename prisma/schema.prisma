@@ -66,6 +66,7 @@ model Profile {
   diamonds       String         @default("0")
   isPremium      Boolean        @default(false)
   portfolioUrl   String?
+  resumeUrl      String?
   tapCount       Int            @default(0)
   tags           Tag[]
   socials        SocialLink[]

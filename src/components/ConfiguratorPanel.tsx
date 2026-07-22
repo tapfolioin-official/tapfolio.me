@@ -18,6 +18,7 @@ interface ConfigProps {
     linkedin: string;
     x: string;
     instagram: string;
+    youtube?: string;
     whatsapp: string;
     meetingLink: string;
     profileTheme: "light" | "dark";
@@ -352,6 +353,17 @@ export default function ConfiguratorPanel({ config, setConfig }: ConfigProps) {
                 value={config.meetingLink}
                 onChange={handleInputChange}
                 placeholder="calendly.com/johndoe"
+                className="config-input mt-1"
+              />
+            </div>
+            <div>
+              <label className="text-[10px] text-gray-500 uppercase font-semibold">YouTube Channel / Handle</label>
+              <input
+                type="text"
+                name="youtube"
+                value={config.youtube || ""}
+                onChange={handleInputChange}
+                placeholder="@johndoe"
                 className="config-input mt-1"
               />
             </div>

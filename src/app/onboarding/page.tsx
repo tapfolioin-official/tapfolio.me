@@ -42,6 +42,7 @@ export default function OnboardingPage() {
   const [linkedin, setLinkedin] = useState('');
   const [instagram, setInstagram] = useState('');
   const [facebook, setFacebook] = useState('');
+  const [youtube, setYoutube] = useState('');
   const [portfolio, setPortfolio] = useState('');
 
   // Fetch initial profile
@@ -213,6 +214,13 @@ export default function OnboardingPage() {
           platform: 'Facebook',
           handle: facebook,
           url: facebook.startsWith('http') ? facebook : `https://facebook.com/${facebook}`,
+        });
+      }
+      if (youtube) {
+        socialsList.push({
+          platform: 'YouTube',
+          handle: youtube,
+          url: youtube.startsWith('http') ? youtube : `https://youtube.com/${youtube.startsWith('@') ? youtube : '@' + youtube}`,
         });
       }
       if (portfolio) {
@@ -527,6 +535,17 @@ export default function OnboardingPage() {
                   placeholder="facebook-handle"
                   value={facebook}
                   onChange={(e) => setFacebook(e.target.value)}
+                />
+              </div>
+
+              <div className={styles.inputGroup}>
+                <label htmlFor="youtube">YouTube Channel (Handle)</label>
+                <input
+                  id="youtube"
+                  type="text"
+                  placeholder="@youtube-handle"
+                  value={youtube}
+                  onChange={(e) => setYoutube(e.target.value)}
                 />
               </div>
 

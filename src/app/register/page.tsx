@@ -67,6 +67,7 @@ export default function RegisterPage() {
   const [linkedin, setLinkedin] = useState('');
   const [instagram, setInstagram] = useState('');
   const [facebook, setFacebook] = useState('');
+  const [youtube, setYoutube] = useState('');
   const [portfolio, setPortfolio] = useState('');
 
   // Password strength logic
@@ -462,6 +463,13 @@ export default function RegisterPage() {
           platform: 'Facebook',
           handle: facebook,
           url: facebook.startsWith('http') ? facebook : `https://facebook.com/${facebook}`,
+        });
+      }
+      if (youtube) {
+        socialsList.push({
+          platform: 'YouTube',
+          handle: youtube,
+          url: youtube.startsWith('http') ? youtube : `https://youtube.com/${youtube.startsWith('@') ? youtube : '@' + youtube}`,
         });
       }
       if (portfolio) {
@@ -1078,6 +1086,17 @@ export default function RegisterPage() {
                   placeholder="facebook-username"
                   value={facebook}
                   onChange={(e) => setFacebook(e.target.value)}
+                />
+              </div>
+
+              <div className={styles.inputGroup}>
+                <label htmlFor="youtube">YouTube Channel Handle</label>
+                <input
+                  id="youtube"
+                  type="text"
+                  placeholder="@youtube-handle"
+                  value={youtube}
+                  onChange={(e) => setYoutube(e.target.value)}
                 />
               </div>
 

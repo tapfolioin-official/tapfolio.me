@@ -59,6 +59,7 @@ export default async function ConnectRedirectPage({
       tagline: true,
       isPremium: true,
       portfolioUrl: true,
+      resumeUrl: true,
     },
   });
 
@@ -87,6 +88,7 @@ export default async function ConnectRedirectPage({
         tagline: profile.tagline ?? '',
         isPremium: profile.isPremium ?? false,
         portfolioUrl: profile.portfolioUrl ?? '',
+        resumeUrl: profile.resumeUrl ?? '',
       }}
       isLoggedIn={isLoggedIn}
     />
