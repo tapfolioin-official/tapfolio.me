@@ -290,7 +290,7 @@ export default function ConfiguratorPanel({ config, setConfig }: ConfigProps) {
                 name="phone"
                 value={config.phone}
                 onChange={handleInputChange}
-                placeholder="+1 234 567 890"
+                placeholder="+91 9876543210"
                 className="config-input mt-1"
               />
             </div>
@@ -341,7 +341,7 @@ export default function ConfiguratorPanel({ config, setConfig }: ConfigProps) {
                 name="whatsapp"
                 value={config.whatsapp}
                 onChange={handleInputChange}
-                placeholder="+1234567890"
+                placeholder="+919876543210"
                 className="config-input mt-1"
               />
             </div>

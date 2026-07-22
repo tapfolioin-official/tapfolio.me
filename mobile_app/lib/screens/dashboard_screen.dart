@@ -280,8 +280,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
           _nameController.text = _profile!.name;
           _taglineController.text = _profile!.tagline;
           _bioController.text = _profile!.bio;
-          _phoneController.text = _profile!.phone ?? '';
-          _whatsappController.text = _profile!.whatsapp ?? '';
+          _phoneController.text = (_profile!.phone != null && _profile!.phone!.isNotEmpty)
+              ? (_profile!.phone!.startsWith('+') ? _profile!.phone! : (_profile!.phone!.replaceAll(RegExp(r'\D'), '').length == 10 ? '+91${_profile!.phone!.replaceAll(RegExp(r'\D'), '')}' : _profile!.phone!))
+              : '+91';
+          _whatsappController.text = (_profile!.whatsapp != null && _profile!.whatsapp!.isNotEmpty)
+              ? (_profile!.whatsapp!.startsWith('+') ? _profile!.whatsapp! : (_profile!.whatsapp!.replaceAll(RegExp(r'\D'), '').length == 10 ? '+91${_profile!.whatsapp!.replaceAll(RegExp(r'\D'), '')}' : _profile!.whatsapp!))
+              : '+91';
           _locationController.text = _profile!.location ?? '';
         });
       } else {

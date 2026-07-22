@@ -349,8 +349,8 @@ export default function Dashboard() {
   const [avatar, setAvatar] = useState('');
   const [isPremium, setIsPremium] = useState(false);
   const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [whatsapp, setWhatsapp] = useState('');
+  const [phone, setPhone] = useState('+91');
+  const [whatsapp, setWhatsapp] = useState('+91');
   const [location, setLocation] = useState('');
   const [portfolioUrl, setPortfolioUrl] = useState('');
   const [resumeUrl, setResumeUrl] = useState('');
@@ -438,8 +438,8 @@ export default function Dashboard() {
         setAvatar(data.profile.avatar);
         setIsPremium(data.profile.isPremium);
         setEmail(data.profile.user?.email || '');
-        setPhone(data.profile.phone || '');
-        setWhatsapp(data.profile.whatsapp || '');
+        setPhone(data.profile.phone ? (data.profile.phone.startsWith('+') ? data.profile.phone : (data.profile.phone.replace(/\D/g, '').length === 10 ? `+91${data.profile.phone.replace(/\D/g, '')}` : data.profile.phone)) : '+91');
+        setWhatsapp(data.profile.whatsapp ? (data.profile.whatsapp.startsWith('+') ? data.profile.whatsapp : (data.profile.whatsapp.replace(/\D/g, '').length === 10 ? `+91${data.profile.whatsapp.replace(/\D/g, '')}` : data.profile.whatsapp)) : '+91');
         setLocation(data.profile.location || '');
         setPortfolioUrl(data.profile.portfolioUrl || '');
         setResumeUrl(data.profile.resumeUrl || '');
@@ -1549,11 +1549,11 @@ export default function Dashboard() {
                           </div>
                           <div>
                             <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">Phone</label>
-                            <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none transition-all text-gray-900 text-sm font-semibold" placeholder="+123456789" />
+                            <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} onFocus={(e) => { if (!e.target.value) setPhone('+91'); }} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none transition-all text-gray-900 text-sm font-semibold" placeholder="+91 9876543210" />
                           </div>
                           <div>
                             <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">WhatsApp</label>
-                            <input type="tel" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none transition-all text-gray-900 text-sm font-semibold" placeholder="+123456789" />
+                            <input type="tel" value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} onFocus={(e) => { if (!e.target.value) setWhatsapp('+91'); }} className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:bg-white focus:border-blue-500 outline-none transition-all text-gray-900 text-sm font-semibold" placeholder="+91 9876543210" />
                           </div>
                           <div>
                             <label className="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wider">Portfolio Link</label>
