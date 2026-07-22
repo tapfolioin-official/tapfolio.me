@@ -105,9 +105,11 @@ export default async function PublicProfile({ params }: { params: Promise<{ user
     const hasWa = filteredSocials.some((s: any) => s.platform.toLowerCase().includes('whatsapp'));
     if (!hasWa) {
       const trimmedWa = profile.whatsapp.trim();
+      let waDigits = trimmedWa.replace(/\D/g, '');
+      if (waDigits.length === 10) waDigits = `91${waDigits}`;
       const waUrl = (trimmedWa.startsWith('http://') || trimmedWa.startsWith('https://'))
         ? trimmedWa
-        : `https://wa.me/${trimmedWa.replace(/\D/g, '')}`;
+        : `https://wa.me/${waDigits}`;
       if (waUrl) {
         filteredSocials.push({
           id: 0,
@@ -236,7 +238,7 @@ export default async function PublicProfile({ params }: { params: Promise<{ user
                   <div className={styles.contactItem}>
                     <span className={styles.contactLabel}>💬 WhatsApp</span>
                     <a
-                      href={profile.whatsapp.trim().startsWith('http') ? profile.whatsapp.trim() : `https://wa.me/${profile.whatsapp.trim().replace(/\D/g, '')}`}
+                      href={profile.whatsapp.trim().startsWith('http') ? profile.whatsapp.trim() : `https://wa.me/${profile.whatsapp.trim().replace(/\D/g, '').length === 10 ? '91' + profile.whatsapp.trim().replace(/\D/g, '') : profile.whatsapp.trim().replace(/\D/g, '')}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className={styles.contactValue}

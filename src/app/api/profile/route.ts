@@ -252,6 +252,20 @@ await prisma.user.update({
 });
 }
 
+const formatPhoneWithDefaultCountryCode = (val: any) => {
+  if (val === null || val === undefined) return val;
+  const str = String(val).trim();
+  if (!str) return str;
+  if (str.startsWith('+')) return str;
+  const digitsOnly = str.replace(/\D/g, '');
+  if (digitsOnly.length === 10) return `+91${digitsOnly}`;
+  if (digitsOnly.length === 12 && digitsOnly.startsWith('91')) return `+${digitsOnly}`;
+  return str;
+};
+
+const formattedPhone = phone !== undefined ? formatPhoneWithDefaultCountryCode(phone) : undefined;
+const formattedWhatsapp = whatsapp !== undefined ? formatPhoneWithDefaultCountryCode(whatsapp) : undefined;
+
     const finalProfile = await prisma.$transaction(async (tx) => {
       if (tags !== undefined) {
         await tx.tag.deleteMany({ where: { profileId: existingProfile.id } });
@@ -270,8 +284,8 @@ await prisma.user.update({
           isPremium: isPremium !== undefined ? isPremium : existingProfile.isPremium,
           portfolioUrl: portfolioUrl !== undefined ? portfolioUrl : existingProfile.portfolioUrl,
           resumeUrl: resumeUrl !== undefined ? resumeUrl : existingProfile.resumeUrl,
-          phone: phone !== undefined ? phone : existingProfile.phone,
-          whatsapp: whatsapp !== undefined ? whatsapp : existingProfile.whatsapp,
+          phone: formattedPhone !== undefined ? formattedPhone : existingProfile.phone,
+          whatsapp: formattedWhatsapp !== undefined ? formattedWhatsapp : existingProfile.whatsapp,
           location: location !== undefined ? location : existingProfile.location,
           tags: tags ? {
             create: tags.map((t: any) => ({ text: t.text, type: t.type }))

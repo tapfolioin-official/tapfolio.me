@@ -932,6 +932,20 @@ export default function Dashboard() {
       return;
     }
 
+    const formatPhoneWithDefaultCountryCode = (val: string) => {
+      if (!val) return '';
+      const trimmed = val.trim();
+      if (!trimmed) return '';
+      if (trimmed.startsWith('+')) return trimmed;
+      const digitsOnly = trimmed.replace(/\D/g, '');
+      if (digitsOnly.length === 10) return `+91${digitsOnly}`;
+      if (digitsOnly.length === 12 && digitsOnly.startsWith('91')) return `+${digitsOnly}`;
+      return trimmed;
+    };
+
+    const finalPhone = formatPhoneWithDefaultCountryCode(phone);
+    const finalWhatsapp = formatPhoneWithDefaultCountryCode(whatsapp);
+
     try {
       const payload: any = {
         name,
@@ -939,8 +953,8 @@ export default function Dashboard() {
         tagline,
         bio,
         avatar,
-        phone,
-        whatsapp,
+        phone: finalPhone,
+        whatsapp: finalWhatsapp,
         location,
         portfolioUrl,
         resumeUrl,
