@@ -37,7 +37,7 @@ export default function FoundersPage() {
     },
     {
       name: "Abhinand",
-      jobTitle: "Co-founder & CEO",
+      jobTitle: "Founder & CEO",
       description: "Co-founder & Chief Technology Officer of Tapfolio. Passionate systems engineer and creative designer driving the software architecture and physical device provisioning pipelines.",
       image: "/abhinand.png",
       url: "https://www.tapfolio.me/portfolio/abhinand",
