@@ -100,7 +100,7 @@ export const foundersData: Record<string, FounderProfile> = {
     socials: [
       { platform: "LinkedIn", url: "https://www.linkedin.com/in/mohammed-nibrasul-haqq-8267162ba/" },
       { platform: "GitHub", url: "https://github.com/nibrasul" },
-      { platform: "X (Twitter)", url: "https://x.com/tapfolio" }
+      { platform: "X (Twitter)", url: "https://x.com/Nibrasulhaqq" }
     ],
     biography: [
       "Mohammed Nibrasul Haqq is the Co-Founder and Chief Technology Officer (CTO) of Tapfolio, where he leads software engineering, platform architecture, and product development. He specializes in Next.js, Flutter, AI integrations, cloud infrastructure, NFC technology, and modern SaaS applications.",

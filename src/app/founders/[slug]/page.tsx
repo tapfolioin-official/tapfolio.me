@@ -264,10 +264,10 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
                 </a>
 
                 <a
-                  href="https://x.com/tapfolio"
+                  href={founder.slug === "mohammed-nibrasul-haqq" ? "https://x.com/Nibrasulhaqq" : "https://x.com/tapfolio"}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label="Open X profile of Tapfolio"
+                  aria-label={`Open X profile of ${founder.name}`}
                   className="text-gray-400 hover:text-white transition-colors"
                 >
                   <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">

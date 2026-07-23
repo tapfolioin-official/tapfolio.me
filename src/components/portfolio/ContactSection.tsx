@@ -159,10 +159,10 @@ export default function ContactSection() {
             </a>
 
             <a
-              href="https://x.com/tapfolio"
+              href="https://x.com/Nibrasulhaqq"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Open X profile of Tapfolio"
+              aria-label="Open X profile of Mohammed Nibrasul Haqq"
               className="hover:text-blue-400 transition-colors flex items-center gap-2"
             >
               <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">

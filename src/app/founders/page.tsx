@@ -34,7 +34,7 @@ export default function FoundersPage() {
       url: "https://www.tapfolio.me/founders/mohammed-nibrasul-haqq",
       vision: " frictionless, memorable, and green professional networking for the world.",
       experience: "Senior Software Engineer & Tech Lead specializing in web architectures and scalable direct matching ecosystems.",
-      sameAs: ["https://www.linkedin.com/in/mohammed-nibrasul-haqq-8267162ba/", "https://github.com/nibrasul"]
+      sameAs: ["https://www.linkedin.com/in/mohammed-nibrasul-haqq-8267162ba/", "https://github.com/nibrasul", "https://x.com/Nibrasulhaqq"]
     },
     {
       slug: "abhinand",
