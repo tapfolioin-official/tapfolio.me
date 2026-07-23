@@ -13,11 +13,14 @@ import AbhinandBreathing from "@/components/portfolio/abhinand/BreathingSpaceSec
 
 // Nibras Professional Portfolio Components
 import Navigation from "@/components/portfolio/Navigation";
+import ProgressBar from "@/components/portfolio/ProgressBar";
 import NibrasHero from "@/components/portfolio/HeroSection";
 import NibrasAbout from "@/components/portfolio/AboutSection";
 import ProjectsSection from "@/components/portfolio/ProjectsSection";
 import NibrasExperience from "@/components/portfolio/ExperienceSection";
 import ServicesSection from "@/components/portfolio/ServicesSection";
+import EducationCertificationsSection from "@/components/portfolio/EducationCertificationsSection";
+import TestimonialsSection from "@/components/portfolio/TestimonialsSection";
 import ArticlesSection from "@/components/portfolio/ArticlesSection";
 import MediaKitSection from "@/components/portfolio/MediaKitSection";
 import NibrasContact from "@/components/portfolio/ContactSection";
@@ -108,12 +111,15 @@ export default function DynamicPortfolioPage() {
   // Modern Professional Portfolio Layout for Nibras
   return (
     <main className="relative w-full bg-[#0A0A0A] text-white overflow-x-hidden selection:bg-blue-600 selection:text-white">
+      <ProgressBar />
       <Navigation />
       <NibrasHero />
       <NibrasAbout />
       <ProjectsSection />
       <NibrasExperience />
       <ServicesSection />
+      <EducationCertificationsSection />
+      <TestimonialsSection />
       <ArticlesSection />
       <MediaKitSection />
       <NibrasContact />

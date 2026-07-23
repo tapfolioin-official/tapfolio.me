@@ -7,8 +7,10 @@ import Logo from "./Logo";
 const navLinks = [
   { label: "About", id: "about" },
   { label: "Work", id: "projects" },
-  { label: "Experience", id: "experience" },
+  { label: "Journey", id: "experience" },
   { label: "Skills", id: "skills" },
+  { label: "Education", id: "education" },
+  { label: "Testimonials", id: "testimonials" },
   { label: "Articles", id: "articles" },
   { label: "Media Kit", id: "media-kit" },
   { label: "Contact", id: "contact" },
