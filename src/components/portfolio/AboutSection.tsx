@@ -45,13 +45,47 @@ export default function AboutSection() {
           
           {/* Left Column (5 cols): Portrait & Rich Quick Specs */}
           <div className="lg:col-span-5 flex flex-col items-center lg:items-start gap-6">
-            <div className="relative w-full max-w-[380px] aspect-[4/5] rounded-3xl overflow-hidden border-2 border-blue-500/30 shadow-2xl bg-[#111625] group">
+            <div className="relative w-full max-w-[380px] aspect-[4/5] rounded-3xl overflow-hidden border-2 border-blue-500/30 shadow-2xl bg-[#111625] group cursor-pointer">
               <ProfilePhoto
                 src="/nibras.png"
                 alt="Mohammed Nibrasul Haqq - Co-Founder & CTO at Tapfolio"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
               />
-              <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-[#0A0A0A] via-[#0A0A0A]/85 to-transparent p-6 flex flex-col">
+
+              {/* Interactive Hover Overlay with Key Stats */}
+              <div className="absolute inset-0 bg-[#0A0A0A]/85 backdrop-blur-md p-6 flex flex-col justify-between opacity-0 group-hover:opacity-100 transition-all duration-500 ease-out z-10 border border-blue-500/30">
+                <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                  <span className="text-xs font-bold uppercase tracking-widest text-blue-400">Founder Snapshot</span>
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 text-left">
+                  <div className="bg-white/5 border border-white/10 p-3 rounded-xl">
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Experience</span>
+                    <span className="text-lg font-bold text-white font-space-grotesk">5+ Years</span>
+                  </div>
+                  <div className="bg-white/5 border border-white/10 p-3 rounded-xl">
+                    <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider block">Products</span>
+                    <span className="text-lg font-bold text-white font-space-grotesk">10+ Shipped</span>
+                  </div>
+                  <div className="bg-white/5 border border-white/10 p-3 rounded-xl">
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Location</span>
+                    <span className="text-sm font-bold text-white font-space-grotesk">Kochi, India</span>
+                  </div>
+                  <div className="bg-white/5 border border-white/10 p-3 rounded-xl">
+                    <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block">Status</span>
+                    <span className="text-xs font-bold text-emerald-300">Co-Founder / CTO</span>
+                  </div>
+                </div>
+
+                <div className="text-[11px] text-gray-300 font-medium pt-2 border-t border-white/10 flex items-center justify-between">
+                  <span>Mohammed Nibrasul Haqq</span>
+                  <span className="text-blue-400 font-bold">Tapfolio →</span>
+                </div>
+              </div>
+
+              {/* Default Bottom Bar */}
+              <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-[#0A0A0A] via-[#0A0A0A]/85 to-transparent p-6 flex flex-col group-hover:opacity-0 transition-opacity duration-300">
                 <span className="text-xl font-bold font-space-grotesk text-white">Mohammed Nibrasul Haqq</span>
                 <span className="text-xs font-semibold text-blue-400">Co-Founder & CTO @ Tapfolio</span>
               </div>
