@@ -103,10 +103,10 @@ export const foundersData: Record<string, FounderProfile> = {
       { platform: "X (Twitter)", url: "https://x.com/tapfolio" }
     ],
     biography: [
-      "Mohammed Nibrasul Haqq is an Indian software engineer and Co-Founder & CTO of Tapfolio. He specializes in Next.js, Flutter, AI integrations, cloud infrastructure, NFC technology, and modern SaaS platforms. Under his leadership, Tapfolio has developed an intelligent NFC networking platform that connects physical contactless cards to dynamic web identity profiles.",
-      "Early in his software journey, Nibras recognized the friction and waste of traditional paper business cards. This insight led him to co-found Tapfolio—a platform designed to link NFC smart cards with live, editable digital identity profiles.",
-      "As CTO, Nibras leads core software development, web and mobile platform architectures, and card provisioning pipelines at Tapfolio. His technical approach focuses on reliable engineering, clean component design, and high performance.",
-      "Beyond Tapfolio, Nibras actively develops autonomous AI developer agents, CLI tools, and web utilities aimed at simplifying software development and business operations."
+      "Mohammed Nibrasul Haqq is the Co-Founder and Chief Technology Officer (CTO) of Tapfolio, where he leads software engineering, platform architecture, and product development. He specializes in Next.js, Flutter, AI integrations, cloud infrastructure, NFC technology, and modern SaaS applications.",
+      "While working on web applications and digital identity systems, he observed that traditional paper business cards often become outdated or are discarded shortly after being exchanged. This led him to co-found Tapfolio, a platform that combines NFC-enabled smart cards with dynamic digital identity profiles.",
+      "As CTO, Nibras leads core software development, web and mobile platform architectures, and card provisioning pipelines at Tapfolio. His technical approach focuses on reliable engineering, clean component design, sub-second page performance, and low-latency data synchronization.",
+      "Today, Nibras continues to expand Tapfolio while exploring AI-powered automation, developer tools, and scalable cloud systems. His long-term focus is building products that simplify professional networking and improve how people share and manage their digital identity."
     ],
     quickFacts: {
       location: "Kochi, India",

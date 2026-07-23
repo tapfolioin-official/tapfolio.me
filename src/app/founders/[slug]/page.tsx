@@ -399,9 +399,17 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
 
         {/* Biography Section - Optimal Readable Column Width (max-w-[850px], text-[18px], leading-[1.9]) */}
         <section id="biography" className="flex flex-col gap-6 scroll-mt-28">
-          <div className="border-b border-gray-100 pb-4">
+          <div className="border-b border-gray-100 pb-4 flex flex-col gap-2">
             <span className="text-xs font-bold uppercase tracking-wider text-blue-600">Executive Narrative</span>
-            <h2 className="text-3xl font-bold text-gray-950 mt-1">Biography</h2>
+            <h2 className="text-3xl font-bold text-gray-950">Biography</h2>
+            
+            {/* Visual Highlights Bar */}
+            <div className="flex flex-wrap items-center gap-2.5 pt-2 text-xs font-semibold text-gray-700">
+              <span className="bg-gray-100 px-3 py-1 rounded-full border border-gray-200">📍 Based in Kochi, India</span>
+              <span className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full border border-blue-100">🧑‍💻 Co-Founder & CTO</span>
+              <span className="bg-gray-100 px-3 py-1 rounded-full border border-gray-200">🏢 Tapfolio</span>
+              <span className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full border border-emerald-100">⚡ Building AI & NFC Products</span>
+            </div>
           </div>
 
           <div className="max-w-[850px] space-y-6 text-gray-700 text-[18px] leading-[1.9] tracking-[-0.01em]">
