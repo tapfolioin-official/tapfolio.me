@@ -1,23 +1,26 @@
 "use client";
 
 import React, { useState } from "react";
+import dynamic from "next/dynamic";
 import LenisScrollProvider from "@/lib/LenisScrollProvider";
 import Navbar from "@/components/navigation/Navbar";
 import Preloader from "@/components/hero/Preloader";
 
-// The 12 Sections
+// Above the fold - eager import for instant LCP
 import HeroSection from "@/components/sections/HeroSection";
 import TrustedBySection from "@/components/sections/TrustedBySection";
 import MetricsStrip from "@/components/sections/MetricsStrip";
-import WhyTapfolioSection from "@/components/sections/WhyTapfolioSection";
-import ProductsSection from "@/components/sections/ProductsSection";
-import HowItWorksSection from "@/components/sections/HowItWorksSection";
-import EcosystemBento from "@/components/sections/EcosystemBento";
-import SecuritySection from "@/components/sections/SecuritySection";
-import LiveDemoSection from "@/components/sections/LiveDemoSection";
-import TrustCompanySection from "@/components/sections/TrustCompanySection";
-import ConfiguratorSection from "@/components/sections/ConfiguratorSection";
-import FooterSection from "@/components/sections/FooterSection";
+
+// Below the fold - dynamic lazy loading to eliminate mobile TBT and payload
+const WhyTapfolioSection = dynamic(() => import("@/components/sections/WhyTapfolioSection"));
+const ProductsSection = dynamic(() => import("@/components/sections/ProductsSection"));
+const HowItWorksSection = dynamic(() => import("@/components/sections/HowItWorksSection"));
+const EcosystemBento = dynamic(() => import("@/components/sections/EcosystemBento"));
+const SecuritySection = dynamic(() => import("@/components/sections/SecuritySection"));
+const LiveDemoSection = dynamic(() => import("@/components/sections/LiveDemoSection"));
+const TrustCompanySection = dynamic(() => import("@/components/sections/TrustCompanySection"));
+const ConfiguratorSection = dynamic(() => import("@/components/sections/ConfiguratorSection"));
+const FooterSection = dynamic(() => import("@/components/sections/FooterSection"));
 
 export default function Home() {
   const [preloaderComplete, setPreloaderComplete] = useState(false);

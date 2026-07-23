@@ -38,9 +38,11 @@ export default function Preloader({
 
   // Main animation sequence
   useEffect(() => {
-    // Detect bots, crawlers, or Lighthouse performance runners
+    // Detect mobile screens (<768px), bots, crawlers, or Lighthouse performance runners
+    const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
     const isBot = typeof window !== "undefined" && /bot|googlebot|crawler|spider|robot|crawling|lighthouse|headless/i.test(navigator.userAgent);
-    if (isBot) {
+    
+    if (isMobile || isBot) {
       setIsVisible(false);
       onComplete();
       return;
