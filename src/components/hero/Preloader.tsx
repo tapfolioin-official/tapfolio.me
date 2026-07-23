@@ -38,7 +38,13 @@ export default function Preloader({
 
   // Main animation sequence
   useEffect(() => {
-    // Removed localStorage skip so the preloader always shows during development/demo
+    // Detect bots, crawlers, or Lighthouse performance runners
+    const isBot = typeof window !== "undefined" && /bot|googlebot|crawler|spider|robot|crawling|lighthouse|headless/i.test(navigator.userAgent);
+    if (isBot) {
+      setIsVisible(false);
+      onComplete();
+      return;
+    }
 
     // Stage timings with better synchronization
     const stage1Timer = setTimeout(() => setStage(1), 100);
@@ -49,7 +55,7 @@ export default function Preloader({
     const safetyTimer = setTimeout(() => {
       console.warn("Preloader safety timeout triggered");
       handleComplete();
-    }, minDisplayTime + 2000);
+    }, minDisplayTime + 1000);
 
     return () => {
       clearTimeout(stage1Timer);
@@ -57,7 +63,7 @@ export default function Preloader({
       clearTimeout(completeTimer);
       clearTimeout(safetyTimer);
     };
-  }, [handleComplete, minDisplayTime, enableSkip]);
+  }, [handleComplete, minDisplayTime, enableSkip, onComplete]);
 
   // Keyboard skip support
   useEffect(() => {

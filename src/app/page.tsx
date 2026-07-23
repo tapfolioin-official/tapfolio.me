@@ -30,29 +30,26 @@ export default function Home() {
         <Preloader onComplete={() => setPreloaderComplete(true)} />
       )}
 
-      {preloaderComplete && (
-        <LenisScrollProvider>
-          <div className="flex flex-col relative w-full overflow-hidden">
+      <LenisScrollProvider>
+        <div className="flex flex-col relative w-full overflow-hidden">
+          {/* Main Page Flow (12 Sections) */}
+          <main className="w-full flex flex-col">
+            <HeroSection />
+            <TrustedBySection />
+            <MetricsStrip />
+            <WhyTapfolioSection />
+            <ProductsSection />
+            <HowItWorksSection />
+            <EcosystemBento />
+            <SecuritySection />
+            <LiveDemoSection />
+            <TrustCompanySection />
+            <ConfiguratorSection />
+          </main>
 
-            {/* Main Page Flow (12 Sections) */}
-            <main className="w-full flex flex-col">
-              <HeroSection />
-              <TrustedBySection />
-              <MetricsStrip />
-              <WhyTapfolioSection />
-              <ProductsSection />
-              <HowItWorksSection />
-              <EcosystemBento />
-              <SecuritySection />
-              <LiveDemoSection />
-              <TrustCompanySection />
-              <ConfiguratorSection />
-            </main>
-
-            <FooterSection />
-          </div>
-        </LenisScrollProvider>
-      )}
+          <FooterSection />
+        </div>
+      </LenisScrollProvider>
     </div>
   );
 }
