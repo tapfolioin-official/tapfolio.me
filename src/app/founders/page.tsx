@@ -26,21 +26,23 @@ export const metadata = generatePageMetadata({
 export default function FoundersPage() {
   const founders = [
     {
+      slug: "mohammed-nibrasul-haqq",
       name: "Mohammed Nibrasul Haqq",
       jobTitle: "Co-founder & CTO",
       description: "Co-founder & Chief Technology Officer of Tapfolio. Visionary builder focused on reinventing professional networking using state-of-the-art NFC technology and modern web platforms.",
       image: "/nibras.png",
-      url: "https://www.tapfolio.me/portfolio/nibras",
+      url: "https://www.tapfolio.me/founders/mohammed-nibrasul-haqq",
       vision: " frictionless, memorable, and green professional networking for the world.",
       experience: "Senior Software Engineer & Tech Lead specializing in web architectures and scalable direct matching ecosystems.",
       sameAs: ["https://www.linkedin.com/in/mohammed-nibrasul-haqq-8267162ba/", "https://github.com/nibrasul"]
     },
     {
+      slug: "abhinand",
       name: "Abhinand",
       jobTitle: "Co-founder & CEO",
       description: "Co-founder & Chief Executive Officer of Tapfolio. Passionate systems engineer and creative designer driving the software architecture and physical device provisioning pipelines.",
       image: "/abhinand.png",
-      url: "https://www.tapfolio.me/portfolio/abhinand",
+      url: "https://www.tapfolio.me/founders/abhinand",
       vision: "Bridging the gap between the physical medium and the real-time digital connection hub.",
       experience: "Lead Systems Architect with deep experience designing hardware integrations, real-time sync systems, and responsive designs.",
       sameAs: ["https://www.linkedin.com/in/abhinand-ks-428387332/", "#"]
@@ -112,19 +114,27 @@ export default function FoundersPage() {
                 </div>
               </div>
 
-              {/* SameAs profiles links */}
-              <div className="flex gap-4 mt-2">
-                {f.sameAs.map((link, lIdx) => (
-                  <a
-                    key={lIdx}
-                    href={link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs font-semibold text-blue-600 hover:underline"
-                  >
-                    {link.includes('github') ? 'GitHub' : 'LinkedIn'}
-                  </a>
-                ))}
+              {/* Profile Links & CTA */}
+              <div className="flex flex-col gap-3 w-full mt-2">
+                <a
+                  href={`/founders/${f.slug}`}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-3 rounded-full transition-all text-center"
+                >
+                  View Full Entity Profile →
+                </a>
+                <div className="flex justify-center gap-4">
+                  {f.sameAs.map((link, lIdx) => (
+                    <a
+                      key={lIdx}
+                      href={link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs font-semibold text-gray-500 hover:text-blue-600 hover:underline"
+                    >
+                      {link.includes('github') ? 'GitHub' : 'LinkedIn'}
+                    </a>
+                  ))}
+                </div>
               </div>
             </div>
           ))}

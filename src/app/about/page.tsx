@@ -86,8 +86,8 @@ export default function AboutPage() {
   ];
 
   const team = [
-    { name: "Mohammed Nibrasul Haqq", role: "Co‑founder & CTO", img: "/nibras.png" },
-    { name: "Abhinand", role: "Co‑founder & CEO", img: "/abhinand.png" },
+    { name: "Mohammed Nibrasul Haqq", role: "Co‑founder & CTO", img: "/nibras.png", link: "/founders/mohammed-nibrasul-haqq" },
+    { name: "Abhinand", role: "Co‑founder & CEO", img: "/abhinand.png", link: "/founders/abhinand" },
     { name: "Sarah Chen", role: "Head of Product", img: "/sarah.png" },
     { name: "Michael Torres", role: "Lead Engineer", img: "/michael.png" },
   ];
@@ -328,22 +328,38 @@ export default function AboutPage() {
             </p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {team.map((member, i) => (
-              <div
-                key={i}
-                className="bg-gray-50 border border-gray-100 rounded-2xl p-6 text-center hover:shadow-md transition-all"
-              >
-                <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-gray-150 bg-gray-100 flex items-center justify-center mx-auto mb-4">
-                  <img
-                    src={member.img}
-                    alt={member.name}
-                    className="w-full h-full object-cover"
-                  />
+            {team.map((member, i) => {
+              const content = (
+                <>
+                  <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-gray-150 bg-gray-100 flex items-center justify-center mx-auto mb-4">
+                    <img
+                      src={member.img}
+                      alt={member.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <h4 className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">{member.name}</h4>
+                  <p className="text-sm text-gray-500">{member.role}</p>
+                </>
+              );
+
+              return member.link ? (
+                <a
+                  key={i}
+                  href={member.link}
+                  className="group bg-gray-50 border border-gray-100 rounded-2xl p-6 text-center hover:shadow-md hover:border-blue-200 transition-all block"
+                >
+                  {content}
+                </a>
+              ) : (
+                <div
+                  key={i}
+                  className="bg-gray-50 border border-gray-100 rounded-2xl p-6 text-center shadow-none"
+                >
+                  {content}
                 </div>
-                <h4 className="font-bold text-gray-900">{member.name}</h4>
-                <p className="text-sm text-gray-500">{member.role}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
 

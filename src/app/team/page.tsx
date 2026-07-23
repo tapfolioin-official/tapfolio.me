@@ -28,8 +28,8 @@ export default function TeamPage() {
     {
       name: "Leadership",
       members: [
-        { name: "Mohammed Nibrasul Haqq", role: "Co-founder & CTO", bio: "Reinventing networking using NFC cards.", image: "/nibras.png" },
-        { name: "Abhinand", role: "Co-founder & CEO", bio: "Designing hardware and dynamic platforms.", image: "/abhinand.png" }
+        { name: "Mohammed Nibrasul Haqq", role: "Co-founder & CTO", bio: "Reinventing networking using NFC cards.", image: "/nibras.png", profileUrl: "/founders/mohammed-nibrasul-haqq" },
+        { name: "Abhinand", role: "Co-founder & CEO", bio: "Designing hardware and dynamic platforms.", image: "/abhinand.png", profileUrl: "/founders/abhinand" }
       ]
     },
     {
@@ -98,7 +98,7 @@ export default function TeamPage() {
                 {dept.name}
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                {dept.members.map((m, mIdx) => (
+                {dept.members.map((m: any, mIdx) => (
                   <div 
                     key={mIdx} 
                     id={m.name.toLowerCase().replace(/ /g, '-')}
@@ -116,6 +116,14 @@ export default function TeamPage() {
                       <span className="text-xs font-medium text-gray-400">{m.role}</span>
                     </div>
                     <p className="text-xs text-gray-500 leading-relaxed max-w-xs">{m.bio}</p>
+                    {m.profileUrl && (
+                      <a
+                        href={m.profileUrl}
+                        className="text-xs font-bold text-blue-600 hover:underline mt-1"
+                      >
+                        View Entity Profile →
+                      </a>
+                    )}
                   </div>
                 ))}
               </div>
