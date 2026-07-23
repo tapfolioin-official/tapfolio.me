@@ -482,7 +482,7 @@ export const foundersData: Record<string, FounderProfile> = {
     },
     timeline: [
       {
-        year: "2026 – Present",
+        year: "2024 – Present",
         title: "Founder & CEO — Tapfolio",
         description: "Leading product strategy, business development, NFC digital identity solutions, product design, branding, and global growth strategy."
       },
@@ -492,9 +492,14 @@ export const foundersData: Record<string, FounderProfile> = {
         description: "Founded full-service creative agency delivering branding, social media, and advertising campaigns for clients across India & UAE."
       },
       {
-        year: "2023 – 2025",
+        year: "2022 – 2023",
         title: "Creative Professional — FLY Creative",
         description: "Managed branding, social media strategy, promotional video production, and digital marketing for one of Kerala's top travel agencies."
+      },
+      {
+        year: "2016 – Present",
+        title: "Freelance Creative Professional (8+ Years)",
+        description: "Delivering graphic design, brand identity, videography, photography, digital marketing, and creative direction."
       }
     ],
     skills: [
@@ -519,7 +524,7 @@ export const foundersData: Record<string, FounderProfile> = {
       {
         title: "Tapfolio Smart NFC Platform",
         role: "Founder & CEO",
-        year: "2026 - Present",
+        year: "2024 - Present",
         description: "Smart NFC digital business card ecosystem connecting physical cards with dynamic web profiles.",
         techStack: ["NFC / NDEF", "Product Design", "Brand Strategy", "UI/UX", "System Sync"],
         url: "https://www.tapfolio.me"
@@ -527,7 +532,7 @@ export const foundersData: Record<string, FounderProfile> = {
       {
         title: "Kreovate Marketing Agency",
         role: "Founder & Creative Director",
-        year: "2023",
+        year: "2023 - Present",
         description: "Full-service marketing & branding agency serving enterprise clients across India & UAE.",
         techStack: ["Branding", "Content Production", "Digital Marketing", "Campaigns"],
         url: "https://www.tapfolio.me"
@@ -535,7 +540,7 @@ export const foundersData: Record<string, FounderProfile> = {
       {
         title: "FLY Creative Campaigns",
         role: "Creative Professional",
-        year: "2023 - 2025",
+        year: "2022 - 2023",
         description: "Visual storytelling, video production, and brand campaigns for travel agency.",
         techStack: ["Videography", "Video Editing", "Social Strategy", "Advertising"]
       }
@@ -544,14 +549,14 @@ export const foundersData: Record<string, FounderProfile> = {
       {
         name: "Tapfolio",
         role: "Founder & CEO",
-        period: "2026 - Present",
+        period: "2024 - Present",
         description: "Reinventing business networking with smart NFC cards and real-time digital identity platforms.",
         url: "https://www.tapfolio.me"
       },
       {
         name: "Kreovate Marketing Agency",
         role: "Founder",
-        period: "2023",
+        period: "2023 - Present",
         description: "Branding, digital marketing, content production, and business growth across India & UAE."
       }
     ],
