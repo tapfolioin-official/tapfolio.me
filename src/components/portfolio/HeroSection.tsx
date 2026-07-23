@@ -1,16 +1,24 @@
 "use client";
 
-import { useRef } from "react";
-import { motion } from "framer-motion";
+import { useRef, useCallback } from "react";
+import { motion, useReducedMotion } from "framer-motion";
+import Link from "next/link";
+import ProfilePhoto from "./ProfilePhoto";
 
 export default function HeroSection() {
   const containerRef = useRef<HTMLElement>(null);
+  const shouldReduceMotion = useReducedMotion();
 
-  const scrollToSection = (id: string) => {
+  const scrollToSection = useCallback((id: string) => {
     const el = document.getElementById(id);
     if (el) {
       el.scrollIntoView({ behavior: "smooth" });
     }
+  }, []);
+
+  const fadeIn = {
+    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 20 },
+    visible: { opacity: 1, y: 0 },
   };
 
   return (
@@ -19,117 +27,240 @@ export default function HeroSection() {
       ref={containerRef}
       className="relative w-full min-h-screen flex flex-col justify-center items-center px-6 md:px-16 pt-28 pb-16 bg-[#0A0A0A] overflow-hidden"
     >
-      {/* Radial Glow */}
+      {/* Background Radial Glow */}
       <div 
-        className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] bg-blue-600/10 rounded-full blur-[140px] pointer-events-none"
+        className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-blue-600/10 rounded-full blur-[140px] pointer-events-none"
       />
       <div 
-        className="absolute bottom-10 right-10 w-[450px] h-[450px] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none"
+        className="absolute bottom-10 right-10 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none"
       />
 
-      {/* Main Container */}
-      <div className="relative z-10 max-w-[1200px] w-full mx-auto flex flex-col items-center text-center gap-8">
+      {/* Main Split Layout Container */}
+      <div className="relative z-10 max-w-[1200px] w-full mx-auto flex flex-col gap-12">
         
-        {/* Entity Verified Badge */}
+        {/* Top Reading Context & Freshness Bar */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="inline-flex items-center gap-2.5 px-4 py-2 bg-blue-500/10 border border-blue-500/20 rounded-full"
+          variants={fadeIn}
+          initial="hidden"
+          animate="visible"
+          transition={{ duration: 0.6 }}
+          className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4 text-xs text-gray-400 font-medium"
         >
-          <span className="relative flex h-2.5 w-2.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-          </span>
-          <span className="text-xs font-bold tracking-wide text-blue-300">
-            Co-Founder & CTO @ Tapfolio • Full-Stack Systems & AI Architect
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>📍 Kochi, India • Available for Speaking, Consulting & Partnerships</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <span>⏱ 5 min read</span>
+            <span>•</span>
+            <span>Last Updated: July 2026</span>
+          </div>
         </motion.div>
 
-        {/* Primary Headline */}
+        {/* Split Grid: Left Intro & CTAs | Right Portrait */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+          
+          {/* Left Column (7 cols): Name, Factual Badge, Bio, Mission & Links */}
+          <motion.div
+            variants={fadeIn}
+            initial="hidden"
+            animate="visible"
+            transition={{ duration: 0.8, delay: 0.1 }}
+            className="lg:col-span-7 flex flex-col gap-6 text-left"
+          >
+            {/* Factual Role & Stack Badge */}
+            <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-blue-500/10 border border-blue-500/20 rounded-full w-fit">
+              <span className="text-xs font-bold tracking-wide text-blue-300">
+                Co-Founder & CTO at Tapfolio • Next.js • Flutter • AI • NFC
+              </span>
+            </div>
+
+            {/* Name Headline */}
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-black font-space-grotesk tracking-tight text-white leading-[1.08]">
+              Mohammed <br className="hidden sm:inline" />
+              <span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-white bg-clip-text text-transparent">
+                Nibrasul Haqq
+              </span>
+            </h1>
+
+            {/* Extended Intro Paragraph */}
+            <p className="text-base md:text-lg font-inter text-gray-200 leading-relaxed">
+              <strong>Mohammed Nibrasul Haqq</strong> is an Indian software engineer and Co-Founder & CTO of Tapfolio. He designs and builds SaaS products, NFC-powered digital identity systems, AI integrations, and scalable web and mobile applications using Flutter, Next.js, Node.js, and modern cloud technologies.
+            </p>
+
+            {/* Human Mission Sentence */}
+            <p className="text-sm md:text-base font-inter italic text-blue-300/90 border-l-2 border-blue-500/40 pl-4 py-0.5">
+              &quot;Passionate about building products that simplify how people connect, share, and grow through technology.&quot;
+            </p>
+
+            {/* Primary Trust Statement */}
+            <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+              Building products used by professionals & businesses across India and worldwide.
+            </div>
+
+            {/* Action CTAs using Next.js Link */}
+            <div className="flex flex-wrap items-center gap-4 pt-2">
+              <button
+                onClick={() => scrollToSection("projects")}
+                className="px-7 py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-space-grotesk font-bold rounded-full text-xs uppercase tracking-widest transition-all shadow-lg shadow-blue-600/25 hover:scale-105 cursor-pointer"
+              >
+                Featured Work ↓
+              </button>
+              
+              <a
+                href="https://www.linkedin.com/in/mohammed-nibrasul-haqq-8267162ba/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-5 py-3.5 bg-white/10 hover:bg-white/20 text-white font-space-grotesk font-semibold rounded-full text-xs uppercase tracking-widest transition-all border border-white/15 hover:scale-105"
+              >
+                LinkedIn ↗
+              </a>
+
+              <a
+                href="https://github.com/nibrasul"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-5 py-3.5 bg-white/10 hover:bg-white/20 text-white font-space-grotesk font-semibold rounded-full text-xs uppercase tracking-widest transition-all border border-white/15 hover:scale-105"
+              >
+                GitHub ↗
+              </a>
+
+              <Link
+                href="/founders/mohammed-nibrasul-haqq"
+                className="px-5 py-3.5 bg-blue-950/60 hover:bg-blue-900/80 text-blue-300 font-space-grotesk font-semibold rounded-full text-xs uppercase tracking-widest transition-all border border-blue-500/30 hover:scale-105"
+              >
+                Knowledge Entity Record ↗
+              </Link>
+            </div>
+          </motion.div>
+
+          {/* Right Column (5 cols): Professional Portrait Frame */}
+          <motion.div
+            variants={fadeIn}
+            initial="hidden"
+            animate="visible"
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="lg:col-span-5 flex flex-col items-center lg:items-end justify-center"
+          >
+            <div className="relative w-full max-w-[340px] md:max-w-[380px] aspect-[4/5] rounded-3xl overflow-hidden border-2 border-blue-500/30 shadow-2xl bg-[#111625] group">
+              <ProfilePhoto
+                src="/nibras.png"
+                alt="Mohammed Nibrasul Haqq - Co-Founder & CTO at Tapfolio"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+              />
+              <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-[#0A0A0A] via-[#0A0A0A]/90 to-transparent p-6 flex flex-col gap-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-lg font-bold font-space-grotesk text-white">Mohammed Nibrasul Haqq</span>
+                  <span className="bg-blue-500/20 text-blue-300 text-[10px] font-bold uppercase px-2.5 py-1 rounded border border-blue-500/30">
+                    CTO @ Tapfolio
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  {["Next.js", "Flutter", "NFC Hardware", "AI Agents", "Node.js"].map((tech, idx) => (
+                    <span key={idx} className="bg-white/10 text-gray-300 text-[10px] font-semibold px-2 py-0.5 rounded">
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+        </div>
+
+        {/* Featured Work Strip (Replacing abstract metric grid with tangible work) */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className="space-y-4 max-w-4xl"
+          variants={fadeIn}
+          initial="hidden"
+          animate="visible"
+          transition={{ duration: 0.8, delay: 0.3 }}
+          className="flex flex-col gap-4 pt-10 border-t border-white/10"
         >
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-black font-space-grotesk tracking-tight text-white leading-[1.05]">
-            Mohammed <br className="hidden md:inline" />
-            <span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-white bg-clip-text text-transparent">
-              Nibrasul Haqq
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-widest text-blue-400">
+              Featured Work Showcase
             </span>
-          </h1>
-          
-          {/* Rich Intro Sentence targeting Entity SEO */}
-          <p className="text-lg md:text-xl font-inter font-normal text-gray-200 max-w-3xl mx-auto leading-relaxed pt-2">
-            <strong>Mohammed Nibrasul Haqq</strong> is an Indian software engineer, Co-Founder & CTO of Tapfolio, specializing in NFC technology, SaaS platforms, Flutter, Next.js, AI integrations, and digital identity products.
-          </p>
+            <button
+              onClick={() => scrollToSection("projects")}
+              className="text-xs font-bold text-gray-400 hover:text-white transition-colors cursor-pointer"
+            >
+              View All Case Studies →
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            {/* Work 1: Tapfolio */}
+            <button
+              onClick={() => scrollToSection("projects")}
+              className="bg-[#111625]/60 hover:bg-[#111625] border border-white/10 hover:border-blue-500/40 rounded-2xl p-5 text-left flex flex-col justify-between gap-3 transition-all group cursor-pointer"
+            >
+              <div>
+                <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider block">NFC & SaaS Platform</span>
+                <h3 className="text-lg font-bold text-white font-space-grotesk group-hover:text-blue-300 transition-colors">Tapfolio</h3>
+                <p className="text-xs text-gray-400 mt-1 line-clamp-2">Digital identity & smart NFC business card platform.</p>
+              </div>
+              <span className="text-[11px] font-semibold text-gray-300 group-hover:text-blue-400 flex items-center gap-1">
+                Next.js • Flutter • NFC →
+              </span>
+            </button>
+
+            {/* Work 2: Invoice Printer */}
+            <button
+              onClick={() => scrollToSection("projects")}
+              className="bg-[#111625]/60 hover:bg-[#111625] border border-white/10 hover:border-blue-500/40 rounded-2xl p-5 text-left flex flex-col justify-between gap-3 transition-all group cursor-pointer"
+            >
+              <div>
+                <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider block">Business Utility</span>
+                <h3 className="text-lg font-bold text-white font-space-grotesk group-hover:text-blue-300 transition-colors">Invoice Printer</h3>
+                <p className="text-xs text-gray-400 mt-1 line-clamp-2">Enterprise invoice editor & vector PDF generator.</p>
+              </div>
+              <span className="text-[11px] font-semibold text-gray-300 group-hover:text-blue-400 flex items-center gap-1">
+                React • TypeScript • PDF →
+              </span>
+            </button>
+
+            {/* Work 3: JARVIS AI */}
+            <button
+              onClick={() => scrollToSection("projects")}
+              className="bg-[#111625]/60 hover:bg-[#111625] border border-white/10 hover:border-blue-500/40 rounded-2xl p-5 text-left flex flex-col justify-between gap-3 transition-all group cursor-pointer"
+            >
+              <div>
+                <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider block">AI Orchestrator</span>
+                <h3 className="text-lg font-bold text-white font-space-grotesk group-hover:text-blue-300 transition-colors">JARVIS AI Suite</h3>
+                <p className="text-xs text-gray-400 mt-1 line-clamp-2">Autonomous CLI & voice shell assistant for developer ops.</p>
+              </div>
+              <span className="text-[11px] font-semibold text-gray-300 group-hover:text-blue-400 flex items-center gap-1">
+                Node.js • OpenAI • CLI →
+              </span>
+            </button>
+
+            {/* Work 4: Old School Tea */}
+            <button
+              onClick={() => scrollToSection("projects")}
+              className="bg-[#111625]/60 hover:bg-[#111625] border border-white/10 hover:border-blue-500/40 rounded-2xl p-5 text-left flex flex-col justify-between gap-3 transition-all group cursor-pointer"
+            >
+              <div>
+                <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider block">E-Commerce</span>
+                <h3 className="text-lg font-bold text-white font-space-grotesk group-hover:text-blue-300 transition-colors">Old School Tea</h3>
+                <p className="text-xs text-gray-400 mt-1 line-clamp-2">Storytelling digital storefront for artisanal tea brand.</p>
+              </div>
+              <span className="text-[11px] font-semibold text-gray-300 group-hover:text-blue-400 flex items-center gap-1">
+                Next.js • Stripe • UX →
+              </span>
+            </button>
+          </div>
         </motion.div>
 
-        {/* Action CTAs */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-          className="flex flex-wrap items-center justify-center gap-4 pt-2"
-        >
+        {/* Bottom Discover More Scroll Indicator */}
+        <div className="flex justify-center pt-2">
           <button
-            onClick={() => scrollToSection("projects")}
-            className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-space-grotesk font-bold rounded-full text-xs uppercase tracking-widest transition-all shadow-lg shadow-blue-600/25 hover:scale-105 cursor-pointer"
+            onClick={() => scrollToSection("about")}
+            className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-gray-400 hover:text-blue-400 transition-colors cursor-pointer"
           >
-            Explore Projects & Case Studies ↓
+            <span>Discover More</span>
+            <span className="animate-bounce text-sm">↓</span>
           </button>
-          
-          <a
-            href="https://www.linkedin.com/in/mohammed-nibrasul-haqq-8267162ba/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-6 py-4 bg-white/10 hover:bg-white/20 text-white font-space-grotesk font-semibold rounded-full text-xs uppercase tracking-widest transition-all border border-white/15 hover:scale-105"
-          >
-            LinkedIn Profile ↗
-          </a>
-
-          <a
-            href="https://github.com/nibrasul"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-6 py-4 bg-white/10 hover:bg-white/20 text-white font-space-grotesk font-semibold rounded-full text-xs uppercase tracking-widest transition-all border border-white/15 hover:scale-105"
-          >
-            GitHub Repositories ↗
-          </a>
-
-          <a
-            href="/founders/mohammed-nibrasul-haqq"
-            className="px-6 py-4 bg-blue-950/60 hover:bg-blue-900/80 text-blue-300 font-space-grotesk font-semibold rounded-full text-xs uppercase tracking-widest transition-all border border-blue-500/30 hover:scale-105"
-          >
-            Knowledge Entity Page ↗
-          </a>
-        </motion.div>
-
-        {/* Metrics Grid */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-6 w-full max-w-4xl pt-12 border-t border-white/10 mt-6"
-        >
-          <div className="flex flex-col items-center">
-            <span className="text-3xl md:text-4xl font-extrabold text-white font-space-grotesk">5+ Years</span>
-            <span className="text-xs text-gray-400 uppercase tracking-wider font-semibold mt-1">Systems Engineering</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <span className="text-3xl md:text-4xl font-extrabold text-blue-400 font-space-grotesk">12K+</span>
-            <span className="text-xs text-gray-400 uppercase tracking-wider font-semibold mt-1">Active Professionals</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <span className="text-3xl md:text-4xl font-extrabold text-white font-space-grotesk">10+</span>
-            <span className="text-xs text-gray-400 uppercase tracking-wider font-semibold mt-1">Products Shipped</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <span className="text-3xl md:text-4xl font-extrabold text-emerald-400 font-space-grotesk">99.9%</span>
-            <span className="text-xs text-gray-400 uppercase tracking-wider font-semibold mt-1">Platform Uptime</span>
-          </div>
-        </motion.div>
+        </div>
 
       </div>
     </section>
