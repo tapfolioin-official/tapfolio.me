@@ -109,39 +109,39 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
 
   const founderTechStack = isAbhinand
     ? [
-        "Brand Strategist",
-        "Creative Director",
-        "UI/UX Design",
-        "Digital Marketing",
-        "Content Creation",
-        "Entrepreneurship",
-        "AI Automation"
-      ]
+      "Brand Strategist",
+      "Creative Director",
+      "UI/UX Design",
+      "Digital Marketing",
+      "Content Creation",
+      "Entrepreneurship",
+      "AI Automation"
+    ]
     : [
-        "Next.js",
-        "React",
-        "TypeScript",
-        "Flutter",
-        "Node.js",
-        "AI Agents",
-        "NFC Hardware",
-        "PostgreSQL"
-      ];
+      "Next.js",
+      "React",
+      "TypeScript",
+      "Flutter",
+      "Node.js",
+      "AI Agents",
+      "NFC Hardware",
+      "PostgreSQL"
+    ];
 
   const currentlyWorkingOn = isAbhinand
     ? [
-        "Content Creation & Personal Branding",
-        "Digital Marketing & Growth Campaigns",
-        "Creative Direction & Visual Storytelling",
-        "Startup Development & Innovation",
-        "AI Consulting & Business Automation"
-      ]
+      "Content Creation & Personal Branding",
+      "Digital Marketing & Growth Campaigns",
+      "Creative Direction & Visual Storytelling",
+      "Startup Development & Innovation",
+      "AI Consulting & Business Automation"
+    ]
     : [
-        "Tapfolio Next.js Platform & NDEF Card Provisioning Engine",
-        "Autonomous AI Developer Agents & CLI Tooling",
-        "Cross-Platform Flutter Identity Mobile Sync",
-        "Knowledge Graph & Entity Indexing Architecture"
-      ];
+      "Tapfolio Next.js Platform & NDEF Card Provisioning Engine",
+      "Autonomous AI Developer Agents & CLI Tooling",
+      "Cross-Platform Flutter Identity Mobile Sync",
+      "Knowledge Graph & Entity Indexing Architecture"
+    ];
 
   return (
     <div className="bg-white min-h-screen text-gray-900 font-sans selection:bg-blue-100 flex flex-col pt-20">
@@ -173,7 +173,7 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
 
       {/* Main Container - 7xl / 1360px Spacious Layout */}
       <main className="flex-1 w-full max-w-7xl mx-auto px-6 py-12 flex flex-col gap-16">
-        
+
         {/* Breadcrumb Navigation */}
         <nav aria-label="Breadcrumb" className="text-xs text-gray-400 font-medium flex items-center gap-2">
           <a href="/" className="hover:text-blue-600 transition-colors">Home</a>
@@ -186,7 +186,7 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
         {/* Hero Section */}
         <section className="bg-gradient-to-br from-gray-900 via-gray-950 to-blue-950 text-white rounded-3xl p-8 md:p-12 shadow-2xl relative overflow-hidden flex flex-col lg:flex-row gap-10 items-center">
           <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/2" />
-          
+
           {/* Portrait */}
           <div className="relative w-44 h-44 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-blue-500/30 shadow-2xl flex-shrink-0 bg-gray-800">
             <AvatarImage
@@ -225,7 +225,7 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
                 <span className="text-[10px] text-gray-400 block uppercase tracking-wider">Projects Shipped</span>
               </div>
               <div>
-                <span className="text-xl md:text-2xl font-bold font-display text-blue-400">Since 2023</span>
+                <span className="text-xl md:text-2xl font-bold font-display text-blue-400">Since 2026</span>
                 <span className="text-[10px] text-gray-400 block uppercase tracking-wider">Started Building</span>
               </div>
               <div>
@@ -263,7 +263,7 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
                   Connect with {founder.name.split(" ")[0]}
                 </a>
               )}
-              
+
               {/* SVG Social Icons */}
               <div className="flex items-center gap-3 pl-2">
                 <a
@@ -274,7 +274,7 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
                   className="text-gray-400 hover:text-white transition-colors"
                 >
                   <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                    <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
+                    <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z" />
                   </svg>
                 </a>
 
@@ -286,7 +286,7 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
                   className="text-gray-400 hover:text-white transition-colors"
                 >
                   <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/>
+                    <path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z" />
                   </svg>
                 </a>
 
@@ -298,7 +298,7 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
                   className="text-gray-400 hover:text-white transition-colors"
                 >
                   <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                   </svg>
                 </a>
               </div>
@@ -429,7 +429,7 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
           <div className="border-b border-gray-100 pb-4 flex flex-col gap-2">
             <span className="text-xs font-bold uppercase tracking-wider text-blue-600">Executive Narrative</span>
             <h2 className="text-3xl font-bold text-gray-950">Biography</h2>
-            
+
             {/* Visual Highlights Bar */}
             <div className="flex flex-wrap items-center gap-2.5 pt-2 text-xs font-semibold text-gray-700">
               <span className="bg-gray-100 px-3 py-1 rounded-full border border-gray-200">📍 Based in Kochi, India</span>
