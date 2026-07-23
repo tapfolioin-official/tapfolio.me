@@ -86,8 +86,8 @@ export default function AboutPage() {
   ];
 
   const team = [
-    { name: "Mohammed Nibrasul Haqq", role: "CEO & Co‑founder", img: "/nibras.png" },
-    { name: "Abhinand", role: "CTO & Co‑founder", img: "/abhinand.png" },
+    { name: "Mohammed Nibrasul Haqq", role: "Co‑founder & CTO", img: "/nibras.png" },
+    { name: "Abhinand", role: "Co‑founder & CEO", img: "/abhinand.png" },
     { name: "Sarah Chen", role: "Head of Product", img: "/sarah.png" },
     { name: "Michael Torres", role: "Lead Engineer", img: "/michael.png" },
   ];

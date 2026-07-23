@@ -22,7 +22,7 @@ export default function TrustCompanySection() {
               <img src="/nibras.png" alt="Mohammed Nibrasul Haqq" className="w-16 h-16 rounded-full object-cover" />
               <div>
                 <h4 className="font-bold text-gray-900 text-lg">Mohammed Nibrasul Haqq</h4>
-                <span className="text-blue-600 text-sm font-medium">Co-founder & CEO</span>
+                <span className="text-blue-600 text-sm font-medium">Co-founder & CTO</span>
               </div>
             </div>
             
@@ -30,7 +30,7 @@ export default function TrustCompanySection() {
               <img src="/abhinand.png" alt="Abhinand" className="w-16 h-16 rounded-full object-cover" />
               <div>
                 <h4 className="font-bold text-gray-900 text-lg">Abhinand</h4>
-                <span className="text-blue-600 text-sm font-medium">Co-founder & CTO</span>
+                <span className="text-blue-600 text-sm font-medium">Co-founder & CEO</span>
               </div>
             </div>
           </div>

@@ -28,7 +28,7 @@ export default function FoundersPage() {
     {
       name: "Mohammed Nibrasul Haqq",
       jobTitle: "Co-founder & CTO",
-      description: "Co-founder & Chief Executive Officer of Tapfolio. Visionary builder focused on reinventing professional networking using state-of-the-art NFC technology and modern web platforms.",
+      description: "Co-founder & Chief Technology Officer of Tapfolio. Visionary builder focused on reinventing professional networking using state-of-the-art NFC technology and modern web platforms.",
       image: "/nibras.png",
       url: "https://www.tapfolio.me/portfolio/nibras",
       vision: " frictionless, memorable, and green professional networking for the world.",
@@ -37,8 +37,8 @@ export default function FoundersPage() {
     },
     {
       name: "Abhinand",
-      jobTitle: "Founder & CEO",
-      description: "Co-founder & Chief Technology Officer of Tapfolio. Passionate systems engineer and creative designer driving the software architecture and physical device provisioning pipelines.",
+      jobTitle: "Co-founder & CEO",
+      description: "Co-founder & Chief Executive Officer of Tapfolio. Passionate systems engineer and creative designer driving the software architecture and physical device provisioning pipelines.",
       image: "/abhinand.png",
       url: "https://www.tapfolio.me/portfolio/abhinand",
       vision: "Bridging the gap between the physical medium and the real-time digital connection hub.",

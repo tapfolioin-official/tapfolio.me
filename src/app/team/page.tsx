@@ -28,8 +28,8 @@ export default function TeamPage() {
     {
       name: "Leadership",
       members: [
-        { name: "Mohammed Nibrasul Haqq", role: "Co-founder & CEO", bio: "Reinventing networking using NFC cards.", image: "/nibras.png" },
-        { name: "Abhinand", role: "Co-founder & CTO", bio: "Designing hardware and dynamic platforms.", image: "/abhinand.png" }
+        { name: "Mohammed Nibrasul Haqq", role: "Co-founder & CTO", bio: "Reinventing networking using NFC cards.", image: "/nibras.png" },
+        { name: "Abhinand", role: "Co-founder & CEO", bio: "Designing hardware and dynamic platforms.", image: "/abhinand.png" }
       ]
     },
     {

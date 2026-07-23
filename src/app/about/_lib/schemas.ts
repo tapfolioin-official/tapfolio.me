@@ -14,12 +14,12 @@ export function getOrganizationSchema(): Record<string, any> {
       {
         "@type": "Person",
         "name": "Mohammed Nibrasul Haqq",
-        "jobTitle": "Co-founder & CEO"
+        "jobTitle": "Co-founder & CTO"
       },
       {
         "@type": "Person",
         "name": "Abhinand",
-        "jobTitle": "Co-founder & CTO"
+        "jobTitle": "Co-founder & CEO"
       }
     ],
     "contactPoint": {
