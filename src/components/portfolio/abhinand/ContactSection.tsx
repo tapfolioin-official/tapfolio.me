@@ -5,8 +5,9 @@ import { motion, useScroll, useTransform } from "framer-motion";
 
 const socialLinks = [
   { label: "Email", href: "mailto:abhinandkspersonal@gmail.com" },
-  { label: "Portfolio", href: "https://Myportfolio.com" },
-  { label: "Instagram", href: "https://www.instagram.com/ft_abhinand_?igsh=MTkzYTBubDZ0bWphOQ==" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/abhinand-ks-428387332/" },
+  { label: "GitHub", href: "https://github.com/abhinand-me/" },
+  { label: "Instagram", href: "https://www.instagram.com/ft_abhinand_" },
   { label: "WhatsApp", href: "https://wa.me/917736650217" },
 ];
 
