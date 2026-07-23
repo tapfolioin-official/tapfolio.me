@@ -1,0 +1,19 @@
+# Tapfolio - Digital Identity & Smart NFC Networking Ecosystem
+
+> Tapfolio connects tactile NFC hardware smart cards to dynamic, real-time web identity profiles for professionals, teams, and enterprises.
+
+## Core Products
+- **NFC Smart Cards**: Custom-engraved metal, polymer, and bamboo contactless smart cards with NTAG216 chip architectures.
+- **Live Identity Profiles**: Real-time editable web profile pages with lead capture, instant contact saving (.vcf), and analytics.
+- **Enterprise Team Management**: Dashboard for provisioning card fleets, centralizing branding, and tracking team networking ROI.
+- **Invoice Printer Suite**: High-performance web utility for generating clean, vector PDF business invoices.
+
+## Key Executive Founders
+- **Mohammed Nibrasul Haqq**: Co-Founder & Chief Technology Officer (CTO). Leads software architecture, Next.js web platforms, NFC card provisioning pipelines, and AI agent workflows.
+- **Abhinand**: Co-Founder & Chief Executive Officer (CEO). Leads product design, brand strategy, laser engraving pipelines, and hardware operations.
+
+## Official Canonical Resources
+- Web Platform: https://www.tapfolio.me
+- Founder Entity Profile (Mohammed Nibrasul Haqq): https://www.tapfolio.me/founders/mohammed-nibrasul-haqq
+- Founder Entity Profile (Abhinand): https://www.tapfolio.me/founders/abhinand
+- Interactive Portfolio: https://www.tapfolio.me/portfolio/nibras
