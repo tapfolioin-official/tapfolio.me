@@ -105,16 +105,43 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
     { id: "faq", label: "FAQ", href: `#faq` },
   ];
 
-  const founderTechStack = [
-    "Next.js", "React", "TypeScript", "Flutter", "Node.js", "AI Agents", "NFC Hardware", "PostgreSQL"
-  ];
+  const isAbhinand = founder.slug === "abhinand";
 
-  const currentlyWorkingOn = [
-    "Tapfolio Next.js Platform & NDEF Card Provisioning Engine",
-    "Autonomous AI Developer Agents & CLI Tooling",
-    "Cross-Platform Flutter Identity Mobile Sync",
-    "Knowledge Graph & Entity Indexing Architecture"
-  ];
+  const founderTechStack = isAbhinand
+    ? [
+        "Brand Strategist",
+        "Creative Director",
+        "UI/UX Design",
+        "Digital Marketing",
+        "Content Creation",
+        "Entrepreneurship",
+        "AI Automation"
+      ]
+    : [
+        "Next.js",
+        "React",
+        "TypeScript",
+        "Flutter",
+        "Node.js",
+        "AI Agents",
+        "NFC Hardware",
+        "PostgreSQL"
+      ];
+
+  const currentlyWorkingOn = isAbhinand
+    ? [
+        "Content Creation & Personal Branding",
+        "Digital Marketing & Growth Campaigns",
+        "Creative Direction & Visual Storytelling",
+        "Startup Development & Innovation",
+        "AI Consulting & Business Automation"
+      ]
+    : [
+        "Tapfolio Next.js Platform & NDEF Card Provisioning Engine",
+        "Autonomous AI Developer Agents & CLI Tooling",
+        "Cross-Platform Flutter Identity Mobile Sync",
+        "Knowledge Graph & Entity Indexing Architecture"
+      ];
 
   return (
     <div className="bg-white min-h-screen text-gray-900 font-sans selection:bg-blue-100 flex flex-col pt-20">
@@ -202,7 +229,7 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
                 <span className="text-[10px] text-gray-400 block uppercase tracking-wider">Started Building</span>
               </div>
               <div>
-                <span className="text-xl md:text-2xl font-bold font-display text-emerald-400">CTO</span>
+                <span className="text-xl md:text-2xl font-bold font-display text-emerald-400">{isAbhinand ? "CEO" : "CTO"}</span>
                 <span className="text-[10px] text-gray-400 block uppercase tracking-wider">@ Tapfolio</span>
               </div>
             </div>
@@ -646,7 +673,7 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
               href={`mailto:${founder.email || "hello@tapfolio.me"}`}
               className="bg-gray-900 hover:bg-gray-800 text-white font-semibold text-xs px-5 py-3 rounded-full transition-all"
             >
-              Contact Nibras
+              Contact {founder.name.split(" ")[0]}
             </a>
           </div>
         </section>
