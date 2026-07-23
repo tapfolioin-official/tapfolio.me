@@ -293,78 +293,105 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
         </div>
 
         {/* Balanced 3x3 Quick Facts & Entity Data Grid */}
-        <section className="bg-gray-50 border border-gray-100 rounded-3xl p-8 flex flex-col gap-6">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-blue-600">Quick Facts & Entity Data</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-6 text-sm">
-            <div className="flex items-center gap-3">
-              <span className="text-xl">📍</span>
-              <div>
-                <span className="text-gray-400 text-xs block">Location</span>
-                <span className="font-semibold text-gray-900">{founder.quickFacts.location}</span>
+        <section className="bg-gradient-to-br from-gray-50 via-white to-blue-50/40 border border-gray-200/80 rounded-3xl p-8 md:p-10 shadow-sm flex flex-col gap-6">
+          <div className="flex items-center justify-between border-b border-gray-100 pb-4">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-blue-600" />
+              <h2 className="text-xs font-extrabold uppercase tracking-widest text-blue-600">Quick Facts & Entity Data</h2>
+            </div>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-gray-500 bg-gray-100 px-3 py-1 rounded-full border border-gray-200">
+              Official Founder Record
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+            <div className="bg-white border border-gray-100 rounded-2xl p-4 flex items-center gap-3.5 shadow-sm hover:border-blue-200 transition-all">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center text-lg shadow-sm shrink-0">
+                📍
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xs font-semibold text-gray-500">Location</span>
+                <span className="font-bold text-gray-900 leading-tight">{founder.quickFacts.location}</span>
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <span className="text-xl">🌐</span>
-              <div>
-                <span className="text-gray-400 text-xs block">Languages</span>
-                <span className="font-semibold text-gray-900">{founder.quickFacts.languages.join(", ")}</span>
+            <div className="bg-white border border-gray-100 rounded-2xl p-4 flex items-center gap-3.5 shadow-sm hover:border-blue-200 transition-all">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center text-lg shadow-sm shrink-0">
+                🌐
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xs font-semibold text-gray-500">Languages</span>
+                <span className="font-bold text-gray-900 leading-tight">{founder.quickFacts.languages.join(", ")}</span>
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <span className="text-xl">💼</span>
-              <div>
-                <span className="text-gray-400 text-xs block">Role</span>
-                <span className="font-semibold text-gray-900">{founder.jobTitle}</span>
+            <div className="bg-white border border-gray-100 rounded-2xl p-4 flex items-center gap-3.5 shadow-sm hover:border-blue-200 transition-all">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center text-lg shadow-sm shrink-0">
+                💼
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xs font-semibold text-gray-500">Role</span>
+                <span className="font-bold text-gray-900 leading-tight">{founder.jobTitle}</span>
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <span className="text-xl">🏢</span>
-              <div>
-                <span className="text-gray-400 text-xs block">Company</span>
-                <span className="font-semibold text-gray-900">{founder.company}</span>
+            <div className="bg-white border border-gray-100 rounded-2xl p-4 flex items-center gap-3.5 shadow-sm hover:border-blue-200 transition-all">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center text-lg shadow-sm shrink-0">
+                🏢
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xs font-semibold text-gray-500">Company</span>
+                <span className="font-bold text-gray-900 leading-tight">{founder.company}</span>
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <span className="text-xl">⚡</span>
-              <div>
-                <span className="text-gray-400 text-xs block">Experience</span>
-                <span className="font-semibold text-gray-900">{founder.quickFacts.experienceYears}</span>
+            <div className="bg-white border border-gray-100 rounded-2xl p-4 flex items-center gap-3.5 shadow-sm hover:border-blue-200 transition-all">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center text-lg shadow-sm shrink-0">
+                ⚡
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xs font-semibold text-gray-500">Experience</span>
+                <span className="font-bold text-gray-900 leading-tight">{founder.quickFacts.experienceYears}</span>
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <span className="text-xl">🎯</span>
-              <div>
-                <span className="text-gray-400 text-xs block">Specialization</span>
-                <span className="font-semibold text-gray-900">Full-Stack Web & AI Systems</span>
+            <div className="bg-white border border-gray-100 rounded-2xl p-4 flex items-center gap-3.5 shadow-sm hover:border-blue-200 transition-all">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center text-lg shadow-sm shrink-0">
+                🎯
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xs font-semibold text-gray-500">Specialization</span>
+                <span className="font-bold text-gray-900 leading-tight">Full-Stack Web & AI Systems</span>
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <span className="text-xl">🧑‍💻</span>
-              <div>
-                <span className="text-gray-400 text-xs block">Primary Stack</span>
-                <span className="font-semibold text-gray-900">Next.js, Flutter, Node, AI</span>
+            <div className="bg-white border border-gray-100 rounded-2xl p-4 flex items-center gap-3.5 shadow-sm hover:border-blue-200 transition-all">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center text-lg shadow-sm shrink-0">
+                🧑‍💻
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xs font-semibold text-gray-500">Primary Stack</span>
+                <span className="font-bold text-gray-900 leading-tight">Next.js, Flutter, Node, AI</span>
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <span className="text-xl">🌍</span>
-              <div>
-                <span className="text-gray-400 text-xs block">Nationality</span>
-                <span className="font-semibold text-gray-900">{founder.quickFacts.nationality}</span>
+            <div className="bg-white border border-gray-100 rounded-2xl p-4 flex items-center gap-3.5 shadow-sm hover:border-blue-200 transition-all">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center text-lg shadow-sm shrink-0">
+                🌍
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xs font-semibold text-gray-500">Nationality</span>
+                <span className="font-bold text-gray-900 leading-tight">{founder.quickFacts.nationality}</span>
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <span className="text-xl">🚀</span>
-              <div>
-                <span className="text-gray-400 text-xs block">Availability</span>
-                <span className="font-semibold text-gray-900">Strategic Partnerships</span>
+            <div className="bg-white border border-gray-100 rounded-2xl p-4 flex items-center gap-3.5 shadow-sm hover:border-blue-200 transition-all">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center text-lg shadow-sm shrink-0">
+                🚀
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xs font-semibold text-gray-500">Availability</span>
+                <span className="font-bold text-gray-900 leading-tight">Strategic Partnerships</span>
               </div>
             </div>
           </div>
