@@ -1,82 +1,86 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
-
-const socialLinks = [
-  { label: "Email", href: "mailto:nibrasulhaqqamini@gmail.com" },
-  { label: "LinkedIn", href: "https://www.linkedin.com/in/mohammed-nibrasul-haqq-8267162ba" },
-  { label: "GitHub", href: "https://github.com/nibrasulhaqq" },
-];
+import { motion } from "framer-motion";
 
 export default function ContactSection() {
-  const containerRef = useRef<HTMLElement>(null);
-  
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"],
-  });
-
-  // Cinematic fade from dark to light
-  const backgroundColor = useTransform(scrollYProgress, [0, 0.4], ["#0A0A0A", "#FFFFFF"]);
-  const textColor = useTransform(scrollYProgress, [0, 0.4], ["#F5F5F5", "#0A0A0A"]);
-  const mutedTextColor = useTransform(scrollYProgress, [0, 0.4], ["#8A8A8A", "#8A8A8A"]);
-  
-  const yOffset = useTransform(scrollYProgress, [0.2, 0.6], [50, 0]);
-  const opacity = useTransform(scrollYProgress, [0.2, 0.6], [0, 1]);
-
   return (
-    <motion.section
+    <section
       id="contact"
-      ref={containerRef}
-      style={{ backgroundColor, color: textColor }}
-      className="relative w-full min-h-screen flex flex-col justify-between py-16 md:py-24 px-6 md:px-16 overflow-hidden"
+      className="relative w-full bg-[#0A0A0A] py-28 md:py-36 px-6 md:px-16 border-t border-white/10"
     >
-      {/* Top: Full Name Returns */}
-      <motion.div 
-        style={{ color: textColor }}
-        className="w-full max-w-7xl mx-auto flex justify-center md:justify-start"
-      >
-        <span className="text-xs md:text-sm font-inter tracking-[0.4em] uppercase font-semibold">
-          MOHAMMED NIBRASUL HAQQ
-        </span>
-      </motion.div>
+      <div className="max-w-[1200px] w-full mx-auto">
+        <div className="bg-gradient-to-br from-[#111625] via-gray-900 to-[#0B0F19] border border-white/10 rounded-3xl p-10 md:p-16 flex flex-col items-center text-center gap-10 shadow-2xl relative overflow-hidden">
+          
+          <div className="absolute top-0 right-0 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
 
-      {/* Middle: Cinematic Question & Links */}
-      <motion.div 
-        style={{ opacity, y: yOffset }}
-        className="flex-grow flex flex-col items-center justify-center max-w-5xl mx-auto text-center space-y-24 w-full"
-      >
-        <h2 className="text-5xl md:text-7xl lg:text-8xl font-space-grotesk font-bold tracking-tighter leading-[1.05]">
-          Start a <br className="hidden md:block" />
-          <motion.span style={{ color: mutedTextColor }}>conversation.</motion.span>
-        </h2>
+          {/* Header */}
+          <div className="flex flex-col items-center gap-4 max-w-2xl">
+            <span className="text-xs font-bold uppercase tracking-widest text-blue-400 bg-blue-500/10 px-4 py-1.5 rounded-full border border-blue-500/20">
+              Get in Touch
+            </span>
+            <h2 className="text-4xl md:text-6xl font-black font-space-grotesk text-white tracking-tight">
+              Let&apos;s Build Something Extraordinary.
+            </h2>
+            <p className="text-gray-300 text-base md:text-lg leading-relaxed">
+              Open to technical advisory, enterprise partnerships, architectural consulting, and high-impact software ventures.
+            </p>
+          </div>
 
-        {/* Enormous Spaced Links */}
-        <div className="flex flex-col md:flex-row items-center gap-16 md:gap-32 pt-12">
-          {socialLinks.map((link) => (
+          {/* Primary Action Button */}
+          <div className="flex flex-wrap items-center justify-center gap-4">
             <a
-              key={link.label}
-              href={link.href}
-              className="group relative text-lg md:text-xl font-inter tracking-[0.2em] uppercase font-medium overflow-hidden pb-2"
+              href="mailto:hello@tapfolio.me"
+              className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-space-grotesk font-bold rounded-full text-xs uppercase tracking-widest transition-all shadow-lg shadow-blue-600/25 hover:scale-105"
             >
-              {link.label}
-              <span className="absolute bottom-0 left-0 w-full h-[1px] bg-current origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]" />
+              Send Email (hello@tapfolio.me) →
             </a>
-          ))}
-        </div>
-      </motion.div>
 
-      {/* Bottom: Signature / Copyright */}
-      <div className="w-full max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-inter tracking-widest uppercase">
-        <motion.span style={{ color: mutedTextColor }}>
-          © {new Date().getFullYear()}
-        </motion.span>
-        <motion.span style={{ color: mutedTextColor }}>
-          Designed & Engineered with intent.
-        </motion.span>
+            <a
+              href="/founders/mohammed-nibrasul-haqq"
+              className="px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-space-grotesk font-semibold rounded-full text-xs uppercase tracking-widest transition-all border border-white/15 hover:scale-105"
+            >
+              View Knowledge Entity Profile →
+            </a>
+          </div>
+
+          {/* Social Links */}
+          <div className="flex flex-wrap justify-center items-center gap-8 pt-6 border-t border-white/10 w-full max-w-xl text-xs font-semibold text-gray-400">
+            <a
+              href="https://www.linkedin.com/in/mohammed-nibrasul-haqq-8267162ba/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-blue-400 transition-colors"
+            >
+              LinkedIn ↗
+            </a>
+            <a
+              href="https://github.com/nibrasul"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-blue-400 transition-colors"
+            >
+              GitHub ↗
+            </a>
+            <a
+              href="https://x.com/tapfolio"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-blue-400 transition-colors"
+            >
+              X (Twitter) ↗
+            </a>
+            <a
+              href="https://www.tapfolio.me"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-blue-400 transition-colors"
+            >
+              Tapfolio.me ↗
+            </a>
+          </div>
+
+        </div>
       </div>
-      
-    </motion.section>
+    </section>
   );
 }

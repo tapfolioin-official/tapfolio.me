@@ -1,129 +1,104 @@
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import SectionTransition from "./SectionTransition";
+import { motion } from "framer-motion";
 
-const services = [
+interface SkillCategory {
+  title: string;
+  subtitle: string;
+  description: string;
+  skills: string[];
+  icon: string;
+}
+
+const skillCategories: SkillCategory[] = [
   {
-    id: "01",
-    title: "Web Development",
-    description: "Building responsive, highly-optimized web applications with modern architectures.",
-    tech: ["React", "Next.js", "Node.js"]
+    title: "Full-Stack Web Architecture",
+    subtitle: "Modern Next.js & React Ecosystems",
+    description: "Architecting high-performance web applications with server-side rendering, dynamic API routes, clean component systems, and sub-second page loads.",
+    skills: ["Next.js (App Router)", "React 19", "TypeScript", "TailwindCSS", "Framer Motion", "GSAP"],
+    icon: "⚡"
   },
   {
-    id: "02",
-    title: "UI/UX Design",
-    description: "Crafting seamless, engaging digital experiences with a focus on editorial aesthetics.",
-    tech: ["Figma", "Framer Motion", "TailwindCSS"]
+    title: "Hardware & NFC Systems",
+    subtitle: "Direct Physical-to-Digital Sync",
+    description: "Engineering NDEF data structures, NFC card provisioning pipelines, custom URL routing, and seamless contact sharing for physical smart cards.",
+    skills: ["NTAG215/216 Chips", "NDEF Data Formats", "Contactless Protocols", "Enterprise Card Provisioning"],
+    icon: "🎴"
   },
   {
-    id: "03",
-    title: "AI Integration",
-    description: "Integrating powerful cognitive models and developing autonomous agents for complex workflows.",
-    tech: ["OpenAI API", "Python", "LangChain"]
+    title: "Cloud, Backend & Databases",
+    subtitle: "Scalable Infrastructure & APIs",
+    description: "Designing RESTful and GraphQL APIs, relational database schemas, real-time WebSockets, and edge cloud deployments.",
+    skills: ["Node.js", "Express", "PostgreSQL", "Prisma ORM", "Supabase", "Redis", "Vercel", "AWS"],
+    icon: "☁️"
   },
   {
-    id: "04",
-    title: "Product Strategy",
-    description: "Connecting the dots between business goals, user needs, and technical feasibility.",
-    tech: ["Market Research", "Prototyping", "Analytics"]
+    title: "AI Agents & System Automation",
+    subtitle: "Intelligent Workflows & Machine Learning",
+    description: "Integrating LLM APIs, building autonomous developer AI agents, CLI shell assistants, and geospatial machine learning pipelines.",
+    skills: ["OpenAI APIs", "AI Agents", "Python", "TensorFlow", "Pandas", "Vector Search", "CLI Automation"],
+    icon: "🤖"
   }
 ];
 
 export default function ServicesSection() {
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
-
   return (
     <section
-      id="services"
-      className="relative w-full bg-[#FFFFFF] py-32 md:py-40 px-6 md:px-16"
+      id="skills"
+      className="relative w-full bg-[#0A0A0A] py-28 md:py-36 px-6 md:px-16 border-t border-white/10"
     >
-      <div className="max-w-[1400px] w-full mx-auto space-y-24">
+      <div className="max-w-[1200px] w-full mx-auto flex flex-col gap-16">
         
-        <SectionTransition direction="up">
-          <span className="text-xs font-inter tracking-[0.2em] text-slate-400 uppercase font-bold">
-            SERVICES
-          </span>
-        </SectionTransition>
+        {/* Header */}
+        <div className="flex flex-col gap-4">
+          <span className="text-xs font-bold uppercase tracking-widest text-blue-400">Technical Competencies</span>
+          <h2 className="text-4xl md:text-6xl font-black font-space-grotesk text-white tracking-tight">
+            Skills & Capabilities
+          </h2>
+          <p className="text-gray-400 max-w-2xl text-base md:text-lg">
+            Core technical domains and software stacks specialized across web applications, cloud infrastructure, NFC hardware, and AI automation.
+          </p>
+        </div>
 
-        <div className="flex flex-col border-t border-black/10">
-          {services.map((service, index) => {
-            const isHovered = hoveredId === service.id;
-            return (
-              <motion.div
-                key={service.id}
-                onMouseEnter={() => setHoveredId(service.id)}
-                onMouseLeave={() => setHoveredId(null)}
-                className="relative border-b border-black/10 py-12 md:py-16 transition-colors duration-500 cursor-pointer overflow-hidden"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <div className="flex flex-col md:flex-row md:items-start gap-8 md:gap-16 relative z-10">
-                  
-                  {/* Number */}
-                  <div className="flex-shrink-0 w-16">
-                    <span className="text-xl font-space-grotesk font-bold text-slate-300">
-                      {service.id}
-                    </span>
+        {/* Skills Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {skillCategories.map((cat, idx) => (
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-10%" }}
+              transition={{ duration: 0.8, delay: idx * 0.1, ease: [0.16, 1, 0.3, 1] }}
+              className="bg-[#111625]/60 border border-white/10 rounded-3xl p-8 flex flex-col justify-between gap-6 hover:border-blue-500/40 transition-all"
+            >
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-2xl">
+                    {cat.icon}
                   </div>
-
-                  {/* Content Area */}
-                  <div className="flex-grow">
-                    <motion.h3 
-                      className="text-4xl md:text-6xl lg:text-7xl font-black text-[#0A0A0A] tracking-tighter"
-                      animate={{ color: isHovered ? "#2563EB" : "#0A0A0A" }}
-                      transition={{ duration: 0.4 }}
-                    >
-                      {service.title}
-                    </motion.h3>
-
-                    <AnimatePresence>
-                      {isHovered && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0, filter: "blur(10px)" }}
-                          animate={{ opacity: 1, height: "auto", filter: "blur(0px)" }}
-                          exit={{ opacity: 0, height: 0, filter: "blur(10px)" }}
-                          transition={{ duration: 0.4, ease: "easeOut" }}
-                          className="pt-8 overflow-hidden"
-                        >
-                          <div className="flex flex-col md:flex-row gap-8 md:gap-16">
-                            <p className="text-lg md:text-xl font-inter text-slate-600 max-w-xl leading-relaxed">
-                              {service.description}
-                            </p>
-                            
-                            <div className="space-y-4">
-                              <span className="text-xs font-inter tracking-[0.2em] text-[#2563EB] uppercase font-bold">
-                                Technologies
-                              </span>
-                              <div className="flex flex-wrap gap-2">
-                                {service.tech.map((t) => (
-                                  <span key={t} className="px-4 py-2 border border-black/10 rounded-full text-xs font-inter text-slate-600 bg-white">
-                                    {t}
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                  <div>
+                    <h3 className="text-2xl font-bold font-space-grotesk text-white">{cat.title}</h3>
+                    <span className="text-xs font-semibold text-blue-400">{cat.subtitle}</span>
                   </div>
-
                 </div>
 
-                {/* Background hover effect */}
-                <motion.div 
-                  className="absolute inset-0 bg-slate-50 z-0 origin-left"
-                  initial={{ scaleX: 0 }}
-                  animate={{ scaleX: isHovered ? 1 : 0 }}
-                  transition={{ duration: 0.5, ease: "circOut" }}
-                />
-              </motion.div>
-            );
-          })}
+                <p className="text-gray-300 text-sm leading-relaxed pt-2">
+                  {cat.description}
+                </p>
+              </div>
+
+              <div className="flex flex-wrap gap-2 pt-4 border-t border-white/10">
+                {cat.skills.map((skill, sIdx) => (
+                  <span
+                    key={sIdx}
+                    className="bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs font-semibold px-3 py-1.5 rounded-lg"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </motion.div>
+          ))}
         </div>
 
       </div>

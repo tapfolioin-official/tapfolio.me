@@ -1,82 +1,71 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import ProfilePhoto from "./ProfilePhoto";
 
 export default function AboutSection() {
-  const containerRef = useRef<HTMLElement>(null);
-  
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"],
-  });
-
-  // Slow parallax for the roles
-  const y1 = useTransform(scrollYProgress, [0, 1], [100, -50]);
-  const y2 = useTransform(scrollYProgress, [0, 1], [150, -100]);
-  const y3 = useTransform(scrollYProgress, [0, 1], [200, -150]);
-  const y4 = useTransform(scrollYProgress, [0, 1], [250, -200]);
-
   return (
     <section
       id="about"
-      ref={containerRef}
-      className="relative w-full min-h-[150vh] bg-[#0A0A0A] py-32 md:py-40 px-6 md:px-16 flex flex-col justify-center overflow-hidden"
+      className="relative w-full bg-[#0A0A0A] py-28 md:py-36 px-6 md:px-16 border-t border-white/10"
     >
-      <div className="max-w-[1400px] w-full mx-auto relative z-10">
-        
-        {/* Two Column Grid for Statement & Photo */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-start">
+      <div className="max-w-[1200px] w-full mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
           
-          {/* Left Column: Main Statement */}
-          <div className="lg:col-span-7 space-y-12">
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-20%" }}
-              transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
-              className="text-4xl md:text-6xl lg:text-7xl font-space-grotesk font-bold text-[#F5F5F5] leading-tight"
-            >
-              I engineer digital platforms that combine <span className="text-[#8A8A8A]">technical precision</span>, <span className="text-[#8A8A8A]">intuitive design</span>, and <span className="text-[#F5F5F5]">real-world impact</span>.
-            </motion.p>
+          {/* Left Column: Portrait & Quick Card */}
+          <div className="lg:col-span-5 flex flex-col items-center lg:items-start gap-6">
+            <div className="relative w-full max-w-[380px] aspect-[4/5] rounded-3xl overflow-hidden border-2 border-blue-500/20 shadow-2xl bg-[#111625]">
+              <ProfilePhoto
+                src="/nibras.png"
+                alt="Mohammed Nibrasul Haqq"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-[#0A0A0A] via-[#0A0A0A]/80 to-transparent p-6 flex flex-col">
+                <span className="text-xl font-bold font-space-grotesk text-white">Mohammed Nibrasul Haqq</span>
+                <span className="text-xs font-semibold text-blue-400">Co-Founder & CTO @ Tapfolio</span>
+              </div>
+            </div>
           </div>
 
-          {/* Right Column: Profile Photo */}
-          <div className="lg:col-span-5 flex justify-center lg:justify-end">
-            <ProfilePhoto 
-              src="/nibras.png" 
-              alt="Mohammed Nibrasul Haqq"
-              className="w-full max-w-[380px] aspect-[4/5] md:aspect-[3/4]"
-            />
+          {/* Right Column: Executive Narrative */}
+          <div className="lg:col-span-7 flex flex-col gap-8">
+            <div className="flex flex-col gap-3">
+              <span className="text-xs font-bold uppercase tracking-widest text-blue-400">Executive Profile</span>
+              <h2 className="text-4xl md:text-5xl font-black font-space-grotesk text-white tracking-tight leading-tight">
+                Architecting Products at the Intersection of <span className="text-blue-400">Software</span>, <span className="text-indigo-300">NFC Hardware</span> & <span className="text-emerald-400">AI</span>.
+              </h2>
+            </div>
+
+            <div className="space-y-4 text-gray-300 text-base md:text-lg leading-relaxed">
+              <p>
+                I&apos;m a software architect, full-stack engineer, and co-founder of Tapfolio. My work focuses on building clean, high-performance web applications, scaling cloud infrastructure, and bridging physical contactless hardware to live digital identities.
+              </p>
+              <p>
+                As CTO at Tapfolio, I architected our Next.js App Router platform, real-time lead sync APIs, and multi-device NFC provisioning systems that power networking for over 12,000 active professionals worldwide.
+              </p>
+              <p>
+                Whether designing AI agent workflows, optimizing core web vitals, or shipping full-stack SaaS platforms, my philosophy centers on technical precision, extreme speed, and real-world impact.
+              </p>
+            </div>
+
+            {/* Quick Specs */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-4 border-t border-white/10 text-xs">
+              <div>
+                <span className="text-gray-500 block uppercase font-bold tracking-wider">Role</span>
+                <span className="font-semibold text-white">Co-Founder & CTO</span>
+              </div>
+              <div>
+                <span className="text-gray-500 block uppercase font-bold tracking-wider">Location</span>
+                <span className="font-semibold text-white">Bangalore, India</span>
+              </div>
+              <div>
+                <span className="text-gray-500 block uppercase font-bold tracking-wider">Specialization</span>
+                <span className="font-semibold text-white">Full-Stack & Systems</span>
+              </div>
+            </div>
           </div>
 
         </div>
-
-        {/* Scroll Revealed Roles */}
-        <div className="mt-40 md:mt-64 relative w-full h-[60vh] flex flex-col items-end text-right pr-4 md:pr-16">
-          <motion.div style={{ y: y1 }} className="absolute top-0 right-0">
-            <span className="text-[clamp(3rem,8vw,10rem)] font-bold tracking-tighter text-[#2563EB]/20 uppercase font-space-grotesk">
-              Engineer
-            </span>
-          </motion.div>
-          <motion.div style={{ y: y2 }} className="absolute top-[20%] right-0">
-            <span className="text-[clamp(3rem,8vw,10rem)] font-bold tracking-tighter text-[#F5F5F5] uppercase mix-blend-difference font-space-grotesk">
-              Designer
-            </span>
-          </motion.div>
-          <motion.div style={{ y: y3 }} className="absolute top-[40%] right-0">
-            <span className="text-[clamp(3rem,8vw,10rem)] font-bold tracking-tighter text-[#8A8A8A] uppercase font-space-grotesk">
-              Founder
-            </span>
-          </motion.div>
-          <motion.div style={{ y: y4 }} className="absolute top-[60%] right-0">
-            <span className="text-[clamp(3rem,8vw,10rem)] font-bold tracking-tighter text-[#F5F5F5]/10 uppercase font-space-grotesk">
-              Architect
-            </span>
-          </motion.div>
-        </div>
-
       </div>
     </section>
   );

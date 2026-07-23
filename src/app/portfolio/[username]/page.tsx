@@ -11,13 +11,15 @@ import AbhinandExperience from "@/components/portfolio/abhinand/ExperienceSectio
 import AbhinandContact from "@/components/portfolio/abhinand/ContactSection";
 import AbhinandBreathing from "@/components/portfolio/abhinand/BreathingSpaceSection";
 
-// Nibras Portfolio Components (Default Template)
+// Nibras Professional Portfolio Components
+import Navigation from "@/components/portfolio/Navigation";
 import NibrasHero from "@/components/portfolio/HeroSection";
-import NibrasPhilosophy from "@/components/portfolio/PhilosophySection";
 import NibrasAbout from "@/components/portfolio/AboutSection";
+import ProjectsSection from "@/components/portfolio/ProjectsSection";
 import NibrasExperience from "@/components/portfolio/ExperienceSection";
+import ServicesSection from "@/components/portfolio/ServicesSection";
 import NibrasContact from "@/components/portfolio/ContactSection";
-import NibrasBreathing from "@/components/portfolio/BreathingSpaceSection";
+import FooterSection from "@/components/portfolio/FooterSection";
 
 export default function DynamicPortfolioPage() {
   const params = useParams();
@@ -101,30 +103,17 @@ export default function DynamicPortfolioPage() {
     );
   }
 
+  // Modern Professional Portfolio Layout for Nibras
   return (
-    <main className="relative w-full bg-[#0A0A0A] overflow-x-hidden">
-      <div className="relative w-full">
-        <div className="sticky top-0 z-0">
-          <NibrasHero />
-        </div>
-        <div className="relative z-10 bg-[#0A0A0A]">
-          <div className="sticky top-0 z-10">
-            <NibrasPhilosophy />
-          </div>
-          <div className="relative z-20 bg-[#0A0A0A]">
-            <NibrasAbout />
-          </div>
-        </div>
-      </div>
-
-      <div className="relative z-30 bg-[#0A0A0A]">
-        <NibrasExperience />
-        <NibrasBreathing />
-      </div>
-
-      <div className="relative w-full z-40 bg-[#0A0A0A]">
-        <NibrasContact />
-      </div>
+    <main className="relative w-full bg-[#0A0A0A] text-white overflow-x-hidden selection:bg-blue-600 selection:text-white">
+      <Navigation />
+      <NibrasHero />
+      <NibrasAbout />
+      <ProjectsSection />
+      <NibrasExperience />
+      <ServicesSection />
+      <NibrasContact />
+      <FooterSection />
     </main>
   );
 }

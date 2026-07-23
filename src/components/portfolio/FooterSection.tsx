@@ -1,25 +1,23 @@
-"use client";
-
-import MagneticButton from "./MagneticButton";
+import React from 'react';
 
 export default function FooterSection() {
-  const handleBackToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
   return (
-    <footer className="w-full py-8 px-6 md:px-12 bg-white border-t border-slate-100">
-      <div className="max-w-3xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-        <p className="text-[10px] font-inter tracking-[0.15em] text-slate-400 uppercase">
-          &copy; 2026 Mohammed Nibrasul Haqq
-        </p>
-        <MagneticButton
-          onClick={handleBackToTop}
-          strength={0.2}
-          className="text-[10px] font-inter tracking-[0.2em] text-slate-400 uppercase hover:text-slate-900 transition-colors duration-300"
-        >
-          Back to top ↑
-        </MagneticButton>
+    <footer className="w-full bg-[#0A0A0A] border-t border-white/10 py-10 flex justify-center text-xs text-gray-500">
+      <div className="max-w-[1200px] w-full px-6 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div>
+          © 2026 Mohammed Nibrasul Haqq. All rights reserved. • Co-Founder & CTO @ Tapfolio
+        </div>
+        <div className="flex gap-6">
+          <a href="/founders/mohammed-nibrasul-haqq" className="hover:text-blue-400 transition-colors">
+            Knowledge Entity Profile
+          </a>
+          <a href="/founders" className="hover:text-blue-400 transition-colors">
+            Tapfolio Founders
+          </a>
+          <a href="/" className="hover:text-blue-400 transition-colors">
+            Tapfolio Home
+          </a>
+        </div>
       </div>
     </footer>
   );
