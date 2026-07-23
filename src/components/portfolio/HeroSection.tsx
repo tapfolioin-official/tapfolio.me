@@ -93,7 +93,7 @@ export default function HeroSection() {
 
             {/* Primary Trust Statement */}
             <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-              Building products used by professionals & businesses across India and worldwide.
+              Building software that connects people through better digital experiences.
             </div>
 
             {/* Action CTAs using Next.js Link */}

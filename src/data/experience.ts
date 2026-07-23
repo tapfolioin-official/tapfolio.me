@@ -21,16 +21,16 @@ export const experiences: ExperienceItem[] = [
     type: "STARTUP",
     company: "Tapfolio",
     role: "Co-Founder & CTO",
-    location: "Kochi & Bangalore, India",
+    location: "Kochi, India",
     icon: "🚀",
     description: "Co-founded and engineered Tapfolio, a smart digital identity ecosystem combining physical NFC hardware with real-time web profiles.",
-    outcome: "Successfully scaled platform to power digital identities, contact sharing, and lead capture workflows across multiple markets.",
-    responsibilities: ["Technical Vision & CTO Leadership", "Full-Stack Next.js Architecture", "NFC Hardware Provisioning", "Database & Edge Deployment"],
+    outcome: "Successfully launched and scaled platform to power digital identities, contact sharing, and lead capture workflows.",
+    responsibilities: ["Technical Vision & CTO Leadership", "Full-Stack Next.js Architecture", "NFC Hardware Provisioning", "Database & Cloud Infrastructure"],
     technologies: ["Next.js", "TypeScript", "TailwindCSS", "PostgreSQL", "Supabase", "Flutter", "NFC / NDEF", "Vercel"],
     bullets: [
       "Architected Next.js App Router platform, PostgreSQL database schemas, and API routes handling instant lead sync.",
       "Engineered multi-device NFC card provisioning algorithms and custom vanity URL routing.",
-      "Established CI/CD pipeline on Vercel delivering sub-second page loads and 99.9% uptime."
+      "Established CI/CD pipeline on Vercel delivering reliable, high-performance page loads."
     ],
     link: "https://www.tapfolio.me"
   },
@@ -43,7 +43,7 @@ export const experiences: ExperienceItem[] = [
     location: "Kochi, India",
     icon: "☕",
     description: "Engineered a storytelling-driven e-commerce digital presence tailored for a traditional artisanal tea brand.",
-    outcome: "Elevated direct-to-consumer brand positioning and optimized product discoverability with zero layout shifts.",
+    outcome: "Elevated direct-to-consumer brand positioning and optimized product discoverability with smooth checkout flows.",
     responsibilities: ["E-Commerce UX Design", "Frontend Performance Tuning", "Stripe Checkout Integration"],
     technologies: ["Next.js", "TypeScript", "TailwindCSS", "Stripe API", "Framer Motion"],
     bullets: [
@@ -58,10 +58,10 @@ export const experiences: ExperienceItem[] = [
     type: "STARTUP",
     company: "LocalConnect",
     role: "Founder & Mobile Developer",
-    location: "Kerala, India",
+    location: "Kochi, India",
     icon: "📱",
     description: "Conceived and launched a location-aware service marketplace connecting customers with local labor and technicians.",
-    outcome: "Streamlined local service discovery and double-sided transaction routing with sub-second request matching.",
+    outcome: "Streamlined local service discovery and double-sided transaction routing with efficient request matching.",
     responsibilities: ["Mobile App Architecture", "Real-Time Request Routing", "Backend Database Design"],
     technologies: ["React Native", "Flutter", "Firebase Firestore", "Node.js", "Google Maps API"],
     bullets: [

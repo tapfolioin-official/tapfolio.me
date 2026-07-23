@@ -187,7 +187,7 @@ export default function SocialProofSection() {
             </div>
           </motion.div>
 
-          {/* Card 4: Authentic Team Endorsements */}
+          {/* Card 4: Products Built & Collaborations */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -196,28 +196,37 @@ export default function SocialProofSection() {
           >
             <div className="flex flex-col gap-4">
               <div className="flex items-center gap-3">
-                <span className="text-2xl p-2.5 bg-amber-500/10 border border-amber-500/20 rounded-2xl">💬</span>
+                <span className="text-2xl p-2.5 bg-amber-500/10 border border-amber-500/20 rounded-2xl">🤝</span>
                 <div>
-                  <h3 className="text-2xl font-bold font-space-grotesk text-white">Endorsements</h3>
-                  <span className="text-xs text-amber-400 font-semibold">Co-Founder & Team Trust</span>
+                  <h3 className="text-2xl font-bold font-space-grotesk text-white">Worked With & Built</h3>
+                  <span className="text-xs text-amber-400 font-semibold">Platforms & Collaborations</span>
                 </div>
               </div>
 
-              <div className="bg-white/5 border border-white/10 rounded-2xl p-5 space-y-3">
-                <p className="text-sm text-gray-200 italic leading-relaxed">
-                  &quot;Nibras consistently approaches technical challenges with a strong product mindset. His work on Tapfolio&apos;s architecture has been instrumental in shaping the platform.&quot;
-                </p>
-                <div className="text-xs font-bold text-blue-300 pt-2 border-t border-white/10 flex items-center justify-between">
-                  <span>— Abhinand</span>
-                  <span className="text-gray-400 font-normal">Co-Founder & CEO @ Tapfolio</span>
+              <div className="grid grid-cols-2 gap-3 pt-1">
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col gap-1">
+                  <span className="text-xs font-bold text-white font-space-grotesk">Tapfolio</span>
+                  <span className="text-[10px] text-blue-400 font-semibold">Co-Founder & CTO</span>
+                </div>
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col gap-1">
+                  <span className="text-xs font-bold text-white font-space-grotesk">Old School Tea</span>
+                  <span className="text-[10px] text-purple-400 font-semibold">Client E-Commerce</span>
+                </div>
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col gap-1">
+                  <span className="text-xs font-bold text-white font-space-grotesk">LocalConnect</span>
+                  <span className="text-[10px] text-emerald-400 font-semibold">Founder & Mobile</span>
+                </div>
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col gap-1">
+                  <span className="text-xs font-bold text-white font-space-grotesk">Invoice Printer</span>
+                  <span className="text-[10px] text-amber-400 font-semibold">Business Utility</span>
                 </div>
               </div>
             </div>
 
             <div className="pt-2 text-xs text-gray-400 flex items-center justify-between border-t border-white/10">
-              <span>Verified Founder Collaboration</span>
+              <span>Verified Founders & Products</span>
               <a href="https://www.tapfolio.me/founders" className="text-blue-400 hover:text-blue-300 font-bold">
-                Tapfolio Team →
+                Tapfolio Founders →
               </a>
             </div>
           </motion.div>

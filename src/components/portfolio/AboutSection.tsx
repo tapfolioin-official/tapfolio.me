@@ -136,7 +136,7 @@ export default function AboutSection() {
               </h2>
             </div>
 
-            {/* Narrative Story (Specific & Impact-Driven) */}
+            {/* Narrative Story (Specific & Human-Centered) */}
             <div className="space-y-4 text-gray-300 text-base md:text-lg leading-relaxed font-normal">
               <p>
                 My journey into software engineering began with curiosity and a passion for solving real-world problems through technology. What started with small web applications gradually evolved into designing complete digital products and eventually co-founding Tapfolio, where I combine software engineering, NFC technology, and AI to simplify professional networking.
@@ -145,7 +145,7 @@ export default function AboutSection() {
                 My work focuses on designing SaaS platforms, building scalable Next.js applications that enable businesses to manage digital identities and professional networking more efficiently, integrating NFC hardware with contactless smart cards, and developing AI-powered workflows that solve practical business problems.
               </p>
               <p>
-                As CTO at Tapfolio, I guide our overall technical vision, product architecture, engineering decisions, and roadmap planning—ensuring our web platforms, mobile services, and card provisioning pipelines operate with performance and high reliability.
+                My role is to design the technology behind Tapfolio—from our web platform and mobile apps to the infrastructure powering NFC business cards. I enjoy solving practical engineering problems and turning complex ideas into products that people actually use.
               </p>
             </div>
 
