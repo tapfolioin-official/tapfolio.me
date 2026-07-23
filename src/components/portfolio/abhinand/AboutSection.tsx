@@ -44,7 +44,7 @@ export default function AboutSection() {
               transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
               className="text-4xl md:text-6xl lg:text-7xl font-space-grotesk font-bold text-[#F5F5F5] leading-tight"
             >
-              I build visually engaging content that combines <span className="text-[#8A8A8A]">clean design</span>, <span className="text-[#8A8A8A]">cinematic edits</span>, and <span className="text-[#F5F5F5]">brand-focused storytelling</span>.
+              I build NFC-powered digital identity platforms, combining <span className="text-[#8A8A8A]">product strategy</span>, <span className="text-[#8A8A8A]">brand development</span>, and <span className="text-[#F5F5F5]">creative innovation</span>.
             </motion.p>
           </div>
 
@@ -52,7 +52,7 @@ export default function AboutSection() {
           <div className="lg:col-span-5 flex justify-center lg:justify-end">
             <ProfilePhoto
               src="/abhinand.png"
-              alt="Abhinand Sunil"
+              alt="Abhinand K.S."
               className="w-full max-w-[380px] aspect-[4/5] md:aspect-[3/4]"
             />
           </div>
@@ -63,22 +63,22 @@ export default function AboutSection() {
         <div className="mt-40 md:mt-64 relative w-full h-[60vh] flex flex-col items-end text-right pr-4 md:pr-16">
           <motion.div style={{ y: y1, x: x1 }} className="absolute top-0 right-0">
             <span className="text-[clamp(3rem,8vw,10rem)] font-bold tracking-tighter text-[#F5F5F5]/20 uppercase font-space-grotesk">
-              Photographer
+              Founder & CEO
             </span>
           </motion.div>
           <motion.div style={{ y: y2, x: x2 }} className="absolute top-[20%] right-0">
             <span className="text-[clamp(3rem,8vw,10rem)] font-bold tracking-tighter text-[#F5F5F5] uppercase mix-blend-difference font-space-grotesk">
-              Videographer
+              Product Strategist
             </span>
           </motion.div>
           <motion.div style={{ y: y3, x: x3 }} className="absolute top-[40%] right-0">
             <span className="text-[clamp(3rem,8vw,10rem)] font-bold tracking-tighter text-[#8A8A8A] uppercase font-space-grotesk">
-              Editor
+              Brand Director
             </span>
           </motion.div>
           <motion.div style={{ y: y4, x: x4 }} className="absolute top-[60%] right-0">
             <span className="text-[clamp(3rem,8vw,10rem)] font-bold tracking-tighter text-[#F5F5F5]/10 uppercase font-space-grotesk">
-              Founder
+              NFC Innovator
             </span>
           </motion.div>
         </div>

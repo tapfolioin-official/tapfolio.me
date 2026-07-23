@@ -38,14 +38,14 @@ export default function FoundersPage() {
     },
     {
       slug: "abhinand",
-      name: "Abhinand",
-      jobTitle: "Co-founder & CEO",
-      description: "Co-founder & Chief Executive Officer of Tapfolio. Passionate systems engineer and creative designer driving the software architecture and physical device provisioning pipelines.",
+      name: "Abhinand K.S.",
+      jobTitle: "Founder & CEO",
+      description: "Founder & Chief Executive Officer of Tapfolio. Multidisciplinary creative professional with 8+ years of experience across branding, digital marketing, product design, and NFC smart networking.",
       image: "/abhinand.png",
       url: "https://www.tapfolio.me/founders/abhinand",
-      vision: "Bridging the gap between the physical medium and the real-time digital connection hub.",
-      experience: "Lead Systems Architect with deep experience designing hardware integrations, real-time sync systems, and responsive designs.",
-      sameAs: ["https://www.linkedin.com/in/abhinand-ks-428387332/", "#"]
+      vision: "Creating a global ecosystem where every professional can share their identity, portfolio, and opportunities with a single tap. Tap. Connect. Grow.",
+      experience: "8+ Years Exp in Brand Strategy, Creative Direction, Product Design & Startup Leadership.",
+      sameAs: ["https://www.linkedin.com/in/abhinand-ks-428387332/", "https://github.com/abhinand", "https://www.instagram.com/ft_abhinand_"]
     }
   ];
 

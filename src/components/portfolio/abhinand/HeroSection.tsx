@@ -70,12 +70,12 @@ export default function HeroSection() {
           className="space-y-6 px-4"
         >
           <span className="block text-[10px] md:text-xs font-inter tracking-[0.4em] text-[#8A8A8A] uppercase">
-            Photographer • Videographer • Editor • Founder
+            Founder & CEO @ Tapfolio • Product Strategist • Creative Director
           </span>
           <h1 className="text-[clamp(3rem,10vw,8rem)] font-space-grotesk font-black tracking-tighter text-[#F5F5F5] leading-[0.95]">
             Abhinand
             <br />
-            Sunil
+            K.S.
           </h1>
         </motion.div>
  

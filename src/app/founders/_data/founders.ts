@@ -247,12 +247,12 @@ export const foundersData: Record<string, FounderProfile> = {
   },
   "abhinand": {
     slug: "abhinand",
-    name: "Abhinand",
-    alternateName: "Abhinand Sunil",
-    jobTitle: "Co-Founder & CEO",
+    name: "Abhinand K.S.",
+    alternateName: "Abhinand",
+    jobTitle: "Founder & CEO",
     company: "Tapfolio",
     avatar: "/abhinand.png",
-    shortSummary: "Co-Founder & Chief Executive Officer of Tapfolio. Product engineer and brand strategist driving Tapfolio's global growth, physical card design, and business vision.",
+    shortSummary: "Founder & Chief Executive Officer (CEO) of Tapfolio. Visionary behind Tapfolio building the future of NFC-powered digital identity, smart networking, brand strategy, and product innovation. Tap. Connect. Grow.",
     email: "hello@tapfolio.me",
     portfolioUrl: "https://www.tapfolio.me/portfolio/abhinand",
     socials: [
@@ -261,96 +261,123 @@ export const foundersData: Record<string, FounderProfile> = {
       { platform: "Instagram", url: "https://www.instagram.com/ft_abhinand_" }
     ],
     biography: [
-      "Abhinand is the Co-Founder and Chief Executive Officer (CEO) of Tapfolio. Combining expertise in product design, systems engineering, and brand building, Abhinand leads Tapfolio's executive vision, strategic partnerships, and hardware product line.",
-      "Driven by a belief that tactile objects should seamlessly bridge into the digital domain, Abhinand spearheaded the engineering and custom laser-engraving of Tapfolio's premium matte, metal, and bamboo NFC cards.",
-      "As CEO, Abhinand oversees market expansion, operations, customer success, and long-term brand strategy at Tapfolio."
+      "Hi, I'm Abhinand, the Founder and CEO of Tapfolio—a premium NFC-powered digital identity platform transforming how people connect, share, and grow through smart NFC technology.",
+      "Beyond building startups, I am a multidisciplinary creative professional with 8+ years of experience in the creative and digital industry. My expertise spans graphic design, video editing, videography, photography, branding, digital marketing, and product design, helping businesses build impactful brands and compelling digital experiences.",
+      "My entrepreneurial journey led me to establish Kreovate Marketing Agency, a creative agency focused on branding, marketing, content production, and digital growth. Through Kreovate, I have successfully worked with clients across India and the UAE, delivering creative solutions that drive measurable business results.",
+      "I have also worked with FLY Creative, one of Kerala's leading travel agencies, where I contributed to branding, social media strategy, advertising campaigns, visual storytelling, and digital marketing initiatives.",
+      "Today, I combine technology, creativity, business strategy, and innovation to build products that solve real-world problems. Every feature of Tapfolio reflects my vision of creating a future where networking is seamless, professional, and powered by technology."
     ],
     quickFacts: {
       location: "Kochi, India",
       nationality: "Indian",
       languages: ["English", "Malayalam"],
       company: "Tapfolio",
-      industry: "Hardware Design & Smart Networking",
-      experienceYears: "Since 2023",
-      specialization: "Executive Leadership, Industrial Card Design & Product Strategy",
-      availability: "Open to Enterprise Partnerships & Investor Relations"
+      industry: "Smart Networking & Brand Strategy",
+      experienceYears: "8+ Years Exp",
+      specialization: "Product Strategy, Brand Development & UI/UX Design",
+      availability: "Open to Enterprise Partnerships & Brand Collaborations"
     },
     timeline: [
       {
-        year: "2023",
-        title: "Hardware Exploration & NFC Prototyping",
-        description: "Researched metal, bamboo, and matte polymer materials for durable NFC cards."
+        year: "2024 – Present",
+        title: "Founder & CEO — Tapfolio",
+        description: "Leading product strategy, business development, NFC digital identity solutions, product design, branding, and global growth strategy."
       },
       {
-        year: "2024",
-        title: "Co-Founded Tapfolio",
-        description: "Formed Tapfolio alongside Mohammed Nibrasul Haqq to build a unified physical-digital networking platform."
+        year: "2023 – Present",
+        title: "Founder — Kreovate Marketing Agency",
+        description: "Founded full-service creative agency delivering branding, social media, and advertising campaigns for clients across India & UAE."
       },
       {
-        year: "2025",
-        title: "Enterprise Card Series Launch",
-        description: "Directed launch of laser-engraved metal NFC cards and platform management features."
+        year: "2022 – 2023",
+        title: "Creative Professional — FLY Creative",
+        description: "Managed branding, social media strategy, promotional video production, and digital marketing for one of Kerala's top travel agencies."
       },
       {
-        year: "2026",
-        title: "Global Operations & Leadership",
-        description: "Scaling corporate distribution and brand footprint."
+        year: "2016 – Present",
+        title: "Freelance Creative Professional (8+ Years)",
+        description: "Delivering graphic design, brand identity, videography, photography, digital marketing, and creative direction."
       }
     ],
     skills: [
       {
-        category: "Leadership & Strategy",
-        skills: ["Executive Strategy", "Operations", "Product Management", "Brand Development"]
+        category: "Brand & Executive Strategy",
+        skills: ["Brand Strategy", "Creative Direction", "Brand Identity", "Startup Strategy", "Business Development", "Product Strategy", "Growth Strategy"]
       },
       {
-        category: "Hardware & Design",
-        skills: ["Industrial Product Design", "Laser Engraving Pipelines", "UI/UX Design", "Figma"]
+        category: "Design & Multimedia",
+        skills: ["UI/UX Design", "Graphic Design", "Photography", "Videography", "Video Editing", "Content Creation", "Product Design"]
       },
       {
-        category: "Software & Mobile",
-        skills: ["Web Platforms", "System Architecture", "NFC Ecosystems"]
+        category: "Digital Marketing & Growth",
+        skills: ["Digital Marketing", "Social Media Marketing", "Performance Marketing", "Content Strategy", "Advertising Campaigns"]
+      },
+      {
+        category: "Product & Technology",
+        skills: ["NFC Product Development", "Product Innovation", "AI Content Creation", "Physical-Digital Sync"]
       }
     ],
     projects: [
       {
-        title: "Tapfolio Metal & Bamboo Card Series",
-        role: "Co-Founder & Lead Designer",
+        title: "Tapfolio Smart NFC Platform",
+        role: "Founder & CEO",
         year: "2024 - Present",
-        description: "Custom-engraved smart NFC cards engineered for modern networking.",
-        techStack: ["NTAG216", "Laser Engraving", "Matte Polymer", "Anodized Stainless Steel"],
+        description: "Smart NFC digital business card ecosystem connecting physical cards with dynamic web profiles.",
+        techStack: ["NFC / NDEF", "Product Design", "Brand Strategy", "UI/UX", "System Sync"],
         url: "https://www.tapfolio.me"
+      },
+      {
+        title: "Kreovate Marketing Agency",
+        role: "Founder & Creative Director",
+        year: "2023 - Present",
+        description: "Full-service marketing & branding agency serving enterprise clients across India & UAE.",
+        techStack: ["Branding", "Content Production", "Digital Marketing", "Campaigns"],
+        url: "https://www.tapfolio.me"
+      },
+      {
+        title: "FLY Creative Campaigns",
+        role: "Creative Professional",
+        year: "2022 - 2023",
+        description: "Visual storytelling, video production, and brand campaigns for travel agency.",
+        techStack: ["Videography", "Video Editing", "Social Strategy", "Advertising"]
       }
     ],
     companies: [
       {
         name: "Tapfolio",
-        role: "Co-Founder & CEO",
+        role: "Founder & CEO",
         period: "2024 - Present",
         description: "Reinventing business networking with smart NFC cards and real-time digital identity platforms.",
         url: "https://www.tapfolio.me"
+      },
+      {
+        name: "Kreovate Marketing Agency",
+        role: "Founder",
+        period: "2023 - Present",
+        description: "Branding, digital marketing, content production, and business growth across India & UAE."
       }
     ],
     media: [],
     faqs: [
       {
-        question: "Who is Abhinand?",
-        answer: "Abhinand is a product engineer, designer, and the Co-Founder & CEO of Tapfolio, leading executive strategy and hardware innovation."
+        question: "Who is Abhinand K.S.?",
+        answer: "Abhinand K.S. is the Founder and CEO of Tapfolio, a multidisciplinary creative professional with 8+ years of experience in product design, branding, and marketing strategy."
       },
       {
-        question: "What is Abhinand's role at Tapfolio?",
-        answer: "As Co-Founder & CEO, Abhinand leads company strategy, industrial card design, operations, brand vision, and enterprise partnerships."
+        question: "What is Abhinand K.S.'s role at Tapfolio?",
+        answer: "As Founder & CEO, Abhinand leads product strategy, business growth, brand development, industrial card design, and user experience at Tapfolio."
       },
       {
-        question: "What is Tapfolio?",
-        answer: "Tapfolio is a smart business card platform combining custom NFC hardware with real-time digital profile pages and lead capture analytics."
+        question: "What other companies has Abhinand founded?",
+        answer: "Abhinand founded Kreovate Marketing Agency, a creative agency delivering branding, marketing, and digital growth across India and the UAE."
       }
     ],
     education: [
       {
         institution: "St. Albert's College (Autonomous), Ernakulam",
-        degree: "B.Sc. Computer Science",
+        degree: "B.Sc. Computer Science & Industrial Design",
         years: "2023 - 2026",
-        achievements: "Focused on Software Systems, Hardware Prototyping, and Industrial Product Design."
+        achievements: "Focused on Software Systems, Multimedia Technologies, Branding, and Industrial Product Design."
       }
     ]
   }
