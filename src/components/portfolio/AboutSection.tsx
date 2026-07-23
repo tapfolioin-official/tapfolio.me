@@ -105,7 +105,7 @@ export default function AboutSection() {
             {/* Narrative Story (Specific & Impact-Driven) */}
             <div className="space-y-4 text-gray-300 text-base md:text-lg leading-relaxed font-normal">
               <p>
-                My interest in software began with building small web applications and gradually evolved into designing complete digital products. That curiosity eventually led me to co-found Tapfolio, where I focus on combining software engineering, NFC technology, and AI to simplify professional networking.
+                My journey into software engineering began with curiosity and a passion for solving real-world problems through technology. What started with small web applications gradually evolved into designing complete digital products and eventually co-founding Tapfolio, where I combine software engineering, NFC technology, and AI to simplify professional networking.
               </p>
               <p>
                 My work focuses on designing SaaS platforms, building scalable Next.js applications that enable businesses to manage digital identities and professional networking more efficiently, integrating NFC hardware with contactless smart cards, and developing AI-powered workflows that solve practical business problems.
@@ -138,6 +138,15 @@ export default function AboutSection() {
                 className="text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-1"
               >
                 View Case Studies ↓
+              </a>
+              <span className="text-gray-600">•</span>
+              <a
+                href="https://github.com/nibrasul"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs font-bold text-gray-300 hover:text-white transition-colors flex items-center gap-1"
+              >
+                GitHub ↗
               </a>
               <span className="text-gray-600">•</span>
               <Link
