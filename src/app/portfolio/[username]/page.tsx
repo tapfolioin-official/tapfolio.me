@@ -18,6 +18,8 @@ import NibrasAbout from "@/components/portfolio/AboutSection";
 import ProjectsSection from "@/components/portfolio/ProjectsSection";
 import NibrasExperience from "@/components/portfolio/ExperienceSection";
 import ServicesSection from "@/components/portfolio/ServicesSection";
+import ArticlesSection from "@/components/portfolio/ArticlesSection";
+import MediaKitSection from "@/components/portfolio/MediaKitSection";
 import NibrasContact from "@/components/portfolio/ContactSection";
 import FooterSection from "@/components/portfolio/FooterSection";
 
@@ -112,6 +114,8 @@ export default function DynamicPortfolioPage() {
       <ProjectsSection />
       <NibrasExperience />
       <ServicesSection />
+      <ArticlesSection />
+      <MediaKitSection />
       <NibrasContact />
       <FooterSection />
     </main>
