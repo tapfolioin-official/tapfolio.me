@@ -131,7 +131,7 @@ export default function FoundersPage() {
                       rel="noopener noreferrer"
                       className="text-xs font-semibold text-gray-500 hover:text-blue-600 hover:underline"
                     >
-                      {link.includes('github') ? 'GitHub' : 'LinkedIn'}
+                      {link.includes('github') ? 'GitHub' : link.includes('linkedin') ? 'LinkedIn' : link.includes('instagram') ? 'Instagram' : 'Social'}
                     </a>
                   ))}
                 </div>

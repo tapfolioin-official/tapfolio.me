@@ -143,6 +143,10 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
       "Knowledge Graph & Entity Indexing Architecture"
     ];
 
+  const linkedinSocial = founder.socials.find(s => s.platform.toLowerCase().includes("linkedin"))?.url || "#";
+  const githubSocial = founder.socials.find(s => s.platform.toLowerCase().includes("github"))?.url || "#";
+  const xSocial = founder.socials.find(s => s.platform.toLowerCase().includes("x") || s.platform.toLowerCase().includes("twitter"))?.url || "#";
+
   return (
     <div className="bg-white min-h-screen text-gray-900 font-sans selection:bg-blue-100 flex flex-col pt-20">
       {/* Schema Injection */}
@@ -267,7 +271,7 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
               {/* SVG Social Icons */}
               <div className="flex items-center gap-3 pl-2">
                 <a
-                  href="https://www.linkedin.com/in/mohammed-nibrasul-haqq-8267162ba/"
+                  href={linkedinSocial}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={`Open LinkedIn profile of ${founder.name}`}
@@ -279,7 +283,7 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
                 </a>
 
                 <a
-                  href="https://github.com/nibrasul"
+                  href={githubSocial}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={`Open GitHub profile of ${founder.name}`}
@@ -291,7 +295,7 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
                 </a>
 
                 <a
-                  href={founder.slug === "mohammed-nibrasul-haqq" ? "https://x.com/Nibrasulhaqq" : "https://x.com/tapfolio"}
+                  href={xSocial}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={`Open X profile of ${founder.name}`}
@@ -654,7 +658,7 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
               Explore Portfolio →
             </a>
             <a
-              href="https://www.linkedin.com/in/mohammed-nibrasul-haqq-8267162ba/"
+              href={linkedinSocial}
               target="_blank"
               rel="noopener noreferrer"
               className="bg-gray-100 hover:bg-gray-200 text-gray-900 font-semibold text-xs px-5 py-3 rounded-full transition-all"
@@ -662,7 +666,7 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
               LinkedIn ↗
             </a>
             <a
-              href="https://github.com/nibrasul"
+              href={githubSocial}
               target="_blank"
               rel="noopener noreferrer"
               className="bg-gray-100 hover:bg-gray-200 text-gray-900 font-semibold text-xs px-5 py-3 rounded-full transition-all"
