@@ -1,52 +1,18 @@
 "use client";
 
 import React from "react";
-import { ROUTES } from "@/config/routes";
 
 /**
- * Self-contained Navbar component.
- * Maps scroll links back to homepage anchors.
+ * Clean Navbar component for Founder profile & directory pages.
+ * Streamlined navigation focused on Tapfolio brand & founder navigation.
  */
 export default function Navbar() {
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
-
-  React.useEffect(() => {
-    fetch("/api/auth/me")
-      .then((res) => {
-        if (res.ok) {
-          setIsLoggedIn(true);
-        }
-      })
-      .catch(() => {});
-  }, []);
-
-  const scrollToSection = (id: string) => {
-    if (typeof window !== "undefined") {
-      if (window.location.pathname === "/") {
-        const el = document.getElementById(id);
-        if (el) {
-          el.scrollIntoView({ behavior: "smooth" });
-          return;
-        }
-      }
-      window.location.href = `/#${id}`;
-    }
-  };
-
   return (
-    <nav className="fixed top-0 left-0 w-full h-20 bg-white/70 backdrop-blur-md border-b border-gray-200 z-50 flex items-center justify-between px-6 md:px-[12%] max-w-[1440px] left-1/2 -translate-x-1/2">
+    <nav className="fixed top-0 left-0 w-full h-20 bg-white/80 backdrop-blur-md border-b border-gray-150 z-50 flex items-center justify-between px-6 md:px-[12%] max-w-[1440px] left-1/2 -translate-x-1/2">
       {/* Brand Logo */}
-      <div 
-        className="flex items-center gap-1 cursor-pointer" 
-        onClick={() => {
-          if (typeof window !== "undefined") {
-            if (window.location.pathname === "/") {
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            } else {
-              window.location.href = "/";
-            }
-          }
-        }}
+      <a 
+        href="/"
+        className="flex items-center gap-1 cursor-pointer"
       >
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-1">
           <path d="M5 14C6.10457 14 7 13.1046 7 12C7 10.8954 6.10457 10 5 10C3.89543 10 3 10.8954 3 12C3 13.1046 3.89543 14 5 14Z" fill="#60A5FA"/>
@@ -56,85 +22,28 @@ export default function Navbar() {
         <span className="font-bold text-2xl tracking-tight font-sans" style={{ color: '#020b2d' }}>
           Tap<span style={{ color: '#2563EB' }}>folio</span>
         </span>
-      </div>
+      </a>
 
-      {/* Navigation Links */}
-      <div className="hidden md:flex items-center gap-8">
-        <button
-          type="button"
-          onClick={() => scrollToSection("products")}
-          className="text-gray-600 hover:text-gray-900 font-medium transition-colors cursor-pointer"
+      {/* Streamlined Founders Navigation */}
+      <div className="flex items-center gap-6 text-sm font-medium">
+        <a 
+          href="/founders" 
+          className="text-gray-600 hover:text-blue-600 transition-colors"
         >
-          Products
-        </button>
-        <button
-          type="button"
-          onClick={() => scrollToSection("technology")}
-          className="text-gray-600 hover:text-gray-900 font-medium transition-colors cursor-pointer"
-        >
-          Technology
-        </button>
-        <button
-          type="button"
-          onClick={() => scrollToSection("industries")}
-          className="text-gray-600 hover:text-gray-900 font-medium transition-colors cursor-pointer"
-        >
-          Industries
-        </button>
-        <button
-          type="button"
-          onClick={() => scrollToSection("pricing")}
-          className="text-gray-600 hover:text-gray-900 font-medium transition-colors cursor-pointer"
-        >
-          Pricing
-        </button>
-        <button
-          type="button"
-          onClick={() => scrollToSection("order")}
-          className="text-gray-600 hover:text-gray-900 font-medium transition-colors cursor-pointer"
-        >
-          Order
-        </button>
-        <a
-          href="/docs"
-          className="text-blue-600 hover:text-blue-800 font-semibold transition-colors cursor-pointer"
-        >
-          Docs
+          Founders
         </a>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="flex items-center gap-4">
-        <button
-          type="button"
-          onClick={() => scrollToSection("order")}
-          className="hidden lg:inline-flex items-center justify-center px-6 h-[50px] border border-gray-200 text-gray-700 font-semibold rounded-full hover:bg-gray-50 transition-all cursor-pointer"
+        <a 
+          href="/about" 
+          className="text-gray-600 hover:text-blue-600 transition-colors"
         >
-          Configure
-        </button>
-        <button
-          type="button"
-          onClick={() => scrollToSection("order")}
-          className="hidden sm:inline-flex items-center justify-center px-6 h-[50px] border border-gray-900 text-gray-900 font-semibold rounded-full hover:bg-gray-50 transition-all cursor-pointer"
+          About
+        </a>
+        <a 
+          href="/" 
+          className="text-blue-600 font-semibold hover:text-blue-800 transition-colors"
         >
-          Order Now
-        </button>
-        
-        {isLoggedIn ? (
-          <a
-            href={ROUTES.DASHBOARD}
-            className="inline-flex items-center justify-center px-6 h-[50px] bg-blue-600 text-white font-semibold rounded-full hover:bg-blue-700 transition-all cursor-pointer shadow-md text-sm"
-          >
-            Dashboard
-          </a>
-        ) : (
-          <a
-            href={ROUTES.LOGIN}
-            className="inline-flex items-center justify-center px-6 h-[50px] bg-gray-900 text-white font-semibold rounded-full hover:bg-blue-600 transition-all cursor-pointer shadow-md text-sm"
-          >
-            Login to Dashboard
-          </a>
-        )}
+          Back to Home →
+        </a>
       </div>
     </nav>
   );
