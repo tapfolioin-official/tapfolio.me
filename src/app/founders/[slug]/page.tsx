@@ -92,7 +92,6 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
   const breadcrumbSchema = getFounderBreadcrumbSchema(founder);
   const faqSchema = getFounderFAQSchema(founder);
 
-  // Leadership Team Founders
   const mohammed = foundersData["mohammed-nibrasul-haqq"];
   const abhinand = foundersData["abhinand"];
 
@@ -108,6 +107,13 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
 
   const founderTechStack = [
     "Next.js", "React", "TypeScript", "Flutter", "Node.js", "AI Agents", "NFC Hardware", "PostgreSQL"
+  ];
+
+  const currentlyWorkingOn = [
+    "Tapfolio Next.js Platform & NDEF Card Provisioning Engine",
+    "Autonomous AI Developer Agents & CLI Tooling",
+    "Cross-Platform Flutter Identity Mobile Sync",
+    "Knowledge Graph & Entity Indexing Architecture"
   ];
 
   return (
@@ -273,7 +279,7 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
           </div>
         </section>
 
-        {/* Anchor Tab Navigation Bar */}
+        {/* Sticky Anchor Tab Navigation Bar */}
         <div className="sticky top-20 z-40 bg-white/90 backdrop-blur-md border-b border-gray-100 py-3 flex items-center gap-6 overflow-x-auto">
           {tabs.map((tab) => (
             <a
@@ -286,7 +292,7 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
           ))}
         </div>
 
-        {/* Quick Facts Grid with Denser Icons */}
+        {/* Balanced 3x3 Quick Facts & Entity Data Grid */}
         <section className="bg-gray-50 border border-gray-100 rounded-3xl p-8 flex flex-col gap-6">
           <h2 className="text-xs font-bold uppercase tracking-wider text-blue-600">Quick Facts & Entity Data</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-6 text-sm">
@@ -334,28 +340,53 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
               <span className="text-xl">🎯</span>
               <div>
                 <span className="text-gray-400 text-xs block">Specialization</span>
-                <span className="font-semibold text-gray-900">Full-Stack & Systems</span>
+                <span className="font-semibold text-gray-900">Full-Stack Web & AI Systems</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <span className="text-xl">🧑‍💻</span>
+              <div>
+                <span className="text-gray-400 text-xs block">Primary Stack</span>
+                <span className="font-semibold text-gray-900">Next.js, Flutter, Node, AI</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <span className="text-xl">🌍</span>
+              <div>
+                <span className="text-gray-400 text-xs block">Nationality</span>
+                <span className="font-semibold text-gray-900">{founder.quickFacts.nationality}</span>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <span className="text-xl">🚀</span>
+              <div>
+                <span className="text-gray-400 text-xs block">Availability</span>
+                <span className="font-semibold text-gray-900">Strategic Partnerships</span>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Biography Section */}
+        {/* Biography Section - Optimal Readable Column Width (max-w-[850px], text-[18px], leading-[1.9]) */}
         <section id="biography" className="flex flex-col gap-6 scroll-mt-28">
           <div className="border-b border-gray-100 pb-4">
-            <span className="text-xs font-bold uppercase tracking-wider text-blue-600">Biography & Leadership</span>
-            <h2 className="text-3xl font-bold text-gray-950 mt-1">About {founder.name}</h2>
+            <span className="text-xs font-bold uppercase tracking-wider text-blue-600">Executive Narrative</span>
+            <h2 className="text-3xl font-bold text-gray-950 mt-1">Biography</h2>
           </div>
-          <div className="prose prose-gray max-w-none space-y-5 text-gray-600 leading-relaxed text-base">
+
+          <div className="max-w-[850px] space-y-6 text-gray-700 text-[18px] leading-[1.9] tracking-[-0.01em]">
             {founder.biography.map((paragraph, pIdx) => (
               <p key={pIdx}>{paragraph}</p>
             ))}
           </div>
         </section>
 
-        {/* Education Milestone */}
+        {/* Academic Background */}
         {founder.education && founder.education.length > 0 && (
-          <section className="bg-blue-50/40 border border-blue-100 rounded-3xl p-8 flex flex-col gap-4">
+          <section className="max-w-[850px] bg-blue-50/40 border border-blue-100 rounded-3xl p-8 flex flex-col gap-4">
             <span className="text-xs font-bold uppercase tracking-wider text-blue-600">Academic Background</span>
             {founder.education.map((edu, eIdx) => (
               <div key={eIdx} className="flex flex-col gap-1">
@@ -376,15 +407,15 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
         <section id="timeline" className="flex flex-col gap-8 scroll-mt-28">
           <div className="border-b border-gray-100 pb-4">
             <span className="text-xs font-bold uppercase tracking-wider text-blue-600">Career Milestones</span>
-            <h2 className="text-3xl font-bold text-gray-950 mt-1">Journey & Progression</h2>
+            <h2 className="text-3xl font-bold text-gray-950 mt-1">Journey</h2>
           </div>
-          <div className="relative border-l-2 border-blue-100 ml-4 pl-6 space-y-8">
+          <div className="relative border-l-2 border-blue-100 ml-4 pl-6 space-y-8 max-w-[850px]">
             {founder.timeline.map((item, tIdx) => (
               <div key={tIdx} className="relative group">
                 <div className="absolute -left-[31px] top-1.5 w-4 h-4 rounded-full bg-blue-600 border-4 border-white ring-4 ring-blue-50" />
                 <span className="text-xs font-extrabold text-blue-600 uppercase tracking-widest">{item.year}</span>
                 <h3 className="text-xl font-bold text-gray-900 mt-0.5">{item.title}</h3>
-                <p className="text-gray-500 text-sm mt-1">{item.description}</p>
+                <p className="text-gray-600 text-sm mt-1 leading-relaxed">{item.description}</p>
               </div>
             ))}
           </div>
@@ -430,7 +461,7 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
                     <span className="text-xs text-gray-400 font-medium">{proj.year}</span>
                   </div>
                   <h3 className="text-2xl font-bold text-gray-950">{proj.title}</h3>
-                  <p className="text-gray-500 text-sm leading-relaxed">{proj.description}</p>
+                  <p className="text-gray-600 text-sm leading-relaxed">{proj.description}</p>
                 </div>
 
                 <div className="flex flex-col gap-4">
@@ -460,49 +491,76 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
           </div>
         </section>
 
-        {/* Tapfolio Leadership Team Section */}
+        {/* Currently Working On Section */}
+        <section className="bg-gradient-to-r from-gray-900 to-blue-950 text-white rounded-3xl p-8 md:p-10 flex flex-col gap-6 shadow-xl">
+          <div className="flex flex-col gap-1">
+            <span className="text-xs font-bold uppercase tracking-wider text-blue-400">Fresh Focus</span>
+            <h2 className="text-2xl md:text-3xl font-bold font-display">Currently Working On</h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {currentlyWorkingOn.map((item, idx) => (
+              <div key={idx} className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-3">
+                <span className="text-blue-400 font-bold">•</span>
+                <span className="text-xs md:text-sm text-gray-200 font-medium">{item}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Redesigned Tapfolio Leadership Team Section */}
         <section id="leadership" className="bg-blue-50/50 border border-blue-100 rounded-3xl p-8 md:p-10 flex flex-col gap-8 scroll-mt-28">
           <div className="flex flex-col gap-1">
             <span className="text-xs font-bold uppercase tracking-wider text-blue-600">Company Leadership</span>
-            <h2 className="text-3xl font-bold text-gray-950">Tapfolio Leadership Team</h2>
-            <p className="text-gray-500 text-sm">Meet the co-founders building Tapfolio&apos;s physical-digital networking ecosystem.</p>
+            <h2 className="text-3xl font-bold text-gray-950">Leadership Team</h2>
+            <p className="text-gray-500 text-sm">Tapfolio&apos;s executive co-founders driving product strategy and platform architecture.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {mohammed && (
-              <a
-                href={`/founders/${mohammed.slug}`}
-                className={`bg-white border rounded-2xl p-6 flex items-center gap-4 hover:shadow-md transition-all group ${
-                  founder.slug === mohammed.slug ? "border-blue-500 ring-2 ring-blue-100" : "border-gray-200"
-                }`}
-              >
-                <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-blue-500/20 bg-gray-100 flex-shrink-0">
-                  <AvatarImage src={mohammed.avatar} alt={mohammed.name} className="w-full h-full object-cover" />
+              <div className="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col justify-between gap-6 hover:shadow-md transition-all">
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-blue-500/20 bg-gray-100 flex-shrink-0">
+                    <AvatarImage src={mohammed.avatar} alt={mohammed.name} className="w-full h-full object-cover" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900 text-lg">{mohammed.name}</h3>
+                    <span className="text-xs font-bold text-blue-600 uppercase block">{mohammed.jobTitle}</span>
+                    <span className="text-xs text-gray-500">Software Engineering & Architecture</span>
+                  </div>
                 </div>
-                <div>
-                  <span className="text-xs font-bold text-blue-600 uppercase block">{mohammed.jobTitle}</span>
-                  <h3 className="font-bold text-gray-900 text-lg group-hover:text-blue-600 transition-colors">{mohammed.name}</h3>
-                  <span className="text-xs text-gray-500">Kochi, India • Software & Systems</span>
-                </div>
-              </a>
+
+                <a
+                  href={`/founders/${mohammed.slug}`}
+                  className="text-xs font-bold text-blue-600 hover:underline border-t border-gray-100 pt-4 flex items-center justify-between"
+                >
+                  <span>View Founder Profile</span>
+                  <span>→</span>
+                </a>
+              </div>
             )}
 
             {abhinand && (
-              <a
-                href={`/founders/${abhinand.slug}`}
-                className={`bg-white border rounded-2xl p-6 flex items-center gap-4 hover:shadow-md transition-all group ${
-                  founder.slug === abhinand.slug ? "border-blue-500 ring-2 ring-blue-100" : "border-gray-200"
-                }`}
-              >
-                <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-blue-500/20 bg-gray-100 flex-shrink-0">
-                  <AvatarImage src={abhinand.avatar} alt={abhinand.name} className="w-full h-full object-cover" />
+              <div className="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col justify-between gap-6 hover:shadow-md transition-all">
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-blue-500/20 bg-gray-100 flex-shrink-0">
+                    <AvatarImage src={abhinand.avatar} alt={abhinand.name} className="w-full h-full object-cover" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900 text-lg">{abhinand.name}</h3>
+                    <span className="text-xs font-bold text-blue-600 uppercase block">{abhinand.jobTitle}</span>
+                    <span className="text-xs text-gray-500">Strategy, Operations & Product Design</span>
+                  </div>
                 </div>
-                <div>
-                  <span className="text-xs font-bold text-blue-600 uppercase block">{abhinand.jobTitle}</span>
-                  <h3 className="font-bold text-gray-900 text-lg group-hover:text-blue-600 transition-colors">{abhinand.name}</h3>
-                  <span className="text-xs text-gray-500">Kochi, India • Hardware & Product</span>
-                </div>
-              </a>
+
+                <a
+                  href={`/founders/${abhinand.slug}`}
+                  className="text-xs font-bold text-blue-600 hover:underline border-t border-gray-100 pt-4 flex items-center justify-between"
+                >
+                  <span>View Founder Profile</span>
+                  <span>→</span>
+                </a>
+              </div>
             )}
           </div>
         </section>
@@ -520,6 +578,41 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
                 <p className="text-sm text-gray-500 leading-relaxed">{faq.answer}</p>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* Footer Collaboration Callout */}
+        <section className="border-t border-gray-100 pt-12 flex flex-col items-center text-center gap-6">
+          <h2 className="text-3xl font-bold text-gray-950">Interested in collaborating?</h2>
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <a
+              href={founder.portfolioUrl || "/portfolio/nibras"}
+              className="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-6 py-3 rounded-full shadow-md transition-all"
+            >
+              Explore Portfolio →
+            </a>
+            <a
+              href="https://www.linkedin.com/in/mohammed-nibrasul-haqq-8267162ba/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-gray-100 hover:bg-gray-200 text-gray-900 font-semibold text-xs px-5 py-3 rounded-full transition-all"
+            >
+              LinkedIn ↗
+            </a>
+            <a
+              href="https://github.com/nibrasul"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-gray-100 hover:bg-gray-200 text-gray-900 font-semibold text-xs px-5 py-3 rounded-full transition-all"
+            >
+              GitHub ↗
+            </a>
+            <a
+              href={`mailto:${founder.email || "hello@tapfolio.me"}`}
+              className="bg-gray-900 hover:bg-gray-800 text-white font-semibold text-xs px-5 py-3 rounded-full transition-all"
+            >
+              Contact Nibras
+            </a>
           </div>
         </section>
 
