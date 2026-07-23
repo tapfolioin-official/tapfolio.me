@@ -22,23 +22,23 @@ export default function HeroSection() {
   };
 
   return (
-    <section 
+    <section
       id="hero"
       ref={containerRef}
       className="relative w-full min-h-screen flex flex-col justify-center items-center px-6 md:px-16 pt-28 pb-16 bg-[#0A0A0A] overflow-hidden"
     >
       {/* Background Radial Glow */}
-      <div 
+      <div
         className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-blue-600/10 rounded-full blur-[140px] pointer-events-none"
       />
-      <div 
+      <div
         className="absolute bottom-10 right-10 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px] pointer-events-none"
       />
 
       {/* Main Split Layout Container */}
       <div className="relative z-10 max-w-[1200px] w-full mx-auto flex flex-col gap-12">
-        
-        {/* Top Reading Context & Freshness Bar */}
+
+        {/* Top Status & Location Bar */}
         <motion.div
           variants={fadeIn}
           initial="hidden"
@@ -48,18 +48,16 @@ export default function HeroSection() {
         >
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>📍 Kochi, India • Available for Speaking, Consulting & Partnerships</span>
+            <span>📍 Kochi, India • Open to Collaboration • Available Worldwide</span>
           </div>
-          <div className="flex items-center gap-4">
-            <span>⏱ 5 min read</span>
-            <span>•</span>
-            <span>Last Updated: July 2026</span>
+          <div className="flex items-center gap-2 text-blue-400 font-semibold">
+            <span>Co-Founder & CTO @ Tapfolio</span>
           </div>
         </motion.div>
 
         {/* Split Grid: Left Intro & CTAs | Right Portrait */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-          
+
           {/* Left Column (7 cols): Name, Factual Badge, Bio, Mission & Links */}
           <motion.div
             variants={fadeIn}
@@ -85,12 +83,12 @@ export default function HeroSection() {
 
             {/* Extended Intro Paragraph */}
             <p className="text-base md:text-lg font-inter text-gray-200 leading-relaxed">
-              <strong>Mohammed Nibrasul Haqq</strong> is an Indian software engineer and Co-Founder & CTO of Tapfolio. He designs and builds SaaS products, NFC-powered digital identity systems, AI integrations, and scalable web and mobile applications using Flutter, Next.js, Node.js, and modern cloud technologies.
+              <strong>Mohammed Nibrasul Haqq</strong> is an Indian software engineer and Co-Founder & CTO of Tapfolio. He focuses on building scalable products that solve real-world business problems through NFC technology, AI, and modern web platforms.
             </p>
 
-            {/* Human Mission Sentence */}
-            <p className="text-sm md:text-base font-inter italic text-blue-300/90 border-l-2 border-blue-500/40 pl-4 py-0.5">
-              &quot;Passionate about building products that simplify how people connect, share, and grow through technology.&quot;
+            {/* Stronger Personal Identity Mission Sentence */}
+            <p className="text-sm md:text-base font-inter font-medium text-blue-300 border-l-2 border-blue-500/40 pl-4 py-0.5">
+              I build digital products at the intersection of NFC, AI, SaaS, and user experience—passionate about simplifying how people connect, share, and grow through technology.
             </p>
 
             {/* Primary Trust Statement */}
@@ -106,7 +104,7 @@ export default function HeroSection() {
               >
                 Featured Work ↓
               </button>
-              
+
               <a
                 href="https://www.linkedin.com/in/mohammed-nibrasul-haqq-8267162ba/"
                 target="_blank"
