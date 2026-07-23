@@ -45,7 +45,7 @@ export default function FoundersPage() {
       url: "https://www.tapfolio.me/founders/abhinandks",
       vision: "Creating a global ecosystem where every professional can share their identity, portfolio, and opportunities with a single tap. Tap. Connect. Grow.",
       experience: "8+ Years Exp in Brand Strategy, Creative Direction, Product Design & Startup Leadership.",
-      sameAs: ["https://www.linkedin.com/in/abhinand-ks-428387332/", "https://github.com/abhinand", "https://www.instagram.com/ft_abhinand_"]
+      sameAs: ["https://www.linkedin.com/in/abhinand-ks-428387332/", "https://github.com/abhinand-me/", "https://www.instagram.com/ft_abhinand_"]
     }
   ];
 

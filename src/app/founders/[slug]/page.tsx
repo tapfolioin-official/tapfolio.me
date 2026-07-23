@@ -267,7 +267,7 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
               {/* SVG Social Icons */}
               <div className="flex items-center gap-3 pl-2">
                 <a
-                  href="https://www.linkedin.com/in/mohammed-nibrasul-haqq-8267162ba/"
+                  href={founder.socials.find(s => s.platform === "LinkedIn")?.url || "https://www.linkedin.com/in/abhinand-ks-428387332/"}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={`Open LinkedIn profile of ${founder.name}`}
@@ -279,7 +279,7 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
                 </a>
 
                 <a
-                  href="https://github.com/nibrasul"
+                  href={founder.socials.find(s => s.platform === "GitHub")?.url || "https://github.com/abhinand-me/"}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={`Open GitHub profile of ${founder.name}`}
@@ -654,7 +654,7 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
               Explore Portfolio →
             </a>
             <a
-              href="https://www.linkedin.com/in/mohammed-nibrasul-haqq-8267162ba/"
+              href={founder.socials.find(s => s.platform === "LinkedIn")?.url || "https://www.linkedin.com/in/abhinand-ks-428387332/"}
               target="_blank"
               rel="noopener noreferrer"
               className="bg-gray-100 hover:bg-gray-200 text-gray-900 font-semibold text-xs px-5 py-3 rounded-full transition-all"
@@ -662,7 +662,7 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
               LinkedIn ↗
             </a>
             <a
-              href="https://github.com/nibrasul"
+              href={founder.socials.find(s => s.platform === "GitHub")?.url || "https://github.com/abhinand-me/"}
               target="_blank"
               rel="noopener noreferrer"
               className="bg-gray-100 hover:bg-gray-200 text-gray-900 font-semibold text-xs px-5 py-3 rounded-full transition-all"

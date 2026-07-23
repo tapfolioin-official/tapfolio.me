@@ -253,11 +253,11 @@ export const foundersData: Record<string, FounderProfile> = {
     company: "Tapfolio",
     avatar: "/abhinand.png",
     shortSummary: "Founder & Chief Executive Officer (CEO) of Tapfolio. Visionary behind Tapfolio building the future of NFC-powered digital identity, smart networking, brand strategy, and product innovation. Tap. Connect. Grow.",
-    email: "hello@tapfolio.me",
+    email: "abhinandkspersonal@gmail.com",
     portfolioUrl: "https://www.tapfolio.me/portfolio/abhinand",
     socials: [
       { platform: "LinkedIn", url: "https://www.linkedin.com/in/abhinand-ks-428387332/" },
-      { platform: "GitHub", url: "https://github.com/abhinand" },
+      { platform: "GitHub", url: "https://github.com/abhinand-me/" },
       { platform: "Instagram", url: "https://www.instagram.com/ft_abhinand_" }
     ],
     biography: [
