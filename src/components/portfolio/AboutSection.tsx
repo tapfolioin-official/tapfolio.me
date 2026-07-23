@@ -102,25 +102,33 @@ export default function AboutSection() {
               </h2>
             </div>
 
-            {/* Narrative Story (Specific & Evidence-Based) */}
+            {/* Narrative Story (Specific & Impact-Driven) */}
             <div className="space-y-4 text-gray-300 text-base md:text-lg leading-relaxed font-normal">
               <p>
                 My interest in software began with building small web applications and gradually evolved into designing complete digital products. That curiosity eventually led me to co-found Tapfolio, where I focus on combining software engineering, NFC technology, and AI to simplify professional networking.
               </p>
               <p>
-                My work focuses on designing SaaS platforms, building scalable Next.js applications, integrating NFC hardware with digital identity systems, and developing AI-powered workflows that solve practical business problems.
+                My work focuses on designing SaaS platforms, building scalable Next.js applications that enable businesses to manage digital identities and professional networking more efficiently, integrating NFC hardware with contactless smart cards, and developing AI-powered workflows that solve practical business problems.
               </p>
               <p>
                 As CTO at Tapfolio, I guide our overall technical vision, product architecture, engineering decisions, and roadmap planning—ensuring our web platforms, mobile services, and card provisioning pipelines operate with performance and high reliability.
               </p>
             </div>
 
-            {/* Founder Philosophy Block */}
-            <div className="bg-blue-500/10 border-l-4 border-blue-500 rounded-r-2xl p-6 space-y-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-blue-300 block">Founder Philosophy</span>
-              <p className="text-base text-white font-medium italic leading-relaxed">
+            {/* Enhanced Founder Philosophy Block */}
+            <div className="bg-[#111625]/80 border-l-4 border-blue-500 rounded-r-3xl p-8 relative shadow-xl space-y-3 border border-white/5">
+              <div className="flex items-center justify-between">
+                <span className="text-5xl text-blue-400 font-serif leading-none select-none">❝</span>
+                <span className="text-[10px] font-extrabold uppercase tracking-widest text-blue-400 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20">
+                  Founder Philosophy
+                </span>
+              </div>
+              <p className="text-lg md:text-xl text-white font-medium italic leading-relaxed pt-1">
                 &quot;I believe technology should remove friction, not add complexity. Every product I build aims to make interactions simpler, faster, and more meaningful.&quot;
               </p>
+              <div className="pt-2 text-xs font-bold uppercase tracking-wider text-blue-300">
+                — Mohammed Nibrasul Haqq
+              </div>
             </div>
 
             {/* Supporting Navigation Links */}
