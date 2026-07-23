@@ -3,21 +3,28 @@
 
   <url>
     <loc>https://www.tapfolio.me/</loc>
-    <lastmod>2026-06-20T11:15:42.810Z</lastmod>
+    <lastmod>2026-07-23T00:00:00.000Z</lastmod>
     <changefreq>yearly</changefreq>
     <priority>1.0</priority>
   </url>
 
   <url>
+    <loc>https://www.tapfolio.me/founders</loc>
+    <lastmod>2026-07-23T00:00:00.000Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
     <loc>https://www.tapfolio.me/portfolio/nibras</loc>
-    <lastmod>2026-06-20T11:15:42.810Z</lastmod>
+    <lastmod>2026-07-23T00:00:00.000Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
     <loc>https://www.tapfolio.me/portfolio/Abhinand</loc>
-    <lastmod>2026-06-20T11:15:42.810Z</lastmod>
+    <lastmod>2026-07-23T00:00:00.000Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
