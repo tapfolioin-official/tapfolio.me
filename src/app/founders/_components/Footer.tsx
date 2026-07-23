@@ -1,64 +1,120 @@
 import React from 'react';
 
 /**
- * Self-contained Footer component.
- * Links point to /about, /founders, /team (independent routes).
+ * Entity-focused Footer component for Founder profile pages.
+ * Optimizes Knowledge Graph entity signals and internal linking for founders.
  */
 export default function Footer() {
   return (
-    <footer className="w-full bg-white border-t border-gray-100 pt-20 pb-10 flex justify-center">
+    <footer className="w-full bg-gray-50 border-t border-gray-100 pt-16 pb-12 flex justify-center mt-20">
       <div className="max-w-[1200px] w-full px-6">
         
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
-          <div className="md:col-span-1">
-            <h3 className="font-display font-black text-2xl tracking-tighter text-gray-950 mb-6">TapFolio.</h3>
-            <p className="text-gray-500 text-sm leading-relaxed mb-6">
-              The smartest business card on the planet. Eco-friendly, always updated, and designed for modern professionals.
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
+          {/* Brand & Entity Statement */}
+          <div className="md:col-span-1 flex flex-col gap-3">
+            <h3 className="font-display font-black text-2xl tracking-tight text-gray-950">
+              Tap<span className="text-blue-600">folio</span> Leadership
+            </h3>
+            <p className="text-gray-500 text-xs leading-relaxed">
+              Official leadership & founder profile directory for Tapfolio. Structured entity graph for Google Knowledge Graph and search engine indexation.
             </p>
-            <div className="text-gray-900 font-medium text-sm">
+            <div className="text-blue-600 font-semibold text-xs mt-1">
               hello@tapfolio.me
             </div>
           </div>
           
+          {/* Founder Profiles */}
           <div>
-            <h4 className="font-bold text-gray-900 mb-4">Products</h4>
-            <ul className="space-y-3 text-sm text-gray-500">
-              <li><a href="/#products" className="hover:text-blue-600 transition-colors">TapFolio PVC</a></li>
-              <li><a href="/#products" className="hover:text-blue-600 transition-colors">TapFolio Metal</a></li>
-              <li><a href="/#products" className="hover:text-blue-600 transition-colors">TapFolio Team</a></li>
-              <li><a href="/#order" className="hover:text-blue-600 transition-colors">Custom Enterprise</a></li>
+            <h4 className="font-bold text-gray-900 text-sm mb-3">Founder Entities</h4>
+            <ul className="space-y-2.5 text-xs text-gray-600">
+              <li>
+                <a href="/founders/mohammed-nibrasul-haqq" className="hover:text-blue-600 font-semibold transition-colors">
+                  Mohammed Nibrasul Haqq
+                </a>
+                <span className="block text-[11px] text-gray-400">Co-Founder & CTO</span>
+              </li>
+              <li className="pt-1">
+                <a href="/founders/abhinand" className="hover:text-blue-600 font-semibold transition-colors">
+                  Abhinand
+                </a>
+                <span className="block text-[11px] text-gray-400">Co-Founder & CEO</span>
+              </li>
             </ul>
           </div>
 
+          {/* Platform & Organization */}
           <div>
-            <h4 className="font-bold text-gray-900 mb-4">Software</h4>
-            <ul className="space-y-3 text-sm text-gray-500">
-              <li><a href="/#technology" className="hover:text-blue-600 transition-colors">Profile Builder</a></li>
-              <li><a href="/#technology" className="hover:text-blue-600 transition-colors">Analytics Dashboard</a></li>
-              <li><a href="/#technology" className="hover:text-blue-600 transition-colors">Lead Capture</a></li>
-              <li><a href="/docs" className="hover:text-blue-600 transition-colors font-semibold text-blue-600">Developer API Docs</a></li>
+            <h4 className="font-bold text-gray-900 text-sm mb-3">Organization</h4>
+            <ul className="space-y-2.5 text-xs text-gray-600">
+              <li>
+                <a href="/founders" className="hover:text-blue-600 font-medium transition-colors">
+                  Founders Directory
+                </a>
+              </li>
+              <li>
+                <a href="/about" className="hover:text-blue-600 font-medium transition-colors">
+                  About Tapfolio
+                </a>
+              </li>
+              <li>
+                <a href="/team" className="hover:text-blue-600 font-medium transition-colors">
+                  Meet the Team
+                </a>
+              </li>
+              <li>
+                <a href="/" className="hover:text-blue-600 font-medium transition-colors">
+                  Home Platform
+                </a>
+              </li>
             </ul>
           </div>
 
+          {/* Official Profiles / Social Graph */}
           <div>
-            <h4 className="font-bold text-gray-900 mb-4">Company</h4>
-            <ul className="space-y-3 text-sm text-gray-500">
-              <li><a href="/about" className="hover:text-blue-600 transition-colors font-medium">About Us</a></li>
-              <li><a href="/founders" className="hover:text-blue-600 transition-colors font-medium">Founders</a></li>
-              <li><a href="/team" className="hover:text-blue-600 transition-colors font-medium">Team</a></li>
-              <li><a href="/#order" className="hover:text-blue-600 transition-colors">Contact</a></li>
+            <h4 className="font-bold text-gray-900 text-sm mb-3">External Profiles</h4>
+            <ul className="space-y-2.5 text-xs text-gray-600">
+              <li>
+                <a 
+                  href="https://www.linkedin.com/company/tapfolio" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="hover:text-blue-600 transition-colors"
+                >
+                  LinkedIn Official
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="https://github.com/nibrasul/Add-1" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="hover:text-blue-600 transition-colors"
+                >
+                  GitHub Repository
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="https://x.com/tapfolio" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="hover:text-blue-600 transition-colors"
+                >
+                  X (Twitter)
+                </a>
+              </li>
             </ul>
           </div>
         </div>
 
-        <div className="pt-8 border-t border-gray-100 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-400">
+        {/* Legal & Copyright */}
+        <div className="pt-8 border-t border-gray-200 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-400">
           <div>
-            © 2026 TapFolio Inc. All rights reserved.
+            © 2026 Tapfolio Inc. All rights reserved. • Founder Entity SEO Directory
           </div>
           <div className="flex gap-6">
             <a href="/terms" className="hover:text-gray-900 transition-colors">Terms of Service</a>
             <a href="/privacy" className="hover:text-gray-900 transition-colors">Privacy Policy</a>
-            <a href="/privacy" className="hover:text-gray-900 transition-colors">Cookie Policy</a>
           </div>
         </div>
 
