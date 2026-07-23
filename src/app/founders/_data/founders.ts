@@ -94,7 +94,7 @@ export const foundersData: Record<string, FounderProfile> = {
     jobTitle: "Co-Founder & CTO",
     company: "Tapfolio",
     avatar: "/nibras.png",
-    shortSummary: "Co-Founder & Chief Technology Officer of Tapfolio. Visionary software architect and AI systems engineer focused on reinventing professional networking through state-of-the-art NFC technology and high-performance digital profile platforms.",
+    shortSummary: "Co-Founder & Chief Technology Officer of Tapfolio. Software engineer and AI systems developer specializing in Next.js, Flutter, cloud infrastructure, NFC technology, and modern SaaS platforms.",
     email: "hello@tapfolio.me",
     portfolioUrl: "https://www.tapfolio.me/portfolio/nibras",
     socials: [
@@ -103,19 +103,19 @@ export const foundersData: Record<string, FounderProfile> = {
       { platform: "X (Twitter)", url: "https://x.com/tapfolio" }
     ],
     biography: [
-      "Mohammed Nibrasul Haqq is the Co-Founder and Chief Technology Officer (CTO) of Tapfolio. Driven by a deep passion for modern web engineering, real-time sync architectures, and physical-to-digital interactions, Nibras leads the technology roadmap, cloud infrastructure, and core software engineering at Tapfolio.",
-      "Early in his journey as a software developer, Nibras recognized the inherent friction and environmental waste of traditional paper business cards. Most paper cards are discarded within days of an exchange, and contact details quickly become stale. This insight sparked the creation of Tapfolio—a platform designed to link high-grade NFC hardware with dynamic, live digital identity profiles.",
-      "As CTO, Nibras architected Tapfolio's Next.js platform, real-time analytics engines, and cross-platform mobile connectivity suite. His technical philosophy centers on extreme performance, sleek UI aesthetics, and reliable offline-to-online data synchronization. Under his leadership, Tapfolio has expanded to serve thousands of active professionals and enterprise teams worldwide.",
-      "Beyond core application development, Nibras actively explores AI agent workflows, automated web pipelines, and next-generation mobile applications. His vision is to establish Tapfolio as the universal global standard for friction-free professional identity exchange."
+      "Mohammed Nibrasul Haqq is an Indian software engineer and Co-Founder & CTO of Tapfolio. He specializes in Next.js, Flutter, AI integrations, cloud infrastructure, NFC technology, and modern SaaS platforms. Under his leadership, Tapfolio has developed an intelligent NFC networking platform that connects physical contactless cards to dynamic web identity profiles.",
+      "Early in his software journey, Nibras recognized the friction and waste of traditional paper business cards. This insight led him to co-found Tapfolio—a platform designed to link NFC smart cards with live, editable digital identity profiles.",
+      "As CTO, Nibras leads core software development, web and mobile platform architectures, and card provisioning pipelines at Tapfolio. His technical approach focuses on reliable engineering, clean component design, and high performance.",
+      "Beyond Tapfolio, Nibras actively develops autonomous AI developer agents, CLI tools, and web utilities aimed at simplifying software development and business operations."
     ],
     quickFacts: {
-      location: "Bangalore, India",
+      location: "Kochi, India",
       nationality: "Indian",
       languages: ["English", "Malayalam", "Hindi"],
       company: "Tapfolio",
-      industry: "Information Technology & Digital Identity",
-      experienceYears: "5+ Years",
-      specialization: "Full Stack Web Systems, NFC Integration, Next.js & Cloud Infrastructure",
+      industry: "Software & Digital Identity",
+      experienceYears: "Since 2023",
+      specialization: "Full-Stack Web Systems, NFC Hardware Integration, Next.js & AI Agents",
       availability: "Open to Strategic Partnerships & Technical Collaboration"
     },
     timeline: [
@@ -127,17 +127,17 @@ export const foundersData: Record<string, FounderProfile> = {
       {
         year: "2024",
         title: "Co-Founded Tapfolio",
-        description: "Formed Tapfolio alongside Abhinand and built the core matching & analytics engine."
+        description: "Formed Tapfolio alongside Abhinand and built the core web platform & analytics engine."
       },
       {
         year: "2025",
-        title: "Launched Enterprise NFC Ecosystem",
-        description: "Engineered multi-device NFC provisioning, custom domain routing, and instant lead capture."
+        title: "Expanded NFC Feature Suite & Analytics",
+        description: "Expanded the Tapfolio platform with advanced NFC features, analytics, and customization."
       },
       {
         year: "2026",
-        title: "Scaling Global SaaS & Knowledge Graph Infrastructure",
-        description: "Expanding real-time analytics, AI networking agents, and Knowledge Graph entity architecture."
+        title: "Scaling Web Infrastructure & AI Workflows",
+        description: "Expanding real-time analytics, AI agent integrations, and platform capabilities."
       }
     ],
     skills: [
@@ -161,41 +161,51 @@ export const foundersData: Record<string, FounderProfile> = {
     projects: [
       {
         title: "Tapfolio",
-        role: "Co-Founder & Technical Lead",
+        role: "Co-Founder & CTO",
         year: "2024 - Present",
-        description: "Smart NFC business card ecosystem and live digital networking platform.",
+        description: "Smart NFC business card platform and live digital networking ecosystem.",
         techStack: ["Next.js", "TypeScript", "TailwindCSS", "PostgreSQL", "NFC / NDEF"],
         url: "https://www.tapfolio.me",
         github: "https://github.com/nibrasul/Add-1"
       },
       {
-        title: "Invoice Printer",
+        title: "Invoice Printer Suite",
         role: "Lead Architect",
         year: "2025",
-        description: "Bespoke invoice generator and automated PDF printer for enterprise billing.",
-        techStack: ["React", "TypeScript", "TailwindCSS", "PDFKit"],
+        description: "Web invoice editor featuring dynamic line items, total calculations, and vector PDF printing.",
+        techStack: ["React", "TypeScript", "TailwindCSS", "PDF Engine"],
         url: "https://www.tapfolio.me/invoice-printer"
+      },
+      {
+        title: "JARVIS AI Assistant",
+        role: "AI Systems Architect",
+        year: "2025",
+        description: "Autonomous CLI & voice shell assistant for developer operations.",
+        techStack: ["Node.js", "OpenAI API", "Python", "CLI Tooling"],
+        github: "https://github.com/nibrasul"
       },
       {
         title: "Resume Builder",
         role: "Creator & Developer",
         year: "2025",
         description: "Interactive resume creation engine with real-time preview and export.",
-        techStack: ["Next.js", "TypeScript", "Framer Motion"]
-      },
-      {
-        title: "Zervgo",
-        role: "Co-Developer",
-        year: "2024",
-        description: "Service management and instant booking platform for digital agencies.",
-        techStack: ["React", "Node.js", "PostgreSQL"]
+        techStack: ["Next.js", "TypeScript", "Framer Motion"],
+        github: "https://github.com/nibrasul"
       },
       {
         title: "OldSchoolTea",
         role: "Full Stack Engineer",
         year: "2024",
-        description: "E-commerce platform for artisanal tea blends and cultural merchandise.",
-        techStack: ["Next.js", "Stripe", "TailwindCSS"]
+        description: "Storytelling e-commerce storefront for artisanal tea brand.",
+        techStack: ["Next.js", "Stripe", "TailwindCSS"],
+        url: "https://www.tapfolio.me"
+      },
+      {
+        title: "LocalConnect",
+        role: "Founder & Mobile Developer",
+        year: "2024",
+        description: "Location-aware service marketplace connecting customers with local labor.",
+        techStack: ["React Native", "Flutter", "Firebase", "Node.js"]
       }
     ],
     companies: [
@@ -203,20 +213,11 @@ export const foundersData: Record<string, FounderProfile> = {
         name: "Tapfolio",
         role: "Co-Founder & CTO",
         period: "2024 - Present",
-        description: "Reinventing business networking with premium NFC cards and real-time digital profiles.",
+        description: "Reinventing business networking with smart NFC cards and real-time digital profiles.",
         url: "https://www.tapfolio.me"
       }
     ],
-    media: [
-      {
-        type: "press",
-        publisher: "Tapfolio Media",
-        title: "Tapfolio Launches Next-Gen NFC Digital Cards for Enterprise",
-        date: "2026-01-15",
-        summary: "Co-founder & CTO Mohammed Nibrasul Haqq announces the release of automated CRM lead sync and metal NFC card offerings.",
-        url: "https://www.tapfolio.me/about"
-      }
-    ],
+    media: [],
     faqs: [
       {
         question: "Who is Mohammed Nibrasul Haqq?",
@@ -237,10 +238,10 @@ export const foundersData: Record<string, FounderProfile> = {
     ],
     education: [
       {
-        institution: "Technological University",
-        degree: "Bachelor of Technology in Computer Science & Engineering",
-        years: "2020 - 2024",
-        achievements: "Specialized in Distributed Web Systems and Mobile Computing."
+        institution: "St. Albert's College (Autonomous), Ernakulam",
+        degree: "B.Sc. Computer Science",
+        years: "2023 - 2026",
+        achievements: "Core focus on Data Structures, Relational Database Management Systems, Operating Systems, and Distributed Software Engineering."
       }
     ]
   },
@@ -251,7 +252,7 @@ export const foundersData: Record<string, FounderProfile> = {
     jobTitle: "Co-Founder & CEO",
     company: "Tapfolio",
     avatar: "/abhinand.png",
-    shortSummary: "Co-Founder & Chief Executive Officer of Tapfolio. Visionary systems engineer, product designer, and hardware strategist driving Tapfolio's global growth, physical card design, and business vision.",
+    shortSummary: "Co-Founder & Chief Executive Officer of Tapfolio. Product engineer and brand strategist driving Tapfolio's global growth, physical card design, and business vision.",
     email: "hello@tapfolio.me",
     portfolioUrl: "https://www.tapfolio.me/portfolio/abhinand",
     socials: [
@@ -260,17 +261,17 @@ export const foundersData: Record<string, FounderProfile> = {
       { platform: "Instagram", url: "https://www.instagram.com/ft_abhinand_" }
     ],
     biography: [
-      "Abhinand is the Co-Founder and Chief Executive Officer (CEO) of Tapfolio. Combining expertise in physical product design, systems engineering, and brand building, Abhinand leads Tapfolio's executive vision, strategic partnerships, and hardware product line.",
-      "Driven by a belief that tactile objects should seamlessly bridge into the digital domain, Abhinand spearheaded the engineering and custom laser-engraving of Tapfolio's premium matte, metal, and bamboo NFC cards. His focus on industrial design ensures every Tapfolio product delivers an impressive tactile feel alongside instant digital functionality.",
-      "As CEO, Abhinand oversees market expansion, operations, customer success, and long-term brand strategy. Under his leadership, Tapfolio has grown into a trusted identity solution across corporate teams, creative freelancers, and executive sales departments."
+      "Abhinand is the Co-Founder and Chief Executive Officer (CEO) of Tapfolio. Combining expertise in product design, systems engineering, and brand building, Abhinand leads Tapfolio's executive vision, strategic partnerships, and hardware product line.",
+      "Driven by a belief that tactile objects should seamlessly bridge into the digital domain, Abhinand spearheaded the engineering and custom laser-engraving of Tapfolio's premium matte, metal, and bamboo NFC cards.",
+      "As CEO, Abhinand oversees market expansion, operations, customer success, and long-term brand strategy at Tapfolio."
     ],
     quickFacts: {
-      location: "Bangalore, India",
+      location: "Kochi, India",
       nationality: "Indian",
       languages: ["English", "Malayalam"],
       company: "Tapfolio",
       industry: "Hardware Design & Smart Networking",
-      experienceYears: "5+ Years",
+      experienceYears: "Since 2023",
       specialization: "Executive Leadership, Industrial Card Design & Product Strategy",
       availability: "Open to Enterprise Partnerships & Investor Relations"
     },
@@ -287,13 +288,13 @@ export const foundersData: Record<string, FounderProfile> = {
       },
       {
         year: "2025",
-        title: "Enterprise Metal Line Launch",
-        description: "Directed launch of laser-engraved metal NFC cards and enterprise management software."
+        title: "Enterprise Card Series Launch",
+        description: "Directed launch of laser-engraved metal NFC cards and platform management features."
       },
       {
         year: "2026",
         title: "Global Operations & Leadership",
-        description: "Scaling corporate distribution and brand footprint internationally."
+        description: "Scaling corporate distribution and brand footprint."
       }
     ],
     skills: [
@@ -315,7 +316,7 @@ export const foundersData: Record<string, FounderProfile> = {
         title: "Tapfolio Metal & Bamboo Card Series",
         role: "Co-Founder & Lead Designer",
         year: "2024 - Present",
-        description: "Custom-engraved smart NFC cards engineered for luxury networking.",
+        description: "Custom-engraved smart NFC cards engineered for modern networking.",
         techStack: ["NTAG216", "Laser Engraving", "Matte Polymer", "Anodized Stainless Steel"],
         url: "https://www.tapfolio.me"
       }
@@ -325,24 +326,15 @@ export const foundersData: Record<string, FounderProfile> = {
         name: "Tapfolio",
         role: "Co-Founder & CEO",
         period: "2024 - Present",
-        description: "Reinventing business networking with premium NFC cards and real-time digital identity platforms.",
+        description: "Reinventing business networking with smart NFC cards and real-time digital identity platforms.",
         url: "https://www.tapfolio.me"
       }
     ],
-    media: [
-      {
-        type: "press",
-        publisher: "Tapfolio News",
-        title: "Abhinand Unveils Next Generation Metal Smart Cards",
-        date: "2026-02-01",
-        summary: "Tapfolio CEO Abhinand introduces luxury laser-engraved NFC cards built for sales leaders and executives.",
-        url: "https://www.tapfolio.me/about"
-      }
-    ],
+    media: [],
     faqs: [
       {
         question: "Who is Abhinand?",
-        answer: "Abhinand is a systems engineer, product designer, and the Co-Founder & CEO of Tapfolio, leading executive strategy and hardware innovation."
+        answer: "Abhinand is a product engineer, designer, and the Co-Founder & CEO of Tapfolio, leading executive strategy and hardware innovation."
       },
       {
         question: "What is Abhinand's role at Tapfolio?",
@@ -355,10 +347,10 @@ export const foundersData: Record<string, FounderProfile> = {
     ],
     education: [
       {
-        institution: "Technological University",
-        degree: "Bachelor of Technology in Electronics & Communication Engineering",
-        years: "2020 - 2024",
-        achievements: "Focused on Embedded Systems, Hardware Prototyping, and Industrial Design."
+        institution: "St. Albert's College (Autonomous), Ernakulam",
+        degree: "B.Sc. Computer Science",
+        years: "2023 - 2026",
+        achievements: "Focused on Software Systems, Hardware Prototyping, and Industrial Product Design."
       }
     ]
   }
