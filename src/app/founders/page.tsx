@@ -26,26 +26,26 @@ export const metadata = generatePageMetadata({
 export default function FoundersPage() {
   const founders = [
     {
-      slug: "mohammed-nibrasul-haqq",
-      name: "Mohammed Nibrasul Haqq",
-      jobTitle: "Co-founder & CTO",
-      description: "Co-founder & Chief Technology Officer of Tapfolio. Visionary builder focused on reinventing professional networking using state-of-the-art NFC technology and modern web platforms.",
-      image: "/nibras.png",
-      url: "https://www.tapfolio.me/founders/mohammed-nibrasul-haqq",
-      vision: " frictionless, memorable, and green professional networking for the world.",
-      experience: "Senior Software Engineer & Tech Lead specializing in web architectures and scalable direct matching ecosystems.",
-      sameAs: ["https://www.linkedin.com/in/mohammed-nibrasul-haqq-8267162ba/", "https://github.com/nibrasul", "https://x.com/Nibrasulhaqq"]
-    },
-    {
       slug: "abhinand",
       name: "Abhinand K.S.",
       jobTitle: "Founder & CEO",
       description: "Founder & Chief Executive Officer of Tapfolio. Multidisciplinary creative professional with 8+ years of experience across branding, digital marketing, product design, and NFC smart networking.",
       image: "/abhinand.png",
-      url: "https://www.tapfolio.me/founders/abhinandks",
+      url: "https://www.tapfolio.me/founders/abhinand",
       vision: "Creating a global ecosystem where every professional can share their identity, portfolio, and opportunities with a single tap. Tap. Connect. Grow.",
       experience: "8+ Years Exp in Brand Strategy, Creative Direction, Product Design & Startup Leadership.",
       sameAs: ["https://www.linkedin.com/in/abhinand-ks-428387332/", "https://github.com/abhinand-me/", "https://www.instagram.com/ft_abhinand_"]
+    },
+    {
+      slug: "mohammed-nibrasul-haqq",
+      name: "Mohammed Nibrasul Haqq",
+      jobTitle: "Co-Founder & CTO",
+      description: "Co-Founder & Chief Technology Officer of Tapfolio. Visionary builder focused on reinventing professional networking using state-of-the-art NFC technology and modern web platforms.",
+      image: "/nibras.png",
+      url: "https://www.tapfolio.me/founders/mohammed-nibrasul-haqq",
+      vision: " frictionless, memorable, and green professional networking for the world.",
+      experience: "Senior Software Engineer & Tech Lead specializing in web architectures and scalable direct matching ecosystems.",
+      sameAs: ["https://www.linkedin.com/in/mohammed-nibrasul-haqq-8267162ba/", "https://github.com/nibrasul", "https://x.com/Nibrasulhaqq"]
     }
   ];
 

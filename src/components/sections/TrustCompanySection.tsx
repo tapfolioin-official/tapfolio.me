@@ -18,19 +18,19 @@ export default function TrustCompanySection() {
           </p>
 
           <div className="space-y-8">
+            <a href="/founders/abhinand" className="flex items-center gap-6 group">
+              <img src="/abhinand.png" alt="Abhinand K.S." className="w-16 h-16 rounded-full object-cover group-hover:ring-4 group-hover:ring-blue-100 transition-all" />
+              <div>
+                <h4 className="font-bold text-gray-900 text-lg group-hover:text-blue-600 transition-colors">Abhinand K.S.</h4>
+                <span className="text-blue-600 text-sm font-medium">Founder & CEO</span>
+              </div>
+            </a>
+
             <a href="/founders/mohammed-nibrasul-haqq" className="flex items-center gap-6 group">
               <img src="/nibras.png" alt="Mohammed Nibrasul Haqq" className="w-16 h-16 rounded-full object-cover group-hover:ring-4 group-hover:ring-blue-100 transition-all" />
               <div>
                 <h4 className="font-bold text-gray-900 text-lg group-hover:text-blue-600 transition-colors">Mohammed Nibrasul Haqq</h4>
-                <span className="text-blue-600 text-sm font-medium">Co-founder & CTO</span>
-              </div>
-            </a>
-            
-            <a href="/founders/abhinand" className="flex items-center gap-6 group">
-              <img src="/abhinand.png" alt="Abhinand" className="w-16 h-16 rounded-full object-cover group-hover:ring-4 group-hover:ring-blue-100 transition-all" />
-              <div>
-                <h4 className="font-bold text-gray-900 text-lg group-hover:text-blue-600 transition-colors">Abhinand</h4>
-                <span className="text-blue-600 text-sm font-medium">Co-founder & CEO</span>
+                <span className="text-blue-600 text-sm font-medium">Co-Founder & CTO</span>
               </div>
             </a>
           </div>

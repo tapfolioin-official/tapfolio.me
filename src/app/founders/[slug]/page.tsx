@@ -583,29 +583,6 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {mohammed && (
-              <div className="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col justify-between gap-6 hover:shadow-md transition-all">
-                <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-blue-500/20 bg-gray-100 flex-shrink-0">
-                    <AvatarImage src={mohammed.avatar} alt={mohammed.name} className="w-full h-full object-cover" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-gray-900 text-lg">{mohammed.name}</h3>
-                    <span className="text-xs font-bold text-blue-600 uppercase block">{mohammed.jobTitle}</span>
-                    <span className="text-xs text-gray-500">Software Engineering & Architecture</span>
-                  </div>
-                </div>
-
-                <a
-                  href={`/founders/${mohammed.slug}`}
-                  className="text-xs font-bold text-blue-600 hover:underline border-t border-gray-100 pt-4 flex items-center justify-between"
-                >
-                  <span>View Founder Profile</span>
-                  <span>→</span>
-                </a>
-              </div>
-            )}
-
             {abhinand && (
               <div className="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col justify-between gap-6 hover:shadow-md transition-all">
                 <div className="flex items-center gap-4">
@@ -621,6 +598,29 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
 
                 <a
                   href={`/founders/${abhinand.slug}`}
+                  className="text-xs font-bold text-blue-600 hover:underline border-t border-gray-100 pt-4 flex items-center justify-between"
+                >
+                  <span>View Founder Profile</span>
+                  <span>→</span>
+                </a>
+              </div>
+            )}
+
+            {mohammed && (
+              <div className="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col justify-between gap-6 hover:shadow-md transition-all">
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-blue-500/20 bg-gray-100 flex-shrink-0">
+                    <AvatarImage src={mohammed.avatar} alt={mohammed.name} className="w-full h-full object-cover" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900 text-lg">{mohammed.name}</h3>
+                    <span className="text-xs font-bold text-blue-600 uppercase block">{mohammed.jobTitle}</span>
+                    <span className="text-xs text-gray-500">Software Engineering & Architecture</span>
+                  </div>
+                </div>
+
+                <a
+                  href={`/founders/${mohammed.slug}`}
                   className="text-xs font-bold text-blue-600 hover:underline border-t border-gray-100 pt-4 flex items-center justify-between"
                 >
                   <span>View Founder Profile</span>
