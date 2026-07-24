@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://tapfolio.me"),
+  metadataBase: new URL("https://www.tapfolio.me"),
   title: "Tapfolio | Smart NFC Professional Profiles & Digital Cards",
   description: "Redefine networking with Tapfolio. Built by Founder & CEO Abhinand K.S. and Co-founder & CTO Mohammed Nibrasul Haqq, providing contactless, smart NFC business cards.",
   keywords: ["NFC profile", "tap portfolio", "digital business card", "networking tracker", "Tapfolio"],
@@ -29,12 +29,12 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    url: "https://tapfolio.me",
+    url: "https://www.tapfolio.me",
     title: "Tapfolio | Smart NFC Professional Profiles",
     description: "Redefine networking with Tapfolio. Built by Founder & CEO Abhinand K.S. and Co-founder & CTO Mohammed Nibrasul Haqq, providing contactless, smart NFC business cards.",
     images: [
       {
-        url: "https://tapfolio.me/assets/og-image.png",
+        url: "https://www.tapfolio.me/assets/og-image.png",
       }
     ],
   },
@@ -42,19 +42,19 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Tapfolio | Smart NFC Professional Profiles",
     description: "Redefine networking with Tapfolio. Built by Founder & CEO Abhinand K.S. and Co-founder & CTO Mohammed Nibrasul Haqq, providing contactless, smart NFC business cards.",
-    images: ["https://tapfolio.me/assets/og-image.png"],
+    images: ["https://www.tapfolio.me/assets/og-image.png"],
   }
 };
 
 const orgJsonLd = {
   "@type": "Organization",
-  "@id": "https://tapfolio.me/#organization",
+  "@id": "https://www.tapfolio.me/#organization",
   "name": "Tapfolio",
   "alternateName": "Tapfolio Inc.",
-  "url": "https://tapfolio.me",
+  "url": "https://www.tapfolio.me",
   "logo": {
     "@type": "ImageObject",
-    "url": "https://tapfolio.me/logo.png",
+    "url": "https://www.tapfolio.me/logo.png",
     "width": "512",
     "height": "512",
     "caption": "Tapfolio Logo"
@@ -71,31 +71,31 @@ const orgJsonLd = {
     "contactType": "customer support"
   },
   "founders": [
-    { "@id": "https://tapfolio.me/founders/abhinand#person" },
-    { "@id": "https://tapfolio.me/founders/mohammed-nibrasul-haqq#person" }
+    { "@id": "https://www.tapfolio.me/founders/abhinand#person" },
+    { "@id": "https://www.tapfolio.me/founders/mohammed-nibrasul-haqq#person" }
   ]
 };
 
 const websiteJsonLd = {
   "@type": "WebSite",
-  "@id": "https://tapfolio.me/#website",
+  "@id": "https://www.tapfolio.me/#website",
   "name": "Tapfolio",
-  "url": "https://tapfolio.me",
+  "url": "https://www.tapfolio.me",
   "publisher": {
-    "@id": "https://tapfolio.me/#organization"
+    "@id": "https://www.tapfolio.me/#organization"
   }
 };
 
 const abhinandPersonJsonLd = {
   "@type": "Person",
-  "@id": "https://tapfolio.me/founders/abhinand#person",
+  "@id": "https://www.tapfolio.me/founders/abhinand#person",
   "name": "Abhinand K.S.",
   "jobTitle": "Founder and CEO",
   "worksFor": {
-    "@id": "https://tapfolio.me/#organization"
+    "@id": "https://www.tapfolio.me/#organization"
   },
-  "url": "https://tapfolio.me/founders/abhinand",
-  "image": "https://tapfolio.me/abhinand.png",
+  "url": "https://www.tapfolio.me/founders/abhinand",
+  "image": "https://www.tapfolio.me/abhinand.png",
   "sameAs": [
     "https://www.linkedin.com/in/abhinand-ks-428387332/",
     "https://github.com/abhinand-me/",
@@ -113,14 +113,14 @@ const abhinandPersonJsonLd = {
 
 const nibrasPersonJsonLd = {
   "@type": "Person",
-  "@id": "https://tapfolio.me/founders/mohammed-nibrasul-haqq#person",
+  "@id": "https://www.tapfolio.me/founders/mohammed-nibrasul-haqq#person",
   "name": "Mohammed Nibrasul Haqq",
   "jobTitle": "Co-founder and CTO",
   "worksFor": {
-    "@id": "https://tapfolio.me/#organization"
+    "@id": "https://www.tapfolio.me/#organization"
   },
-  "url": "https://tapfolio.me/founders/mohammed-nibrasul-haqq",
-  "image": "https://tapfolio.me/nibras.png",
+  "url": "https://www.tapfolio.me/founders/mohammed-nibrasul-haqq",
+  "image": "https://www.tapfolio.me/nibras.png",
   "sameAs": [
     "https://www.linkedin.com/in/mohammed-nibrasul-haqq-8267162ba/",
     "https://github.com/nibrasul",

@@ -5,7 +5,7 @@ import { BLOG_POSTS } from './blog/page';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const timestamp = new Date();
-  const host = 'https://tapfolio.me';
+  const host = 'https://www.tapfolio.me';
 
   // 1. Core pages (incorporates original items to ensure nothing is removed)
   const corePages: MetadataRoute.Sitemap = [
