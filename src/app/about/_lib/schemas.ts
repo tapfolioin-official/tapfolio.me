@@ -6,20 +6,40 @@ export function getOrganizationSchema(): Record<string, any> {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "Tapfolio",
-    "url": "https://www.tapfolio.me",
-    "logo": "https://www.tapfolio.me/logo.png",
-    "description": "Showcase your professional links, track your networking connections, and join the exclusive premium leaderboard in one tap.",
+    "url": "https://tapfolio.me",
+    "logo": "https://tapfolio.me/assets/logo.png",
+    "description": "Tapfolio provides smart NFC professional profiles and digital business cards.",
     "email": "hello@tapfolio.me",
-    "founders": [
-      {
-        "@type": "Person",
-        "name": "Mohammed Nibrasul Haqq",
-        "jobTitle": "Co-founder & CTO"
-      },
+    "founder": [
       {
         "@type": "Person",
         "name": "Abhinand",
-        "jobTitle": "Co-founder & CEO"
+        "jobTitle": "Founder and CEO",
+        "url": "https://tapfolio.me"
+      }
+    ],
+    "founders": [
+      {
+        "@type": "Person",
+        "name": "Abhinand",
+        "jobTitle": "Founder and CEO"
+      },
+      {
+        "@type": "Person",
+        "name": "Mohammed Nibrasul Haqq",
+        "jobTitle": "Co-founder and CTO"
+      }
+    ],
+    "employee": [
+      {
+        "@type": "Person",
+        "name": "Abhinand",
+        "jobTitle": "Founder and CEO"
+      },
+      {
+        "@type": "Person",
+        "name": "Mohammed Nibrasul Haqq",
+        "jobTitle": "Co-founder and CTO"
       }
     ],
     "contactPoint": {

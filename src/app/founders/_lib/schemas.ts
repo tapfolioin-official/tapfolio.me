@@ -12,25 +12,48 @@ export function getOrganizationEntitySchema(): Record<string, any> {
     "@type": "Organization",
     "@id": ORGANIZATION_ID,
     "name": "Tapfolio",
-    "url": "https://www.tapfolio.me",
+    "url": "https://tapfolio.me",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://www.tapfolio.me/logo.png"
+      "url": "https://tapfolio.me/assets/logo.png"
     },
-    "description": "Showcase your professional links, track your networking connections, and join the exclusive premium leaderboard in one tap.",
+    "description": "Tapfolio provides smart NFC professional profiles and digital business cards.",
     "email": "hello@tapfolio.me",
-    "founders": [
-      {
-        "@type": "Person",
-        "@id": "https://www.tapfolio.me/founders/mohammed-nibrasul-haqq#person",
-        "name": "Mohammed Nibrasul Haqq",
-        "jobTitle": "Co-Founder & CTO"
-      },
+    "founder": [
       {
         "@type": "Person",
         "@id": "https://www.tapfolio.me/founders/abhinand#person",
         "name": "Abhinand",
-        "jobTitle": "Co-Founder & CEO"
+        "jobTitle": "Founder and CEO",
+        "url": "https://tapfolio.me"
+      }
+    ],
+    "founders": [
+      {
+        "@type": "Person",
+        "@id": "https://www.tapfolio.me/founders/abhinand#person",
+        "name": "Abhinand",
+        "jobTitle": "Founder and CEO"
+      },
+      {
+        "@type": "Person",
+        "@id": "https://www.tapfolio.me/founders/mohammed-nibrasul-haqq#person",
+        "name": "Mohammed Nibrasul Haqq",
+        "jobTitle": "Co-founder and CTO"
+      }
+    ],
+    "employee": [
+      {
+        "@type": "Person",
+        "@id": "https://www.tapfolio.me/founders/abhinand#person",
+        "name": "Abhinand",
+        "jobTitle": "Founder and CEO"
+      },
+      {
+        "@type": "Person",
+        "@id": "https://www.tapfolio.me/founders/mohammed-nibrasul-haqq#person",
+        "name": "Mohammed Nibrasul Haqq",
+        "jobTitle": "Co-founder and CTO"
       }
     ],
     "contactPoint": {

@@ -91,7 +91,7 @@ export const foundersData: Record<string, FounderProfile> = {
     slug: "mohammed-nibrasul-haqq",
     name: "Mohammed Nibrasul Haqq",
     alternateName: "Nibras",
-    jobTitle: "Co-Founder & CTO",
+    jobTitle: "Co-founder & CTO",
     company: "Tapfolio",
     avatar: "/nibras.png",
     shortSummary: "Co-Founder & Chief Technology Officer of Tapfolio. Software engineer and AI systems developer specializing in Next.js, Flutter, cloud infrastructure, NFC technology, and modern SaaS platforms.",

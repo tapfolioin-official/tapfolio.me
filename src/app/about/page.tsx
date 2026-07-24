@@ -86,8 +86,8 @@ export default function AboutPage() {
   ];
 
   const team = [
-    { name: "Mohammed Nibrasul Haqq", role: "Co‑founder & CTO", img: "/nibras.png", link: "/founders/mohammed-nibrasul-haqq" },
-    { name: "Abhinand", role: "Co‑founder & CEO", img: "/abhinand.png", link: "/founders/abhinand" },
+    { name: "Abhinand", role: "Founder & CEO", img: "/abhinand.png", link: "/founders/abhinand" },
+    { name: "Mohammed Nibrasul Haqq", role: "Co-founder & CTO", img: "/nibras.png", link: "/founders/mohammed-nibrasul-haqq" },
     { name: "Sarah Chen", role: "Head of Product", img: "/sarah.png" },
     { name: "Michael Torres", role: "Lead Engineer", img: "/michael.png" },
   ];
@@ -327,8 +327,10 @@ export default function AboutPage() {
               dedicated to redefining professional networking.
             </p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <section id="team-leadership" aria-label="Tapfolio Leadership Team" className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {team.map((member, i) => {
+              const isLeadership = i < 2;
+
               const content = (
                 <>
                   <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-gray-150 bg-gray-100 flex items-center justify-center mx-auto mb-4">
@@ -338,8 +340,12 @@ export default function AboutPage() {
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <h4 className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">{member.name}</h4>
-                  <p className="text-sm text-gray-500">{member.role}</p>
+                  {isLeadership ? (
+                    <h3 className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">{member.name}</h3>
+                  ) : (
+                    <h4 className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">{member.name}</h4>
+                  )}
+                  <p className={`${isLeadership ? "role " : ""}text-sm text-gray-500`}>{member.role}</p>
                 </>
               );
 
@@ -347,7 +353,7 @@ export default function AboutPage() {
                 <a
                   key={i}
                   href={member.link}
-                  className="group bg-gray-50 border border-gray-100 rounded-2xl p-6 text-center hover:shadow-md hover:border-blue-200 transition-all block"
+                  className={`${isLeadership ? "team-member " : ""}group bg-gray-50 border border-gray-100 rounded-2xl p-6 text-center hover:shadow-md hover:border-blue-200 transition-all block`}
                 >
                   {content}
                 </a>
@@ -360,7 +366,7 @@ export default function AboutPage() {
                 </div>
               );
             })}
-          </div>
+          </section>
         </section>
 
         {/* Testimonials */}

@@ -28,8 +28,8 @@ export default function TeamPage() {
     {
       name: "Leadership",
       members: [
-        { name: "Mohammed Nibrasul Haqq", role: "Co-founder & CTO", bio: "Reinventing networking using NFC cards.", image: "/nibras.png", profileUrl: "/founders/mohammed-nibrasul-haqq" },
-        { name: "Abhinand", role: "Co-founder & CEO", bio: "Designing hardware and dynamic platforms.", image: "/abhinand.png", profileUrl: "/founders/abhinand" }
+        { name: "Abhinand", role: "Founder & CEO", bio: "Designing hardware and dynamic platforms.", image: "/abhinand.png", profileUrl: "/founders/abhinand" },
+        { name: "Mohammed Nibrasul Haqq", role: "Co-founder & CTO", bio: "Reinventing networking using NFC cards.", image: "/nibras.png", profileUrl: "/founders/mohammed-nibrasul-haqq" }
       ]
     },
     {
@@ -92,43 +92,52 @@ export default function TeamPage() {
 
         {/* Departments Listing */}
         <div className="flex flex-col gap-16">
-          {departments.map((dept, dIdx) => (
-            <section key={dIdx} className="flex flex-col gap-8">
-              <h2 className="text-2xl font-bold text-gray-950 border-b border-gray-100 pb-2">
-                {dept.name}
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                {dept.members.map((m: any, mIdx) => (
-                  <div 
-                    key={mIdx} 
-                    id={m.name.toLowerCase().replace(/ /g, '-')}
-                    className="border border-gray-100 rounded-2xl p-6 bg-white flex flex-col items-center text-center gap-4 hover:shadow-lg transition-all"
-                  >
-                    <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-gray-100 bg-gray-50 flex items-center justify-center">
-                      <AvatarImage 
-                        src={m.image} 
-                        alt={m.name} 
-                        className="w-full h-full object-cover" 
-                      />
+          {departments.map((dept, dIdx) => {
+            const isLeadership = dept.name === "Leadership";
+
+            return (
+              <section 
+                key={dIdx} 
+                id={isLeadership ? "team-leadership" : undefined}
+                aria-label={isLeadership ? "Tapfolio Leadership Team" : undefined}
+                className="flex flex-col gap-8"
+              >
+                <h2 className="text-2xl font-bold text-gray-950 border-b border-gray-100 pb-2">
+                  {dept.name}
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                  {dept.members.map((m: any, mIdx) => (
+                    <div 
+                      key={mIdx} 
+                      id={m.name.toLowerCase().replace(/ /g, '-')}
+                      className={`${isLeadership ? "team-member " : ""}border border-gray-100 rounded-2xl p-6 bg-white flex flex-col items-center text-center gap-4 hover:shadow-lg transition-all`}
+                    >
+                      <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-gray-100 bg-gray-50 flex items-center justify-center">
+                        <AvatarImage 
+                          src={m.image} 
+                          alt={m.name} 
+                          className="w-full h-full object-cover" 
+                        />
+                      </div>
+                      <div className="flex flex-col">
+                        <h3 className="font-bold text-gray-950 text-base">{m.name}</h3>
+                        <p className={`${isLeadership ? "role " : ""}text-xs font-medium text-gray-400`}>{m.role}</p>
+                      </div>
+                      <p className="text-xs text-gray-500 leading-relaxed max-w-xs">{m.bio}</p>
+                      {m.profileUrl && (
+                        <a
+                          href={m.profileUrl}
+                          className="text-xs font-bold text-blue-600 hover:underline mt-1"
+                        >
+                          View Entity Profile →
+                        </a>
+                      )}
                     </div>
-                    <div className="flex flex-col">
-                      <h3 className="font-bold text-gray-950 text-base">{m.name}</h3>
-                      <span className="text-xs font-medium text-gray-400">{m.role}</span>
-                    </div>
-                    <p className="text-xs text-gray-500 leading-relaxed max-w-xs">{m.bio}</p>
-                    {m.profileUrl && (
-                      <a
-                        href={m.profileUrl}
-                        className="text-xs font-bold text-blue-600 hover:underline mt-1"
-                      >
-                        View Entity Profile →
-                      </a>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </section>
-          ))}
+                  ))}
+                </div>
+              </section>
+            );
+          })}
         </div>
       </main>
 
