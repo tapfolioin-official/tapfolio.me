@@ -1,5 +1,5 @@
-export const ORGANIZATION_ID = "https://tapfolio.me/#organization";
-export const WEBSITE_ID = "https://tapfolio.me/#website";
+export const ORGANIZATION_ID = "https://www.tapfolio.me/#organization";
+export const WEBSITE_ID = "https://www.tapfolio.me/#website";
 
 export function getOrganizationSchema(): Record<string, any> {
   return {
@@ -7,32 +7,36 @@ export function getOrganizationSchema(): Record<string, any> {
     "@type": "Organization",
     "@id": ORGANIZATION_ID,
     "name": "Tapfolio",
-    "url": "https://tapfolio.me",
+    "alternateName": "Tapfolio Inc.",
+    "url": "https://www.tapfolio.me",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://tapfolio.me/assets/logo.png"
+      "url": "https://www.tapfolio.me/logo.png",
+      "width": "512",
+      "height": "512",
+      "caption": "Tapfolio Logo"
     },
     "description": "Tapfolio provides smart NFC professional profiles and digital business cards.",
     "email": "hello@tapfolio.me",
     "founder": [
       {
         "@type": "Person",
-        "@id": "https://tapfolio.me/founders/abhinand#person",
+        "@id": "https://www.tapfolio.me/founders/abhinand#person",
         "name": "Abhinand K.S.",
         "jobTitle": "Founder and CEO",
-        "url": "https://tapfolio.me/founders/abhinand"
+        "url": "https://www.tapfolio.me/founders/abhinand"
       }
     ],
     "founders": [
       {
         "@type": "Person",
-        "@id": "https://tapfolio.me/founders/abhinand#person",
+        "@id": "https://www.tapfolio.me/founders/abhinand#person",
         "name": "Abhinand K.S.",
         "jobTitle": "Founder and CEO"
       },
       {
         "@type": "Person",
-        "@id": "https://tapfolio.me/founders/mohammed-nibrasul-haqq#person",
+        "@id": "https://www.tapfolio.me/founders/mohammed-nibrasul-haqq#person",
         "name": "Mohammed Nibrasul Haqq",
         "jobTitle": "Co-founder and CTO"
       }
@@ -40,13 +44,13 @@ export function getOrganizationSchema(): Record<string, any> {
     "employee": [
       {
         "@type": "Person",
-        "@id": "https://tapfolio.me/founders/abhinand#person",
+        "@id": "https://www.tapfolio.me/founders/abhinand#person",
         "name": "Abhinand K.S.",
         "jobTitle": "Founder and CEO"
       },
       {
         "@type": "Person",
-        "@id": "https://tapfolio.me/founders/mohammed-nibrasul-haqq#person",
+        "@id": "https://www.tapfolio.me/founders/mohammed-nibrasul-haqq#person",
         "name": "Mohammed Nibrasul Haqq",
         "jobTitle": "Co-founder and CTO"
       }

@@ -94,7 +94,7 @@ export const foundersData: Record<string, FounderProfile> = {
     jobTitle: "Co-founder & CTO",
     company: "Tapfolio",
     avatar: "/nibras.png",
-    shortSummary: "Co-Founder & Chief Technology Officer of Tapfolio. Software engineer and AI systems developer specializing in Next.js, Flutter, cloud infrastructure, NFC technology, and modern SaaS platforms.",
+    shortSummary: "Meet Mohammed Nibrasul Haqq, Co-Founder & CTO of Tapfolio. Explore his work in software engineering, AI integration, platform architecture, and product development.",
     email: "hello@tapfolio.me",
     portfolioUrl: "https://www.tapfolio.me/portfolio/nibras",
     socials: [
@@ -455,7 +455,7 @@ export const foundersData: Record<string, FounderProfile> = {
     jobTitle: "Founder & CEO",
     company: "Tapfolio",
     avatar: "/abhinand.png",
-    shortSummary: "Founder & Chief Executive Officer (CEO) of Tapfolio. Visionary behind Tapfolio building the future of NFC-powered digital identity, smart networking, brand strategy, and product innovation. Tap. Connect. Grow.",
+    shortSummary: "Meet Abhinand K.S., Founder & CEO of Tapfolio. Discover his leadership, product vision, entrepreneurship, and the journey behind building Tapfolio.",
     email: "abhinandkspersonal@gmail.com",
     portfolioUrl: "https://www.tapfolio.me/portfolio/abhinand",
     socials: [

@@ -13,10 +13,10 @@ export function getOrganizationEntitySchema(): Record<string, any> {
     "@id": ORGANIZATION_ID,
     "name": "Tapfolio",
     "alternateName": "Tapfolio Inc.",
-    "url": "https://tapfolio.me",
+    "url": "https://www.tapfolio.me",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://tapfolio.me/logo.png",
+      "url": "https://www.tapfolio.me/logo.png",
       "width": "512",
       "height": "512",
       "caption": "Tapfolio Logo"
@@ -34,7 +34,7 @@ export function getOrganizationEntitySchema(): Record<string, any> {
         "@id": "https://www.tapfolio.me/founders/abhinand#person",
         "name": "Abhinand K.S.",
         "jobTitle": "Founder and CEO",
-        "url": "https://tapfolio.me/founders/abhinand"
+        "url": "https://www.tapfolio.me/founders/abhinand"
       }
     ],
     "founders": [

@@ -8,24 +8,44 @@ import { getWebPageSchema, getProductSchema, getFAQPageSchema, getBreadcrumbSche
 export const metadata: Metadata = {
   title: "Pricing Plans | Tapfolio Smart NFC Cards & Team Software",
   description: "Explore flexible plans for Tapfolio digital cards. Choose lifetime free profiles with physical cards, premium customization upgrades, or enterprise team software.",
+  metadataBase: new URL("https://www.tapfolio.me"),
+  keywords: ["NFC profile", "tap portfolio", "digital business card", "networking tracker", "Tapfolio"],
   alternates: {
-    canonical: "https://tapfolio.me/pricing",
+    canonical: "https://www.tapfolio.me/pricing",
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
   openGraph: {
     title: "Pricing Plans | Tapfolio Smart NFC Cards & Team Software",
     description: "Explore flexible plans for Tapfolio digital cards. Choose lifetime free profiles with physical cards, premium customization upgrades, or enterprise team software.",
-    url: "https://tapfolio.me/pricing",
+    url: "https://www.tapfolio.me/pricing",
     type: "website",
     siteName: "Tapfolio",
+    images: [
+      {
+        url: "https://www.tapfolio.me/og/pricing.png",
+        width: 1200,
+        height: 630,
+        alt: "Tapfolio Pricing",
+      }
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Pricing Plans | Tapfolio Smart NFC Cards & Team Software",
+    description: "Explore flexible plans for Tapfolio digital cards. Choose lifetime free profiles with physical cards, premium customization upgrades, or enterprise team software.",
+    images: ["https://www.tapfolio.me/og/pricing.png"],
   }
 };
 
 export default function PricingPage() {
-  const pageUrl = "https://tapfolio.me/pricing";
+  const pageUrl = "https://www.tapfolio.me/pricing";
   const webPageSchema = getWebPageSchema(pageUrl, "Pricing Plans", "Tapfolio pricing tiers and software plans.");
   const productSchema = getProductSchema("Tapfolio Premium Profile Upgrade", "Unlock advanced link tracking, custom branding, and dynamic video portfolio layouts.", "4.99");
   const breadcrumbSchema = getBreadcrumbSchema([
-    { name: "Home", url: "https://tapfolio.me" },
+    { name: "Home", url: "https://www.tapfolio.me" },
     { name: "Pricing", url: pageUrl }
   ]);
 

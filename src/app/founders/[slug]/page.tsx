@@ -40,6 +40,8 @@ export async function generateMetadata({ params }: FounderPageProps): Promise<Me
   return {
     title: `${founder.name} | ${founder.jobTitle} | Tapfolio`,
     description: founder.shortSummary,
+    metadataBase: new URL("https://www.tapfolio.me"),
+    keywords: ["NFC profile", "tap portfolio", "digital business card", "networking tracker", "Tapfolio", founder.name],
     alternates: {
       canonical: canonicalUrl,
     },
@@ -64,7 +66,7 @@ export async function generateMetadata({ params }: FounderPageProps): Promise<Me
           url: `https://www.tapfolio.me${founder.avatar}`,
           width: 800,
           height: 800,
-          alt: `${founder.name} - ${founder.jobTitle}`,
+          alt: founder.name,
         },
       ],
       type: "profile",

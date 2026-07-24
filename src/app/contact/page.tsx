@@ -10,8 +10,10 @@ export const metadata = {
   title: "Contact Us | Tapfolio",
   description: "Get in touch with the Tapfolio team. Reach out for enterprise inquiries, custom orders, technical support, or general feedback.",
   alternates: {
-    canonical: "https://tapfolio.me/contact",
+    canonical: "https://www.tapfolio.me/contact",
   },
+  metadataBase: new URL("https://www.tapfolio.me"),
+  keywords: ["NFC profile", "tap portfolio", "digital business card", "networking tracker", "Tapfolio"],
   robots: {
     index: true,
     follow: true,
@@ -19,12 +21,15 @@ export const metadata = {
   openGraph: {
     title: "Contact Us | Tapfolio",
     description: "Get in touch with the Tapfolio team. Reach out for enterprise inquiries, custom orders, technical support, or general feedback.",
-    url: "https://tapfolio.me/contact",
+    url: "https://www.tapfolio.me/contact",
     type: "website",
     siteName: "Tapfolio",
     images: [
       {
-        url: "https://tapfolio.me/contact-og.png",
+        url: "https://www.tapfolio.me/og/contact.png",
+        width: 1200,
+        height: 630,
+        alt: "Contact Tapfolio",
       }
     ],
   },
@@ -32,7 +37,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "Contact Us | Tapfolio",
     description: "Get in touch with the Tapfolio team. Reach out for enterprise inquiries, custom orders, technical support, or general feedback.",
-    images: ["https://tapfolio.me/contact-og.png"],
+    images: ["https://www.tapfolio.me/og/contact.png"],
   }
 };
 
@@ -98,8 +103,32 @@ export default function ContactPage() {
     },
   ];
 
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "@id": "https://www.tapfolio.me/contact#breadcrumb",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://www.tapfolio.me"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Contact",
+        "item": "https://www.tapfolio.me/contact"
+      }
+    ]
+  };
+
   return (
     <div className="bg-white min-h-screen text-gray-900 font-sans selection:bg-blue-100 flex flex-col pt-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       {/* Header */}
       <header className="fixed top-0 left-0 w-full h-20 bg-white/80 backdrop-blur-md border-b border-gray-150 z-50 flex items-center justify-between px-6 md:px-[12%] max-w-[1440px] left-1/2 -translate-x-1/2">
         <a href="/" className="flex items-center gap-1 cursor-pointer">
@@ -240,7 +269,8 @@ export default function ContactPage() {
               <h4 className="font-bold text-gray-900 mb-4">Company</h4>
               <ul className="space-y-3 text-sm text-gray-500">
                 <li><a href="/about" className="hover:text-blue-600 transition-colors">About Us</a></li>
-                <li><a href="/customer-success" className="hover:text-blue-600 transition-colors">Customer Success</a></li>
+                <li><a href="/team" className="hover:text-blue-600 transition-colors">Meet the Team</a></li>
+                <li><a href="/founders" className="hover:text-blue-600 transition-colors">Founders Directory</a></li>
                 <li><a href="/privacy" className="hover:text-blue-600 transition-colors">Privacy & Security</a></li>
                 <li><a href="/contact" className="hover:text-blue-600 transition-colors">Contact</a></li>
               </ul>

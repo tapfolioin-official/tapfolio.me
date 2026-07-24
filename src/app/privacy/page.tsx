@@ -3,31 +3,36 @@ import Link from "next/link";
 
 export const metadata = {
   title: "Privacy Policy | Tapfolio",
-  description: "Tapfolio's privacy policy, detailing data collection, processing, user rights, and account deletion rules.",
+  description: "Read Tapfolio's Privacy Policy. Learn how we secure, process, and protect your digital profile data, contactless records, and account information.",
   alternates: {
-    canonical: "https://tapfolio.me/privacy",
+    canonical: "https://www.tapfolio.me/privacy",
   },
+  metadataBase: new URL("https://www.tapfolio.me"),
+  keywords: ["NFC profile", "tap portfolio", "digital business card", "networking tracker", "Tapfolio"],
   robots: {
     index: true,
     follow: true,
   },
   openGraph: {
     title: "Privacy Policy | Tapfolio",
-    description: "Tapfolio's privacy policy, detailing data collection, processing, user rights, and account deletion rules.",
-    url: "https://tapfolio.me/privacy",
+    description: "Read Tapfolio's Privacy Policy. Learn how we secure, process, and protect your digital profile data, contactless records, and account information.",
+    url: "https://www.tapfolio.me/privacy",
     type: "website",
     siteName: "Tapfolio",
     images: [
       {
-        url: "https://tapfolio.me/privacy-og.png",
+        url: "https://www.tapfolio.me/og/privacy.png",
+        width: 1200,
+        height: 630,
+        alt: "Privacy Policy Tapfolio",
       }
     ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Privacy Policy | Tapfolio",
-    description: "Tapfolio's privacy policy, detailing data collection, processing, user rights, and account deletion rules.",
-    images: ["https://tapfolio.me/privacy-og.png"],
+    description: "Read Tapfolio's Privacy Policy. Learn how we secure, process, and protect your digital profile data, contactless records, and account information.",
+    images: ["https://www.tapfolio.me/og/privacy.png"],
   }
 };
 

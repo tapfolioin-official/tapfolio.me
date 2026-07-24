@@ -9,8 +9,8 @@
 - **Invoice Printer Suite**: High-performance web utility for generating clean, vector PDF business invoices.
 
 ## Key Executive Founders
-- **Mohammed Nibrasul Haqq**: Co-Founder & Chief Technology Officer (CTO). Leads software architecture, Next.js web platforms, NFC card provisioning pipelines, and AI agent workflows.
-- **Abhinand K.S.**: Co-Founder & Chief Executive Officer (CEO). Leads product design, brand strategy, laser engraving pipelines, and hardware operations.
+- **Abhinand K.S.**: Founder & CEO. Leads product design, brand strategy, laser engraving pipelines, and hardware operations.
+- **Mohammed Nibrasul Haqq**: Co-Founder & CTO. Leads software architecture, Next.js web platforms, NFC card provisioning pipelines, and AI agent workflows.
 
 ## Pricing & Tiers
 - **Basic (Free)**: Permanent digital profile, unlimited contact downloads, up to 5 links, standard themes.

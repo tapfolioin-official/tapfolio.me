@@ -3,31 +3,36 @@ import Link from "next/link";
 
 export const metadata = {
   title: "Terms of Service | Tapfolio",
-  description: "Tapfolio's Terms of Service governing usage of the mobile application, website, and NFC networking products.",
+  description: "Read Tapfolio's Terms of Service. Understand the rules, usage agreements, and hardware warranties for our dynamic profiles and smart NFC cards.",
   alternates: {
-    canonical: "https://tapfolio.me/terms",
+    canonical: "https://www.tapfolio.me/terms",
   },
+  metadataBase: new URL("https://www.tapfolio.me"),
+  keywords: ["NFC profile", "tap portfolio", "digital business card", "networking tracker", "Tapfolio"],
   robots: {
     index: true,
     follow: true,
   },
   openGraph: {
     title: "Terms of Service | Tapfolio",
-    description: "Tapfolio's Terms of Service governing usage of the mobile application, website, and NFC networking products.",
-    url: "https://tapfolio.me/terms",
+    description: "Read Tapfolio's Terms of Service. Understand the rules, usage agreements, and hardware warranties for our dynamic profiles and smart NFC cards.",
+    url: "https://www.tapfolio.me/terms",
     type: "website",
     siteName: "Tapfolio",
     images: [
       {
-        url: "https://tapfolio.me/terms-og.png",
+        url: "https://www.tapfolio.me/og/terms.png",
+        width: 1200,
+        height: 630,
+        alt: "Terms of Service Tapfolio",
       }
     ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Terms of Service | Tapfolio",
-    description: "Tapfolio's Terms of Service governing usage of the mobile application, website, and NFC networking products.",
-    images: ["https://tapfolio.me/terms-og.png"],
+    description: "Read Tapfolio's Terms of Service. Understand the rules, usage agreements, and hardware warranties for our dynamic profiles and smart NFC cards.",
+    images: ["https://www.tapfolio.me/og/terms.png"],
   }
 };
 

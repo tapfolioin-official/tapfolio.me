@@ -9,7 +9,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // 1. Core pages (incorporates original items to ensure nothing is removed)
   const corePages: MetadataRoute.Sitemap = [
-    { url: `${host}`, lastModified: timestamp, changeFrequency: 'yearly', priority: 1.0 },
+    { url: `${host}`, lastModified: timestamp, changeFrequency: 'weekly', priority: 1.0 },
     { url: `${host}/founders`, lastModified: timestamp, changeFrequency: 'monthly', priority: 0.8 },
     { url: `${host}/founders/mohammed-nibrasul-haqq`, lastModified: timestamp, changeFrequency: 'weekly', priority: 0.9 },
     { url: `${host}/founders/abhinand`, lastModified: timestamp, changeFrequency: 'weekly', priority: 0.9 },

@@ -15,13 +15,16 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.tapfolio.me"),
   title: "Tapfolio | Smart NFC Professional Profiles & Digital Cards",
-  description: "Redefine networking with Tapfolio. Built by Founder & CEO Abhinand K.S. and Co-founder & CTO Mohammed Nibrasul Haqq, providing contactless, smart NFC business cards.",
+  description: "Redefine your networking with Tapfolio. Share interactive profiles instantly via smart NFC cards, track analytics, and build professional connections.",
   keywords: ["NFC profile", "tap portfolio", "digital business card", "networking tracker", "Tapfolio"],
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "",
     other: {
       "msvalidate.01": process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION || "",
     },
+  },
+  alternates: {
+    canonical: "https://www.tapfolio.me",
   },
   robots: {
     index: true,
@@ -30,19 +33,22 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: "https://www.tapfolio.me",
-    title: "Tapfolio | Smart NFC Professional Profiles",
-    description: "Redefine networking with Tapfolio. Built by Founder & CEO Abhinand K.S. and Co-founder & CTO Mohammed Nibrasul Haqq, providing contactless, smart NFC business cards.",
+    title: "Tapfolio | Smart NFC Professional Profiles & Digital Cards",
+    description: "Redefine your networking with Tapfolio. Share interactive profiles instantly via smart NFC cards, track analytics, and build professional connections.",
     images: [
       {
-        url: "https://www.tapfolio.me/assets/og-image.png",
+        url: "https://www.tapfolio.me/og/home.png",
+        width: 1200,
+        height: 630,
+        alt: "Tapfolio Homepage",
       }
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Tapfolio | Smart NFC Professional Profiles",
-    description: "Redefine networking with Tapfolio. Built by Founder & CEO Abhinand K.S. and Co-founder & CTO Mohammed Nibrasul Haqq, providing contactless, smart NFC business cards.",
-    images: ["https://www.tapfolio.me/assets/og-image.png"],
+    title: "Tapfolio | Smart NFC Professional Profiles & Digital Cards",
+    description: "Redefine your networking with Tapfolio. Share interactive profiles instantly via smart NFC cards, track analytics, and build professional connections.",
+    images: ["https://www.tapfolio.me/og/home.png"],
   }
 };
 

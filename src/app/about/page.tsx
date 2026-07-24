@@ -14,11 +14,12 @@ const baseMetadata = generatePageMetadata({
   description:
     "Learn about Tapfolio's journey to reinventing business cards. Discover our mission, values, company history, and vision for the future of networking.",
   path: "/about",
-  imageUrl: "/about-og.png"
+  imageUrl: "/og/about.png"
 });
 
 export const metadata = {
   ...baseMetadata,
+  metadataBase: new URL("https://www.tapfolio.me"),
   robots: {
     index: true,
     follow: true

@@ -40,7 +40,8 @@ export default function FooterSection() {
             <h4 className="font-bold text-gray-900 mb-4">Company</h4>
             <ul className="space-y-3 text-sm text-gray-500">
               <li><a href="/about" className="hover:text-blue-600 transition-colors">About Us</a></li>
-              <li><a href="/customer-success" className="hover:text-blue-600 transition-colors">Customer Success</a></li>
+              <li><a href="/team" className="hover:text-blue-600 transition-colors">Meet the Team</a></li>
+              <li><a href="/founders" className="hover:text-blue-600 transition-colors">Founders Directory</a></li>
               <li><a href="/privacy" className="hover:text-blue-600 transition-colors">Privacy & Security</a></li>
               <li><a href="/contact" className="hover:text-blue-600 transition-colors">Contact</a></li>
             </ul>

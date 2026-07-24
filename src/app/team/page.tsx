@@ -15,11 +15,12 @@ const baseMetadata = generatePageMetadata({
   title: "Meet the Team | Professional Departments",
   description: "Explore Tapfolio's cross-functional team across Engineering, Product, Design, Marketing, and Operations. Meet the experts building the smart card ecosystem.",
   path: "/team",
-  imageUrl: "/team-og.png"
+  imageUrl: "/og/team.png"
 });
 
 export const metadata = {
   ...baseMetadata,
+  metadataBase: new URL("https://www.tapfolio.me"),
   robots: {
     index: true,
     follow: true
@@ -74,9 +75,31 @@ export default function TeamPage() {
     }))
   );
 
+  const breadcrumbSchema = {
+    "@type": "BreadcrumbList",
+    "@id": "https://www.tapfolio.me/team#breadcrumb",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://www.tapfolio.me"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Team",
+        "item": "https://www.tapfolio.me/team"
+      }
+    ]
+  };
+
   const schema = {
     "@context": "https://schema.org",
-    "@graph": flatMembers.map(m => getPersonSchema(m))
+    "@graph": [
+      ...flatMembers.map(m => getPersonSchema(m)),
+      breadcrumbSchema
+    ]
   };
 
   return (

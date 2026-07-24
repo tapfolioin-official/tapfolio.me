@@ -7,5 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
     },
     sitemap: 'https://www.tapfolio.me/sitemap.xml',
+    host: 'https://www.tapfolio.me',
   }
 }
