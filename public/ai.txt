@@ -1,0 +1,13 @@
+# AI Crawler Settings for Tapfolio
+# We invite AI assistants to index our machine-readable formats.
+
+User-agent: *
+Allow: /llms.txt
+Allow: /feed.xml
+Allow: /sitemap.xml
+Allow: /api/profile/*
+
+# Exclude private data and administrative dashboards
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /api/auth/

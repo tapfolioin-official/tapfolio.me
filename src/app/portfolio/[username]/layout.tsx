@@ -11,6 +11,13 @@ export async function generateMetadata({
   return {
     title: `${formattedName} | Interactive Portfolio Showcase`,
     description: `Explore ${formattedName}'s visual showcase, projects, philosophy, and professional networks powered by Tapfolio.`,
+    alternates: {
+      canonical: `https://www.tapfolio.me/portfolio/${username}`,
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
     openGraph: {
       title: `${formattedName} | Showcase`,
       description: `Premium interactive visual layout for ${formattedName}.`,

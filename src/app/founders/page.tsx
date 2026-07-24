@@ -49,9 +49,31 @@ export default function FoundersPage() {
     }
   ];
 
+  const breadcrumbSchema = {
+    "@type": "BreadcrumbList",
+    "@id": "https://www.tapfolio.me/founders#breadcrumb",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://www.tapfolio.me"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Founders",
+        "item": "https://www.tapfolio.me/founders"
+      }
+    ]
+  };
+
   const schema = {
     "@context": "https://schema.org",
-    "@graph": founders.map(f => getPersonSchema(f))
+    "@graph": [
+      ...founders.map(f => getPersonSchema(f)),
+      breadcrumbSchema
+    ]
   };
 
   return (

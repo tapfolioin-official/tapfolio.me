@@ -139,7 +139,7 @@ export default function DynamicPortfolioPage() {
         "sameAs": [
           "https://www.linkedin.com/in/mohammed-nibrasul-haqq-8267162ba/",
           "https://github.com/nibrasul",
-          "https://x.com/tapfolio"
+          "https://x.com/Nibrasulhaqq"
         ],
         "knowsAbout": [
           "NFC Technology",

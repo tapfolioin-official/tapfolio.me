@@ -4,6 +4,31 @@ import Link from "next/link";
 export const metadata = {
   title: "Privacy Policy | Tapfolio",
   description: "Tapfolio's privacy policy, detailing data collection, processing, user rights, and account deletion rules.",
+  alternates: {
+    canonical: "https://tapfolio.me/privacy",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  openGraph: {
+    title: "Privacy Policy | Tapfolio",
+    description: "Tapfolio's privacy policy, detailing data collection, processing, user rights, and account deletion rules.",
+    url: "https://tapfolio.me/privacy",
+    type: "website",
+    siteName: "Tapfolio",
+    images: [
+      {
+        url: "https://tapfolio.me/privacy-og.png",
+      }
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Privacy Policy | Tapfolio",
+    description: "Tapfolio's privacy policy, detailing data collection, processing, user rights, and account deletion rules.",
+    images: ["https://tapfolio.me/privacy-og.png"],
+  }
 };
 
 export default function PrivacyPolicy() {

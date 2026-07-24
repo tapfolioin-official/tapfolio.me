@@ -12,27 +12,36 @@ export function getOrganizationEntitySchema(): Record<string, any> {
     "@type": "Organization",
     "@id": ORGANIZATION_ID,
     "name": "Tapfolio",
+    "alternateName": "Tapfolio Inc.",
     "url": "https://tapfolio.me",
     "logo": {
       "@type": "ImageObject",
-      "url": "https://tapfolio.me/assets/logo.png"
+      "url": "https://tapfolio.me/logo.png",
+      "width": "512",
+      "height": "512",
+      "caption": "Tapfolio Logo"
     },
     "description": "Tapfolio provides smart NFC professional profiles and digital business cards.",
     "email": "hello@tapfolio.me",
+    "foundingLocation": {
+      "@type": "Place",
+      "name": "Kochi, India"
+    },
+    "foundingDate": "2026",
     "founder": [
       {
         "@type": "Person",
         "@id": "https://www.tapfolio.me/founders/abhinand#person",
-        "name": "Abhinand",
+        "name": "Abhinand K.S.",
         "jobTitle": "Founder and CEO",
-        "url": "https://tapfolio.me"
+        "url": "https://tapfolio.me/founders/abhinand"
       }
     ],
     "founders": [
       {
         "@type": "Person",
         "@id": "https://www.tapfolio.me/founders/abhinand#person",
-        "name": "Abhinand",
+        "name": "Abhinand K.S.",
         "jobTitle": "Founder and CEO"
       },
       {
@@ -46,7 +55,7 @@ export function getOrganizationEntitySchema(): Record<string, any> {
       {
         "@type": "Person",
         "@id": "https://www.tapfolio.me/founders/abhinand#person",
-        "name": "Abhinand",
+        "name": "Abhinand K.S.",
         "jobTitle": "Founder and CEO"
       },
       {
@@ -60,12 +69,7 @@ export function getOrganizationEntitySchema(): Record<string, any> {
       "@type": "ContactPoint",
       "email": "hello@tapfolio.me",
       "contactType": "customer support"
-    },
-    "sameAs": [
-      "https://x.com/tapfolio",
-      "https://linkedin.com/company/tapfolio",
-      "https://github.com/tapfolio"
-    ]
+    }
   };
 }
 

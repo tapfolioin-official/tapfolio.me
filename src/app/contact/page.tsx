@@ -9,6 +9,31 @@ import React from "react";
 export const metadata = {
   title: "Contact Us | Tapfolio",
   description: "Get in touch with the Tapfolio team. Reach out for enterprise inquiries, custom orders, technical support, or general feedback.",
+  alternates: {
+    canonical: "https://tapfolio.me/contact",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  openGraph: {
+    title: "Contact Us | Tapfolio",
+    description: "Get in touch with the Tapfolio team. Reach out for enterprise inquiries, custom orders, technical support, or general feedback.",
+    url: "https://tapfolio.me/contact",
+    type: "website",
+    siteName: "Tapfolio",
+    images: [
+      {
+        url: "https://tapfolio.me/contact-og.png",
+      }
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Contact Us | Tapfolio",
+    description: "Get in touch with the Tapfolio team. Reach out for enterprise inquiries, custom orders, technical support, or general feedback.",
+    images: ["https://tapfolio.me/contact-og.png"],
+  }
 };
 
 export default function ContactPage() {

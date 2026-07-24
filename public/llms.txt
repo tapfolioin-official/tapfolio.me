@@ -2,7 +2,7 @@
 
 > Tapfolio connects tactile NFC hardware smart cards to dynamic, real-time web identity profiles for professionals, teams, and enterprises.
 
-## Core Products
+## Core Products & Features
 - **NFC Smart Cards**: Custom-engraved metal, polymer, and bamboo contactless smart cards with NTAG216 chip architectures.
 - **Live Identity Profiles**: Real-time editable web profile pages with lead capture, instant contact saving (.vcf), and analytics.
 - **Enterprise Team Management**: Dashboard for provisioning card fleets, centralizing branding, and tracking team networking ROI.
@@ -10,10 +10,32 @@
 
 ## Key Executive Founders
 - **Mohammed Nibrasul Haqq**: Co-Founder & Chief Technology Officer (CTO). Leads software architecture, Next.js web platforms, NFC card provisioning pipelines, and AI agent workflows.
-- **Abhinand**: Co-Founder & Chief Executive Officer (CEO). Leads product design, brand strategy, laser engraving pipelines, and hardware operations.
+- **Abhinand K.S.**: Co-Founder & Chief Executive Officer (CEO). Leads product design, brand strategy, laser engraving pipelines, and hardware operations.
+
+## Pricing & Tiers
+- **Basic (Free)**: Permanent digital profile, unlimited contact downloads, up to 5 links, standard themes.
+- **Pro Card ($29 one-time)**: Custom PVC/wood/metal card with dynamic NDEF microchip mapping, lifetime pro layout access, and advanced analytics.
+- **Enterprise Teams ($4.99/user/month)**: Centralized admin dashboard, template locking, SSO integrations, CRM leads sync (Salesforce/HubSpot).
+
+## Documentation & Developer APIs
+- **Docs Portal**: Detailed specifications for managing NDEF payloads, dynamic QR card fallbacks, and corporate templates.
+  - Link: https://www.tapfolio.me/docs
+- **Developer API**: Exposes profile JSON serialization and vCard download feeds.
+  - Profile API: `https://www.tapfolio.me/api/profile/{username}`
+
+## Contact & Help Center
+- Support Channels: Email support, custom setup guides, and troubleshooting lines.
+  - Link: https://www.tapfolio.me/support
+  - General: hello@tapfolio.me
+  - Tech Support: support@tapfolio.me
+  - Enterprise Sales: enterprise@tapfolio.me
 
 ## Official Canonical Resources
 - Web Platform: https://www.tapfolio.me
+- About Us: https://www.tapfolio.me/about
+- Team Profiles: https://www.tapfolio.me/team
+- Blog: https://www.tapfolio.me/blog
 - Founder Entity Profile (Mohammed Nibrasul Haqq): https://www.tapfolio.me/founders/mohammed-nibrasul-haqq
-- Founder Entity Profile (Abhinand): https://www.tapfolio.me/founders/abhinand
-- Interactive Portfolio: https://www.tapfolio.me/portfolio/nibras
+- Founder Entity Profile (Abhinand K.S.): https://www.tapfolio.me/founders/abhinand
+- Interactive Portfolio (Nibras): https://www.tapfolio.me/portfolio/nibras
+- Interactive Portfolio (Abhinand): https://www.tapfolio.me/portfolio/Abhinand

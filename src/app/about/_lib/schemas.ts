@@ -5,27 +5,43 @@ export function getOrganizationSchema(): Record<string, any> {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
+    "@id": "https://tapfolio.me/#organization",
     "name": "Tapfolio",
+    "alternateName": "Tapfolio Inc.",
     "url": "https://tapfolio.me",
-    "logo": "https://tapfolio.me/assets/logo.png",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://tapfolio.me/logo.png",
+      "width": "512",
+      "height": "512",
+      "caption": "Tapfolio Logo"
+    },
     "description": "Tapfolio provides smart NFC professional profiles and digital business cards.",
     "email": "hello@tapfolio.me",
+    "foundingLocation": {
+      "@type": "Place",
+      "name": "Kochi, India"
+    },
+    "foundingDate": "2026",
     "founder": [
       {
         "@type": "Person",
-        "name": "Abhinand",
+        "@id": "https://tapfolio.me/founders/abhinand#person",
+        "name": "Abhinand K.S.",
         "jobTitle": "Founder and CEO",
-        "url": "https://tapfolio.me"
+        "url": "https://tapfolio.me/founders/abhinand"
       }
     ],
     "founders": [
       {
         "@type": "Person",
-        "name": "Abhinand",
+        "@id": "https://tapfolio.me/founders/abhinand#person",
+        "name": "Abhinand K.S.",
         "jobTitle": "Founder and CEO"
       },
       {
         "@type": "Person",
+        "@id": "https://tapfolio.me/founders/mohammed-nibrasul-haqq#person",
         "name": "Mohammed Nibrasul Haqq",
         "jobTitle": "Co-founder and CTO"
       }
@@ -33,11 +49,13 @@ export function getOrganizationSchema(): Record<string, any> {
     "employee": [
       {
         "@type": "Person",
-        "name": "Abhinand",
+        "@id": "https://tapfolio.me/founders/abhinand#person",
+        "name": "Abhinand K.S.",
         "jobTitle": "Founder and CEO"
       },
       {
         "@type": "Person",
+        "@id": "https://tapfolio.me/founders/mohammed-nibrasul-haqq#person",
         "name": "Mohammed Nibrasul Haqq",
         "jobTitle": "Co-founder and CTO"
       }
@@ -46,11 +64,6 @@ export function getOrganizationSchema(): Record<string, any> {
       "@type": "ContactPoint",
       "email": "hello@tapfolio.me",
       "contactType": "customer support"
-    },
-    "sameAs": [
-      "https://x.com/tapfolio",
-      "https://linkedin.com/company/tapfolio",
-      "https://github.com/tapfolio"
-    ]
+    }
   };
 }

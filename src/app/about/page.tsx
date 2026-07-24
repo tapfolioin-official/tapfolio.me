@@ -9,19 +9,94 @@ import Footer from "./_components/Footer";
 import { generatePageMetadata } from "./_lib/metadata";
 import { getOrganizationSchema } from "./_lib/schemas";
 
-export const metadata = generatePageMetadata({
+const baseMetadata = generatePageMetadata({
   title: "About Us | Tapfolio — Company Story, Mission & Values",
   description:
     "Learn about Tapfolio's journey to reinventing business cards. Discover our mission, values, company history, and vision for the future of networking.",
   path: "/about",
+  imageUrl: "/about-og.png"
 });
 
+export const metadata = {
+  ...baseMetadata,
+  robots: {
+    index: true,
+    follow: true
+  }
+};
+
 export default function AboutPage() {
+  const aboutPageSchema = {
+    "@type": "AboutPage",
+    "@id": "https://tapfolio.me/about#webpage",
+    "url": "https://tapfolio.me/about",
+    "name": "About Us | Tapfolio",
+    "description": "Tapfolio's mission, values, history, and product details.",
+    "isPartOf": {
+      "@id": "https://tapfolio.me/#website"
+    },
+    "mainEntity": {
+      "@id": "https://tapfolio.me/#organization"
+    },
+    "speakable": {
+      "@type": "SpeakableSpecification",
+      "cssSelector": [".speakable-title", ".speakable-description"]
+    }
+  };
+
+  const breadcrumbSchema = {
+    "@type": "BreadcrumbList",
+    "@id": "https://tapfolio.me/about#breadcrumb",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://tapfolio.me"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "About",
+        "item": "https://tapfolio.me/about"
+      }
+    ]
+  };
+
+  const faqSchema = {
+    "@type": "FAQPage",
+    "@id": "https://tapfolio.me/about#faq",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is Tapfolio?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Tapfolio is a professional networking and digital identity platform that connects tactile NFC smart business cards to dynamic, real-time web profiles."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Who founded Tapfolio?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Tapfolio was co-founded by Abhinand K.S. (Founder & CEO) and Mohammed Nibrasul Haqq (Co-founder & CTO)."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How does Tapfolio work?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Tapfolio cards contain passive NFC microchips. Tapping the card against a smartphone transmits your dynamic profile link over-the-air, loading your portfolio and contact card instantly."
+        }
+      }
+    ]
+  };
+
   const schema = {
     "@context": "https://schema.org",
-    "@type": "AboutPage",
-    mainEntity: getOrganizationSchema(),
-    description: "Tapfolio's mission, values, history, and product details.",
+    "@graph": [aboutPageSchema, breadcrumbSchema, faqSchema]
   };
 
   // ---------- Data ----------
@@ -86,7 +161,7 @@ export default function AboutPage() {
   ];
 
   const team = [
-    { name: "Abhinand", role: "Founder & CEO", img: "/abhinand.png", link: "/founders/abhinand" },
+    { name: "Abhinand K.S.", role: "Founder & CEO", img: "/abhinand.png", link: "/founders/abhinand" },
     { name: "Mohammed Nibrasul Haqq", role: "Co-founder & CTO", img: "/nibras.png", link: "/founders/mohammed-nibrasul-haqq" },
     { name: "Sarah Chen", role: "Head of Product", img: "/sarah.png" },
     { name: "Michael Torres", role: "Lead Engineer", img: "/michael.png" },
@@ -157,14 +232,14 @@ export default function AboutPage() {
             </span>
             Building the future of networking
           </div>
-          <h1 className="text-5xl md:text-7xl font-display font-extrabold tracking-tight text-gray-950 leading-[1.1]">
+          <h1 className="speakable-title text-5xl md:text-7xl font-display font-extrabold tracking-tight text-gray-950 leading-[1.1]">
             Reinventing the way the world{" "}
             <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               Connects
             </span>
             .
           </h1>
-          <p className="text-lg md:text-xl text-gray-500 leading-relaxed max-w-2xl mx-auto">
+          <p className="speakable-description text-lg md:text-xl text-gray-500 leading-relaxed max-w-2xl mx-auto">
             Tapfolio combines premium hardware with real‑time digital profiles.
             Share your links, build relationships, and save paper—all in a
             single tap.

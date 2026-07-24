@@ -11,11 +11,20 @@ import AvatarImage from "./_components/AvatarImage";
 import { generatePageMetadata } from "./_lib/metadata";
 import { getPersonSchema } from "./_lib/schemas";
 
-export const metadata = generatePageMetadata({
+const baseMetadata = generatePageMetadata({
   title: "Meet the Team | Professional Departments",
   description: "Explore Tapfolio's cross-functional team across Engineering, Product, Design, Marketing, and Operations. Meet the experts building the smart card ecosystem.",
   path: "/team",
+  imageUrl: "/team-og.png"
 });
+
+export const metadata = {
+  ...baseMetadata,
+  robots: {
+    index: true,
+    follow: true
+  }
+};
 
 /**
  * Team page component.
@@ -28,7 +37,7 @@ export default function TeamPage() {
     {
       name: "Leadership",
       members: [
-        { name: "Abhinand", role: "Founder & CEO", bio: "Designing hardware and dynamic platforms.", image: "/abhinand.png", profileUrl: "/founders/abhinand" },
+        { name: "Abhinand K.S.", role: "Founder & CEO", bio: "Designing hardware and dynamic platforms.", image: "/abhinand.png", profileUrl: "/founders/abhinand" },
         { name: "Mohammed Nibrasul Haqq", role: "Co-founder & CTO", bio: "Reinventing networking using NFC cards.", image: "/nibras.png", profileUrl: "/founders/mohammed-nibrasul-haqq" }
       ]
     },

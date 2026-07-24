@@ -75,32 +75,12 @@ export default function Footer() {
             <ul className="space-y-2.5 text-xs text-gray-600">
               <li>
                 <a 
-                  href="https://www.linkedin.com/company/tapfolio" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="hover:text-blue-600 transition-colors"
-                >
-                  LinkedIn Official
-                </a>
-              </li>
-              <li>
-                <a 
                   href="https://github.com/nibrasul/Add-1" 
                   target="_blank" 
                   rel="noopener noreferrer" 
                   className="hover:text-blue-600 transition-colors"
                 >
                   GitHub Repository
-                </a>
-              </li>
-              <li>
-                <a 
-                  href="https://x.com/tapfolio" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="hover:text-blue-600 transition-colors"
-                >
-                  X (Twitter)
                 </a>
               </li>
             </ul>

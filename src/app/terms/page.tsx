@@ -4,6 +4,31 @@ import Link from "next/link";
 export const metadata = {
   title: "Terms of Service | Tapfolio",
   description: "Tapfolio's Terms of Service governing usage of the mobile application, website, and NFC networking products.",
+  alternates: {
+    canonical: "https://tapfolio.me/terms",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  openGraph: {
+    title: "Terms of Service | Tapfolio",
+    description: "Tapfolio's Terms of Service governing usage of the mobile application, website, and NFC networking products.",
+    url: "https://tapfolio.me/terms",
+    type: "website",
+    siteName: "Tapfolio",
+    images: [
+      {
+        url: "https://tapfolio.me/terms-og.png",
+      }
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Terms of Service | Tapfolio",
+    description: "Tapfolio's Terms of Service governing usage of the mobile application, website, and NFC networking products.",
+    images: ["https://tapfolio.me/terms-og.png"],
+  }
 };
 
 export default function TermsOfService() {

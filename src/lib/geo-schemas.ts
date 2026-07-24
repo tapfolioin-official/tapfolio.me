@@ -18,16 +18,16 @@ export function getOrganizationSchema(): Record<string, any> {
       {
         "@type": "Person",
         "@id": "https://tapfolio.me/founders/abhinand#person",
-        "name": "Abhinand",
+        "name": "Abhinand K.S.",
         "jobTitle": "Founder and CEO",
-        "url": "https://tapfolio.me"
+        "url": "https://tapfolio.me/founders/abhinand"
       }
     ],
     "founders": [
       {
         "@type": "Person",
         "@id": "https://tapfolio.me/founders/abhinand#person",
-        "name": "Abhinand",
+        "name": "Abhinand K.S.",
         "jobTitle": "Founder and CEO"
       },
       {
@@ -41,7 +41,7 @@ export function getOrganizationSchema(): Record<string, any> {
       {
         "@type": "Person",
         "@id": "https://tapfolio.me/founders/abhinand#person",
-        "name": "Abhinand",
+        "name": "Abhinand K.S.",
         "jobTitle": "Founder and CEO"
       },
       {
@@ -55,12 +55,7 @@ export function getOrganizationSchema(): Record<string, any> {
       "@type": "ContactPoint",
       "email": "hello@tapfolio.me",
       "contactType": "customer support"
-    },
-    "sameAs": [
-      "https://x.com/tapfolio",
-      "https://linkedin.com/company/tapfolio",
-      "https://github.com/tapfolio"
-    ]
+    }
   };
 }
 
