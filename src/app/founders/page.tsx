@@ -39,7 +39,7 @@ export default function FoundersPage() {
     {
       slug: "mohammed-nibrasul-haqq",
       name: "Mohammed Nibrasul Haqq",
-      jobTitle: "Co-Founder & CTO",
+      jobTitle: "Co-founder & CTO",
       description: "Co-Founder & Chief Technology Officer of Tapfolio. Visionary builder focused on reinventing professional networking using state-of-the-art NFC technology and modern web platforms.",
       image: "/nibras.png",
       url: "https://www.tapfolio.me/founders/mohammed-nibrasul-haqq",
