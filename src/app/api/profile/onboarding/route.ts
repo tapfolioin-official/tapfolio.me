@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import prisma from '@/lib/db';
 import { verifyJWT } from '@/lib/auth';
+import { submitToIndexNow } from '@/lib/indexnow';
 
 export async function PUT(request: Request) {
   console.log('[ONBOARDING] Incoming PUT request');
@@ -151,6 +152,13 @@ export async function PUT(request: Request) {
     });
 
     console.log(`[ONBOARDING] Successfully committed onboarding details for userId=${tokenPayload.userId}`);
+
+    // Trigger IndexNow submission in the background for the newly onboarded profile
+    if (result.updatedProfile.isOnline) {
+      submitToIndexNow([`/portfolio/${result.updatedProfile.username}`]).catch((err) => {
+        console.error('[IndexNow] Onboarding background submission failed:', err);
+      });
+    }
 
     console.log('[ONBOARDING] Success response ready');
     return NextResponse.json({

@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import prisma from '@/lib/db';
 import { verifyJWT } from '@/lib/auth';
 import { calculateProfileScore } from '@/lib/score';
+import { submitToIndexNow } from '@/lib/indexnow';
 
 export async function GET(request: Request) {
   try {
@@ -340,6 +341,13 @@ const formattedWhatsapp = whatsapp !== undefined ? formatPhoneWithDefaultCountry
     });
 
     const scoreData = calculateProfileScore(finalProfile);
+
+    // Trigger IndexNow submission in the background if the profile is active/online
+    if (finalProfile.isOnline && finalProfile.user?.profileReady) {
+      submitToIndexNow([`/portfolio/${finalProfile.username}`]).catch((err) => {
+        console.error('[IndexNow] Background submission failed:', err);
+      });
+    }
 
     return NextResponse.json({
       success: true,
