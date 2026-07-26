@@ -20,6 +20,8 @@ const SecuritySection = dynamic(() => import("@/components/sections/SecuritySect
 const LiveDemoSection = dynamic(() => import("@/components/sections/LiveDemoSection"));
 const TrustCompanySection = dynamic(() => import("@/components/sections/TrustCompanySection"));
 const ConfiguratorSection = dynamic(() => import("@/components/sections/ConfiguratorSection"));
+const FAQSection = dynamic(() => import("@/components/sections/FAQSection"));
+const FeaturedBlogsSection = dynamic(() => import("@/components/sections/FeaturedBlogsSection"));
 const FooterSection = dynamic(() => import("@/components/sections/FooterSection"));
 
 export default function HomeClient() {
@@ -48,6 +50,8 @@ export default function HomeClient() {
             <LiveDemoSection />
             <TrustCompanySection />
             <ConfiguratorSection />
+            <FAQSection />
+            <FeaturedBlogsSection />
           </main>
 
           <FooterSection />

@@ -1,13 +1,17 @@
 import { MetadataRoute } from 'next';
 import prisma from '@/lib/db';
-import { GEO_FEATURES, GEO_INDUSTRIES, COMPETITOR_COMPARISONS, GEO_DOCS } from '@/lib/geo-data';
-import { BLOG_POSTS } from './blog/page';
+import { LANDING_PAGES } from '@/lib/content/landing-pages';
+import { INDUSTRIES } from '@/lib/content/industries';
+import { PRODUCTS } from '@/lib/content/products';
+import { COMPARISONS } from '@/lib/content/comparison';
+import { BLOG_POSTS } from '@/lib/content/blog-posts';
+import { GEO_DOCS } from '@/lib/geo-data';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const timestamp = new Date();
   const host = 'https://www.tapfolio.me';
 
-  // 1. Core pages (incorporates original items to ensure nothing is removed)
+  // 1. Core Pages
   const corePages: MetadataRoute.Sitemap = [
     { url: `${host}`, lastModified: timestamp, changeFrequency: 'weekly', priority: 1.0 },
     { url: `${host}/founders`, lastModified: timestamp, changeFrequency: 'monthly', priority: 0.8 },
@@ -29,33 +33,53 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${host}/leaderboard`, lastModified: timestamp, changeFrequency: 'weekly', priority: 0.6 },
     { url: `${host}/history`, lastModified: timestamp, changeFrequency: 'monthly', priority: 0.6 },
     { url: `${host}/customer-success`, lastModified: timestamp, changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${host}/resources`, lastModified: timestamp, changeFrequency: 'weekly', priority: 0.8 },
+    { url: `${host}/company`, lastModified: timestamp, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${host}/technology`, lastModified: timestamp, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${host}/press`, lastModified: timestamp, changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${host}/media-kit`, lastModified: timestamp, changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${host}/mission`, lastModified: timestamp, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${host}/developers`, lastModified: timestamp, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${host}/business`, lastModified: timestamp, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${host}/enterprise`, lastModified: timestamp, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${host}/students`, lastModified: timestamp, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${host}/teams`, lastModified: timestamp, changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${host}/solutions`, lastModified: timestamp, changeFrequency: 'weekly', priority: 0.8 }
   ];
 
-  // 2. Dynamic GEO features pages
-  const featurePages: MetadataRoute.Sitemap = Object.keys(GEO_FEATURES).map(slug => ({
+  // 2. Landing Pages
+  const landingPages: MetadataRoute.Sitemap = Object.keys(LANDING_PAGES).map(slug => ({
     url: `${host}/${slug}`,
     lastModified: timestamp,
     changeFrequency: 'weekly',
     priority: 0.8
   }));
 
-  // 3. Dynamic GEO industries pages
-  const industryPages: MetadataRoute.Sitemap = Object.keys(GEO_INDUSTRIES).map(slug => ({
+  // 3. Comparison Pages
+  const comparisonPages: MetadataRoute.Sitemap = Object.keys(COMPARISONS).map(slug => ({
     url: `${host}/${slug}`,
     lastModified: timestamp,
     changeFrequency: 'weekly',
     priority: 0.8
   }));
 
-  // 4. Dynamic Competitor Comparison pages
-  const comparisonPages: MetadataRoute.Sitemap = Object.keys(COMPETITOR_COMPARISONS).map(slug => ({
-    url: `${host}/tapfolio-vs-${slug}`,
+  // 4. Product Catalog Pages
+  const productPages: MetadataRoute.Sitemap = Object.keys(PRODUCTS).map(slug => ({
+    url: `${host}/products/${slug}`,
+    lastModified: timestamp,
+    changeFrequency: 'weekly',
+    priority: 0.9
+  }));
+
+  // 5. Solution (Industry) Pages
+  const solutionPages: MetadataRoute.Sitemap = Object.keys(INDUSTRIES).map(slug => ({
+    url: `${host}/solutions/${slug}`,
     lastModified: timestamp,
     changeFrequency: 'weekly',
     priority: 0.8
   }));
 
-  // 5. Dynamic Documentation pages
+  // 6. Dynamic Documentation Pages
   const docPages: MetadataRoute.Sitemap = Object.keys(GEO_DOCS).map(slug => ({
     url: `${host}/docs/${slug}`,
     lastModified: timestamp,
@@ -63,7 +87,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8
   }));
 
-  // 6. Dynamic Blog articles pages
+  // 7. Blog Articles
   const blogPages: MetadataRoute.Sitemap = BLOG_POSTS.map(post => ({
     url: `${host}/blog/${post.slug}`,
     lastModified: timestamp,
@@ -71,7 +95,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8
   }));
 
-  // 7. Dynamic active user profiles from database
+  // 8. Dynamic User Profiles
   let profilePages: MetadataRoute.Sitemap = [];
   try {
     const profiles = await prisma.profile.findMany({
@@ -98,9 +122,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     ...corePages,
-    ...featurePages,
-    ...industryPages,
+    ...landingPages,
     ...comparisonPages,
+    ...productPages,
+    ...solutionPages,
     ...docPages,
     ...blogPages,
     ...profilePages
