@@ -1,3 +1,5 @@
+import meet_our_founder_abhinand_ks from './blog/meet-our-founder-abhinand-ks';
+import meet_our_cto_mohammed_nibrasul_haqq from './blog/meet-our-cto-mohammed-nibrasul-haqq';
 import post_0 from './blog/are-nfc-business-cards-safe';
 import post_1 from './blog/advantages-of-nfc-business-cards';
 import post_2 from './blog/nfc-business-cards-applications';
@@ -208,6 +210,9 @@ export interface BlogPost {
 }
 
 export const BLOG_POSTS: BlogPost[] = [
+  meet_our_founder_abhinand_ks,
+  meet_our_cto_mohammed_nibrasul_haqq,
+
   post_0,
   post_1,
   post_2,
