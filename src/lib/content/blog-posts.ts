@@ -1,3 +1,7 @@
+import nibras from './blog/nibras';
+import nibrasul_haqq from './blog/nibrasul-haqq';
+import mohammed_nibras from './blog/mohammed-nibras';
+import mohammed_nibrasul_haqq from './blog/mohammed-nibrasul-haqq';
 import meet_our_founder_abhinand_ks from './blog/meet-our-founder-abhinand-ks';
 import meet_our_cto_mohammed_nibrasul_haqq from './blog/meet-our-cto-mohammed-nibrasul-haqq';
 import post_0 from './blog/are-nfc-business-cards-safe';
@@ -210,6 +214,11 @@ export interface BlogPost {
 }
 
 export const BLOG_POSTS: BlogPost[] = [
+  nibras,
+  nibrasul_haqq,
+  mohammed_nibras,
+  mohammed_nibrasul_haqq,
+
   meet_our_founder_abhinand_ks,
   meet_our_cto_mohammed_nibrasul_haqq,
 
