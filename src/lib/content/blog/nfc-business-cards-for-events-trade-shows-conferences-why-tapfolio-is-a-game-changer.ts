@@ -5,5 +5,7 @@ export default {
   date: "2025-07-04",
   author: "Abhinand K.S.",
   readTime: "5 min read",
+  image: "https://cdn.shopify.com/s/files/1/0654/2229/5259/articles/NFC_Business_Cards_for_Events_Trade_Shows_Conferences_Why_tapfolio_is_a_Game-Changer_7541ac89-6e4b-4817-bcac-890c268e5cc3.jpg?v=1750777320",
+  category: "Networking",
   content: "NFC Business Cards for Events, Trade Shows & Conferences – Why tapfolio is a Game-Changer. In today's digital era, professional connection sharing requires speed, security, and high visual engagement. Reusable smart cards equipped with Near Field Communication (NFC) allow individuals, startups, and enterprise teams to swap contact details, portfolio grids, and social directories instantly with one tap. This guide explores the details, setups, and advantages of adopting this smart networking technology."
 };

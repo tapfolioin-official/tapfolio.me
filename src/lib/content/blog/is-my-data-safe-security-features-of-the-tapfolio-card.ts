@@ -5,5 +5,7 @@ export default {
   date: "2026-02-21",
   author: "Abhinand K.S.",
   readTime: "5 min read",
+  image: "https://cdn.shopify.com/s/files/1/0654/2229/5259/articles/secure-nfc-tap-shield-lock-cybersecurity_jpg_927b2f24-3740-4d5d-9128-e4b4b11a4a72.jpg?v=1767702985",
+  category: "Security",
   content: "Is My Data Safe? Security Features of the tapfolio Card. In today's digital era, professional connection sharing requires speed, security, and high visual engagement. Reusable smart cards equipped with Near Field Communication (NFC) allow individuals, startups, and enterprise teams to swap contact details, portfolio grids, and social directories instantly with one tap. This guide explores the details, setups, and advantages of adopting this smart networking technology."
 };

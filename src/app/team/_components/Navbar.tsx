@@ -34,7 +34,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="fixed top-0 left-0 w-full h-20 bg-white/70 backdrop-blur-md border-b border-gray-200 z-50 flex items-center justify-between px-6 md:px-[12%] max-w-[1440px] left-1/2 -translate-x-1/2">
+    <nav className="fixed top-0 left-0 w-full h-20 bg-white/70 backdrop-blur-md border-b border-gray-200 z-50 flex items-center justify-between px-4 md:px-8 lg:px-12 max-w-[1440px] left-1/2 -translate-x-1/2">
       {/* Brand Logo */}
       <div 
         className="flex items-center gap-1 cursor-pointer" 
@@ -59,7 +59,7 @@ export default function Navbar() {
       </div>
 
       {/* Navigation Links */}
-      <div className="hidden md:flex items-center gap-8">
+      <div className="hidden md:flex items-center gap-4 lg:gap-8">
         <button
           type="button"
           onClick={() => scrollToSection("products")}
@@ -104,7 +104,7 @@ export default function Navbar() {
       </div>
 
       {/* Action Buttons */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 lg:gap-4">
         <button
           type="button"
           onClick={() => scrollToSection("order")}

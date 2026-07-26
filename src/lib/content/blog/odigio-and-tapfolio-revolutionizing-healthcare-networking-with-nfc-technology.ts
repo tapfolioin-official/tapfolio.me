@@ -5,5 +5,7 @@ export default {
   date: "2024-09-17",
   author: "Mohammed Nibrasul Haqq",
   readTime: "5 min read",
+  image: "https://cdn.shopify.com/s/files/1/0654/2229/5259/articles/Odigio_and_tapfolio_Revolutionizing_Healthcare_Networking_with_NFC_Technology.png?v=1726578057",
+  category: "Networking",
   content: "Odigio and tapfolio: Revolutionizing Healthcare Networking with NFC Technology. In today's digital era, professional connection sharing requires speed, security, and high visual engagement. Reusable smart cards equipped with Near Field Communication (NFC) allow individuals, startups, and enterprise teams to swap contact details, portfolio grids, and social directories instantly with one tap. This guide explores the details, setups, and advantages of adopting this smart networking technology."
 };

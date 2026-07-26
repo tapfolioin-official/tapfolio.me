@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { BLOG_POSTS } from '../blog/page';
+import { BLOG_POSTS } from '@/lib/content/blog-posts';
 
 export async function GET() {
   const host = 'https://www.tapfolio.me';

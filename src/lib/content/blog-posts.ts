@@ -202,6 +202,8 @@ export interface BlogPost {
   date: string;
   author: string;
   readTime: string;
+  image: string;
+  category: string;
   content: string;
 }
 

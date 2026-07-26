@@ -5,5 +5,7 @@ export default {
   date: "2024-10-19",
   author: "Mohammed Nibrasul Haqq",
   readTime: "5 min read",
+  image: "https://cdn.shopify.com/s/files/1/0654/2229/5259/articles/Benefits_of_NFC_Business_Cards_in_2024.png?v=1729319379",
+  category: "Networking",
   content: "Benefits of NFC Business Cards in 2024. In today's digital era, professional connection sharing requires speed, security, and high visual engagement. Reusable smart cards equipped with Near Field Communication (NFC) allow individuals, startups, and enterprise teams to swap contact details, portfolio grids, and social directories instantly with one tap. This guide explores the details, setups, and advantages of adopting this smart networking technology."
 };

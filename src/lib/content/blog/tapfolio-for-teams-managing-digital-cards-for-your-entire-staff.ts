@@ -5,5 +5,7 @@ export default {
   date: "2026-02-06",
   author: "Mohammed Nibrasul Haqq",
   readTime: "5 min read",
+  image: "https://cdn.shopify.com/s/files/1/0654/2229/5259/articles/corporate-hr-manager-managing-nfc-business-cards-dashboard_jpg_ccb44f71-434e-4cfb-abee-0f084567f63f.jpg?v=1768827769",
+  category: "Networking",
   content: "tapfolio for Teams: Managing Digital Cards for Your Entire Staff. In today's digital era, professional connection sharing requires speed, security, and high visual engagement. Reusable smart cards equipped with Near Field Communication (NFC) allow individuals, startups, and enterprise teams to swap contact details, portfolio grids, and social directories instantly with one tap. This guide explores the details, setups, and advantages of adopting this smart networking technology."
 };

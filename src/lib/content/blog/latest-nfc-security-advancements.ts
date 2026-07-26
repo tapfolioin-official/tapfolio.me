@@ -5,5 +5,7 @@ export default {
   date: "2024-06-08",
   author: "Mohammed Nibrasul Haqq",
   readTime: "5 min read",
+  image: "https://cdn.shopify.com/s/files/1/0654/2229/5259/articles/Navigating_the_Secure_NFC_Landscape_Advancements_and_Protocols.png?v=1717840245",
+  category: "Networking",
   content: "Navigating the Secure NFC Landscape: Advancements and Protocols. In today's digital era, professional connection sharing requires speed, security, and high visual engagement. Reusable smart cards equipped with Near Field Communication (NFC) allow individuals, startups, and enterprise teams to swap contact details, portfolio grids, and social directories instantly with one tap. This guide explores the details, setups, and advantages of adopting this smart networking technology."
 };
