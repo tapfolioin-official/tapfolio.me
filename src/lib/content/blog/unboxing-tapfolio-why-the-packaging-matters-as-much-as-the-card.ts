@@ -5,7 +5,7 @@ export default {
   date: "2026-06-13",
   author: "Mohammed Nibrasul Haqq",
   readTime: "5 min read",
-  image: "https://www.tapfolio.me/assets/blog/tapfolio-premium-nfc-card-unboxing-hero_752c8ce5-c70c-49e5-8f13-ee4233e9162a.jpg",
+  image: "/assets/blog/tapfolio-premium-nfc-card-unboxing-hero_752c8ce5-c70c-49e5-8f13-ee4233e9162a.jpg",
   category: "Networking",
   content: "Unboxing tapfolio: Why the Packaging Matters as Much as the Card. In today's digital era, professional connection sharing requires speed, security, and high visual engagement. Reusable smart cards equipped with Near Field Communication (NFC) allow individuals, startups, and enterprise teams to swap contact details, portfolio grids, and social directories instantly with one tap. This guide explores the details, setups, and advantages of adopting this smart networking technology."
 };

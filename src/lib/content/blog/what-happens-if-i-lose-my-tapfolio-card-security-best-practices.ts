@@ -5,7 +5,7 @@ export default {
   date: "2026-03-05",
   author: "Abhinand K.S.",
   readTime: "5 min read",
-  image: "https://www.tapfolio.me/assets/blog/deactivated-digital-profile-nfc-card-lost-safety_jpg_ddb74ef3-d11e-494d-b67d-303671ecc37e.jpg",
+  image: "/assets/blog/deactivated-digital-profile-nfc-card-lost-safety_jpg_ddb74ef3-d11e-494d-b67d-303671ecc37e.jpg",
   category: "Security",
   content: "What Happens if I Lose My tapfolio Card? (Security Best Practices). In today's digital era, professional connection sharing requires speed, security, and high visual engagement. Reusable smart cards equipped with Near Field Communication (NFC) allow individuals, startups, and enterprise teams to swap contact details, portfolio grids, and social directories instantly with one tap. This guide explores the details, setups, and advantages of adopting this smart networking technology."
 };

@@ -5,7 +5,7 @@ export default {
   date: "2026-05-20",
   author: "Mohammed Nibrasul Haqq",
   readTime: "5 min read",
-  image: "https://www.tapfolio.me/assets/blog/tapfolio-colored-metal-nfc-card-close-up._2.jpg",
+  image: "/assets/blog/tapfolio-colored-metal-nfc-card-close-up._2.jpg",
   category: "Design Guides",
   content: "The Psychology of Color: What Your Black, Gold, or White tapfolio Card Says About You. In today's digital era, professional connection sharing requires speed, security, and high visual engagement. Reusable smart cards equipped with Near Field Communication (NFC) allow individuals, startups, and enterprise teams to swap contact details, portfolio grids, and social directories instantly with one tap. This guide explores the details, setups, and advantages of adopting this smart networking technology."
 };

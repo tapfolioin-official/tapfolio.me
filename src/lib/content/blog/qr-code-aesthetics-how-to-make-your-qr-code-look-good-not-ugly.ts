@@ -5,7 +5,7 @@ export default {
   date: "2026-06-09",
   author: "Abhinand K.S.",
   readTime: "5 min read",
-  image: "https://www.tapfolio.me/assets/blog/tapfolio-qr-code-design-aesthetics-hero.jpg",
+  image: "/assets/blog/tapfolio-qr-code-design-aesthetics-hero.jpg",
   category: "Networking",
   content: "QR Code Aesthetics: How to Make Your QR Code Look Good (Not Ugly). In today's digital era, professional connection sharing requires speed, security, and high visual engagement. Reusable smart cards equipped with Near Field Communication (NFC) allow individuals, startups, and enterprise teams to swap contact details, portfolio grids, and social directories instantly with one tap. This guide explores the details, setups, and advantages of adopting this smart networking technology."
 };

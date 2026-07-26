@@ -5,7 +5,7 @@ export default {
   date: "2025-05-28",
   author: "Mohammed Nibrasul Haqq",
   readTime: "5 min read",
-  image: "https://www.tapfolio.me/assets/blog/5_Common_Networking_Mistakes_Professionals_Make_And_How_tapfolio_NFC_Cards_Fix_Them.png",
+  image: "/assets/blog/5_Common_Networking_Mistakes_Professionals_Make_And_How_tapfolio_NFC_Cards_Fix_Them.png",
   category: "Networking",
   content: "5 Common Networking Mistakes Professionals Make (And How NFC Cards Fix Them). In today's digital era, professional connection sharing requires speed, security, and high visual engagement. Reusable smart cards equipped with Near Field Communication (NFC) allow individuals, startups, and enterprise teams to swap contact details, portfolio grids, and social directories instantly with one tap. This guide explores the details, setups, and advantages of adopting this smart networking technology."
 };

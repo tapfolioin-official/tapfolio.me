@@ -5,7 +5,7 @@ export default {
   date: "2026-02-10",
   author: "Mohammed Nibrasul Haqq",
   readTime: "5 min read",
-  image: "https://www.tapfolio.me/assets/blog/nfc-business-cards-material-comparison-pvc-wood-metal_jpg_07d99af8-2504-40a4-98c4-16efe2ee5eff.jpg",
+  image: "/assets/blog/nfc-business-cards-material-comparison-pvc-wood-metal_jpg_07d99af8-2504-40a4-98c4-16efe2ee5eff.jpg",
   category: "NFC Hardware",
   content: "tapfolio Metal vs. PVC vs. Bamboo: Which Card Suits Your Style?. In today's digital era, professional connection sharing requires speed, security, and high visual engagement. Reusable smart cards equipped with Near Field Communication (NFC) allow individuals, startups, and enterprise teams to swap contact details, portfolio grids, and social directories instantly with one tap. This guide explores the details, setups, and advantages of adopting this smart networking technology."
 };

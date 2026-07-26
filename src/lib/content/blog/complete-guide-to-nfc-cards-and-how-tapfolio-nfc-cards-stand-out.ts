@@ -5,7 +5,7 @@ export default {
   date: "2024-09-13",
   author: "Abhinand K.S.",
   readTime: "5 min read",
-  image: "https://www.tapfolio.me/assets/blog/nfc_business_card_from_tapfolio_india.png",
+  image: "/assets/blog/nfc_business_card_from_tapfolio_india.png",
   category: "Networking",
   content: "Complete Guide to NFC Cards and How tapfolio NFC Cards Stand Out. In today's digital era, professional connection sharing requires speed, security, and high visual engagement. Reusable smart cards equipped with Near Field Communication (NFC) allow individuals, startups, and enterprise teams to swap contact details, portfolio grids, and social directories instantly with one tap. This guide explores the details, setups, and advantages of adopting this smart networking technology."
 };

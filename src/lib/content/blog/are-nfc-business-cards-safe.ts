@@ -5,7 +5,7 @@ export default {
   date: "2024-01-13",
   author: "Abhinand K.S.",
   readTime: "5 min read",
-  image: "https://www.tapfolio.me/assets/blog/tapfolio_nfc_business_cards_price_details.png",
+  image: "/assets/blog/tapfolio_nfc_business_cards_price_details.png",
   category: "Security",
   content: "Are NFC Business Cards Safe to Use? Exploring Security in Modern Networking. In today's digital era, professional connection sharing requires speed, security, and high visual engagement. Reusable smart cards equipped with Near Field Communication (NFC) allow individuals, startups, and enterprise teams to swap contact details, portfolio grids, and social directories instantly with one tap. This guide explores the details, setups, and advantages of adopting this smart networking technology."
 };

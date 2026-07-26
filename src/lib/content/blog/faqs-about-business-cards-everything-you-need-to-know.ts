@@ -5,7 +5,7 @@ export default {
   date: "2024-12-21",
   author: "Mohammed Nibrasul Haqq",
   readTime: "5 min read",
-  image: "https://www.tapfolio.me/assets/blog/FAQs_About_Business_Cards_Everything_You_Need_to_Know_520x500_080c3505-f9d1-44ef-a6f4-a55875c7665f.png",
+  image: "/assets/blog/FAQs_About_Business_Cards_Everything_You_Need_to_Know_520x500_080c3505-f9d1-44ef-a6f4-a55875c7665f.png",
   category: "Networking",
   content: "FAQs About Business Cards: Everything You Need to Know. In today's digital era, professional connection sharing requires speed, security, and high visual engagement. Reusable smart cards equipped with Near Field Communication (NFC) allow individuals, startups, and enterprise teams to swap contact details, portfolio grids, and social directories instantly with one tap. This guide explores the details, setups, and advantages of adopting this smart networking technology."
 };

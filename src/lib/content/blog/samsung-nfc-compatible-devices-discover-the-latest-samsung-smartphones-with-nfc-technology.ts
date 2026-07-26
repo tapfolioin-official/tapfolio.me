@@ -5,7 +5,7 @@ export default {
   date: "2024-12-19",
   author: "Abhinand K.S.",
   readTime: "5 min read",
-  image: "https://www.tapfolio.me/assets/blog/Samsung_NFC-Compatible_Devices_Discover_the_Latest_Samsung_Smartphones_with_NFC_Technology_520x500_b86cf0f9-4351-4782-bda0-e1cd789d759e.png",
+  image: "/assets/blog/Samsung_NFC-Compatible_Devices_Discover_the_Latest_Samsung_Smartphones_with_NFC_Technology_520x500_b86cf0f9-4351-4782-bda0-e1cd789d759e.png",
   category: "Networking",
   content: "Samsung NFC-Compatible Devices: Discover the Latest Samsung Smartphones with NFC Technology. In today's digital era, professional connection sharing requires speed, security, and high visual engagement. Reusable smart cards equipped with Near Field Communication (NFC) allow individuals, startups, and enterprise teams to swap contact details, portfolio grids, and social directories instantly with one tap. This guide explores the details, setups, and advantages of adopting this smart networking technology."
 };

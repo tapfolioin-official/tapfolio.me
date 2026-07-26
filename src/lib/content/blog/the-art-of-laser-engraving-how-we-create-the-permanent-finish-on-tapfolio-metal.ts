@@ -5,7 +5,7 @@ export default {
   date: "2026-05-28",
   author: "Mohammed Nibrasul Haqq",
   readTime: "5 min read",
-  image: "https://www.tapfolio.me/assets/blog/tapfolio-engraved-metal-nfc-card-close-up_f32e2eba-c1d8-4316-aee8-efc4c4dc6d40.jpg",
+  image: "/assets/blog/tapfolio-engraved-metal-nfc-card-close-up_f32e2eba-c1d8-4316-aee8-efc4c4dc6d40.jpg",
   category: "NFC Hardware",
   content: "The Art of Laser Engraving: How We Create the Permanent Finish on tapfolio Metal. In today's digital era, professional connection sharing requires speed, security, and high visual engagement. Reusable smart cards equipped with Near Field Communication (NFC) allow individuals, startups, and enterprise teams to swap contact details, portfolio grids, and social directories instantly with one tap. This guide explores the details, setups, and advantages of adopting this smart networking technology."
 };

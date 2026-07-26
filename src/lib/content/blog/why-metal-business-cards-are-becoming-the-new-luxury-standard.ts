@@ -5,7 +5,7 @@ export default {
   date: "2025-09-05",
   author: "Mohammed Nibrasul Haqq",
   readTime: "5 min read",
-  image: "https://www.tapfolio.me/assets/blog/luxury-metal-business-card-desk_d7b41e5b-2b71-4d95-8f0d-50aba3f07090.jpg",
+  image: "/assets/blog/luxury-metal-business-card-desk_d7b41e5b-2b71-4d95-8f0d-50aba3f07090.jpg",
   category: "NFC Hardware",
   content: "Why Metal Business Cards Are Becoming the New Luxury Standard. In today's digital era, professional connection sharing requires speed, security, and high visual engagement. Reusable smart cards equipped with Near Field Communication (NFC) allow individuals, startups, and enterprise teams to swap contact details, portfolio grids, and social directories instantly with one tap. This guide explores the details, setups, and advantages of adopting this smart networking technology."
 };

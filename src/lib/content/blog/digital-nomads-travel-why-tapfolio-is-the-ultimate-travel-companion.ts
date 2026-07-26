@@ -5,7 +5,7 @@ export default {
   date: "2026-07-22",
   author: "Mohammed Nibrasul Haqq",
   readTime: "5 min read",
-  image: "https://www.tapfolio.me/assets/blog/tapfolio-digital-nomad-travel-nfc-card-hero_52898b24-2bf5-45ea-8e28-0ba78241d2b3.jpg",
+  image: "/assets/blog/tapfolio-digital-nomad-travel-nfc-card-hero_52898b24-2bf5-45ea-8e28-0ba78241d2b3.jpg",
   category: "Networking",
   content: "Digital Nomads & Travel: Why tapfolio is the Ultimate Travel Companion. In today's digital era, professional connection sharing requires speed, security, and high visual engagement. Reusable smart cards equipped with Near Field Communication (NFC) allow individuals, startups, and enterprise teams to swap contact details, portfolio grids, and social directories instantly with one tap. This guide explores the details, setups, and advantages of adopting this smart networking technology."
 };

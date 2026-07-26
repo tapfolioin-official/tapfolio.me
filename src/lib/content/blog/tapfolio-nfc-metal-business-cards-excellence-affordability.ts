@@ -5,7 +5,7 @@ export default {
   date: "2024-01-15",
   author: "Mohammed Nibrasul Haqq",
   readTime: "5 min read",
-  image: "https://www.tapfolio.me/assets/blog/nfc_enabled_premium_metal_business_card-with_best_price_in_india.png",
+  image: "/assets/blog/nfc_enabled_premium_metal_business_card-with_best_price_in_india.png",
   category: "NFC Hardware",
   content: "Unmatched Quality and Affordability: tapfolio NFC-Enabled Metal Business Cards Lead the Way. In today's digital era, professional connection sharing requires speed, security, and high visual engagement. Reusable smart cards equipped with Near Field Communication (NFC) allow individuals, startups, and enterprise teams to swap contact details, portfolio grids, and social directories instantly with one tap. This guide explores the details, setups, and advantages of adopting this smart networking technology."
 };

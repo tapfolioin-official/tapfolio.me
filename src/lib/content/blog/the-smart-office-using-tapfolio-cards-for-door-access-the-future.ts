@@ -5,7 +5,7 @@ export default {
   date: "2026-07-11",
   author: "Abhinand K.S.",
   readTime: "5 min read",
-  image: "https://www.tapfolio.me/assets/blog/tapfolio-smart-office-nfc-door-access-hero_6b4535e1-e8f6-4491-b508-262cdd16ed19.jpg",
+  image: "/assets/blog/tapfolio-smart-office-nfc-door-access-hero_6b4535e1-e8f6-4491-b508-262cdd16ed19.jpg",
   category: "Networking",
   content: "The \"Smart Office\": Using tapfolio Cards for Door Access (The Future). In today's digital era, professional connection sharing requires speed, security, and high visual engagement. Reusable smart cards equipped with Near Field Communication (NFC) allow individuals, startups, and enterprise teams to swap contact details, portfolio grids, and social directories instantly with one tap. This guide explores the details, setups, and advantages of adopting this smart networking technology."
 };

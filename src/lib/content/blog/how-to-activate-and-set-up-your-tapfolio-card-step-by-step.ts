@@ -5,7 +5,7 @@ export default {
   date: "2026-01-19",
   author: "Abhinand K.S.",
   readTime: "5 min read",
-  image: "https://www.tapfolio.me/assets/blog/nfc-card-tap-on-smartphone-setup-onboarding_jpg_7ffbe946-24c6-4bf2-b995-abe1f93c3566.jpg",
+  image: "/assets/blog/nfc-card-tap-on-smartphone-setup-onboarding_jpg_7ffbe946-24c6-4bf2-b995-abe1f93c3566.jpg",
   category: "Networking",
   content: "How to Activate and Set Up Your tapfolio Card (Step-by-Step). In today's digital era, professional connection sharing requires speed, security, and high visual engagement. Reusable smart cards equipped with Near Field Communication (NFC) allow individuals, startups, and enterprise teams to swap contact details, portfolio grids, and social directories instantly with one tap. This guide explores the details, setups, and advantages of adopting this smart networking technology."
 };
