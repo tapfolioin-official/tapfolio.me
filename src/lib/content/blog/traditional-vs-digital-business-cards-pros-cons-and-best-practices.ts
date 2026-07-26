@@ -5,7 +5,7 @@ export default {
   date: "2025-06-03",
   author: "Mohammed Nibrasul Haqq",
   readTime: "5 min read",
-  image: "https://cdn.shopify.com/s/files/1/0654/2229/5259/articles/Traditional_vs_Digital_Business_Cards_Pros_Cons_and_Best_Practices_eb46ca81-86ea-4862-9008-eb97640b93b2.png?v=1748933636",
+  image: "https://www.tapfolio.me/assets/blog/Traditional_vs_Digital_Business_Cards_Pros_Cons_and_Best_Practices_eb46ca81-86ea-4862-9008-eb97640b93b2.png",
   category: "Networking",
   content: "Traditional vs Digital Business Cards: Pros, Cons, and Best Practices. In today's digital era, professional connection sharing requires speed, security, and high visual engagement. Reusable smart cards equipped with Near Field Communication (NFC) allow individuals, startups, and enterprise teams to swap contact details, portfolio grids, and social directories instantly with one tap. This guide explores the details, setups, and advantages of adopting this smart networking technology."
 };

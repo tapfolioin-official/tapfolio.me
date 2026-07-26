@@ -5,7 +5,7 @@ export default {
   date: "2024-09-11",
   author: "Abhinand K.S.",
   readTime: "5 min read",
-  image: "https://cdn.shopify.com/s/files/1/0654/2229/5259/articles/A_professional_blog_banner_for_The_Ultimate_Guide_to_Digital_Business_Cards_in_2024_featuring_a_futuristic_tech-driven_theme._The_banner_should_inc.webp?v=1726050173",
+  image: "https://www.tapfolio.me/assets/blog/A_professional_blog_banner_for_The_Ultimate_Guide_to_Digital_Business_Cards_in_2024_featuring_a_futuristic_tech-driven_theme._The_banner_should_inc.webp",
   category: "Networking",
   content: "The Ultimate Guide to Digital Business Cards in 2024. In today's digital era, professional connection sharing requires speed, security, and high visual engagement. Reusable smart cards equipped with Near Field Communication (NFC) allow individuals, startups, and enterprise teams to swap contact details, portfolio grids, and social directories instantly with one tap. This guide explores the details, setups, and advantages of adopting this smart networking technology."
 };

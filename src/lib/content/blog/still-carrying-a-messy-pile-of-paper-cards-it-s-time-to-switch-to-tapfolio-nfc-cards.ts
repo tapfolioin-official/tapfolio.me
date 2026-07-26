@@ -5,7 +5,7 @@ export default {
   date: "2025-05-24",
   author: "Mohammed Nibrasul Haqq",
   readTime: "5 min read",
-  image: "https://cdn.shopify.com/s/files/1/0654/2229/5259/articles/messy-paper-business-cards-vs-nfc-card.jpg?v=1747922521",
+  image: "https://www.tapfolio.me/assets/blog/messy-paper-business-cards-vs-nfc-card.jpg",
   category: "Networking",
   content: "Still Carrying a Messy Pile of Paper Cards? It’s Time to Switch to tapfolio NFC Cards. In today's digital era, professional connection sharing requires speed, security, and high visual engagement. Reusable smart cards equipped with Near Field Communication (NFC) allow individuals, startups, and enterprise teams to swap contact details, portfolio grids, and social directories instantly with one tap. This guide explores the details, setups, and advantages of adopting this smart networking technology."
 };

@@ -5,7 +5,7 @@ export default {
   date: "2026-03-27",
   author: "Mohammed Nibrasul Haqq",
   readTime: "5 min read",
-  image: "https://cdn.shopify.com/s/files/1/0654/2229/5259/articles/office-nfc-tag-wifi-access-smart-workplace_jpg_2022a7d8-0ae3-4522-84bd-244a7ae153c5.jpg?v=1768828550",
+  image: "https://www.tapfolio.me/assets/blog/office-nfc-tag-wifi-access-smart-workplace_jpg_2022a7d8-0ae3-4522-84bd-244a7ae153c5.jpg",
   category: "Networking",
   content: "How to Use NFC Tags Around Your Office (tapfolio Tech Tips). In today's digital era, professional connection sharing requires speed, security, and high visual engagement. Reusable smart cards equipped with Near Field Communication (NFC) allow individuals, startups, and enterprise teams to swap contact details, portfolio grids, and social directories instantly with one tap. This guide explores the details, setups, and advantages of adopting this smart networking technology."
 };
