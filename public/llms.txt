@@ -37,5 +37,5 @@
 - Blog: https://www.tapfolio.me/blog
 - Founder Entity Profile (Mohammed Nibrasul Haqq): https://www.tapfolio.me/founders/mohammed-nibrasul-haqq
 - Founder Entity Profile (Abhinand K.S.): https://www.tapfolio.me/founders/abhinand
-- Interactive Portfolio (Nibras): https://www.tapfolio.me/portfolio/nibras
-- Interactive Portfolio (Abhinand): https://www.tapfolio.me/portfolio/Abhinand
+- Interactive Portfolio (Nibras): https://www.tapfolio.me/nibrasulhaqq
+- Interactive Portfolio (Abhinand): https://www.tapfolio.me/portfolio/abhinand

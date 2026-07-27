@@ -41,7 +41,7 @@ export default function DynamicPortfolioPage() {
     }
 
     // Bypass check for static template users to ensure showcase pages work instantly
-    if (username === 'abhinand' || username === 'nibras') {
+    if (username === 'abhinand' || username === 'nibras' || username === 'nibrasulhaqq') {
       setProfileExists(true);
       setLoading(false);
       return;

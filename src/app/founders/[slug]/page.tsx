@@ -394,7 +394,7 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
               </div>
               <div className="flex flex-col">
                 <span className="text-xs font-semibold text-gray-500">Specialization</span>
-                <span className="font-bold text-gray-900 leading-tight">Full-Stack Web & AI Systems</span>
+                <span className="font-bold text-gray-900 leading-tight">{founder.quickFacts.specialization}</span>
               </div>
             </div>
 
@@ -404,7 +404,7 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
               </div>
               <div className="flex flex-col">
                 <span className="text-xs font-semibold text-gray-500">Primary Stack</span>
-                <span className="font-bold text-gray-900 leading-tight">Next.js, Flutter, Node, AI</span>
+                <span className="font-bold text-gray-900 leading-tight">{founderTechStack.slice(0, 4).join(", ")}</span>
               </div>
             </div>
 
@@ -438,10 +438,10 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
 
             {/* Visual Highlights Bar */}
             <div className="flex flex-wrap items-center gap-2.5 pt-2 text-xs font-semibold text-gray-700">
-              <span className="bg-gray-100 px-3 py-1 rounded-full border border-gray-200">📍 Based in Kochi, India</span>
-              <span className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full border border-blue-100">🧑‍💻 Co-Founder & CTO</span>
-              <span className="bg-gray-100 px-3 py-1 rounded-full border border-gray-200">🏢 Tapfolio</span>
-              <span className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full border border-emerald-100">⚡ Building AI & NFC Products</span>
+              <span className="bg-gray-100 px-3 py-1 rounded-full border border-gray-200">📍 Based in {founder.quickFacts.location}</span>
+              <span className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full border border-blue-100">🧑‍💻 {founder.jobTitle}</span>
+              <span className="bg-gray-100 px-3 py-1 rounded-full border border-gray-200">🏢 {founder.company}</span>
+              <span className="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full border border-emerald-100">⚡ {isAbhinand ? "Brand & Growth Strategy" : "Building AI & NFC Products"}</span>
             </div>
           </div>
 
@@ -654,7 +654,7 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
           <h2 className="text-3xl font-bold text-gray-950">Interested in collaborating?</h2>
           <div className="flex flex-wrap items-center justify-center gap-4">
             <a
-              href={founder.portfolioUrl || "/portfolio/nibras"}
+              href={founder.portfolioUrl || "/nibrasulhaqq"}
               className="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-6 py-3 rounded-full shadow-md transition-all"
             >
               Explore Portfolio →
