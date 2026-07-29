@@ -87,14 +87,20 @@ export default function HeroSection() {
         >
           <div className="flex flex-col sm:flex-row items-center gap-4">
             <MagneticButton 
-              onClick={() => router.push("/portfolio/Abhinand/projects")}
+              onClick={() => {
+                const el = document.getElementById("experience");
+                if (el) el.scrollIntoView({ behavior: "smooth" });
+              }}
               className="group flex items-center gap-4 px-8 py-4 bg-[#F5F5F5] text-[#0A0A0A] rounded-full font-space-grotesk font-bold uppercase tracking-widest text-sm hover:bg-white transition-colors"
             >
               Explore Selected Work
               <span className="transform group-hover:translate-x-2 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">→</span>
             </MagneticButton>
             <MagneticButton 
-              onClick={() => router.push("/portfolio/Abhinand/about")}
+              onClick={() => {
+                const el = document.getElementById("about");
+                if (el) el.scrollIntoView({ behavior: "smooth" });
+              }}
               className="group flex items-center gap-4 px-8 py-4 bg-transparent border border-[#F5F5F5]/20 text-[#F5F5F5] rounded-full font-space-grotesk font-bold uppercase tracking-widest text-sm hover:bg-[#F5F5F5]/10 transition-colors"
             >
               Learn More About Me

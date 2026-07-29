@@ -1,8 +1,46 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import styles from '../dashboard/dashboard.module.css';
 
+interface RevenueData {
+  metrics: {
+    monthlyRevenue: string;
+    premiumSubscribers: number;
+    conversionRate: string;
+    refunds: number;
+    recentPremiumAdded: string;
+  };
+  topPlans: Array<{
+    plan: string;
+    revenue: string;
+    subs: number;
+  }>;
+  countries: Array<{
+    country: string;
+    revenue: string;
+  }>;
+}
+
 export default function RevenuePage() {
+  const [data, setData] = useState<RevenueData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/admin/revenue')
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to load revenue data');
+        return res.json();
+      })
+      .then((resData) => {
+        if (resData.success) {
+          setData(resData);
+        }
+      })
+      .catch((err) => console.error('Error fetching revenue metrics:', err))
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <div className={styles.page}>
       <div className={styles.pageHeader}>
@@ -12,45 +50,57 @@ export default function RevenuePage() {
         </div>
       </div>
 
+      {/* KPI Cards */}
       <div className={styles.kpiGrid}>
         <div className={styles.kpiCard}>
           <span className={styles.kpiLabel}>💰 Monthly Revenue</span>
-          <span className={styles.kpiValue}>₹48,250</span>
-          <span className={styles.kpiDeltaUp}>+12.4% vs last month</span>
+          <span className={styles.kpiValue}>
+            {loading ? '—' : data?.metrics.monthlyRevenue}
+          </span>
+          <span className={styles.kpiDeltaUp}>Real-time active plan value</span>
         </div>
         <div className={styles.kpiCard}>
           <span className={styles.kpiLabel}>⭐ Premium Subscribers</span>
-          <span className={styles.kpiValue}>127</span>
-          <span className={styles.kpiDeltaUp}>+8 this week</span>
+          <span className={styles.kpiValue}>
+            {loading ? '—' : data?.metrics.premiumSubscribers}
+          </span>
+          <span className={styles.kpiDeltaUp}>
+            {loading ? '—' : data?.metrics.recentPremiumAdded}
+          </span>
         </div>
         <div className={styles.kpiCard}>
           <span className={styles.kpiLabel}>📊 Conversion Rate</span>
-          <span className={styles.kpiValue}>4.2%</span>
-          <span className={styles.kpiDeltaUp}>+0.3%</span>
+          <span className={styles.kpiValue}>
+            {loading ? '—' : data?.metrics.conversionRate}
+          </span>
+          <span className={styles.kpiDeltaUp}>Ratio of total registered users</span>
         </div>
         <div className={styles.kpiCard}>
           <span className={styles.kpiLabel}>🔄 Refunds</span>
-          <span className={styles.kpiValue}>2</span>
+          <span className={styles.kpiValue}>
+            {loading ? '—' : data?.metrics.refunds}
+          </span>
           <span className={styles.kpiDeltaUp}>Under control</span>
         </div>
       </div>
 
+      {/* Breakdown Rows */}
       <div className={styles.splitRow}>
         <div className={styles.panel}>
           <div className={styles.panelHeader}>
             <span className={styles.panelTitle}>🏆 Top Plans</span>
           </div>
           <div className={styles.panelBody}>
-            {[
-              { plan: 'Pro Monthly', revenue: '₹24,500', subs: 89 },
-              { plan: 'Pro Annual', revenue: '₹18,750', subs: 31 },
-              { plan: 'Enterprise', revenue: '₹5,000', subs: 7 },
-            ].map((p) => (
-              <div key={p.plan} className={styles.statRow}>
-                <span className={styles.statLabel}>{p.plan} ({p.subs} subs)</span>
-                <span className={styles.statValue}>{p.revenue}</span>
-              </div>
-            ))}
+            {loading ? (
+              <div style={{ padding: '1rem', color: '#64748B' }}>Loading plans...</div>
+            ) : (
+              (data?.topPlans || []).map((p) => (
+                <div key={p.plan} className={styles.statRow}>
+                  <span className={styles.statLabel}>{p.plan} ({p.subs} subs)</span>
+                  <span className={styles.statValue}>{p.revenue}</span>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
@@ -59,17 +109,16 @@ export default function RevenuePage() {
             <span className={styles.panelTitle}>🌍 Revenue by Country</span>
           </div>
           <div className={styles.panelBody}>
-            {[
-              { country: '🇮🇳 India', revenue: '₹28,400' },
-              { country: '🇺🇸 USA', revenue: '₹12,300' },
-              { country: '🇦🇪 UAE', revenue: '₹4,800' },
-              { country: '🇬🇧 UK', revenue: '₹2,750' },
-            ].map((c) => (
-              <div key={c.country} className={styles.statRow}>
-                <span className={styles.statLabel}>{c.country}</span>
-                <span className={styles.statValue}>{c.revenue}</span>
-              </div>
-            ))}
+            {loading ? (
+              <div style={{ padding: '1rem', color: '#64748B' }}>Loading countries...</div>
+            ) : (
+              (data?.countries || []).map((c) => (
+                <div key={c.country} className={styles.statRow}>
+                  <span className={styles.statLabel}>{c.country}</span>
+                  <span className={styles.statValue}>{c.revenue}</span>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>

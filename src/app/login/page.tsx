@@ -73,7 +73,14 @@ function LoginFormContent() {
     // Parse redirect url for username (e.g. /connect/antony)
     if (redirectParam && redirectParam.includes('/connect/')) {
       targetUsername = redirectParam.split('/connect/')[1]?.split('?')[0] || '';
-    } else if (redirectParam && redirectParam.startsWith('/') && redirectParam.length > 1 && !redirectParam.includes('/dashboard') && !redirectParam.includes('/api')) {
+    } else if (
+      redirectParam && 
+      redirectParam.startsWith('/') && 
+      redirectParam.length > 1 && 
+      !redirectParam.includes('/dashboard') && 
+      !redirectParam.includes('/api') &&
+      !['/admin', '/careers', '/login', '/company', '/pricing', '/contact', '/support', '/docs', '/teams', '/register', '/business', '/solution'].some(route => redirectParam.startsWith(route))
+    ) {
       targetUsername = redirectParam.slice(1).split('?')[0];
     }
 
@@ -90,7 +97,14 @@ function LoginFormContent() {
       setInviteUser(targetUsername);
       // Fetch public profile name of the inviter
       fetch(`/api/profile/${targetUsername}`)
-        .then(res => res.json())
+        .then(res => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const contentType = res.headers.get("content-type");
+          if (!contentType || !contentType.includes("application/json")) {
+            throw new TypeError("Response is not JSON");
+          }
+          return res.json();
+        })
         .then(data => {
           if (data.success && data.profile) {
             setInviteName(data.profile.name);

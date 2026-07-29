@@ -6,6 +6,10 @@ class ExportFormatService {
     switch (preset) {
       case ExportSizePreset.story:
         return {'width': ExportConstants.storyWidth, 'height': ExportConstants.storyHeight};
+      case ExportSizePreset.post:
+        return {'width': ExportConstants.postWidth, 'height': ExportConstants.postHeight};
+      case ExportSizePreset.businessCard:
+        return {'width': ExportConstants.bizCardWidth, 'height': ExportConstants.bizCardHeight};
       case ExportSizePreset.square:
         return {'width': ExportConstants.squareWidth, 'height': ExportConstants.squareHeight};
       case ExportSizePreset.landscape:

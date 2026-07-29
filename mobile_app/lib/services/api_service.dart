@@ -623,7 +623,7 @@ class ApiService {
   Future<Map<String, dynamic>> saveTheme(Map<String, dynamic> settings) async {
     try {
       final response = await _apiClient.sendRequest(
-        'POST',
+        'PUT',
         ApiEndpoints.theme,
         body: jsonEncode({'settings': settings}),
       );

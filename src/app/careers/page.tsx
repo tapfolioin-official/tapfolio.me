@@ -4,6 +4,8 @@ import Link from "next/link";
 import Navbar from "@/app/team/_components/Navbar";
 import Footer from "@/app/team/_components/Footer";
 import { getWebPageSchema, getBreadcrumbSchema } from "@/lib/geo-schemas";
+import prisma from "@/lib/db";
+import JobListingSection from "./_components/JobListingSection";
 
 export const metadata: Metadata = {
   title: "Careers at Tapfolio | Build the Future of Digital Identity",
@@ -20,7 +22,7 @@ export const metadata: Metadata = {
   }
 };
 
-export default function CareersPage() {
+export default async function CareersPage() {
   const pageUrl = "https://tapfolio.me/careers";
   const webPageSchema = getWebPageSchema(pageUrl, "Careers at Tapfolio", "Tapfolio job listings and startup opportunities.");
   const breadcrumbSchema = getBreadcrumbSchema([
@@ -33,12 +35,26 @@ export default function CareersPage() {
     "@graph": [webPageSchema, breadcrumbSchema]
   };
 
-  const jobs = [
-    { title: "Senior Full Stack Engineer (Next.js)", dept: "Engineering", loc: "Kochi, India / Remote", type: "Full-time" },
-    { title: "NFC Mobile Developer (Flutter)", dept: "Engineering", loc: "Kochi, India / Hybrid", type: "Full-time" },
-    { title: "Brand Strategist & Product Designer", dept: "Product & Design", loc: "Kochi, India / Hybrid", type: "Full-time" },
-    { title: "Growth Marketing Specialist", dept: "Growth & Operations", loc: "Remote (Global)", type: "Contract" }
-  ];
+  let jobs = await prisma.jobRequirement.findMany({
+    orderBy: { createdAt: "desc" },
+  });
+
+  if (jobs.length === 0) {
+    const defaultJobs = [
+      { title: "Senior Full Stack Engineer (Next.js)", dept: "Engineering", loc: "Kochi, India / Remote", type: "Full-time" },
+      { title: "NFC Mobile Developer (Flutter)", dept: "Engineering", loc: "Kochi, India / Hybrid", type: "Full-time" },
+      { title: "Brand Strategist & Product Designer", dept: "Product & Design", loc: "Kochi, India / Hybrid", type: "Full-time" },
+      { title: "Growth Marketing Specialist", dept: "Growth & Operations", loc: "Remote (Global)", type: "Contract" }
+    ];
+
+    await prisma.jobRequirement.createMany({
+      data: defaultJobs,
+    });
+
+    jobs = await prisma.jobRequirement.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+  }
 
   return (
     <div className="bg-slate-950 min-h-screen text-slate-100 font-sans selection:bg-blue-600/30 selection:text-blue-300 flex flex-col pt-20">
@@ -84,34 +100,7 @@ export default function CareersPage() {
           <h2 className="text-2xl font-bold text-white border-b border-slate-800 pb-2">
             Open Opportunities
           </h2>
-          <div className="flex flex-col gap-4">
-            {jobs.map((j, idx) => (
-              <div
-                key={idx}
-                className="border border-slate-800/80 bg-slate-900/20 rounded-2xl p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:border-blue-500/50 transition-all"
-              >
-                <div className="flex flex-col gap-1.5">
-                  <h3 className="font-bold text-white text-lg">{j.title}</h3>
-                  <div className="flex items-center gap-3 text-xs text-slate-500 font-semibold">
-                    <span>🏢 {j.dept}</span>
-                    <span>•</span>
-                    <span>📍 {j.loc}</span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-start">
-                  <span className="bg-slate-800 text-slate-300 text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full border border-slate-700">
-                    {j.type}
-                  </span>
-                  <a
-                    href="mailto:careers@tapfolio.me"
-                    className="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-5 py-2.5 rounded-xl transition-all"
-                  >
-                    Apply Now
-                  </a>
-                </div>
-              </div>
-            ))}
-          </div>
+          <JobListingSection jobs={jobs} />
         </section>
 
       </main>

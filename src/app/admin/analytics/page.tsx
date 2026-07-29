@@ -50,19 +50,16 @@ export default function AnalyticsPage() {
             <span className={styles.panelTitle}>🌍 Traffic Sources</span>
           </div>
           <div className={styles.panelBody}>
-            {[
-              { source: 'Direct', pct: '42%' },
-              { source: 'Instagram', pct: '28%' },
-              { source: 'Google Search', pct: '15%' },
-              { source: 'WhatsApp', pct: '8%' },
-              { source: 'LinkedIn', pct: '4%' },
-              { source: 'Other', pct: '3%' },
-            ].map((s) => (
-              <div key={s.source} className={styles.statRow}>
-                <span className={styles.statLabel}>{s.source}</span>
-                <span className={styles.statValue}>{s.pct}</span>
-              </div>
-            ))}
+            {loading ? (
+              <div style={{ padding: '1rem', color: '#64748B' }}>Loading...</div>
+            ) : (
+              (kpis?.trafficSources || []).map((s: any) => (
+                <div key={s.source} className={styles.statRow}>
+                  <span className={styles.statLabel}>{s.source}</span>
+                  <span className={styles.statValue}>{s.pct}</span>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
@@ -71,17 +68,16 @@ export default function AnalyticsPage() {
             <span className={styles.panelTitle}>📱 Platform Distribution</span>
           </div>
           <div className={styles.panelBody}>
-            {[
-              { platform: 'Android', pct: '45%' },
-              { platform: 'iOS', pct: '27%' },
-              { platform: 'Web (Desktop)', pct: '18%' },
-              { platform: 'Web (Mobile)', pct: '10%' },
-            ].map((p) => (
-              <div key={p.platform} className={styles.statRow}>
-                <span className={styles.statLabel}>{p.platform}</span>
-                <span className={styles.statValue}>{p.pct}</span>
-              </div>
-            ))}
+            {loading ? (
+              <div style={{ padding: '1rem', color: '#64748B' }}>Loading...</div>
+            ) : (
+              (kpis?.platforms || []).map((p: any) => (
+                <div key={p.platform} className={styles.statRow}>
+                  <span className={styles.statLabel}>{p.platform}</span>
+                  <span className={styles.statValue}>{p.pct}</span>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>
@@ -92,21 +88,16 @@ export default function AnalyticsPage() {
             <span className={styles.panelTitle}>🌐 Top Countries</span>
           </div>
           <div className={styles.panelBody}>
-            {[
-              { country: '🇮🇳 India', users: '46%' },
-              { country: '🇺🇸 United States', users: '18%' },
-              { country: '🇦🇪 UAE', users: '12%' },
-              { country: '🇬🇧 United Kingdom', users: '8%' },
-              { country: '🇨🇦 Canada', users: '5%' },
-              { country: '🇩🇪 Germany', users: '4%' },
-              { country: '🇦🇺 Australia', users: '3%' },
-              { country: '🌍 Other', users: '4%' },
-            ].map((c) => (
-              <div key={c.country} className={styles.statRow}>
-                <span className={styles.statLabel}>{c.country}</span>
-                <span className={styles.statValue}>{c.users}</span>
-              </div>
-            ))}
+            {loading ? (
+              <div style={{ padding: '1rem', color: '#64748B' }}>Loading...</div>
+            ) : (
+              (kpis?.countries || []).map((c: any) => (
+                <div key={c.country} className={styles.statRow}>
+                  <span className={styles.statLabel}>{c.country}</span>
+                  <span className={styles.statValue}>{c.users}</span>
+                </div>
+              ))
+            )}
           </div>
         </div>
 

@@ -28,20 +28,20 @@ export default function ConfiguratorSection() {
   });
 
   return (
-    <section id="order" className="w-full py-32 bg-[#050505] text-white flex justify-center">
-      <div className="max-w-[1400px] w-full px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+    <section id="order" className="w-full py-16 md:py-32 bg-[#050505] text-white flex justify-center overflow-hidden">
+      <div className="max-w-[1400px] w-full px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
         
         {/* Left Side: Live 3D Preview */}
         <div className="w-full lg:sticky lg:top-32 flex flex-col items-center">
-          <div className="text-center mb-8">
-            <h2 className="font-display font-bold text-4xl text-white mb-4">Build Your TapFolio.</h2>
-            <p className="text-gray-400">See your design update in real-time before ordering.</p>
+          <div className="text-center mb-6 md:mb-8">
+            <h2 className="font-display font-bold text-3xl sm:text-4xl text-white mb-3 sm:mb-4">Build Your TapFolio.</h2>
+            <p className="text-gray-400 text-sm sm:text-base">See your design update in real-time before ordering.</p>
           </div>
           
-          <div className="w-full h-[500px] bg-white/5 border border-white/10 rounded-3xl flex items-center justify-center mb-8 relative">
-             <div className="absolute top-6 left-6 z-20">
+          <div className="w-full h-[360px] sm:h-[450px] md:h-[500px] bg-white/5 border border-white/10 rounded-2xl sm:rounded-3xl flex items-center justify-center mb-6 md:mb-8 relative overflow-hidden">
+             <div className="absolute top-4 left-4 sm:top-6 sm:left-6 z-20">
                <span className="bg-black/50 border border-white/10 px-3 py-1.5 rounded-full text-xs font-bold text-gray-300">
-                 Live 3D Preview Mount Point
+                 Live 3D Preview
                </span>
              </div>
              
@@ -51,15 +51,15 @@ export default function ConfiguratorSection() {
              </div>
           </div>
 
-          <button className="w-full max-w-[400px] bg-blue-600 hover:bg-blue-500 text-white font-bold py-5 px-8 rounded-full flex items-center justify-center gap-3 transition-colors text-lg shadow-lg shadow-blue-600/20">
+          <button className="w-full max-w-[400px] bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 sm:py-5 px-6 sm:px-8 rounded-full flex items-center justify-center gap-3 transition-colors text-base sm:text-lg shadow-lg shadow-blue-600/20 cursor-pointer">
             Get My Card — {config.material === 'metal' ? '$89' : '$39'}
             <ShoppingBag size={20} />
           </button>
-          <p className="text-gray-500 text-xs mt-4 text-center">Includes free shipping and lifetime profile hosting.</p>
+          <p className="text-gray-500 text-xs mt-3 sm:mt-4 text-center">Includes free shipping and lifetime profile hosting.</p>
         </div>
 
         {/* Right Side: Configurator Panel */}
-        <div className="w-full bg-white text-gray-900 rounded-[40px] p-8 md:p-12 shadow-2xl">
+        <div className="w-full bg-white text-gray-900 rounded-[28px] sm:rounded-[40px] p-4 sm:p-8 md:p-12 shadow-2xl overflow-hidden">
           <ConfiguratorPanel config={config} setConfig={setConfig} />
         </div>
 

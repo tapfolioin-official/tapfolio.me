@@ -178,7 +178,8 @@ main {
 }
 
 .feature-box {
-  width: 380px;
+  width: 100%;
+  max-width: 380px;
   height: 420px;
   border-radius: 32px;
   background: #ffffff;
@@ -250,7 +251,8 @@ main {
 }
 
 .testimonial-review-card {
-  width: 500px;
+  width: 100%;
+  max-width: 500px;
   height: 300px;
   flex-shrink: 0;
   background: #ffffff;
@@ -274,18 +276,31 @@ main {
 }
 
 .configurator-panel {
-  width: 450px;
+  width: 100%;
+  max-width: 450px;
   background: rgba(255, 255, 255, 0.85);
   border: 1px solid var(--color-border-gray);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   box-shadow: var(--shadow-double-b);
   border-radius: 28px;
-  padding: 32px;
+  padding: 28px;
   color: var(--color-text-primary);
   max-height: 80vh;
   overflow-y: auto;
-  justify-self: end;
+  box-sizing: border-box;
+  margin: 0 auto;
+}
+@media (max-width: 640px) {
+  .configurator-panel {
+    padding: 12px 4px;
+    border-radius: 0px;
+    box-shadow: none;
+    border: none;
+    background: transparent;
+    max-height: none;
+    overflow-y: visible;
+  }
 }
 .configurator-panel::-webkit-scrollbar {
   width: 6px;
@@ -323,6 +338,7 @@ main {
   font-size: 14px;
   outline: none;
   transition: all 0.2s ease;
+  box-sizing: border-box;
 }
 .config-input:focus {
   border-color: var(--color-brand-accent);
@@ -330,7 +346,7 @@ main {
 }
 .toggle-group {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
   gap: 8px;
 }
 .toggle-btn {
@@ -338,11 +354,12 @@ main {
   border: 1px solid var(--color-border-gray);
   border-radius: 10px;
   color: var(--color-text-secondary);
-  padding: 10px;
+  padding: 10px 6px;
   font-weight: 600;
-  font-size: 13px;
+  font-size: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
+  text-align: center;
 }
 .toggle-btn:hover {
   background: rgba(0, 0, 0, 0.04);
@@ -354,6 +371,7 @@ main {
 }
 .color-swatches {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
 }
 .color-swatch-btn {

@@ -1,106 +1,147 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import '../models/card_theme.dart';
 
-/// QR section with all sizes driven by [qrSize].
-/// Shows "Scan to Connect" label only when [qrSize] >= 120 (enough vertical
-/// room to display it without overflowing).
+/// Premium glassmorphic QR section — theme-aware.
+///
+/// All sizes scale from [qrSize] for proportional rendering.
 class QrSection extends StatelessWidget {
   final String url;
-
-  /// The logical-pixel side length of the QR image itself.
-  /// All padding, icon sizes, and font sizes scale from this value.
   final double qrSize;
+  final CardExportThemeData theme;
 
   const QrSection({
     super.key,
     required this.url,
     this.qrSize = 130,
+    required this.theme,
   });
 
   @override
   Widget build(BuildContext context) {
-    final pad = (qrSize * 0.12).clamp(8.0, 50.0);   // card padding
-    final iconSz = (qrSize * 0.20).clamp(14.0, 60.0); // NFC icon container
-    final iconFs = (qrSize * 0.12).clamp( 8.0, 36.0); // NFC icon itself
-    final labelFs= (qrSize * 0.13).clamp(10.0, 44.0); // "Scan to Connect"
-    final showLabel = qrSize >= 120;
-    final gapBelowQr = qrSize * 0.10;
+    final t = theme;
+    final outerPad = (qrSize * 0.14).clamp(10.0, 56.0);
+    final innerPad = (qrSize * 0.10).clamp(8.0, 42.0);
+    final borderW  = (qrSize * 0.012).clamp(1.0, 3.5);
+    final outerR   = (qrSize * 0.20).clamp(14.0, 48.0);
+    final innerR   = (qrSize * 0.14).clamp(10.0, 36.0);
+    final iconSz   = (qrSize * 0.22).clamp(16.0, 64.0);
+    final iconFs   = (qrSize * 0.13).clamp(10.0, 40.0);
+    final iconR    = (iconSz * 0.28).clamp(5.0, 18.0);
+    final labelFs  = (qrSize * 0.105).clamp(9.0, 36.0);
+    final nfcFs    = (qrSize * 0.085).clamp(7.0, 28.0);
+    final showLabel = qrSize >= 100;
+    final gapBelowQr = qrSize * 0.08;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // ── QR Code white card ────────────────────────────────────
+        // ── Glassmorphic QR card with gradient border ─────────────
         Container(
-          padding: EdgeInsets.all(pad),
+          padding: EdgeInsets.all(borderW),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(qrSize * 0.145),
+            borderRadius: BorderRadius.circular(outerR),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: t.qrBorderGradient,
+            ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.18),
-                blurRadius: qrSize * 0.22,
-                offset: Offset(0, qrSize * 0.07),
+                color: t.qrGlowColor.withValues(alpha: 0.20),
+                blurRadius: qrSize * 0.35,
+                spreadRadius: qrSize * 0.02,
               ),
               BoxShadow(
-                color: const Color(0xFF6366F1).withValues(alpha: 0.10),
-                blurRadius: qrSize * 0.28,
-                spreadRadius: qrSize * 0.03,
+                color: Colors.black.withValues(alpha: 0.30),
+                blurRadius: qrSize * 0.25,
+                offset: Offset(0, qrSize * 0.06),
               ),
             ],
           ),
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              QrImageView(
-                data: url,
-                version: QrVersions.auto,
-                size: qrSize,
-                gapless: false,
-                eyeStyle: const QrEyeStyle(
-                  eyeShape: QrEyeShape.square,
-                  color: Colors.black,
-                ),
-                dataModuleStyle: const QrDataModuleStyle(
-                  dataModuleShape: QrDataModuleShape.square,
-                  color: Colors.black,
-                ),
-              ),
-              // NFC centre logo
-              Container(
-                width: iconSz,
-                height: iconSz,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(outerR - borderW),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+              child: Container(
+                padding: EdgeInsets.all(innerPad),
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(iconSz * 0.28),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.08),
-                      blurRadius: iconSz * 0.30,
+                  color: t.qrBackground.withValues(alpha: 0.92),
+                  borderRadius: BorderRadius.circular(innerR),
+                ),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    QrImageView(
+                      data: url,
+                      version: QrVersions.auto,
+                      size: qrSize,
+                      gapless: false,
+                      eyeStyle: QrEyeStyle(
+                        eyeShape: QrEyeShape.square,
+                        color: t.qrDotColor,
+                      ),
+                      dataModuleStyle: QrDataModuleStyle(
+                        dataModuleShape: QrDataModuleShape.circle,
+                        color: t.qrDotColor,
+                      ),
+                    ),
+                    Container(
+                      width: iconSz,
+                      height: iconSz,
+                      decoration: BoxDecoration(
+                        color: t.qrBackground,
+                        borderRadius: BorderRadius.circular(iconR),
+                        boxShadow: [
+                          BoxShadow(
+                            color: t.qrGlowColor.withValues(alpha: 0.25),
+                            blurRadius: iconSz * 0.40,
+                            spreadRadius: iconSz * 0.04,
+                          ),
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.08),
+                            blurRadius: iconSz * 0.30,
+                          ),
+                        ],
+                      ),
+                      child: Icon(
+                        Icons.nfc_rounded,
+                        size: iconFs,
+                        color: t.qrIconColor,
+                      ),
                     ),
                   ],
                 ),
-                child: Icon(
-                  Icons.nfc_rounded,
-                  size: iconFs,
-                  color: const Color(0xFF6366F1),
-                ),
               ),
-            ],
+            ),
           ),
         ),
 
-        // ── "Scan to Connect" label (only when there's room) ─────
+        // ── "Tap or Scan" label ──────────────────────────────────
         if (showLabel) ...[
           SizedBox(height: gapBelowQr),
-          Text(
-            'Scan to Connect',
-            style: GoogleFonts.outfit(
-              color: Colors.white,
-              fontWeight: FontWeight.w700,
-              fontSize: labelFs,
-              letterSpacing: 0.1,
-            ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.contactless_rounded,
+                size: nfcFs * 1.2,
+                color: t.textSecondary,
+              ),
+              SizedBox(width: nfcFs * 0.4),
+              Text(
+                'Tap or Scan',
+                style: GoogleFonts.outfit(
+                  color: t.textSecondary,
+                  fontWeight: FontWeight.w600,
+                  fontSize: labelFs,
+                  letterSpacing: 0.3,
+                ),
+              ),
+            ],
           ),
         ],
       ],

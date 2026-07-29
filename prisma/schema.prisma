@@ -489,4 +489,36 @@ model ProfileTheme {
   @@map("profile_themes")
 }
 
+model JobRequirement {
+  id          Int      @id @default(autoincrement())
+  title       String
+  dept        String
+  loc         String
+  type        String   @default("Full-time")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("job_requirements")
+}
+
+model JobApplication {
+  id          Int      @id @default(autoincrement())
+  jobTitle    String
+  firstName   String
+  lastName    String
+  email       String
+  phone       String?
+  address     String?
+  headline    String?
+  photoUrl    String?
+  resumeLink  String
+  summary     String?
+  education   String?
+  experience  String?
+  coverLetter String?
+  createdAt   DateTime @default(now())
+
+  @@map("job_applications")
+}
+
 

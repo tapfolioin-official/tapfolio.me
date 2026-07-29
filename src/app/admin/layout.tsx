@@ -39,6 +39,7 @@ const NAV_SECTIONS = [
     items: [
       { icon: '📝', label: 'Activity Logs', href: '/admin/logs' },
       { icon: '🔒', label: 'Security', href: '/admin/security' },
+      { icon: '💼', label: 'Careers', href: '/admin/careers' },
       { icon: '⚙️', label: 'Settings', href: '/admin/settings' },
     ],
   },

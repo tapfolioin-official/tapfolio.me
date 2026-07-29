@@ -1393,6 +1393,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     location: profile.location,
                     bio: profile.bio,
                     tags: profile.tags,
+                    socials: profile.socials,
                   );
                 },
                 icon: const Icon(Icons.share_rounded, color: Colors.white, size: 18),

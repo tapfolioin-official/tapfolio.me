@@ -2,11 +2,70 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../models/tag.dart';
+import '../../../models/social_link.dart';
 import '../widgets/digital_card.dart';
 import '../services/card_renderer.dart';
 import '../services/card_share_service.dart';
 import '../services/card_download_service.dart';
 import '../services/card_storage_service.dart';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Export format definitions
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum _ExportFormat {
+  story,
+  post,
+  businessCard,
+}
+
+extension _ExportFormatExt on _ExportFormat {
+  String get label {
+    switch (this) {
+      case _ExportFormat.story:        return 'Story';
+      case _ExportFormat.post:         return 'Post';
+      case _ExportFormat.businessCard: return 'Card';
+    }
+  }
+
+  String get subtitle {
+    switch (this) {
+      case _ExportFormat.story:        return '9:16';
+      case _ExportFormat.post:         return '4:5';
+      case _ExportFormat.businessCard: return '3.37:2.125';
+    }
+  }
+
+  IconData get icon {
+    switch (this) {
+      case _ExportFormat.story:        return Icons.stay_current_portrait_rounded;
+      case _ExportFormat.post:         return Icons.crop_portrait_rounded;
+      case _ExportFormat.businessCard: return Icons.credit_card_rounded;
+    }
+  }
+
+  double get aspectRatio {
+    switch (this) {
+      case _ExportFormat.story:        return 9 / 16;
+      case _ExportFormat.post:         return 4 / 5;
+      case _ExportFormat.businessCard: return 1012 / 638; // credit card
+    }
+  }
+
+  double get pixelRatio {
+    // Capture multiplier so the final PNG hits the target pixel dimensions.
+    // The preview widget is 280 lp wide → render at 4× for story (1080 px).
+    switch (this) {
+      case _ExportFormat.story:        return 4.0;
+      case _ExportFormat.post:         return 4.0;
+      case _ExportFormat.businessCard: return 3.6;
+    }
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ShareCardDialog
+// ─────────────────────────────────────────────────────────────────────────────
 
 class ShareCardDialog extends StatefulWidget {
   final String name;
@@ -17,10 +76,11 @@ class ShareCardDialog extends StatefulWidget {
   final bool isPremium;
   final bool isOnline;
 
-  // Profile detail fields shown on the card
+  // Profile detail fields
   final String? location;
   final String? bio;
   final List<Tag> tags;
+  final List<SocialLink> socials;
 
   const ShareCardDialog({
     super.key,
@@ -34,6 +94,7 @@ class ShareCardDialog extends StatefulWidget {
     this.location,
     this.bio,
     this.tags = const [],
+    this.socials = const [],
   });
 
   static void show(
@@ -48,6 +109,7 @@ class ShareCardDialog extends StatefulWidget {
     String? location,
     String? bio,
     List<Tag> tags = const [],
+    List<SocialLink> socials = const [],
   }) {
     showModalBottomSheet(
       context: context,
@@ -67,6 +129,7 @@ class ShareCardDialog extends StatefulWidget {
         location: location,
         bio: bio,
         tags: tags,
+        socials: socials,
       ),
     );
   }
@@ -79,6 +142,9 @@ class _ShareCardDialogState extends State<ShareCardDialog> {
   /// Key for the visible preview (also used as the capture target).
   final GlobalKey _repaintKey = GlobalKey();
   bool _exporting = false;
+
+  /// Currently selected export format.
+  _ExportFormat _format = _ExportFormat.story;
 
   @override
   void initState() {
@@ -110,29 +176,34 @@ class _ShareCardDialogState extends State<ShareCardDialog> {
         removeBranding: widget.isPremium,
         isPremium: widget.isPremium,
         isOnline: widget.isOnline,
+        socials: widget.socials,
         location: widget.location,
         bio: widget.bio,
         tags: widget.tags,
       );
 
-  Future<void> _shareCard() async {
-    setState(() => _exporting = true);
-
-    // Pre-warm network avatar so it is in cache before capture.
-    // Skip data: URIs — decoded instantly as MemoryImage, no fetch needed.
-    final _raw = widget.avatar;
-    if (_raw != null &&
-        _raw.isNotEmpty &&
-        _raw != '/profile_avatar.png' &&
-        !_raw.startsWith('data:') &&
+  Future<void> _prewarmAvatar() async {
+    final raw = widget.avatar;
+    if (raw != null &&
+        raw.isNotEmpty &&
+        raw != '/profile_avatar.png' &&
+        !raw.startsWith('data:') &&
         mounted) {
-      final url = _raw.startsWith('http')
-          ? _raw
-          : '${widget.baseUrl}$_raw';
+      final url = raw.startsWith('http')
+          ? raw
+          : '${widget.baseUrl}$raw';
       await CardRenderer.prewarmImage(url, context);
     }
+  }
 
-    final file = await CardRenderer.captureToPng(_repaintKey, pixelRatio: 4.0);
+  Future<void> _shareCard() async {
+    setState(() => _exporting = true);
+    await _prewarmAvatar();
+
+    final file = await CardRenderer.captureToPng(
+      _repaintKey,
+      pixelRatio: _format.pixelRatio,
+    );
     setState(() => _exporting = false);
 
     if (file != null) {
@@ -155,22 +226,12 @@ class _ShareCardDialogState extends State<ShareCardDialog> {
 
   Future<void> _downloadCard() async {
     setState(() => _exporting = true);
+    await _prewarmAvatar();
 
-    // Pre-warm network avatar so it is in cache before capture.
-    // Skip data: URIs — decoded instantly as MemoryImage, no fetch needed.
-    final _raw2 = widget.avatar;
-    if (_raw2 != null &&
-        _raw2.isNotEmpty &&
-        _raw2 != '/profile_avatar.png' &&
-        !_raw2.startsWith('data:') &&
-        mounted) {
-      final url = _raw2.startsWith('http')
-          ? _raw2
-          : '${widget.baseUrl}$_raw2';
-      await CardRenderer.prewarmImage(url, context);
-    }
-
-    final file = await CardRenderer.captureToPng(_repaintKey, pixelRatio: 4.0);
+    final file = await CardRenderer.captureToPng(
+      _repaintKey,
+      pixelRatio: _format.pixelRatio,
+    );
     setState(() => _exporting = false);
 
     if (file != null) {
@@ -220,7 +281,7 @@ class _ShareCardDialogState extends State<ShareCardDialog> {
                 ),
               ),
               Text(
-                'Your Digital Card',
+                'Share Card',
                 style: GoogleFonts.outfit(
                   color: Colors.white,
                   fontSize: 18,
@@ -229,12 +290,17 @@ class _ShareCardDialogState extends State<ShareCardDialog> {
               ),
               const SizedBox(height: 4),
               Text(
-                'Share, save or copy your profile link',
+                'Choose a format and share your profile',
                 style: GoogleFonts.outfit(
                   color: Colors.white38,
                   fontSize: 13,
                 ),
               ),
+              const SizedBox(height: 18),
+
+              // ── Format selector pills ───────────────────────────────
+              _buildFormatSelector(),
+
               const SizedBox(height: 22),
 
               // ── Card preview (also the RepaintBoundary capture target) ──
@@ -244,24 +310,24 @@ class _ShareCardDialogState extends State<ShareCardDialog> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(26),
                     border: Border.all(
-                      color: Colors.white.withOpacity(0.08),
+                      color: Colors.white.withValues(alpha: 0.08),
                       width: 1,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.40),
+                        color: Colors.black.withValues(alpha: 0.40),
                         blurRadius: 32,
                         offset: const Offset(0, 14),
                       ),
                       BoxShadow(
-                        color: const Color(0xFF6366F1).withOpacity(0.12),
+                        color: const Color(0xFF6366F1).withValues(alpha: 0.12),
                         blurRadius: 40,
                         spreadRadius: 2,
                       ),
                     ],
                   ),
                   child: AspectRatio(
-                    aspectRatio: 9 / 16,
+                    aspectRatio: _format.aspectRatio,
                     child: RepaintBoundary(
                       key: _repaintKey,
                       child: ClipRRect(
@@ -287,7 +353,7 @@ class _ShareCardDialogState extends State<ShareCardDialog> {
               else ...[
                 _actionButton(
                   icon: Icons.share_rounded,
-                  label: 'Share  ·  Instagram Story',
+                  label: 'Share  ·  ${_format.label}',
                   onPressed: _shareCard,
                 ),
                 const SizedBox(height: 10),
@@ -317,6 +383,82 @@ class _ShareCardDialogState extends State<ShareCardDialog> {
       ),
     );
   }
+
+  // ── Format selector ──────────────────────────────────────────────────────
+
+  Widget _buildFormatSelector() {
+    return Container(
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(14),
+        color: Colors.white.withValues(alpha: 0.06),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.08),
+          width: 0.8,
+        ),
+      ),
+      child: Row(
+        children: _ExportFormat.values.map((fmt) {
+          final selected = fmt == _format;
+          return Expanded(
+            child: GestureDetector(
+              onTap: () => setState(() => _format = fmt),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeInOut,
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(11),
+                  color: selected
+                      ? const Color(0xFF6366F1).withValues(alpha: 0.20)
+                      : Colors.transparent,
+                  border: selected
+                      ? Border.all(
+                          color: const Color(0xFF6366F1).withValues(alpha: 0.40),
+                          width: 1,
+                        )
+                      : null,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      fmt.icon,
+                      size: 18,
+                      color: selected
+                          ? const Color(0xFF818CF8)
+                          : Colors.white38,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      fmt.label,
+                      style: GoogleFonts.outfit(
+                        fontSize: 12,
+                        fontWeight:
+                            selected ? FontWeight.w700 : FontWeight.w500,
+                        color: selected ? Colors.white : Colors.white38,
+                      ),
+                    ),
+                    Text(
+                      fmt.subtitle,
+                      style: GoogleFonts.outfit(
+                        fontSize: 9,
+                        color: selected
+                            ? Colors.white38
+                            : Colors.white24,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  // ── Action button ────────────────────────────────────────────────────────
 
   Widget _actionButton({
     required IconData icon,

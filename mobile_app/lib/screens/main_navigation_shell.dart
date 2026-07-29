@@ -151,6 +151,7 @@ class _MainNavigationShellState extends State<MainNavigationShell>
             location: profile.location,
             bio: profile.bio,
             tags: profile.tags,
+            socials: profile.socials,
           );
         }
       } else {
