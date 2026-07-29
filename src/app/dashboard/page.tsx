@@ -1338,28 +1338,28 @@ export default function Dashboard() {
           <div className={`${activeTab === 'customizer' ? 'lg:col-span-7' : 'lg:col-span-12'} flex flex-col gap-6`}>
 
             {/* SEGMENTED TABS */}
-            <div className="flex p-1 bg-gray-200/60 rounded-xl w-full sm:w-fit overflow-x-auto">
+            <div className="flex p-1 bg-gray-200/60 rounded-xl w-full sm:w-fit overflow-x-auto scrollbar-none whitespace-nowrap gap-1 select-none shrink-0">
               <button
                 onClick={() => setActiveTab('overview')}
-                className={`flex-1 sm:flex-none px-6 py-2.5 text-sm font-semibold rounded-lg transition-all whitespace-nowrap ${activeTab === 'overview' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                className={`flex-1 sm:flex-none px-3.5 sm:px-6 py-2.5 text-xs sm:text-sm font-semibold rounded-lg transition-all whitespace-nowrap shrink-0 ${activeTab === 'overview' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
               >
                 Overview
               </button>
               <button
                 onClick={() => setActiveTab('customizer')}
-                className={`flex-1 sm:flex-none px-6 py-2.5 text-sm font-semibold rounded-lg transition-all whitespace-nowrap ${activeTab === 'customizer' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                className={`flex-1 sm:flex-none px-3.5 sm:px-6 py-2.5 text-xs sm:text-sm font-semibold rounded-lg transition-all whitespace-nowrap shrink-0 ${activeTab === 'customizer' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
               >
                 Customize Profile
               </button>
               <button
                 onClick={() => setActiveTab('projects')}
-                className={`flex-1 sm:flex-none px-6 py-2.5 text-sm font-semibold rounded-lg transition-all whitespace-nowrap ${activeTab === 'projects' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                className={`flex-1 sm:flex-none px-3.5 sm:px-6 py-2.5 text-xs sm:text-sm font-semibold rounded-lg transition-all whitespace-nowrap shrink-0 ${activeTab === 'projects' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
               >
                 Projects
               </button>
               <button
                 onClick={() => setActiveTab('sharing')}
-                className={`flex-1 sm:flex-none px-6 py-2.5 text-sm font-semibold rounded-lg transition-all whitespace-nowrap ${activeTab === 'sharing' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                className={`flex-1 sm:flex-none px-3.5 sm:px-6 py-2.5 text-xs sm:text-sm font-semibold rounded-lg transition-all whitespace-nowrap shrink-0 ${activeTab === 'sharing' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
               >
                 Privacy & Sharing
               </button>
@@ -1395,9 +1395,9 @@ export default function Dashboard() {
                   </div>
                   <div className="divide-y divide-gray-100">
                     {progressData.items.map((item, i) => (
-                      <div key={i} className="px-6 py-4 flex items-center justify-between">
+                      <div key={i} className="px-4 sm:px-6 py-3.5 flex items-center justify-between gap-3">
                         <div className="flex items-center gap-3">
-                          <div className={`flex items-center justify-center w-6 h-6 rounded-full border ${item.completed ? 'bg-green-100 border-green-200 text-green-600' : 'bg-gray-50 border-gray-200 text-gray-300'}`}>
+                          <div className={`flex items-center justify-center w-6 h-6 rounded-full border shrink-0 ${item.completed ? 'bg-green-100 border-green-200 text-green-600' : 'bg-gray-50 border-gray-200 text-gray-300'}`}>
                             {item.completed ? (
                               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
                             ) : (
@@ -1409,7 +1409,7 @@ export default function Dashboard() {
                             <p className="text-xs text-gray-400 mt-0.5">{item.desc}</p>
                           </div>
                         </div>
-                        <span className="text-xs font-bold text-gray-400">+{item.value}</span>
+                        <span className="text-xs font-bold text-gray-400 shrink-0">+{item.value}</span>
                       </div>
                     ))}
                   </div>
