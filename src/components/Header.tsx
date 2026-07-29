@@ -1,13 +1,16 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { ROUTES } from '@/config/routes';
+import { Menu, X, LogOut, LayoutDashboard, Users, History, Trophy } from 'lucide-react';
 import styles from './Header.module.css';
 
 export default function Header() {
   const router = useRouter();
   const pathname = usePathname();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -32,6 +35,8 @@ export default function Header() {
           </svg>
           <div style={{ color: '#020b2d' }}>Tap<span style={{ color: '#2563EB', fontWeight: 800 }}>folio</span></div>
         </Link>
+
+        {/* Navigation bar with all 5 buttons included on mobile & desktop */}
         <nav className={styles.nav}>
           <Link href={ROUTES.DASHBOARD} className={`${styles.link} ${pathname === ROUTES.DASHBOARD ? styles.active : ''}`}>
             Dashboard
@@ -45,11 +50,75 @@ export default function Header() {
           <Link href={ROUTES.LEADERBOARD} className={`${styles.link} ${pathname === ROUTES.LEADERBOARD ? styles.active : ''}`}>
             Leaderboard
           </Link>
+          <button onClick={handleLogout} className={`${styles.link} ${styles.logoutNavBtn}`}>
+            Sign Out
+          </button>
         </nav>
+
+        {/* Desktop Sign Out Button */}
         <button onClick={handleLogout} className={styles.logoutBtn}>
           Sign Out
         </button>
+
+        {/* Mobile Hamburger Menu Button */}
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className={styles.mobileMenuToggle}
+          aria-label="Toggle menu"
+        >
+          {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+        </button>
       </div>
+
+      {/* Mobile Menu Dropdown */}
+      {mobileMenuOpen && (
+        <div className={styles.mobileDrawer}>
+          <div className={styles.mobileDrawerLinks}>
+            <Link
+              href={ROUTES.DASHBOARD}
+              onClick={() => setMobileMenuOpen(false)}
+              className={`${styles.mobileDrawerLink} ${pathname === ROUTES.DASHBOARD ? styles.activeMobile : ''}`}
+            >
+              <LayoutDashboard size={18} />
+              <span>Dashboard</span>
+            </Link>
+            <Link
+              href={ROUTES.CONNECTIONS}
+              onClick={() => setMobileMenuOpen(false)}
+              className={`${styles.mobileDrawerLink} ${pathname === ROUTES.CONNECTIONS ? styles.activeMobile : ''}`}
+            >
+              <Users size={18} />
+              <span>Connections</span>
+            </Link>
+            <Link
+              href={ROUTES.HISTORY}
+              onClick={() => setMobileMenuOpen(false)}
+              className={`${styles.mobileDrawerLink} ${pathname === ROUTES.HISTORY ? styles.activeMobile : ''}`}
+            >
+              <History size={18} />
+              <span>Logs</span>
+            </Link>
+            <Link
+              href={ROUTES.LEADERBOARD}
+              onClick={() => setMobileMenuOpen(false)}
+              className={`${styles.mobileDrawerLink} ${pathname === ROUTES.LEADERBOARD ? styles.activeMobile : ''}`}
+            >
+              <Trophy size={18} />
+              <span>Leaderboard</span>
+            </Link>
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                handleLogout();
+              }}
+              className={styles.mobileDrawerLogoutBtn}
+            >
+              <LogOut size={18} />
+              <span>Sign Out</span>
+            </button>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
