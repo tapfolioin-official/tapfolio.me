@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'api_service.dart';
 
@@ -27,6 +28,16 @@ class PushNotificationService {
     if (_initialized) return;
 
     try {
+      // On iOS, verify GoogleService-Info.plist is configured to prevent crash on launch.
+      if (defaultTargetPlatform == TargetPlatform.iOS) {
+        const channel = MethodChannel('me.tapfolio.app/config');
+        final bool isConfigured = await channel.invokeMethod<bool>('isFirebaseConfigured') ?? false;
+        if (!isConfigured) {
+          debugPrint('[PUSH] GoogleService-Info.plist not found in bundle. Skipping Firebase initialization.');
+          return;
+        }
+      }
+
       // 1. Initialize Firebase
       await Firebase.initializeApp();
 

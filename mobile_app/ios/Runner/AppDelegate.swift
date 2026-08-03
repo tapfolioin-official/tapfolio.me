@@ -12,5 +12,18 @@ import UIKit
 
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
+    
+    let channel = FlutterMethodChannel(
+      name: "me.tapfolio.app/config",
+      binaryMessenger: engineBridge.applicationRegistrar.messenger()
+    )
+    channel.setMethodCallHandler { (call, result) in
+      if call.method == "isFirebaseConfigured" {
+        let plistPath = Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist")
+        result(plistPath != nil)
+      } else {
+        result(FlutterMethodNotImplemented)
+      }
+    }
   }
 }
