@@ -153,7 +153,7 @@ export const CorporateTemplate: React.FC<TemplateProps> = ({ data, totals }) => 
               )}
               {totals.globalDiscount > 0 && (
                 <tr className="border-b border-slate-200">
-                  <td className="py-2 px-3 font-semibold text-slate-500 bg-slate-50">Global Discount</td>
+                  <td className="py-2 px-3 font-semibold text-slate-500 bg-slate-50">Total Discount</td>
                   <td className="py-2 px-3 text-right text-slate-800 font-medium">
                     -{formatCurrency(totals.globalDiscount, details.currency)}
                   </td>

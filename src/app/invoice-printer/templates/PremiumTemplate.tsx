@@ -167,7 +167,7 @@ export const PremiumTemplate: React.FC<TemplateProps> = ({ data, totals }) => {
               )}
               {totals.globalDiscount > 0 && (
                 <div className="flex justify-between text-slate-500">
-                  <span>Global Discount</span>
+                  <span>Total Discount</span>
                   <span className="text-slate-800">-{formatCurrency(totals.globalDiscount, details.currency)}</span>
                 </div>
               )}

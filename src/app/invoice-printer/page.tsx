@@ -259,7 +259,12 @@ export default function InvoicePrinterPage() {
             </div>
 
             {/* Subtotal & Calculations Display */}
-            <Totals totals={totals} currency={invoiceData.details.currency} />
+            <Totals
+              totals={totals}
+              currency={invoiceData.details.currency}
+              onDiscountChange={(val) => updateDetails({ discount: val })}
+              onAdvancePaymentChange={(val) => updateDetails({ advancePayment: val })}
+            />
           </div>
 
           {/* Right Column: Live A4 PDF Preview */}

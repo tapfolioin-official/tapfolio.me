@@ -129,7 +129,7 @@ export const MinimalTemplate: React.FC<TemplateProps> = ({ data, totals }) => {
             )}
             {totals.globalDiscount > 0 && (
               <div className="flex justify-between text-zinc-500">
-                <span>Global Discount</span>
+                <span>Total Discount</span>
                 <span className="text-zinc-900">-{formatCurrency(totals.globalDiscount, details.currency)}</span>
               </div>
             )}
