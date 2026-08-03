@@ -531,8 +531,36 @@ export default function ConnectClientPage({
 
   if (loadingProfile && !previewTheme) {
     return (
-      <div className={styles.wrapper}>
-        <p className="text-gray-400 mt-20 animate-pulse">Loading Tapfolio Profile...</p>
+      <div className={styles.loaderContainer}>
+        <div className={styles.loaderGlow} />
+        <div className={styles.loaderContent}>
+          <div className={styles.logoWrapper}>
+            <div className={styles.logoIcon}>
+              <svg width="60" height="60" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="url(#logoGrad)" />
+                <path d="M2 17L12 22L22 17" stroke="url(#logoGrad)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M2 12L12 17L22 12" stroke="url(#logoGrad)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <defs>
+                  <linearGradient id="logoGrad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="#6366f1" />
+                    <stop offset="1" stopColor="#4f46e5" />
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+            <h1 className={styles.loaderBrand}>Tapfolio</h1>
+          </div>
+          
+          <div className={styles.spinnerContainer}>
+            <div className={styles.spinnerRing}></div>
+            <div className={styles.spinnerRingInner}></div>
+          </div>
+          
+          <div className={styles.loadingTextContainer}>
+            <p className={styles.loadingMainText}>Fetching Profile</p>
+            <p className={styles.loadingSubText}>Setting up your digital space...</p>
+          </div>
+        </div>
       </div>
     );
   }

@@ -629,3 +629,170 @@
   transform: translateY(-1px);
   box-shadow: 0 6px 16px rgba(1, 75, 170, 0.25);
 }
+
+/* ─── Loader Screen ─── */
+.loaderContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(circle at 50% 50%, #0b0f19 0%, #030509 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  overflow: hidden;
+  font-family: 'Outfit', 'Inter', sans-serif;
+}
+
+.loaderGlow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(99, 102, 241, 0) 70%);
+  filter: blur(40px);
+  pointer-events: none;
+  animation: pulseGlow 4s ease-in-out infinite alternate;
+}
+
+.loaderContent {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  text-align: center;
+}
+
+.logoWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 2.5rem;
+}
+
+.logoIcon {
+  filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.5));
+  animation: logoFloat 3s ease-in-out infinite alternate;
+}
+
+.loaderBrand {
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+  margin: 0;
+  background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.spinnerContainer {
+  position: relative;
+  width: 70px;
+  height: 70px;
+  margin-bottom: 2.5rem;
+}
+
+.spinnerRing {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  border-top-color: #6366f1;
+  border-right-color: #818cf8;
+  animation: rotateCW 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+
+.spinnerRingInner {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  right: 6px;
+  bottom: 6px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  border-bottom-color: #4f46e5;
+  border-left-color: #a5b4fc;
+  animation: rotateCCW 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  opacity: 0.7;
+}
+
+.loadingTextContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.loadingMainText {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin: 0;
+  animation: textPulse 1.5s ease-in-out infinite alternate;
+}
+
+.loadingSubText {
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.4);
+  margin: 0;
+}
+
+@keyframes rotateCW {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes rotateCCW {
+  0% {
+    transform: rotate(360deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes pulseGlow {
+  0% {
+    transform: translate(-50%, -50%) scale(0.9);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 1;
+  }
+}
+
+@keyframes logoFloat {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes textPulse {
+  0% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
