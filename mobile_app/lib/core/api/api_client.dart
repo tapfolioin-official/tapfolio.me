@@ -22,7 +22,11 @@ class ApiClient {
       return envApiUrl;
     }
     if (kDebugMode) {
-      return 'http://192.168.1.2:3000';
+      // Default to production URL so it works on physical devices (cellular/5G) out of the box.
+      // If you are testing against your local Mac server:
+      // 1. Ensure your iPhone and Mac are on the SAME Wi-Fi network.
+      // 2. Change this to 'http://10.250.40.192:3000' (your Mac's current local IP: 10.250.40.192).
+      return productionUrl;
     }
     return productionUrl;
   }
