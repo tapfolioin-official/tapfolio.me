@@ -6,9 +6,12 @@ interface TemplateProps {
   data: InvoiceData;
   totals: {
     subtotal: number;
-    discount: number;
+    itemDiscounts: number;
+    globalDiscount: number;
     tax: number;
     grandTotal: number;
+    advancePayment: number;
+    balanceDue: number;
   };
 }
 
@@ -49,9 +52,12 @@ export const MinimalTemplate: React.FC<TemplateProps> = ({ data, totals }) => {
             <p className="text-xs text-zinc-500 mt-0.5">Status: <span className="uppercase text-black font-bold tracking-wider">{details.status}</span></p>
           </div>
 
-          <div className="text-right">
+          <div className="text-right flex flex-col items-end">
             <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">Bill To</span>
-            <div className="mt-2 text-xs text-zinc-700 space-y-0.5">
+            {client.logo && (
+              <img src={client.logo} alt="Client Logo" className="max-h-12 object-contain mt-2 mb-2 grayscale" />
+            )}
+            <div className="mt-2 text-xs text-zinc-700 space-y-0.5 text-right">
               <p className="font-bold text-black text-sm">{client.name}</p>
               {client.company && <p className="font-semibold text-zinc-900">{client.company}</p>}
               <p className="whitespace-pre-line leading-relaxed">{client.address}</p>
@@ -70,7 +76,7 @@ export const MinimalTemplate: React.FC<TemplateProps> = ({ data, totals }) => {
                 <th className="py-2 px-1">Description</th>
                 <th className="py-2 px-2 text-right">Qty</th>
                 <th className="py-2 px-2 text-right">Rate</th>
-                {totals.discount > 0 && <th className="py-2 px-2 text-right">Disc.</th>}
+                {totals.itemDiscounts > 0 && <th className="py-2 px-2 text-right">Disc.</th>}
                 {totals.tax > 0 && <th className="py-2 px-2 text-right">Tax</th>}
                 <th className="py-2 px-1 text-right">Amount</th>
               </tr>
@@ -90,7 +96,7 @@ export const MinimalTemplate: React.FC<TemplateProps> = ({ data, totals }) => {
                     </td>
                     <td className="py-3 px-2 text-right text-zinc-600">{item.quantity}</td>
                     <td className="py-3 px-2 text-right text-zinc-600">{formatCurrency(item.unitPrice, details.currency)}</td>
-                    {totals.discount > 0 && (
+                    {totals.itemDiscounts > 0 && (
                       <td className="py-3 px-2 text-right text-zinc-600">
                         {item.discount > 0 ? formatCurrency(item.discount, details.currency) : '-'}
                       </td>
@@ -115,10 +121,16 @@ export const MinimalTemplate: React.FC<TemplateProps> = ({ data, totals }) => {
               <span>Subtotal</span>
               <span className="text-zinc-900">{formatCurrency(totals.subtotal, details.currency)}</span>
             </div>
-            {totals.discount > 0 && (
+            {totals.itemDiscounts > 0 && (
               <div className="flex justify-between text-zinc-500">
-                <span>Discount</span>
-                <span className="text-zinc-900">-{formatCurrency(totals.discount, details.currency)}</span>
+                <span>Item Discount</span>
+                <span className="text-zinc-900">-{formatCurrency(totals.itemDiscounts, details.currency)}</span>
+              </div>
+            )}
+            {totals.globalDiscount > 0 && (
+              <div className="flex justify-between text-zinc-500">
+                <span>Global Discount</span>
+                <span className="text-zinc-900">-{formatCurrency(totals.globalDiscount, details.currency)}</span>
               </div>
             )}
             {totals.tax > 0 && (
@@ -131,6 +143,18 @@ export const MinimalTemplate: React.FC<TemplateProps> = ({ data, totals }) => {
               <span>Total Due</span>
               <span>{formatCurrency(totals.grandTotal, details.currency)}</span>
             </div>
+            {totals.advancePayment > 0 && (
+              <div className="flex justify-between text-zinc-500">
+                <span>Advance Paid</span>
+                <span className="text-zinc-900">-{formatCurrency(totals.advancePayment, details.currency)}</span>
+              </div>
+            )}
+            {totals.advancePayment > 0 && (
+              <div className="flex justify-between border-t border-black pt-2 text-sm font-bold text-black uppercase tracking-wider">
+                <span>Balance Due</span>
+                <span>{formatCurrency(totals.balanceDue, details.currency)}</span>
+              </div>
+            )}
           </div>
         </div>
       </div>

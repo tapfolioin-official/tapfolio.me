@@ -6,9 +6,12 @@ interface TemplateProps {
   data: InvoiceData;
   totals: {
     subtotal: number;
-    discount: number;
+    itemDiscounts: number;
+    globalDiscount: number;
     tax: number;
     grandTotal: number;
+    advancePayment: number;
+    balanceDue: number;
   };
 }
 
@@ -45,7 +48,10 @@ export const CorporateTemplate: React.FC<TemplateProps> = ({ data, totals }) => 
         <div className="grid grid-cols-2 gap-8 py-8 border-b border-slate-200 bg-slate-50/50 -mx-8 md:-mx-12 px-8 md:px-12">
           <div>
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Client Account</span>
-            <div className="mt-2 text-xs text-slate-600 space-y-1">
+            {client.logo && (
+              <img src={client.logo} alt="Client Logo" className="max-h-12 object-contain mt-2 mb-2" />
+            )}
+            <div className="mt-2 text-xs text-slate-650 space-y-1">
               <p className="font-bold text-slate-900 text-sm">{client.name}</p>
               {client.company && <p className="font-semibold text-slate-800">{client.company}</p>}
               <p className="whitespace-pre-line leading-relaxed mt-1 text-slate-500">{client.address}</p>
@@ -137,11 +143,19 @@ export const CorporateTemplate: React.FC<TemplateProps> = ({ data, totals }) => 
                   {formatCurrency(totals.subtotal, details.currency)}
                 </td>
               </tr>
-              {totals.discount > 0 && (
+              {totals.itemDiscounts > 0 && (
                 <tr className="border-b border-slate-200">
-                  <td className="py-2 px-3 font-semibold text-slate-500 bg-slate-50">Discount</td>
+                  <td className="py-2 px-3 font-semibold text-slate-500 bg-slate-50">Item Discount</td>
                   <td className="py-2 px-3 text-right text-slate-800 font-medium">
-                    -{formatCurrency(totals.discount, details.currency)}
+                    -{formatCurrency(totals.itemDiscounts, details.currency)}
+                  </td>
+                </tr>
+              )}
+              {totals.globalDiscount > 0 && (
+                <tr className="border-b border-slate-200">
+                  <td className="py-2 px-3 font-semibold text-slate-500 bg-slate-50">Global Discount</td>
+                  <td className="py-2 px-3 text-right text-slate-800 font-medium">
+                    -{formatCurrency(totals.globalDiscount, details.currency)}
                   </td>
                 </tr>
               )}
@@ -159,6 +173,22 @@ export const CorporateTemplate: React.FC<TemplateProps> = ({ data, totals }) => 
                   {formatCurrency(totals.grandTotal, details.currency)}
                 </td>
               </tr>
+              {totals.advancePayment > 0 && (
+                <tr className="border-b border-slate-200">
+                  <td className="py-2 px-3 font-semibold text-slate-500 bg-slate-50">Advance Paid</td>
+                  <td className="py-2 px-3 text-right text-slate-800 font-medium">
+                    -{formatCurrency(totals.advancePayment, details.currency)}
+                  </td>
+                </tr>
+              )}
+              {totals.advancePayment > 0 && (
+                <tr className="bg-slate-100 font-bold text-sm">
+                  <td className="py-2.5 px-3 text-slate-900">Balance Due</td>
+                  <td className="py-2.5 px-3 text-right text-slate-950">
+                    {formatCurrency(totals.balanceDue, details.currency)}
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

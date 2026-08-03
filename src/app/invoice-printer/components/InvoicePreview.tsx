@@ -9,9 +9,12 @@ interface InvoicePreviewProps {
   data: InvoiceData;
   totals: {
     subtotal: number;
-    discount: number;
+    itemDiscounts: number;
+    globalDiscount: number;
     tax: number;
     grandTotal: number;
+    advancePayment: number;
+    balanceDue: number;
   };
 }
 

@@ -6,9 +6,12 @@ interface TemplateProps {
   data: InvoiceData;
   totals: {
     subtotal: number;
-    discount: number;
+    itemDiscounts: number;
+    globalDiscount: number;
     tax: number;
     grandTotal: number;
+    advancePayment: number;
+    balanceDue: number;
   };
 }
 
@@ -62,6 +65,9 @@ export const ModernTemplate: React.FC<TemplateProps> = ({ data, totals }) => {
         <div className="grid grid-cols-2 gap-8 py-8 border-b border-slate-100">
           <div>
             <span className="text-xs font-bold tracking-wider uppercase text-slate-400">Bill To</span>
+            {client.logo && (
+              <img src={client.logo} alt="Client Logo" className="max-h-12 object-contain mt-2 mb-2" />
+            )}
             <div className="mt-2 text-sm text-slate-600 space-y-1">
               <p className="font-bold text-slate-900 text-base">{client.name}</p>
               {client.company && <p className="font-medium text-slate-800">{client.company}</p>}
@@ -145,10 +151,16 @@ export const ModernTemplate: React.FC<TemplateProps> = ({ data, totals }) => {
               <span>Subtotal</span>
               <span className="font-medium text-slate-800">{formatCurrency(totals.subtotal, details.currency)}</span>
             </div>
-            {totals.discount > 0 && (
+            {totals.itemDiscounts > 0 && (
               <div className="flex justify-between text-slate-500">
-                <span>Discount</span>
-                <span className="font-medium text-slate-800">-{formatCurrency(totals.discount, details.currency)}</span>
+                <span>Item Discount</span>
+                <span className="font-medium text-slate-800">-{formatCurrency(totals.itemDiscounts, details.currency)}</span>
+              </div>
+            )}
+            {totals.globalDiscount > 0 && (
+              <div className="flex justify-between text-slate-500">
+                <span>Global Discount</span>
+                <span className="font-medium text-slate-800">-{formatCurrency(totals.globalDiscount, details.currency)}</span>
               </div>
             )}
             {totals.tax > 0 && (
@@ -161,6 +173,18 @@ export const ModernTemplate: React.FC<TemplateProps> = ({ data, totals }) => {
               <span>Grand Total</span>
               <span className="text-blue-600">{formatCurrency(totals.grandTotal, details.currency)}</span>
             </div>
+            {totals.advancePayment > 0 && (
+              <div className="flex justify-between text-slate-500">
+                <span>Advance Paid</span>
+                <span className="font-medium text-slate-800">-{formatCurrency(totals.advancePayment, details.currency)}</span>
+              </div>
+            )}
+            {totals.advancePayment > 0 && (
+              <div className="flex justify-between border-t border-slate-200 pt-3 text-base font-bold text-slate-950">
+                <span>Balance Due</span>
+                <span className="text-blue-600">{formatCurrency(totals.balanceDue, details.currency)}</span>
+              </div>
+            )}
           </div>
         </div>
       </div>

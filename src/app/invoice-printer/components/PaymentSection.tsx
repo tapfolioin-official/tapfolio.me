@@ -4,9 +4,16 @@ import { PaymentDetails } from '../types';
 interface PaymentSectionProps {
   data: PaymentDetails;
   onChange: (info: Partial<PaymentDetails>) => void;
+  advancePayment: number;
+  onAdvancePaymentChange: (amount: number) => void;
 }
 
-export const PaymentSection: React.FC<PaymentSectionProps> = ({ data, onChange }) => {
+export const PaymentSection: React.FC<PaymentSectionProps> = ({
+  data,
+  onChange,
+  advancePayment,
+  onAdvancePaymentChange
+}) => {
   return (
     <div className="space-y-4">
       <h3 className="text-sm font-semibold text-slate-900 mb-2 uppercase tracking-wider">Payment Details</h3>
@@ -74,6 +81,17 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({ data, onChange }
             value={data.upiId}
             onChange={(e) => onChange({ upiId: e.target.value })}
             placeholder="e.g. acme@okaxis"
+            className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-all text-slate-800"
+          />
+        </div>
+
+        <div className="space-y-1">
+          <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider">Advance Payment Received</label>
+          <input
+            type="number"
+            value={advancePayment || ''}
+            onChange={(e) => onAdvancePaymentChange(Number(e.target.value) || 0)}
+            placeholder="e.g. 1500"
             className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-all text-slate-800"
           />
         </div>

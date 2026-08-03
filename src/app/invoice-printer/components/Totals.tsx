@@ -4,9 +4,12 @@ import { formatCurrency } from '../utils/format';
 interface TotalsProps {
   totals: {
     subtotal: number;
-    discount: number;
+    itemDiscounts: number;
+    globalDiscount: number;
     tax: number;
     grandTotal: number;
+    advancePayment: number;
+    balanceDue: number;
   };
   currency: string;
 }
@@ -22,10 +25,17 @@ export const Totals: React.FC<TotalsProps> = ({ totals, currency }) => {
           <span className="font-semibold text-slate-800">{formatCurrency(totals.subtotal, currency)}</span>
         </div>
         
-        {totals.discount > 0 && (
+        {totals.itemDiscounts > 0 && (
           <div className="flex justify-between text-emerald-600">
             <span>Item Discounts</span>
-            <span className="font-semibold">-{formatCurrency(totals.discount, currency)}</span>
+            <span className="font-semibold">-{formatCurrency(totals.itemDiscounts, currency)}</span>
+          </div>
+        )}
+
+        {totals.globalDiscount > 0 && (
+          <div className="flex justify-between text-emerald-600">
+            <span>Global Discount</span>
+            <span className="font-semibold">-{formatCurrency(totals.globalDiscount, currency)}</span>
           </div>
         )}
 
@@ -37,9 +47,23 @@ export const Totals: React.FC<TotalsProps> = ({ totals, currency }) => {
         )}
 
         <div className="flex justify-between border-t border-slate-200 pt-3 text-sm font-bold text-slate-900">
-          <span>Grand Total Due</span>
+          <span>Grand Total</span>
           <span className="text-blue-600">{formatCurrency(totals.grandTotal, currency)}</span>
         </div>
+
+        {totals.advancePayment > 0 && (
+          <div className="flex justify-between text-slate-600">
+            <span>Advance Paid</span>
+            <span className="font-semibold">-{formatCurrency(totals.advancePayment, currency)}</span>
+          </div>
+        )}
+
+        {totals.advancePayment > 0 && (
+          <div className="flex justify-between border-t border-slate-200 pt-3 text-sm font-bold text-slate-900">
+            <span>Balance Due</span>
+            <span className="text-blue-600">{formatCurrency(totals.balanceDue, currency)}</span>
+          </div>
+        )}
       </div>
     </div>
   );

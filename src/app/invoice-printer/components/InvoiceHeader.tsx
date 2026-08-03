@@ -71,6 +71,17 @@ export const InvoiceHeader: React.FC<InvoiceHeaderProps> = ({ data, onChange }) 
           />
         </div>
 
+        <div className="space-y-1">
+          <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider">Global Discount</label>
+          <input
+            type="number"
+            value={data.discount || ''}
+            onChange={(e) => onChange({ discount: Number(e.target.value) || 0 })}
+            placeholder="e.g. 500"
+            className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-sm focus:outline-none focus:border-blue-500 focus:bg-white transition-all text-slate-800"
+          />
+        </div>
+
         <div className="md:col-span-2 space-y-1">
           <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider">Status</label>
           <div className="grid grid-cols-4 gap-2">

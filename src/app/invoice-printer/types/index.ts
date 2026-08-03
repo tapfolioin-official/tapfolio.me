@@ -11,6 +11,7 @@ export interface CompanyInfo {
 }
 
 export interface ClientInfo {
+  logo?: string; // base64 data URI
   name: string;
   company: string;
   address: string;
@@ -25,6 +26,8 @@ export interface InvoiceDetails {
   dueDate: string;
   currency: string;
   status: 'Paid' | 'Unpaid' | 'Pending' | 'Overdue' | string;
+  discount: number; // global discount amount
+  advancePayment: number; // advance payment amount
 }
 
 export interface InvoiceItem {

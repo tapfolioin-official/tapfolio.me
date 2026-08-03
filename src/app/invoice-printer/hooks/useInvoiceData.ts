@@ -19,6 +19,7 @@ const getInitialData = (): InvoiceData => {
       panNumber: ''
     },
     client: {
+      logo: '',
       name: 'Sudheesh',
       company: 'WedForm',
       address: 'Kodungallur',
@@ -31,7 +32,9 @@ const getInitialData = (): InvoiceData => {
       date: '2026-07-15',
       dueDate: '',
       currency: 'INR',
-      status: 'Pending'
+      status: 'Pending',
+      discount: 0,
+      advancePayment: 0
     },
     items: [
       {
@@ -291,6 +294,7 @@ export const useInvoiceData = () => {
         panNumber: ''
       },
       client: {
+        logo: '',
         name: '',
         company: '',
         address: '',
@@ -303,7 +307,9 @@ export const useInvoiceData = () => {
         date: '',
         dueDate: '',
         currency: 'USD',
-        status: 'Pending'
+        status: 'Pending',
+        discount: 0,
+        advancePayment: 0
       },
       items: [
         {
@@ -333,25 +339,51 @@ export const useInvoiceData = () => {
 
   // Helper calculations
   const calculateTotals = () => {
-    if (!invoiceData) return { subtotal: 0, discount: 0, tax: 0, grandTotal: 0 };
+    if (!invoiceData) {
+      return {
+        subtotal: 0,
+        itemDiscounts: 0,
+        globalDiscount: 0,
+        tax: 0,
+        grandTotal: 0,
+        advancePayment: 0,
+        balanceDue: 0
+      };
+    }
 
-    return invoiceData.items.reduce(
+    const itemTotals = invoiceData.items.reduce(
       (acc, item) => {
         const itemSubtotal = item.quantity * item.unitPrice;
         const itemDiscount = item.discount;
         const taxableAmount = Math.max(0, itemSubtotal - itemDiscount);
         const itemTax = taxableAmount * (item.taxPercent / 100);
-        const itemTotal = taxableAmount + itemTax;
 
         return {
           subtotal: acc.subtotal + itemSubtotal,
-          discount: acc.discount + itemDiscount,
-          tax: acc.tax + itemTax,
-          grandTotal: acc.grandTotal + itemTotal
+          itemDiscounts: acc.itemDiscounts + itemDiscount,
+          tax: acc.tax + itemTax
         };
       },
-      { subtotal: 0, discount: 0, tax: 0, grandTotal: 0 }
+      { subtotal: 0, itemDiscounts: 0, tax: 0 }
     );
+
+    const subtotal = itemTotals.subtotal;
+    const itemDiscounts = itemTotals.itemDiscounts;
+    const globalDiscount = invoiceData.details.discount || 0;
+    const tax = itemTotals.tax;
+    const grandTotal = Math.max(0, subtotal - itemDiscounts - globalDiscount) + tax;
+    const advancePayment = invoiceData.details.advancePayment || 0;
+    const balanceDue = grandTotal - advancePayment;
+
+    return {
+      subtotal,
+      itemDiscounts,
+      globalDiscount,
+      tax,
+      grandTotal,
+      advancePayment,
+      balanceDue
+    };
   };
 
   return {

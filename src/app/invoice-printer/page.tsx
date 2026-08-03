@@ -104,7 +104,14 @@ export default function InvoicePrinterPage() {
       id: 'payments',
       title: 'Payment Settlement',
       icon: CreditCard,
-      component: <PaymentSection data={invoiceData.payment} onChange={updatePayment} />
+      component: (
+        <PaymentSection
+          data={invoiceData.payment}
+          onChange={updatePayment}
+          advancePayment={invoiceData.details.advancePayment}
+          onAdvancePaymentChange={(val) => updateDetails({ advancePayment: val })}
+        />
+      )
     },
     {
       id: 'notes-terms',
