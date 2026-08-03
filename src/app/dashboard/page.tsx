@@ -281,6 +281,16 @@ const getPlatformIcon = (platform: string) => {
       </svg>
     );
   }
+  if (p.includes('google pay') || p.includes('gpay') || p.includes('upi')) {
+    return (
+      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12.24 10.285V13.4h4.743c-.19 1.077-.736 1.99-1.636 2.603V18.1h2.617c1.53-1.42 2.413-3.52 2.413-5.996 0-.585-.052-1.15-.152-1.705H12.24z" fill="#4285F4" />
+        <path d="M12.24 20c2.68 0 4.93-.897 6.57-2.433l-2.617-2.052c-.724.49-1.65.787-2.67.787-2.052 0-3.79-1.396-4.41-3.275H6.4V15.11C8.04 18.39 11.39 20 12.24 20z" fill="#34A853" />
+        <path d="M7.83 13.027a5.81 5.81 0 0 1 0-3.69V7.202H6.4a9.924 9.924 0 0 0 0 9.595l1.43-2.138-.002-.632z" fill="#FBBC05" />
+        <path d="M12.24 7.698c1.46 0 2.766.507 3.796 1.5l2.85-2.85C17.164 4.887 14.914 4 12.24 4 11.39 4 8.04 5.61 6.4 8.89l1.43 2.138c.62-1.879 2.358-3.33 4.41-3.33z" fill="#EA4335" />
+      </svg>
+    );
+  }
   return (
     <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
       <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
