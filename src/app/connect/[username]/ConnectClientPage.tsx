@@ -199,16 +199,11 @@ export default function ConnectClientPage({
   const [error, setError] = useState('');
   const [aboutOpen, setAboutOpen] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
-  const [showAppRedirectModal, setShowAppRedirectModal] = useState(false);
   const [isMobileDevice, setIsMobileDevice] = useState(false);
 
   useEffect(() => {
-    // Only redirect to mobile app if not inside preview dashboard
     const isMobile = /android|iphone|ipad|ipod/i.test(navigator.userAgent);
     setIsMobileDevice(isMobile);
-    if (isMobile && !previewTheme) {
-      setShowAppRedirectModal(true);
-    }
 
     async function loadPublicData() {
       try {
@@ -933,45 +928,6 @@ export default function ConnectClientPage({
           </a>
         </div>
       </div>
-
-      {/* ─── App Redirect Modal ─── */}
-      {showAppRedirectModal && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modalContent}>
-            <div className={styles.modalHeader}>
-              <h3>Open in Tapfolio App?</h3>
-            </div>
-            <div className={styles.modalBody}>
-              <p>Would you like to open this connection in the Tapfolio app for a better experience?</p>
-            </div>
-            <div className={styles.modalActions}>
-              <button 
-                className={styles.modalCancelBtn} 
-                onClick={() => {
-                  setShowAppRedirectModal(false);
-                  if (typeof window !== 'undefined') {
-                    sessionStorage.setItem('asked_app_redirect', 'true');
-                  }
-                }}
-              >
-                Cancel
-              </button>
-              <button 
-                className={styles.modalConfirmBtn} 
-                onClick={() => {
-                  setShowAppRedirectModal(false);
-                  if (typeof window !== 'undefined') {
-                    sessionStorage.setItem('asked_app_redirect', 'true');
-                  }
-                  window.location.href = `tapfolio://connect/${username}`;
-                }}
-              >
-                Open App
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
