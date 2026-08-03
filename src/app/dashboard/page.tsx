@@ -966,6 +966,42 @@ export default function Dashboard() {
     const finalPhone = formatPhoneWithDefaultCountryCode(phone);
     const finalWhatsapp = formatPhoneWithDefaultCountryCode(whatsapp);
 
+    let finalSocials = [...socials];
+    const urlVal = newUrl.trim();
+    if (urlVal) {
+      const handleVal = newPlatform === 'Google Pay' && !newHandle.trim()
+        ? urlVal
+        : newHandle.trim();
+
+      if (handleVal) {
+        const platformSpecs: Record<string, { color: string; icon: string }> = {
+          GitHub: { color: '#24292e', icon: 'github' },
+          LinkedIn: { color: '#0077b5', icon: 'linkedin' },
+          Twitter: { color: '#1da1f2', icon: 'twitter' },
+          Instagram: { color: '#e1306c', icon: 'instagram' },
+          Facebook: { color: '#1877f2', icon: 'facebook' },
+          YouTube: { color: '#ff0000', icon: 'youtube' },
+          Website: { color: '#10b981', icon: 'globe' },
+          'Google Pay': { color: '#4285F4', icon: 'credit-card' },
+        };
+        const specs = platformSpecs[newPlatform] || { color: '#6366f1', icon: 'link' };
+
+        finalSocials.push({
+          platform: newPlatform,
+          handle: handleVal,
+          url: newPlatform === 'Google Pay'
+            ? urlVal
+            : (urlVal.startsWith('http') ? urlVal : `https://${urlVal}`),
+          icon: specs.icon,
+          color: specs.color,
+        });
+
+        setSocials(finalSocials);
+        setNewHandle('');
+        setNewUrl('');
+      }
+    }
+
     try {
       const payload: any = {
         name,
@@ -979,7 +1015,7 @@ export default function Dashboard() {
         portfolioUrl,
         resumeUrl,
         tags,
-        socials,
+        socials: finalSocials,
       };
 
       // Only send password fields if they are filled
