@@ -876,7 +876,14 @@ export default function Dashboard() {
 
   const handleAddSocial = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newHandle.trim() || !newUrl.trim()) return;
+    const urlVal = newUrl.trim();
+    if (!urlVal) return;
+
+    const handleVal = newPlatform === 'Google Pay' && !newHandle.trim()
+      ? urlVal
+      : newHandle.trim();
+
+    if (!handleVal) return;
 
     const platformSpecs: Record<string, { color: string; icon: string }> = {
       GitHub: { color: '#24292e', icon: 'github' },
@@ -895,10 +902,10 @@ export default function Dashboard() {
       ...socials,
       {
         platform: newPlatform,
-        handle: newHandle.trim(),
+        handle: handleVal,
         url: newPlatform === 'Google Pay'
-          ? newUrl.trim()
-          : (newUrl.trim().startsWith('http') ? newUrl.trim() : `https://${newUrl.trim()}`),
+          ? urlVal
+          : (urlVal.startsWith('http') ? urlVal : `https://${urlVal}`),
         icon: specs.icon,
         color: specs.color,
       },
@@ -1728,7 +1735,7 @@ export default function Dashboard() {
                             <option>Website</option>
                             <option>Google Pay</option>
                           </select>
-                          <input type="text" placeholder="Handle/Label" value={newHandle} onChange={(e) => setNewHandle(e.target.value)} className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 font-semibold outline-none focus:border-blue-500" />
+                          <input type="text" placeholder={newPlatform === 'Google Pay' ? "Handle (optional)" : "Handle/Label"} value={newHandle} onChange={(e) => setNewHandle(e.target.value)} className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 font-semibold outline-none focus:border-blue-500" />
                           <input type="text" placeholder={newPlatform === 'Google Pay' ? "UPI ID (e.g., name@okaxis)" : "URL"} value={newUrl} onChange={(e) => setNewUrl(e.target.value)} className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 font-semibold outline-none focus:border-blue-500" />
                           <button type="submit" className="px-5 py-2 bg-gray-900 text-white text-xs font-bold rounded-lg hover:bg-gray-800 transition-colors">Add</button>
                         </form>
