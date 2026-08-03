@@ -886,6 +886,7 @@ export default function Dashboard() {
       Facebook: { color: '#1877f2', icon: 'facebook' },
       YouTube: { color: '#ff0000', icon: 'youtube' },
       Website: { color: '#10b981', icon: 'globe' },
+      'Google Pay': { color: '#4285F4', icon: 'credit-card' },
     };
 
     const specs = platformSpecs[newPlatform] || { color: '#6366f1', icon: 'link' };
@@ -895,7 +896,9 @@ export default function Dashboard() {
       {
         platform: newPlatform,
         handle: newHandle.trim(),
-        url: newUrl.trim().startsWith('http') ? newUrl.trim() : `https://${newUrl.trim()}`,
+        url: newPlatform === 'Google Pay'
+          ? newUrl.trim()
+          : (newUrl.trim().startsWith('http') ? newUrl.trim() : `https://${newUrl.trim()}`),
         icon: specs.icon,
         color: specs.color,
       },
@@ -1723,6 +1726,7 @@ export default function Dashboard() {
                             <option>Facebook</option>
                             <option>YouTube</option>
                             <option>Website</option>
+                            <option>Google Pay</option>
                           </select>
                           <input type="text" placeholder="Handle/Label" value={newHandle} onChange={(e) => setNewHandle(e.target.value)} className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 font-semibold outline-none focus:border-blue-500" />
                           <input type="text" placeholder="URL" value={newUrl} onChange={(e) => setNewUrl(e.target.value)} className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 font-semibold outline-none focus:border-blue-500" />
