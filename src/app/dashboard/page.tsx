@@ -1729,7 +1729,7 @@ export default function Dashboard() {
                             <option>Google Pay</option>
                           </select>
                           <input type="text" placeholder="Handle/Label" value={newHandle} onChange={(e) => setNewHandle(e.target.value)} className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 font-semibold outline-none focus:border-blue-500" />
-                          <input type="text" placeholder="URL" value={newUrl} onChange={(e) => setNewUrl(e.target.value)} className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 font-semibold outline-none focus:border-blue-500" />
+                          <input type="text" placeholder={newPlatform === 'Google Pay' ? "UPI ID (e.g., name@okaxis)" : "URL"} value={newUrl} onChange={(e) => setNewUrl(e.target.value)} className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 font-semibold outline-none focus:border-blue-500" />
                           <button type="submit" className="px-5 py-2 bg-gray-900 text-white text-xs font-bold rounded-lg hover:bg-gray-800 transition-colors">Add</button>
                         </form>
                       </div>
