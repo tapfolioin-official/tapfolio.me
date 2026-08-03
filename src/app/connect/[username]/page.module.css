@@ -651,9 +651,9 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(99, 102, 241, 0) 70%);
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, rgba(1, 75, 170, 0.2) 0%, rgba(1, 75, 170, 0) 70%);
   filter: blur(40px);
   pointer-events: none;
   animation: pulseGlow 4s ease-in-out infinite alternate;
@@ -674,73 +674,105 @@
   flex-direction: column;
   align-items: center;
   gap: 0.75rem;
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
 }
 
-.logoIcon {
-  filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.5));
-  animation: logoFloat 3s ease-in-out infinite alternate;
+.logoContainer {
+  position: relative;
+  width: 130px;
+  height: 130px;
+  margin-bottom: 1.5rem;
+}
+
+.logoTOnly {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  clip-path: polygon(0% 0%, 72% 0%, 72% 35%, 100% 35%, 100% 100%, 0% 100%);
+  filter: drop-shadow(0 0 20px rgba(1, 75, 170, 0.5));
+  animation: logoPulse 2.5s ease-in-out infinite alternate;
+}
+
+.wifiWaves {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 32%;
+  height: 32%;
+  transform: translate(8%, -8%);
+}
+
+.wavesSvg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.waveInner {
+  animation: wavePulse 1.8s ease-in-out infinite;
+}
+
+.waveOuter {
+  animation: wavePulse 1.8s ease-in-out infinite;
+  animation-delay: 0.4s;
 }
 
 .loaderBrand {
-  font-size: 1.75rem;
+  font-size: 1.85rem;
   font-weight: 800;
   letter-spacing: -0.03em;
   color: #ffffff;
   margin: 0;
-  background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #93c5fd 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-}
-
-.spinnerContainer {
-  position: relative;
-  width: 70px;
-  height: 70px;
-  margin-bottom: 2.5rem;
-}
-
-.spinnerRing {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  border: 3px solid transparent;
-  border-top-color: #6366f1;
-  border-right-color: #818cf8;
-  animation: rotateCW 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-}
-
-.spinnerRingInner {
-  position: absolute;
-  top: 6px;
-  left: 6px;
-  right: 6px;
-  bottom: 6px;
-  border-radius: 50%;
-  border: 3px solid transparent;
-  border-bottom-color: #4f46e5;
-  border-left-color: #a5b4fc;
-  animation: rotateCCW 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-  opacity: 0.7;
+  filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.3));
 }
 
 .loadingTextContainer {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  align-items: center;
+}
+
+.connectingStatus {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .loadingMainText {
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
-  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.95);
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   margin: 0;
-  animation: textPulse 1.5s ease-in-out infinite alternate;
+}
+
+.connectionPoints {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  height: 20px;
+}
+
+.point {
+  width: 5px;
+  height: 5px;
+  background-color: #3b82f6;
+  border-radius: 50%;
+  animation: pointBounce 1.4s infinite ease-in-out both;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.8);
+}
+
+.point:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.point:nth-child(2) {
+  animation-delay: -0.16s;
 }
 
 .loadingSubText {
@@ -750,49 +782,58 @@
   margin: 0;
 }
 
-@keyframes rotateCW {
+@keyframes logoPulse {
   0% {
-    transform: rotate(0deg);
+    transform: scale(0.97);
+    filter: drop-shadow(0 0 15px rgba(1, 75, 170, 0.4));
   }
   100% {
-    transform: rotate(360deg);
+    transform: scale(1.03);
+    filter: drop-shadow(0 0 25px rgba(1, 75, 170, 0.7));
   }
 }
 
-@keyframes rotateCCW {
+@keyframes wavePulse {
   0% {
-    transform: rotate(360deg);
+    opacity: 0.15;
+    stroke-width: 12;
+  }
+  20% {
+    opacity: 1;
+    stroke-width: 14;
+  }
+  60% {
+    opacity: 1;
+    stroke-width: 14;
+  }
+  80% {
+    opacity: 0.15;
+    stroke-width: 12;
   }
   100% {
-    transform: rotate(0deg);
+    opacity: 0.15;
+    stroke-width: 12;
+  }
+}
+
+@keyframes pointBounce {
+  0%, 80%, 100% { 
+    transform: scale(0.4);
+    opacity: 0.3;
+  } 
+  40% { 
+    transform: scale(1.2);
+    opacity: 1;
   }
 }
 
 @keyframes pulseGlow {
   0% {
     transform: translate(-50%, -50%) scale(0.9);
-    opacity: 0.8;
+    opacity: 0.7;
   }
   100% {
     transform: translate(-50%, -50%) scale(1.1);
-    opacity: 1;
-  }
-}
-
-@keyframes logoFloat {
-  0% {
-    transform: translateY(0);
-  }
-  100% {
-    transform: translateY(-8px);
-  }
-}
-
-@keyframes textPulse {
-  0% {
-    opacity: 0.5;
-  }
-  100% {
     opacity: 1;
   }
 }

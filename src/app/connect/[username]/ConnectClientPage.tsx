@@ -535,29 +535,49 @@ export default function ConnectClientPage({
         <div className={styles.loaderGlow} />
         <div className={styles.loaderContent}>
           <div className={styles.logoWrapper}>
-            <div className={styles.logoIcon}>
-              <svg width="60" height="60" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="url(#logoGrad)" />
-                <path d="M2 17L12 22L22 17" stroke="url(#logoGrad)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M2 12L12 17L22 12" stroke="url(#logoGrad)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                <defs>
-                  <linearGradient id="logoGrad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
-                    <stop stopColor="#6366f1" />
-                    <stop offset="1" stopColor="#4f46e5" />
-                  </linearGradient>
-                </defs>
-              </svg>
+            <div className={styles.logoContainer}>
+              <img src="/icon.png" className={styles.logoTOnly} alt="Tapfolio" />
+              <div className={styles.wifiWaves}>
+                <svg viewBox="0 0 100 100" className={styles.wavesSvg}>
+                  {/* Inner Wave */}
+                  <path 
+                    d="M 15 50 A 35 35 0 0 1 50 85" 
+                    stroke="url(#waveGrad)" 
+                    strokeWidth="12" 
+                    strokeLinecap="round" 
+                    fill="none" 
+                    className={styles.waveInner} 
+                  />
+                  {/* Outer Wave */}
+                  <path 
+                    d="M 15 20 A 65 65 0 0 1 80 85" 
+                    stroke="url(#waveGrad)" 
+                    strokeWidth="12" 
+                    strokeLinecap="round" 
+                    fill="none" 
+                    className={styles.waveOuter} 
+                  />
+                  <defs>
+                    <linearGradient id="waveGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#3b82f6" />
+                      <stop offset="100%" stopColor="#014BAA" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
             </div>
             <h1 className={styles.loaderBrand}>Tapfolio</h1>
           </div>
           
-          <div className={styles.spinnerContainer}>
-            <div className={styles.spinnerRing}></div>
-            <div className={styles.spinnerRingInner}></div>
-          </div>
-          
           <div className={styles.loadingTextContainer}>
-            <p className={styles.loadingMainText}>Fetching Profile</p>
+            <div className={styles.connectingStatus}>
+              <p className={styles.loadingMainText}>Connecting</p>
+              <div className={styles.connectionPoints}>
+                <span className={styles.point}></span>
+                <span className={styles.point}></span>
+                <span className={styles.point}></span>
+              </div>
+            </div>
             <p className={styles.loadingSubText}>Setting up your digital space...</p>
           </div>
         </div>
