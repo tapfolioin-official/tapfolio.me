@@ -225,13 +225,9 @@ export default function ConnectClientPage({
         upiUrl = `upi://pay?pa=${upiId}&pn=${name}&cu=INR`;
       }
       
-      if (isMobileDevice) {
-        window.location.href = upiUrl;
-      } else {
-        setSelectedUpiId(upiId);
-        setSelectedUpiUrl(upiUrl);
-        setShowUpiModal(true);
-      }
+      setSelectedUpiId(upiId);
+      setSelectedUpiUrl(upiUrl);
+      setShowUpiModal(true);
     }
   };
 
@@ -1014,25 +1010,88 @@ export default function ConnectClientPage({
 
       {/* ─── UPI Payment Modal ─── */}
       {showUpiModal && (
-        <div className={styles.upiModalOverlay} onClick={() => setShowUpiModal(false)}>
-          <div className={styles.upiModalContent} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.upiModalHeader}>
-              <h3>Pay via Google Pay / UPI</h3>
-              <button className={styles.closeBtn} onClick={() => setShowUpiModal(false)}>&times;</button>
-            </div>
-            <div className={styles.upiModalBody}>
-              <div className={styles.qrContainer}>
-                <img 
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(selectedUpiUrl)}`} 
-                  alt="UPI QR Code" 
-                  className={styles.qrImage}
-                />
-              </div>
-              <p className={styles.upiInstructions}>Scan this QR code with any UPI app (Google Pay, PhonePe, Paytm, BHIM) to make a payment.</p>
-              <div className={styles.upiIdBadge}>
-                <span>UPI ID:</span> <strong>{selectedUpiId}</strong>
-              </div>
-            </div>
+        <div className={isMobileDevice ? styles.upiBottomSheetOverlay : styles.upiModalOverlay} onClick={() => setShowUpiModal(false)}>
+          <div className={isMobileDevice ? styles.upiBottomSheetContent : styles.upiModalContent} onClick={(e) => e.stopPropagation()}>
+            {isMobileDevice ? (
+              <>
+                <div className={styles.bottomSheetDragHandle} />
+                <div className={styles.upiBottomSheetHeader}>
+                  <h3>Pay via UPI</h3>
+                  <button className={styles.closeBtn} onClick={() => setShowUpiModal(false)}>&times;</button>
+                </div>
+                <p className={styles.upiBottomSheetInstructions}>
+                  Choose your preferred payment app to pay <strong>{profile.name || 'Tapfolio User'}</strong>:
+                </p>
+                <div className={styles.upiAppList}>
+                  <a href={`gpay://upi/pay?pa=${selectedUpiId}&pn=${encodeURIComponent(profile.name || 'Tapfolio User')}&cu=INR`} className={styles.upiAppOption} onClick={() => setShowUpiModal(false)}>
+                    <div className={styles.upiAppIconGPay}>
+                      {/* Custom SVG logo for GPay or Google G */}
+                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12.24 10.285V13.4h4.743c-.19 1.077-.736 1.99-1.636 2.603V18.1h2.617c1.53-1.42 2.413-3.52 2.413-5.996 0-.585-.052-1.15-.152-1.705H12.24z" fill="#4285F4" />
+                        <path d="M12.24 20c2.68 0 4.93-.897 6.57-2.433l-2.617-2.052c-.724.49-1.65.787-2.67.787-2.052 0-3.79-1.396-4.41-3.275H6.4V15.11C8.04 18.39 11.39 20 12.24 20z" fill="#34A853" />
+                        <path d="M7.83 13.027a5.81 5.81 0 0 1 0-3.69V7.202H6.4a9.924 9.924 0 0 0 0 9.595l1.43-2.138-.002-.632z" fill="#FBBC05" />
+                        <path d="M12.24 7.698c1.46 0 2.766.507 3.796 1.5l2.85-2.85C17.164 4.887 14.914 4 12.24 4 11.39 4 8.04 5.61 6.4 8.89l1.43 2.138c.62-1.879 2.358-3.33 4.41-3.33z" fill="#EA4335" />
+                      </svg>
+                    </div>
+                    <div className={styles.upiAppName}>Google Pay</div>
+                  </a>
+                  <a href={`phonepe://upi/pay?pa=${selectedUpiId}&pn=${encodeURIComponent(profile.name || 'Tapfolio User')}&cu=INR`} className={styles.upiAppOption} onClick={() => setShowUpiModal(false)}>
+                    <div className={styles.upiAppIconPhonePe}>
+                      <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-4h2v4zm0-6h-2V8h2v2z" />
+                      </svg>
+                    </div>
+                    <div className={styles.upiAppName}>PhonePe</div>
+                  </a>
+                  <a href={`paytm://upi/pay?pa=${selectedUpiId}&pn=${encodeURIComponent(profile.name || 'Tapfolio User')}&cu=INR`} className={styles.upiAppOption} onClick={() => setShowUpiModal(false)}>
+                    <div className={styles.upiAppIconPaytm}>
+                      <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M4 4h16v16H4V4zm4 4v8h8V8H8z" />
+                      </svg>
+                    </div>
+                    <div className={styles.upiAppName}>Paytm</div>
+                  </a>
+                  <a href={`bhim://upi/pay?pa=${selectedUpiId}&pn=${encodeURIComponent(profile.name || 'Tapfolio User')}&cu=INR`} className={styles.upiAppOption} onClick={() => setShowUpiModal(false)}>
+                    <div className={styles.upiAppIconBHIM}>
+                      <span className="text-[10px] font-black text-white">BHIM</span>
+                    </div>
+                    <div className={styles.upiAppName}>BHIM</div>
+                  </a>
+                  <a href={selectedUpiUrl} className={styles.upiAppOption} onClick={() => setShowUpiModal(false)}>
+                    <div className={styles.upiAppIconGeneric}>
+                      <svg className="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                        <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+                        <line x1="12" y1="18" x2="12" y2="18.01" />
+                      </svg>
+                    </div>
+                    <div className={styles.upiAppName}>Default UPI App</div>
+                  </a>
+                </div>
+                <div className={styles.upiIdBadge}>
+                  <span>UPI ID:</span> <strong>{selectedUpiId}</strong>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className={styles.upiModalHeader}>
+                  <h3>Pay via Google Pay / UPI</h3>
+                  <button className={styles.closeBtn} onClick={() => setShowUpiModal(false)}>&times;</button>
+                </div>
+                <div className={styles.upiModalBody}>
+                  <div className={styles.qrContainer}>
+                    <img 
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(selectedUpiUrl)}`} 
+                      alt="UPI QR Code" 
+                      className={styles.qrImage}
+                    />
+                  </div>
+                  <p className={styles.upiInstructions}>Scan this QR code with any UPI app (Google Pay, PhonePe, Paytm, BHIM) to make a payment.</p>
+                  <div className={styles.upiIdBadge}>
+                    <span>UPI ID:</span> <strong>{selectedUpiId}</strong>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
