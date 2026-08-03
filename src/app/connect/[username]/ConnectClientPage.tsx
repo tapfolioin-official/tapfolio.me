@@ -241,7 +241,7 @@ export default function ConnectClientPage({
 
     async function loadPublicData() {
       try {
-        const res = await fetch(`/api/profile/${username}`);
+        const res = await fetch(`/api/profile/${username}?t=${Date.now()}`, { cache: 'no-store' });
         const data = await res.json();
         if (res.ok && data.success) {
           setProfileData(data.profile);

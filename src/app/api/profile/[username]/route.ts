@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ username: string }> }
@@ -66,7 +68,9 @@ export async function GET(
       },
       {
         headers: {
-          'Cache-Control': 'public, max-age=15',
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
         },
       }
     );

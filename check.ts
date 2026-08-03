@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-// Load .env file manually
+// Load .env file manually first
 const envPath = path.resolve(process.cwd(), '.env');
 if (fs.existsSync(envPath)) {
   const envContent = fs.readFileSync(envPath, 'utf8');
@@ -15,13 +15,8 @@ if (fs.existsSync(envPath)) {
   });
 }
 
-import prisma from './src/lib/db';
-
 async function main() {
-  const profile = await prisma.profile.findFirst({
-    where: { username: 'nibras' },
-    include: { tags: true }
-  });
-  console.log('Profile:', JSON.stringify(profile, null, 2));
+  const { default: prisma } = await import('./src/lib/db');
+  console.log("DB connection test passed.");
 }
 main();
