@@ -631,7 +631,7 @@ class ApiService {
         'POST',
         ApiEndpoints.connectionAccept,
         body: jsonEncode({
-          'requestId': requestId,
+          'connectionId': requestId,
           'settings': (settings ?? ConnectionPermissionData()).toJson(),
         }),
       );
@@ -651,7 +651,7 @@ class ApiService {
       final response = await _apiClient.sendRequest(
         'POST',
         ApiEndpoints.connectionReject,
-        body: jsonEncode({'requestId': requestId}),
+        body: jsonEncode({'connectionId': requestId}),
       );
 
       final data = jsonDecode(response.body);
