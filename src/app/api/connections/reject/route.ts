@@ -36,6 +36,30 @@ export async function POST(request: Request) {
       data: { status: 'rejected' },
     });
 
+    // Update receiver's existing connection_request notifications so action buttons disappear
+    try {
+      const receiverNotifs = await prisma.notification.findMany({
+        where: {
+          receiverId: payload.userId,
+          type: 'connection_request',
+        },
+      });
+      for (const notif of receiverNotifs) {
+        const notifData = (notif.data as Record<string, any>) || {};
+        if (notifData.connectionId === connectionId) {
+          await prisma.notification.update({
+            where: { id: notif.id },
+            data: {
+              data: { ...notifData, status: 'rejected' },
+              isRead: true,
+            },
+          });
+        }
+      }
+    } catch (e) {
+      console.error('[CONNECTIONS] Error updating receiver notifications on reject:', e);
+    }
+
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error('Connection reject error:', error);

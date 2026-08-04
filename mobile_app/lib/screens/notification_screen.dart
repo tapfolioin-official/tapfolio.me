@@ -101,12 +101,35 @@ class _NotificationScreenState extends State<NotificationScreen> {
     final res = await _api.acceptRequest(connId);
     if (!mounted) return;
     setState(() => _processingIds.remove(notif.id));
-    if (res['success'] == true) {
-      // Remove the notification and refresh
-      await _delete(notif);
+
+    final isAlready = (res['message'] == 'Already accepted.') ||
+        (res['error']?.toString().contains('already') ?? false);
+
+    if (res['success'] == true || isAlready) {
+      setState(() {
+        _notifications = _notifications.map((n) {
+          if (n.id == notif.id) {
+            final updatedData = Map<String, dynamic>.from(n.data);
+            updatedData['status'] = 'accepted';
+            return AppNotification(
+              id: n.id,
+              type: n.type,
+              title: n.title,
+              message: n.message,
+              data: updatedData,
+              isRead: true,
+              createdAt: n.createdAt,
+              sender: n.sender,
+            );
+          }
+          return n;
+        }).toList();
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Connected with ${notif.sender?.name ?? "user"}! 🎉'),
+          content: Text(isAlready
+              ? 'Request already accepted.'
+              : 'Connected with ${notif.sender?.name ?? "user"}! 🎉'),
           backgroundColor: const Color(0xFF10B981),
         ),
       );
@@ -127,12 +150,40 @@ class _NotificationScreenState extends State<NotificationScreen> {
     final res = await _api.rejectRequest(connId);
     if (!mounted) return;
     setState(() => _processingIds.remove(notif.id));
-    if (res['success'] == true) {
-      await _delete(notif);
+
+    final isAlready = (res['error']?.toString().contains('already') ?? false);
+
+    if (res['success'] == true || isAlready) {
+      setState(() {
+        _notifications = _notifications.map((n) {
+          if (n.id == notif.id) {
+            final updatedData = Map<String, dynamic>.from(n.data);
+            updatedData['status'] = 'rejected';
+            return AppNotification(
+              id: n.id,
+              type: n.type,
+              title: n.title,
+              message: n.message,
+              data: updatedData,
+              isRead: true,
+              createdAt: n.createdAt,
+              sender: n.sender,
+            );
+          }
+          return n;
+        }).toList();
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Request declined.'),
           backgroundColor: Color(0xFF374151),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(res['error'] ?? 'Failed to decline'),
+          backgroundColor: Colors.redAccent,
         ),
       );
     }
@@ -461,6 +512,47 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                 ),
                               ),
                             ],
+                          ),
+                      ] else if (notif.type == 'connection_request' || notif.isConnectionAccepted) ...[
+                        const SizedBox(height: 8),
+                        if (notif.isConnectionAccepted)
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF10B981).withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(Icons.check_circle_rounded, size: 14, color: Color(0xFF10B981)),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'Accepted',
+                                  style: GoogleFonts.outfit(
+                                    color: const Color(0xFF10B981),
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        else if (notif.connectionStatus == 'rejected')
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.grey.withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              'Declined',
+                              style: GoogleFonts.outfit(
+                                color: _subtitleColor,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
                           ),
                       ],
                     ],

@@ -40,23 +40,47 @@ export async function GET(request: Request) {
       take: limit,
     });
 
-    const formatted = notifications.map((n) => ({
-      id: n.id,
-      type: n.type,
-      title: n.title,
-      message: n.message,
-      data: n.data,
-      isRead: n.isRead,
-      createdAt: n.createdAt,
-      sender: n.sender
-        ? {
-            id: n.sender.id,
-            name: n.sender.name,
-            avatar: n.sender.profile?.avatar ?? '/profile_avatar.png',
-            username: n.sender.profile?.username ?? '',
-          }
-        : null,
-    }));
+    // Extract connectionIds from connection_request notifications to verify current status
+    const connIds = notifications
+      .filter((n) => n.type === 'connection_request' && n.data && typeof (n.data as any).connectionId === 'number')
+      .map((n) => (n.data as any).connectionId as number);
+
+    const connections = connIds.length > 0
+      ? await prisma.connection.findMany({
+          where: { id: { in: connIds } },
+          select: { id: true, status: true },
+        })
+      : [];
+
+    const connStatusMap = new Map(connections.map((c) => [c.id, c.status]));
+
+    const formatted = notifications.map((n) => {
+      let dataObj = (n.data as Record<string, any>) || {};
+      if (n.type === 'connection_request' && dataObj.connectionId) {
+        const liveStatus = connStatusMap.get(dataObj.connectionId);
+        if (liveStatus) {
+          dataObj = { ...dataObj, status: liveStatus };
+        }
+      }
+
+      return {
+        id: n.id,
+        type: n.type,
+        title: n.title,
+        message: n.message,
+        data: dataObj,
+        isRead: n.isRead,
+        createdAt: n.createdAt,
+        sender: n.sender
+          ? {
+              id: n.sender.id,
+              name: n.sender.name,
+              avatar: n.sender.profile?.avatar ?? '/profile_avatar.png',
+              username: n.sender.profile?.username ?? '',
+            }
+          : null,
+      };
+    });
 
     return NextResponse.json({ success: true, notifications: formatted });
   } catch (error) {

@@ -59,11 +59,16 @@ class AppNotification {
     );
   }
 
-  /// Returns true if this is an actionable connection_request
-  bool get isConnectionRequest => type == 'connection_request';
+  /// Connection status if present in data (e.g. 'pending', 'accepted', 'rejected')
+  String get connectionStatus => (data['status'] as String?) ?? 'pending';
 
-  /// Returns true if notification is a connection_accepted
-  bool get isConnectionAccepted => type == 'connection_accepted';
+  /// Returns true if this is an actionable connection_request that is still pending
+  bool get isConnectionRequest =>
+      type == 'connection_request' && connectionStatus == 'pending';
+
+  /// Returns true if notification is a connection_accepted or has status 'accepted'
+  bool get isConnectionAccepted =>
+      type == 'connection_accepted' || connectionStatus == 'accepted';
 
   /// Parses the connectionId from the data payload (if present)
   int? get connectionId {

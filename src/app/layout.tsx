@@ -149,6 +149,8 @@ const jsonLd = {
   "@graph": [orgJsonLd, websiteJsonLd, abhinandPersonJsonLd, nibrasPersonJsonLd]
 };
 
+import FirebaseAnalytics from "@/components/FirebaseAnalytics";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -163,6 +165,7 @@ export default function RootLayout({
             __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
           }}
         />
+        <FirebaseAnalytics />
         {children}
       </body>
     </html>

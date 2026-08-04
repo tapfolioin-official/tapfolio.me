@@ -153,6 +153,30 @@ export async function POST(request: Request) {
 
     console.log(`[CONNECTIONS] Connection ${connectionId} accepted atomically.`);
 
+    // Update receiver's existing connection_request notifications so action buttons disappear
+    try {
+      const receiverNotifs = await prisma.notification.findMany({
+        where: {
+          receiverId: payload.userId,
+          type: 'connection_request',
+        },
+      });
+      for (const notif of receiverNotifs) {
+        const notifData = (notif.data as Record<string, any>) || {};
+        if (notifData.connectionId === connectionId) {
+          await prisma.notification.update({
+            where: { id: notif.id },
+            data: {
+              data: { ...notifData, status: 'accepted' },
+              isRead: true,
+            },
+          });
+        }
+      }
+    } catch (e) {
+      console.error('[CONNECTIONS] Error updating receiver notifications:', e);
+    }
+
     // Notify the original requester that their request was accepted
     const receiverProfile = await prisma.profile.findUnique({ where: { userId: payload.userId } });
     const accepterName = receiverProfile?.name ?? 'Someone';

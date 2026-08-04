@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "533947683458-nvpu2vo3v4aiokejavlkpa0aettdhm1s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tapfolio.app",
+            "certificate_hash": "30e7b8b8ffbc7e08d0a66542ce34eeed53af154a"
+          }
+        },
+        {
           "client_id": "533947683458-omcg95pfltc2n27lnom8l2fmp4of8hkc.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
