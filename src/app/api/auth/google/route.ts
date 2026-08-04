@@ -47,10 +47,13 @@ export async function POST(request: Request) {
       try {
         const JWKS = jose.createRemoteJWKSet(new URL('https://www.googleapis.com/oauth2/v3/certs'));
         const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+        const webClientId = '533947683458-3tn9eggu70uob8pv4g1kj7kj4j3rjilk.apps.googleusercontent.com';
         const iosClientId = '533947683458-f16dl0kle0is987gqoqum4255pqerhta.apps.googleusercontent.com';
         
-        // Allow verification using either the backend custom config client ID, or the direct iOS client ID
-        const allowedAudiences = clientId ? [clientId, iosClientId] : [iosClientId];
+        // Allow verification using the environment client ID, explicit Web client ID, or explicit iOS client ID
+        const allowedAudiences = clientId 
+          ? [clientId, webClientId, iosClientId] 
+          : [webClientId, iosClientId];
 
         const { payload } = await jose.jwtVerify(idToken, JWKS, {
           issuer: ['accounts.google.com', 'https://accounts.google.com'],
