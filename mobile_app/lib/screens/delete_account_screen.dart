@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import '../services/api_service.dart';
+import '../services/google_auth_service.dart';
 
 /// DeleteAccountScreen — required by Google Play for apps with user accounts.
 ///
@@ -24,12 +24,6 @@ class DeleteAccountScreen extends StatefulWidget {
 class _DeleteAccountScreenState extends State<DeleteAccountScreen>
     with TickerProviderStateMixin {
   final ApiService _apiService = ApiService();
-  final GoogleSignIn _googleSignIn = GoogleSignIn(
-    clientId: Platform.isIOS
-        ? '533947683458-f16dl0kle0is987gqoqum4255pqerhta.apps.googleusercontent.com'
-        : null,
-    scopes: ['email'],
-  );
   final _confirmController = TextEditingController();
 
   bool _isLoading = false;
@@ -83,8 +77,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen>
     try {
       // Sign out Google first (revoke OAuth tokens)
       try {
-        await _googleSignIn.signOut();
-        await _googleSignIn.disconnect();
+        await GoogleAuthService.instance.signOut();
       } catch (_) {
         // Not signed in via Google — safe to ignore
       }

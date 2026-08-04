@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../core/storage/local_storage.dart';
 import '../services/api_service.dart';
+import '../services/google_auth_service.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -20,12 +21,6 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final ApiService _apiService = ApiService();
-  final GoogleSignIn _googleSignIn = GoogleSignIn(
-    clientId: Platform.isIOS
-        ? '533947683458-f16dl0kle0is987gqoqum4255pqerhta.apps.googleusercontent.com'
-        : null,
-    scopes: ['email'],
-  );
 
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
@@ -80,7 +75,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  // Handle native Google Sign-In with development mock fallback
+  // Handle native Google Sign-In with centralized GoogleAuthService
   Future<void> _handleGoogleSignIn() async {
     debugPrint('[TRACE-AUTH] _handleGoogleSignIn() pressed.');
     setState(() {
@@ -88,40 +83,23 @@ class _LoginScreenState extends State<LoginScreen> {
       _errorMessage = null;
     });
 
-    try {
-      final GoogleSignInAccount? account = await _googleSignIn.signIn();
-      if (account != null) {
-        debugPrint('[TRACE-AUTH] Google Sign-In account selected: ${account.email}');
-        final GoogleSignInAuthentication auth = await account.authentication;
-        debugPrint('[TRACE-AUTH] Sending Google Login API request...');
-        final res = await _apiService.googleLogin(
-          auth.idToken ?? 'mock_token',
-          email: account.email,
-          name: account.displayName,
-        );
+    final result = await GoogleAuthService.instance.signInAndAuthenticate(_apiService);
 
-        debugPrint('[TRACE-AUTH] Google Login API response: $res');
-        if (res['success'] == true) {
-          _logAuthSuccess();
-          await _handlePostLogin();
-        } else {
-          setState(() {
-            _isLoading = false;
-            _errorMessage = res['error'];
-          });
-        }
-      } else {
-        debugPrint('[TRACE-AUTH] Google Sign-In cancelled by user.');
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    } catch (e, stack) {
+    if (!mounted) return;
+
+    if (result.success) {
+      _logAuthSuccess();
+      await _handlePostLogin();
+    } else if (result.isCancelled) {
+      debugPrint('[TRACE-AUTH] Google Sign-In cancelled by user.');
       setState(() {
         _isLoading = false;
-        _errorMessage = 'Google Sign-In failed: ${e.toString()}';
       });
-      debugPrint('[EXCEPTION] Google Sign-In Error: $e\n$stack');
+    } else {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = result.error ?? 'Google Sign-In failed.';
+      });
     }
   }
 

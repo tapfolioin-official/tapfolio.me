@@ -7,6 +7,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/api_service.dart';
+import '../services/google_auth_service.dart';
+import '../models/user.dart';
 
 class RegisterScreen extends StatefulWidget {
   final VoidCallback onLoginSuccess;
@@ -19,12 +21,6 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final ApiService _apiService = ApiService();
-  final GoogleSignIn _googleSignIn = GoogleSignIn(
-    clientId: Platform.isIOS
-        ? '533947683458-f16dl0kle0is987gqoqum4255pqerhta.apps.googleusercontent.com'
-        : null,
-    scopes: ['email'],
-  );
 
   int _step = 1;
   bool _isLoading = false;
@@ -466,51 +462,38 @@ class _RegisterScreenState extends State<RegisterScreen> {
       _errorMessage = null;
     });
 
-    try {
-      final GoogleSignInAccount? account = await _googleSignIn.signIn();
-      if (account != null) {
-        final GoogleSignInAuthentication auth = await account.authentication;
-        final res = await _apiService.googleLogin(
-          auth.idToken ?? 'mock_token',
-          email: account.email,
-          name: account.displayName,
-        );
+    final result = await GoogleAuthService.instance.signInAndAuthenticate(_apiService);
 
-        if (res['success'] == true) {
-          // Initialize profile to get default generated username
-          final initRes = await _apiService.initProfile();
-          if (initRes['success'] == true) {
-            setState(() {
-              _nameController.text = account.displayName ?? 'Google User';
-              _emailController.text = account.email;
-              _usernameController.text = initRes['profile']['username'] ?? '';
-              _step = 3; // Go directly to success moment!
-              _isLoading = false;
-            });
-          } else {
-            setState(() {
-              _isLoading = false;
-              _errorMessage = 'Login succeeded, but profile initialization failed.';
-            });
-          }
-        } else {
-          setState(() {
-            _isLoading = false;
-            _errorMessage = res['error'];
-          });
-        }
-      } else {
-        // User cancelled
+    if (!mounted) return;
+
+    if (result.success) {
+      final initRes = await _apiService.initProfile();
+      if (!mounted) return;
+      if (initRes['success'] == true) {
+        final email = result.data?['user']?['email'] as String? ?? '';
+        final name = result.data?['user']?['name'] as String? ?? 'Google User';
         setState(() {
+          _nameController.text = name;
+          _emailController.text = email;
+          _usernameController.text = initRes['profile']?['username'] ?? '';
+          _step = 3; // Go directly to success moment!
           _isLoading = false;
         });
+      } else {
+        setState(() {
+          _isLoading = false;
+          _errorMessage = initRes['error'] ?? 'Failed to initialize Google user profile.';
+        });
       }
-    } catch (e) {
+    } else if (result.isCancelled) {
       setState(() {
         _isLoading = false;
-        _errorMessage = 'Google Sign-In failed. Please try again.';
       });
-      debugPrint('Google Sign-In Error: $e');
+    } else {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = result.error ?? 'Google Sign-In failed.';
+      });
     }
   }
 
