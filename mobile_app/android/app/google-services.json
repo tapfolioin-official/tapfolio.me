@@ -1,29 +1,46 @@
 {
   "project_info": {
-    "project_number": "123456789012",
-    "project_id": "tapfolio-placeholder",
-    "storage_bucket": "tapfolio-placeholder.appspot.com"
+    "project_number": "533947683458",
+    "project_id": "tapfolio-d39fa",
+    "storage_bucket": "tapfolio-d39fa.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:123456789012:android:abcdefabcdefabcdef",
+        "mobilesdk_app_id": "1:533947683458:android:c53652a62ebd4708811a9b",
         "android_client_info": {
           "package_name": "com.tapfolio.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "533947683458-3tn9eggu70uob8pv4g1kj7kj4j3rjilk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyPlaceholderKey1234567890"
+          "current_key": "AIzaSyDvynsis7Msl-nhUhpozb7wMFHDFvGuvg8"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "533947683458-3tn9eggu70uob8pv4g1kj7kj4j3rjilk.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "533947683458-f16dl0kle0is987gqoqum4255pqerhta.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.tapfolio.app"
+              }
+            }
+          ]
         }
       }
     }
   ],
-  "configuration_version": "3"
+  "configuration_version": "1"
 }
