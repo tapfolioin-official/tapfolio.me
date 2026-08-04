@@ -244,6 +244,9 @@ class _ConnectionsScreenState extends State<ConnectionsScreen>
   }
 
   Widget _buildRequestCard(PendingRequest req) {
+    // Filter out empty or whitespace-only tags to prevent empty tag boxes
+    final visibleTags = req.requesterTags.where((t) => t.text.trim().isNotEmpty).toList();
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -343,23 +346,29 @@ class _ConnectionsScreenState extends State<ConnectionsScreen>
             ],
           ),
           const SizedBox(height: 16),
-          // Stats row
+          // Stats row - utilizing clean Material icons instead of emojis
           Row(
             children: [
-              _buildRequestStat('💎', req.requesterDiamonds, const Color(0xFFFFB300)),
+              _buildRequestStat(Icons.diamond_outlined, req.requesterDiamonds, const Color(0xFFFFB300)),
               const SizedBox(width: 8),
-              _buildRequestStat('👥', '${req.requesterConnectionCount}', const Color(0xFF0D9488)),
+              _buildRequestStat(Icons.people_alt_outlined, '${req.requesterConnectionCount}', const Color(0xFF0D9488)),
               const SizedBox(width: 8),
-              _buildRequestStat('⚡', '${req.requesterTapCount}', const Color(0xFF9333EA)),
+              _buildRequestStat(Icons.bolt_rounded, '${req.requesterTapCount}', const Color(0xFF9333EA)),
             ],
           ),
-          if (req.requesterTags.isNotEmpty) ...[
+          if (visibleTags.isNotEmpty) ...[
             const SizedBox(height: 14),
             Wrap(
               spacing: 6,
               runSpacing: 6,
-              children: req.requesterTags.map((t) {
+              children: visibleTags.map((t) {
                 final isLoc = t.type == 'location';
+                
+                // Capitalize the first letter dynamically (e.g. "freealncer" -> "Freealncer")
+                final cleanText = t.text.isNotEmpty 
+                  ? t.text[0].toUpperCase() + t.text.substring(1)
+                  : '';
+
                 return Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
@@ -377,16 +386,17 @@ class _ConnectionsScreenState extends State<ConnectionsScreen>
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        isLoc ? '📍' : '⚙️',
-                        style: const TextStyle(fontSize: 11),
+                      Icon(
+                        isLoc ? Icons.location_on_outlined : Icons.label_outline_rounded,
+                        size: 12,
+                        color: isLoc ? const Color(0xFF10B981) : _subtitleColor,
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        t.text,
+                        cleanText,
                         style: GoogleFonts.outfit(
                           fontSize: 11, 
-                          color: _textColor.withValues(alpha: 0.8),
+                          color: isLoc ? const Color(0xFF0F766E) : _textColor.withValues(alpha: 0.8),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -457,7 +467,7 @@ class _ConnectionsScreenState extends State<ConnectionsScreen>
     );
   }
 
-  Widget _buildRequestStat(String icon, String value, Color color) {
+  Widget _buildRequestStat(IconData icon, String value, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
@@ -467,8 +477,8 @@ class _ConnectionsScreenState extends State<ConnectionsScreen>
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(icon, style: const TextStyle(fontSize: 12)),
-          const SizedBox(width: 4),
+          Icon(icon, size: 14, color: color),
+          const SizedBox(width: 6),
           Text(
             value,
             style: GoogleFonts.outfit(
