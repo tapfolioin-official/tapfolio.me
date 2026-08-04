@@ -245,30 +245,43 @@ class _ConnectionsScreenState extends State<ConnectionsScreen>
 
   Widget _buildRequestCard(PendingRequest req) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: _cardBg,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(color: _cardBorder),
-        boxShadow: _isLight
-            ? [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.02),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                )
-              ]
-            : null,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: _isLight ? 0.03 : 0.15),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CircleAvatar(
-                radius: 26,
-                backgroundImage: getAvatarImage(req.requesterAvatar, _api.baseUrl),
-                backgroundColor: _cardBorder,
+              Container(
+                padding: const EdgeInsets.all(2.5),
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xFF0052FF),
+                      Color(0xFF00C6FF),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: CircleAvatar(
+                  radius: 28,
+                  backgroundImage: getAvatarImage(req.requesterAvatar, _api.baseUrl),
+                  backgroundColor: _cardBorder,
+                ),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -277,36 +290,51 @@ class _ConnectionsScreenState extends State<ConnectionsScreen>
                   children: [
                     Text(
                       req.requesterName,
-                      style: GoogleFonts.outfit(color: _textColor, fontWeight: FontWeight.bold, fontSize: 16),
+                      style: GoogleFonts.outfit(
+                        color: _textColor, 
+                        fontWeight: FontWeight.bold, 
+                        fontSize: 18,
+                      ),
                     ),
-                    if (req.requesterTagline.isNotEmpty)
+                    if (req.requesterTagline.isNotEmpty) ...[
+                      const SizedBox(height: 3),
                       Text(
                         req.requesterTagline,
-                        maxLines: 1,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.outfit(color: _subtitleColor, fontSize: 13),
+                        style: GoogleFonts.outfit(
+                          color: _subtitleColor, 
+                          fontSize: 13,
+                          height: 1.2,
+                        ),
                       ),
+                    ],
                   ],
                 ),
               ),
               if (req.via == 'nfc')
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF0052FF).withValues(alpha: 0.08),
-                    borderRadius: BorderRadius.circular(8),
+                    color: const Color(0xFF0052FF).withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: const Color(0xFF0052FF).withValues(alpha: 0.2),
+                      width: 1,
+                    ),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.nfc, size: 12, color: Color(0xFF0052FF)),
+                      const Icon(Icons.nfc, size: 13, color: Color(0xFF0052FF)),
                       const SizedBox(width: 4),
                       Text(
                         'NFC',
                         style: GoogleFonts.outfit(
                           color: const Color(0xFF0052FF),
                           fontSize: 10,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.5,
                         ),
                       ),
                     ],
@@ -314,74 +342,112 @@ class _ConnectionsScreenState extends State<ConnectionsScreen>
                 ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           // Stats row
           Row(
             children: [
-              _buildRequestStat('💎', req.requesterDiamonds, Colors.amber),
-              const SizedBox(width: 12),
-              _buildRequestStat('👥', '${req.requesterConnectionCount}', Colors.teal),
-              const SizedBox(width: 12),
-              _buildRequestStat('⚡', '${req.requesterTapCount}', Colors.purple),
+              _buildRequestStat('💎', req.requesterDiamonds, const Color(0xFFFFB300)),
+              const SizedBox(width: 8),
+              _buildRequestStat('👥', '${req.requesterConnectionCount}', const Color(0xFF0D9488)),
+              const SizedBox(width: 8),
+              _buildRequestStat('⚡', '${req.requesterTapCount}', const Color(0xFF9333EA)),
             ],
           ),
           if (req.requesterTags.isNotEmpty) ...[
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
             Wrap(
               spacing: 6,
               runSpacing: 6,
               children: req.requesterTags.map((t) {
                 final isLoc = t.type == 'location';
                 return Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
                     color: isLoc
-                        ? const Color(0xFF10b981).withValues(alpha: 0.06)
-                        : const Color(0xFF0052FF).withValues(alpha: 0.06),
-                    borderRadius: BorderRadius.circular(10),
+                        ? const Color(0xFF10B981).withValues(alpha: 0.05)
+                        : (_isLight ? const Color(0xFFF3F4F6) : Colors.white.withValues(alpha: 0.04)),
+                    borderRadius: BorderRadius.circular(8),
                     border: Border.all(
                       color: isLoc
-                          ? const Color(0xFF10b981).withValues(alpha: 0.15)
-                          : const Color(0xFF0052FF).withValues(alpha: 0.15),
+                          ? const Color(0xFF10B981).withValues(alpha: 0.12)
+                          : _cardBorder,
+                      width: 1,
                     ),
                   ),
-                  child: Text(
-                    '${isLoc ? '📍' : '⚙️'} ${t.text}',
-                    style: GoogleFonts.outfit(fontSize: 11, color: _subtitleColor),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        isLoc ? '📍' : '⚙️',
+                        style: const TextStyle(fontSize: 11),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        t.text,
+                        style: GoogleFonts.outfit(
+                          fontSize: 11, 
+                          color: _textColor.withValues(alpha: 0.8),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
                   ),
                 );
               }).toList(),
             ),
           ],
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           Row(
             children: [
               Expanded(
-                child: OutlinedButton(
-                  onPressed: () => _reject(req),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: _isLight ? const Color(0xFF4B5563) : Colors.white70,
-                    side: BorderSide(color: _cardBorder),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    textStyle: GoogleFonts.outfit(fontWeight: FontWeight.w600, fontSize: 13),
+                child: SizedBox(
+                  height: 44,
+                  child: OutlinedButton(
+                    onPressed: () => _reject(req),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: _isLight ? const Color(0xFF6B7280) : Colors.white70,
+                      side: BorderSide(color: _cardBorder),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      textStyle: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 14),
+                    ),
+                    child: const Text('Reject'),
                   ),
-                  child: const Text('Reject'),
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: ElevatedButton(
-                  onPressed: () => _accept(req),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF0052FF),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    elevation: 0,
-                    textStyle: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13),
+                child: Container(
+                  height: 44,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(14),
+                    gradient: const LinearGradient(
+                      colors: [
+                        Color(0xFF0052FF),
+                        Color(0xFF00C6FF),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF0052FF).withValues(alpha: 0.25),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
                   ),
-                  child: const Text('Accept'),
+                  child: ElevatedButton(
+                    onPressed: () => _accept(req),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      foregroundColor: Colors.white,
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      elevation: 0,
+                      textStyle: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 14),
+                    ),
+                    child: const Text('Accept'),
+                  ),
                 ),
               ),
             ],
@@ -406,7 +472,7 @@ class _ConnectionsScreenState extends State<ConnectionsScreen>
           Text(
             value,
             style: GoogleFonts.outfit(
-              color: _isLight ? color : color.withValues(alpha: 0.9),
+              color: color,
               fontSize: 12,
               fontWeight: FontWeight.bold,
             ),
