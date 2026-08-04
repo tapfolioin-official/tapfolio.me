@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:ui';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -18,7 +20,12 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final ApiService _apiService = ApiService();
-  final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    clientId: Platform.isIOS
+        ? '533947683458-f16dl0kle0is987gqoqum4255pqerhta.apps.googleusercontent.com'
+        : null,
+    scopes: ['email'],
+  );
 
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
@@ -151,6 +158,413 @@ class _LoginScreenState extends State<LoginScreen> {
       });
       debugPrint('[EXCEPTION] Email Login Error: $e\n$stack');
     }
+  }
+
+  bool get _isLight => Theme.of(context).brightness == Brightness.light;
+  Color get _textColor => _isLight ? const Color(0xFF111827) : Colors.white;
+  Color get _subtitleColor => _isLight ? const Color(0xFF4B5563) : Colors.white60;
+  Color get _cardBorder => _isLight ? Colors.black12 : Colors.white.withValues(alpha: 0.06);
+
+  Future<void> _handleForgotPassword() async {
+    final emailController = TextEditingController(text: _emailController.text);
+    final passwordController = TextEditingController();
+    final confirmPasswordController = TextEditingController();
+    
+    int forgotStep = 1;
+    String otpCode = '';
+    String? forgotError;
+    bool isForgotLoading = false;
+    int resendCountdown = 60;
+    Timer? countdownTimer;
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            if (forgotStep == 2 && countdownTimer == null) {
+              countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+                if (resendCountdown > 0) {
+                  setModalState(() {
+                    resendCountdown--;
+                  });
+                } else {
+                  timer.cancel();
+                }
+              });
+            }
+
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: _isLight ? Colors.white : const Color(0xFF0F1122),
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                  border: Border.all(color: _cardBorder),
+                ),
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          forgotStep == 1 ? 'Reset Password' :
+                          forgotStep == 2 ? 'Verify Reset Code' :
+                          forgotStep == 3 ? 'Choose New Password' : 'Password Reset!',
+                          style: GoogleFonts.outfit(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: _textColor,
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.close, color: _subtitleColor),
+                          onPressed: () {
+                            countdownTimer?.cancel();
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+
+                    if (forgotError != null) ...[
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                        margin: const EdgeInsets.only(bottom: 16),
+                        decoration: BoxDecoration(
+                          color: Colors.redAccent.withValues(alpha: 0.08),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.redAccent.withValues(alpha: 0.2)),
+                        ),
+                        child: Text(
+                          forgotError!,
+                          style: GoogleFonts.outfit(color: Colors.redAccent, fontSize: 13),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
+
+                    if (forgotStep == 1) ...[
+                      Text(
+                        'Enter the email address associated with your account to receive a reset code.',
+                        style: GoogleFonts.outfit(color: _subtitleColor, fontSize: 13),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildModalTextField(
+                        controller: emailController,
+                        label: 'Email Address',
+                        icon: Icons.email_outlined,
+                      ),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 48,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Theme.of(context).primaryColor,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          ),
+                          onPressed: isForgotLoading
+                              ? null
+                              : () async {
+                                  final emailVal = emailController.text.trim();
+                                  if (emailVal.isEmpty || !emailVal.contains('@')) {
+                                    setModalState(() {
+                                      forgotError = 'Please enter a valid email address.';
+                                    });
+                                    return;
+                                  }
+                                  setModalState(() {
+                                    isForgotLoading = true;
+                                    forgotError = null;
+                                  });
+                                  final res = await _apiService.forgotSendOtp(emailVal);
+                                  setModalState(() {
+                                    isForgotLoading = false;
+                                  });
+                                  if (res['success'] == true) {
+                                    setModalState(() {
+                                      forgotStep = 2;
+                                    });
+                                  } else {
+                                    setModalState(() {
+                                      forgotError = res['error'];
+                                    });
+                                  }
+                                },
+                          child: isForgotLoading
+                              ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                              : Text('Send Reset Code', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
+                        ),
+                      ),
+                    ],
+
+                    if (forgotStep == 2) ...[
+                      Text(
+                        'Enter the 6-digit reset code sent to:',
+                        style: GoogleFonts.outfit(color: _subtitleColor, fontSize: 13),
+                      ),
+                      Text(
+                        emailController.text.trim(),
+                        style: GoogleFonts.outfit(
+                          color: Theme.of(context).primaryColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: _isLight ? const Color(0xFFF9FAFB) : Colors.white.withValues(alpha: 0.04),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: _cardBorder),
+                        ),
+                        child: TextField(
+                          keyboardType: TextInputType.number,
+                          style: GoogleFonts.outfit(color: _textColor, letterSpacing: 8, fontSize: 18),
+                          textAlign: TextAlign.center,
+                          maxLength: 6,
+                          decoration: InputDecoration(
+                            hintText: '000000',
+                            hintStyle: GoogleFonts.outfit(color: _subtitleColor.withValues(alpha: 0.3), letterSpacing: 8),
+                            counterText: '',
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                          ),
+                          onChanged: (val) {
+                            otpCode = val.trim();
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 48,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Theme.of(context).primaryColor,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          ),
+                          onPressed: isForgotLoading
+                              ? null
+                              : () async {
+                                  if (otpCode.length != 6) {
+                                    setModalState(() {
+                                      forgotError = 'Please enter all 6 digits.';
+                                    });
+                                    return;
+                                  }
+                                  setModalState(() {
+                                    isForgotLoading = true;
+                                    forgotError = null;
+                                  });
+                                  final res = await _apiService.forgotVerifyOtp(
+                                    emailController.text.trim(),
+                                    otpCode,
+                                  );
+                                  setModalState(() {
+                                    isForgotLoading = false;
+                                  });
+                                  if (res['success'] == true) {
+                                    countdownTimer?.cancel();
+                                    setModalState(() {
+                                      forgotStep = 3;
+                                    });
+                                  } else {
+                                    setModalState(() {
+                                      forgotError = res['error'];
+                                    });
+                                  }
+                                },
+                          child: isForgotLoading
+                              ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                              : Text('Verify Code', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Center(
+                        child: resendCountdown > 0
+                            ? Text(
+                                'Resend code in $resendCountdown seconds',
+                                style: GoogleFonts.outfit(color: _subtitleColor, fontSize: 12),
+                              )
+                            : TextButton(
+                                onPressed: () async {
+                                  setModalState(() {
+                                    resendCountdown = 60;
+                                    forgotError = null;
+                                  });
+                                  countdownTimer?.cancel();
+                                  countdownTimer = null;
+                                  final res = await _apiService.forgotSendOtp(
+                                    emailController.text.trim(),
+                                  );
+                                  if (res['success'] != true) {
+                                    setModalState(() {
+                                      forgotError = res['error'] ?? 'Failed to resend code.';
+                                    });
+                                  }
+                                },
+                                child: Text(
+                                  'Resend Reset Code',
+                                  style: GoogleFonts.outfit(
+                                    color: Theme.of(context).primaryColor,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                      ),
+                    ],
+
+                    if (forgotStep == 3) ...[
+                      Text(
+                        'Enter a secure new password for your account.',
+                        style: GoogleFonts.outfit(color: _subtitleColor, fontSize: 13),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildModalTextField(
+                        controller: passwordController,
+                        label: 'New Password',
+                        icon: Icons.lock_outline,
+                        obscureText: true,
+                      ),
+                      _buildModalTextField(
+                        controller: confirmPasswordController,
+                        label: 'Confirm Password',
+                        icon: Icons.lock_clock_outlined,
+                        obscureText: true,
+                      ),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 48,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Theme.of(context).primaryColor,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          ),
+                          onPressed: isForgotLoading
+                              ? null
+                              : () async {
+                                  final pass = passwordController.text;
+                                  final conf = confirmPasswordController.text;
+                                  if (pass.length < 6) {
+                                    setModalState(() {
+                                      forgotError = 'Password must be 6+ characters.';
+                                    });
+                                    return;
+                                  }
+                                  if (pass != conf) {
+                                    setModalState(() {
+                                      forgotError = 'Passwords do not match.';
+                                    });
+                                    return;
+                                  }
+                                  setModalState(() {
+                                    isForgotLoading = true;
+                                    forgotError = null;
+                                  });
+                                  final res = await _apiService.forgotReset(
+                                    emailController.text.trim(),
+                                    pass,
+                                  );
+                                  setModalState(() {
+                                    isForgotLoading = false;
+                                  });
+                                  if (res['success'] == true) {
+                                    setModalState(() {
+                                      forgotStep = 4;
+                                    });
+                                  } else {
+                                    setModalState(() {
+                                      forgotError = res['error'];
+                                    });
+                                  }
+                                },
+                          child: isForgotLoading
+                              ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                              : Text('Reset Password', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
+                        ),
+                      ),
+                    ],
+
+                    if (forgotStep == 4) ...[
+                      const Center(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 16.0),
+                          child: Icon(Icons.check_circle_outline, color: Colors.green, size: 64),
+                        ),
+                      ),
+                      Center(
+                        child: Text(
+                          'Your password has been successfully reset. You can now use your new password to sign in.',
+                          style: GoogleFonts.outfit(color: _textColor, fontSize: 14),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 48,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Theme.of(context).primaryColor,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          ),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text('Done', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+    countdownTimer?.cancel();
+  }
+
+  Widget _buildModalTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    bool obscureText = false,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: _isLight ? const Color(0xFFF9FAFB) : Colors.white.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _cardBorder),
+      ),
+      child: TextField(
+        controller: controller,
+        obscureText: obscureText,
+        style: GoogleFonts.outfit(color: _textColor),
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: GoogleFonts.outfit(color: _subtitleColor),
+          prefixIcon: Icon(icon, color: const Color(0xFF0052FF)),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        ),
+      ),
+    );
   }
 
   Widget _buildGlassTextField({
@@ -402,7 +816,25 @@ class _LoginScreenState extends State<LoginScreen> {
                                         },
                                       ),
                                     ),
-                                    const SizedBox(height: 8),
+                                    Align(
+                                      alignment: Alignment.centerRight,
+                                      child: TextButton(
+                                        onPressed: _handleForgotPassword,
+                                        style: TextButton.styleFrom(
+                                          padding: EdgeInsets.zero,
+                                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                        ),
+                                        child: Text(
+                                          'Forgot Password?',
+                                          style: GoogleFonts.outfit(
+                                            color: const Color(0xFF6366f1),
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 13,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 12),
 
                                     // Sign In Button
                                     SizedBox(

@@ -6,6 +6,7 @@ import 'services/deep_link_service.dart';
 import 'services/push_notification_service.dart';
 import 'screens/login_screen.dart';
 import 'screens/main_navigation_shell.dart';
+import 'screens/splash_screen.dart';
 import 'screens/connect_screen.dart';
 import 'screens/connections_screen.dart';
 import 'screens/public_profile_screen.dart';
@@ -68,6 +69,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final ApiService _apiService = ApiService();
+  bool _showSplash = true;
   bool _checkingAuth = true;
   bool _isAuthenticated = false;
 
@@ -154,10 +156,10 @@ class _MyAppState extends State<MyApp> {
       title: 'Tapfolio',
       debugShowCheckedModeBanner: false,
       navigatorKey: navigatorKey,
-      themeMode: ThemeMode.system,
+      themeMode: ThemeMode.light,
       theme: ThemeData(
         brightness: Brightness.light,
-        primaryColor: const Color(0xFF6366F1),
+        primaryColor: const Color(0xFF0052FF),
         scaffoldBackgroundColor: const Color(0xFFF3F4F6),
         textTheme: GoogleFonts.outfitTextTheme(
           ThemeData.light().textTheme.apply(
@@ -166,26 +168,9 @@ class _MyAppState extends State<MyApp> {
           ),
         ),
         colorScheme: const ColorScheme.light(
-          primary: Color(0xFF6366F1),
+          primary: Color(0xFF0052FF),
           secondary: Color(0xFFD946EF),
           surface: Colors.white,
-          error: Colors.redAccent,
-        ),
-      ),
-      darkTheme: ThemeData(
-        brightness: Brightness.dark,
-        primaryColor: const Color(0xFF6366F1),
-        scaffoldBackgroundColor: const Color(0xFF06070D),
-        textTheme: GoogleFonts.outfitTextTheme(
-          ThemeData.dark().textTheme.apply(
-            bodyColor: Colors.white,
-            displayColor: Colors.white,
-          ),
-        ),
-        colorScheme: const ColorScheme.dark(
-          primary: Color(0xFF6366F1),
-          secondary: Color(0xFFD946EF),
-          surface: Color(0xFF0F1122),
           error: Colors.redAccent,
         ),
       ),
@@ -227,9 +212,21 @@ class _MyAppState extends State<MyApp> {
   }
 
   Widget _buildHome() {
+    if (_showSplash) {
+      return SplashScreen(
+        onComplete: () {
+          if (mounted) {
+            setState(() {
+              _showSplash = false;
+            });
+          }
+        },
+      );
+    }
+
     if (_checkingAuth) {
       return const Scaffold(
-        backgroundColor: Color(0xFF0F0F16),
+        backgroundColor: Color(0xFFF3F4F6),
         body: Center(
           child: CircularProgressIndicator(color: Color(0xFF6366F1)),
         ),

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'dashboard_screen.dart';
 import 'leaderboard_screen.dart';
 import 'history_screen.dart';
@@ -8,10 +9,13 @@ import 'profile_view_screen.dart';
 import 'connections_screen.dart';
 import 'delete_account_screen.dart';
 import 'notification_screen.dart';
+import 'edit_profile_screen.dart';
+import 'manage_socials_screen.dart';
 import '../services/api_service.dart';
 import '../services/push_notification_service.dart';
 import '../models/profile.dart';
 import '../features/card_export/dialog/share_card_dialog.dart';
+import '../widgets/offline_banner.dart';
 
 class MainNavigationShell extends StatefulWidget {
   final VoidCallback onLogout;
@@ -29,8 +33,11 @@ class _MainNavigationShellState extends State<MainNavigationShell>
 
   int _pendingCount = 0;       // connection request badge on nav bar
   int _unreadNotifCount = 0;   // notification bell badge
+  int _score = 0;              // user profile score
+  bool _isOffline = false;     // connectivity state
 
   Timer? _notifTimer;
+  StreamSubscription<List<ConnectivityResult>>? _connectivitySub;
 
   late List<Widget> _screens;
 
@@ -45,17 +52,21 @@ class _MainNavigationShellState extends State<MainNavigationShell>
     WidgetsBinding.instance.addObserver(this);
     _screens = [
       const DashboardScreen(),
-      const LeaderboardScreen(),
-      const HistoryScreen(),
       const ConnectionsScreen(),
-      const ProfileViewScreen(),
+      const ManageSocialsScreen(),
+      const LeaderboardScreen(),
+      EditProfileScreen(onLogout: widget.onLogout),
     ];
     debugPrint('[TRACE-SHELL] Calling _fetchPendingCount()...');
     _fetchPendingCount();
     debugPrint('[TRACE-SHELL] Calling _fetchUnreadCount()...');
     _fetchUnreadCount();
+    debugPrint('[TRACE-SHELL] Calling _fetchScore()...');
+    _fetchScore();
     debugPrint('[TRACE-SHELL] Starting notification polling...');
     _startPolling();
+    // Listen for connectivity changes
+    _initConnectivity();
     // Register push notification token on successful load/sign-in
     debugPrint('[TRACE-SHELL] Registering PushNotificationService FCM token...');
     try {
@@ -66,11 +77,40 @@ class _MainNavigationShellState extends State<MainNavigationShell>
     debugPrint('[TRACE-SHELL] initState() completed.');
   }
 
+  void _initConnectivity() {
+    _connectivitySub = Connectivity().onConnectivityChanged.listen((results) {
+      final offline = results.every((r) => r == ConnectivityResult.none);
+      if (mounted) {
+        final wasOffline = _isOffline;
+        setState(() => _isOffline = offline);
+        // Auto-refresh when connectivity is restored
+        if (wasOffline && !offline) {
+          debugPrint('[CONNECTIVITY] Internet restored — refreshing all data.');
+          _refreshAll();
+        }
+      }
+    });
+    // Check initial state
+    Connectivity().checkConnectivity().then((results) {
+      if (mounted) {
+        setState(() => _isOffline = results.every((r) => r == ConnectivityResult.none));
+      }
+    });
+  }
+
+  /// Re-fetch all data after connectivity is restored.
+  void _refreshAll() {
+    _fetchPendingCount();
+    _fetchUnreadCount();
+    _fetchScore();
+  }
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       _startPolling();
       _fetchUnreadCount();
+      _fetchScore();
     } else if (state == AppLifecycleState.paused) {
       _stopPolling();
     }
@@ -78,9 +118,10 @@ class _MainNavigationShellState extends State<MainNavigationShell>
 
   void _startPolling() {
     _stopPolling();
-    // Poll unread count every 15 seconds while app is active
+    // Poll unread count and score every 15 seconds while active
     _notifTimer = Timer.periodic(const Duration(seconds: 15), (_) {
       _fetchUnreadCount();
+      _fetchScore();
     });
   }
 
@@ -92,6 +133,7 @@ class _MainNavigationShellState extends State<MainNavigationShell>
   @override
   void dispose() {
     _stopPolling();
+    _connectivitySub?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -104,6 +146,17 @@ class _MainNavigationShellState extends State<MainNavigationShell>
   Future<void> _fetchUnreadCount() async {
     final count = await _apiService.getUnreadNotificationCount();
     if (mounted) setState(() => _unreadNotifCount = count);
+  }
+
+  Future<void> _fetchScore() async {
+    try {
+      final res = await _apiService.getProfile();
+      if (res != null && res['score'] != null) {
+        if (mounted) setState(() => _score = res['score'] as int? ?? 0);
+      }
+    } catch (e) {
+      debugPrint('[SHELL] Error fetching score: $e');
+    }
   }
 
   void _openNotifications() {
@@ -183,23 +236,33 @@ class _MainNavigationShellState extends State<MainNavigationShell>
       backgroundColor: scaffoldBg,
       appBar: AppBar(
         backgroundColor: appBarBg,
-        elevation: 0,
+        elevation: 0.5,
         title: Row(
           children: [
-            Text(
-              'Tap',
-              style: GoogleFonts.outfit(
-                fontWeight: FontWeight.bold,
-                fontSize: 22,
-                color: logoTextColor,
+            Container(
+              width: 30,
+              height: 30,
+              decoration: BoxDecoration(
+                color: const Color(0xFF0052FF),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              alignment: Alignment.center,
+              child: Text(
+                'T',
+                style: GoogleFonts.outfit(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
               ),
             ),
+            const SizedBox(width: 8),
             Text(
-              'folio',
+              'tapfolio',
               style: GoogleFonts.outfit(
-                fontWeight: FontWeight.w400,
-                fontSize: 22,
-                color: const Color(0xFF6366F1),
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+                color: const Color(0xFF0052FF),
               ),
             ),
           ],
@@ -209,7 +272,7 @@ class _MainNavigationShellState extends State<MainNavigationShell>
           GestureDetector(
             onTap: _openNotifications,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 2),
               child: Stack(
                 clipBehavior: Clip.none,
                 children: [
@@ -233,141 +296,92 @@ class _MainNavigationShellState extends State<MainNavigationShell>
             icon: Icon(Icons.share_rounded, color: iconColor),
             onPressed: _onSharePressed,
           ),
-          // ── More menu ──
-          PopupMenuButton<String>(
-            icon: Icon(Icons.more_vert, color: iconColor),
-            color: isLight ? Colors.white : const Color(0xFF1A1A2E),
-            onSelected: (value) async {
-              if (value == 'logout') {
-                _stopPolling();
-                await _apiService.logout();
-                widget.onLogout();
-              } else if (value == 'diagnostics') {
-                Navigator.of(context).pushNamed('/diagnostics');
-              } else if (value == 'delete_account') {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => DeleteAccountScreen(
-                      onAccountDeleted: () {
-                        Navigator.of(context).popUntil((r) => r.isFirst);
-                        widget.onLogout();
-                      },
-                    ),
-                  ),
-                );
-              }
-            },
-            itemBuilder: (context) {
-              final popupTextColor = isLight ? const Color(0xFF1F2937) : Colors.white;
-              final popupIconColor = isLight ? const Color(0xFF4B5563) : Colors.white70;
-              return [
-                PopupMenuItem(
-                  value: 'diagnostics',
-                  child: Row(
-                    children: [
-                      Icon(Icons.analytics_outlined, color: popupIconColor, size: 20),
-                      const SizedBox(width: 12),
-                      Text('Diagnostics', style: GoogleFonts.outfit(color: popupTextColor)),
-                    ],
-                  ),
-                ),
-                PopupMenuItem(
-                  value: 'logout',
-                  child: Row(
-                    children: [
-                      Icon(Icons.logout, color: popupIconColor, size: 20),
-                      const SizedBox(width: 12),
-                      Text('Sign Out', style: GoogleFonts.outfit(color: popupTextColor)),
-                    ],
-                  ),
-                ),
-                PopupMenuItem(
-                  value: 'delete_account',
-                  child: Row(
-                    children: [
-                      Icon(Icons.delete_forever, color: Colors.red.shade400, size: 20),
-                      const SizedBox(width: 12),
-                      Text('Delete Account',
-                          style: GoogleFonts.outfit(color: Colors.red.shade400)),
-                    ],
-                  ),
-                ),
-              ];
-            },
+        ],
+      ),
+      body: Column(
+        children: [
+          if (_isOffline) const OfflineBanner(),
+          Expanded(
+            child: IndexedStack(
+              index: _currentIndex,
+              children: _screens,
+            ),
           ),
         ],
       ),
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
-      ),
-      extendBody: true,
+      extendBody: false,
       bottomNavigationBar: Container(
-        margin: const EdgeInsets.only(left: 16, right: 16, bottom: 20),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.4),
-              blurRadius: 20,
-              offset: const Offset(0, 8),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          border: Border(
+            top: BorderSide(color: Colors.black12, width: 0.5),
+          ),
+        ),
+        child: BottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            setState(() => _currentIndex = index);
+            if (index == 1) _fetchPendingCount();
+          },
+          backgroundColor: Colors.white,
+          selectedItemColor: const Color(0xFF0052FF),
+          unselectedItemColor: const Color(0xFF94A3B8),
+          showUnselectedLabels: true,
+          type: BottomNavigationBarType.fixed,
+          selectedLabelStyle:
+              GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.w600),
+          unselectedLabelStyle: GoogleFonts.outfit(fontSize: 11),
+          items: [
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.home_outlined),
+              activeIcon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: _pendingCount > 0
+                  ? Badge.count(
+                      count: _pendingCount,
+                      child: const Icon(Icons.people_outline),
+                    )
+                  : const Icon(Icons.people_outline),
+              activeIcon: _pendingCount > 0
+                  ? Badge.count(
+                      count: _pendingCount,
+                      child: const Icon(Icons.people),
+                    )
+                  : const Icon(Icons.people),
+              label: 'Connections',
+            ),
+            BottomNavigationBarItem(
+              icon: Container(
+                width: 44,
+                height: 44,
+                decoration: const BoxDecoration(
+                  color: Color(0xFF0052FF),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 4,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: const Icon(Icons.add, color: Colors.white, size: 24),
+              ),
+              label: '',
+            ),
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.emoji_events_outlined),
+              activeIcon: Icon(Icons.emoji_events),
+              label: 'Leader Board',
+            ),
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline),
+              activeIcon: Icon(Icons.person),
+              label: 'Profile',
             ),
           ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(24),
-          child: BottomNavigationBar(
-            currentIndex: _currentIndex,
-            onTap: (index) {
-              setState(() => _currentIndex = index);
-              if (index == 3) _fetchPendingCount();
-            },
-            backgroundColor: isLight ? Colors.white.withValues(alpha: 0.95) : const Color(0xFF0F1122).withValues(alpha: 0.95),
-            selectedItemColor: const Color(0xFF6366F1),
-            unselectedItemColor: isLight ? Colors.black38 : Colors.white38,
-            showUnselectedLabels: true,
-            type: BottomNavigationBarType.fixed,
-            selectedLabelStyle:
-                GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.w600),
-            unselectedLabelStyle: GoogleFonts.outfit(fontSize: 11),
-            items: [
-              const BottomNavigationBarItem(
-                icon: Icon(Icons.dashboard_outlined),
-                activeIcon: Icon(Icons.dashboard),
-                label: 'Dashboard',
-              ),
-              const BottomNavigationBarItem(
-                icon: Icon(Icons.emoji_events_outlined),
-                activeIcon: Icon(Icons.emoji_events),
-                label: 'Leaderboard',
-              ),
-              const BottomNavigationBarItem(
-                icon: Icon(Icons.history_outlined),
-                activeIcon: Icon(Icons.history),
-                label: 'Logs',
-              ),
-              BottomNavigationBarItem(
-                icon: _pendingCount > 0
-                    ? Badge.count(
-                        count: _pendingCount,
-                        child: const Icon(Icons.people_outline),
-                      )
-                    : const Icon(Icons.people_outline),
-                activeIcon: _pendingCount > 0
-                    ? Badge.count(
-                        count: _pendingCount,
-                        child: const Icon(Icons.people),
-                      )
-                    : const Icon(Icons.people),
-                label: 'Connections',
-              ),
-              const BottomNavigationBarItem(
-                icon: Icon(Icons.nfc_outlined),
-                activeIcon: Icon(Icons.nfc),
-                label: 'Tap Profile',
-              ),
-            ],
-          ),
         ),
       ),
     );

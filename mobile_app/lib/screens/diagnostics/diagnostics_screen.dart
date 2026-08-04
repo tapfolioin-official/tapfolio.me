@@ -27,6 +27,12 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
   String _serverVersion = 'Unknown';
   String _connectionDetails = 'Testing...';
 
+  bool get _isLight => Theme.of(context).brightness == Brightness.light;
+  Color get _textColor => _isLight ? const Color(0xFF1F2937) : Colors.white;
+  Color get _subtitleColor => _isLight ? const Color(0xFF4B5563) : Colors.white60;
+  Color get _cardBg => _isLight ? Colors.white : const Color(0xFF0F1122);
+  Color get _cardBorder => _isLight ? Colors.black12 : Colors.white.withValues(alpha: 0.06);
+
   @override
   void initState() {
     super.initState();
@@ -84,13 +90,15 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
         : 'None Stored';
 
     return Scaffold(
-      backgroundColor: const Color(0xFF06070D),
+      backgroundColor: _isLight ? const Color(0xFFF3F4F6) : const Color(0xFF06070D),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0F1122),
-        title: Text('Diagnostics Dashboard', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
+        backgroundColor: _isLight ? Colors.white : const Color(0xFF0F1122),
+        title: Text('Diagnostics Dashboard', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: _textColor)),
+        iconTheme: IconThemeData(color: _textColor),
+        elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh_rounded),
+            icon: Icon(Icons.refresh_rounded, color: _textColor),
             onPressed: _runDiagnostics,
           ),
         ],
@@ -162,13 +170,13 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFF0F1122),
+        color: _cardBg,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+        border: Border.all(color: _cardBorder),
       ),
       child: Row(
         children: [
-          Icon(icon, color: color ?? Colors.white70, size: 20),
+          Icon(icon, color: color ?? (_isLight ? const Color(0xFF6366F1) : Colors.white70), size: 20),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -176,13 +184,13 @@ class _DiagnosticsScreenState extends State<DiagnosticsScreen> {
               children: [
                 Text(
                   title,
-                  style: GoogleFonts.outfit(color: Colors.white38, fontSize: 11),
+                  style: GoogleFonts.outfit(color: _subtitleColor, fontSize: 11),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   value,
                   style: GoogleFonts.outfit(
-                    color: color ?? Colors.white,
+                    color: color ?? _textColor,
                     fontWeight: FontWeight.w500,
                     fontSize: 14,
                   ),

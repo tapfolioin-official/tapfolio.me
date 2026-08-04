@@ -769,28 +769,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     // Separate role tags, location tags, and other tags
     final roleTags = profile.tags.where((t) => t.type == 'role').toList();
-    final locationTags = profile.tags
-        .where((t) => t.type == 'location')
-        .toList();
-
-    // Social links we want to display (you can filter if needed)
     final socials = profile.socials;
 
-    // Extract WhatsApp separately for "Chat with me"
+    // Extract WhatsApp separately
     final whatsappSocial = socials.firstWhere(
       (s) => s.platform.toLowerCase() == 'whatsapp',
       orElse: () =>
           SocialLink(platform: '', handle: '', url: '', icon: '', color: ''),
     );
 
-    // Extract Behance separately for special button
+    // Extract Behance separately
     final behanceSocial = socials.firstWhere(
       (s) => s.platform.toLowerCase() == 'behance',
       orElse: () =>
           SocialLink(platform: '', handle: '', url: '', icon: '', color: ''),
     );
 
-    // Extract portfolio (Website or custom)
+    // Extract portfolio
     final portfolioSocial = socials.firstWhere(
       (s) =>
           s.platform.toLowerCase() == 'website' ||
@@ -799,264 +794,311 @@ class _DashboardScreenState extends State<DashboardScreen> {
           SocialLink(platform: '', handle: '', url: '', icon: '', color: ''),
     );
 
+    // Dynamic mock chips based on mockup style
+    List<Widget> chips = [];
+    String role1 = roleTags.isNotEmpty ? roleTags[0].text : 'UI/UX Designer';
+    chips.add(_buildMockChip(Icons.person, role1));
+    chips.add(const SizedBox(height: 8));
+
+    String role2 = roleTags.length > 1 ? roleTags[1].text : 'Digital Creator';
+    chips.add(_buildMockChip(Icons.videocam, role2));
+    chips.add(const SizedBox(height: 8));
+
+    String loc = (profile.location != null && profile.location!.isNotEmpty)
+        ? profile.location!
+        : 'Bangalore, India';
+    chips.add(_buildMockChip(Icons.location_on, loc));
+
+    // Map socials
+    final socialTilesList = socials
+        .where(
+          (s) =>
+              s.platform.toLowerCase() != 'whatsapp' &&
+              s.platform.toLowerCase() != 'behance' &&
+              s.platform.toLowerCase() != 'website' &&
+              s.platform.toLowerCase() != 'portfolio',
+        )
+        .map((social) {
+          return _buildMockSocialTile(
+            icon: _buildBrandIcon(social.platform, social.icon, parseHexColor(social.color)),
+            title: social.platform,
+            subtitle: social.handle.isNotEmpty ? social.handle : social.url,
+            onTap: () async {
+              final uri = Uri.parse(social.url);
+              if (await canLaunchUrl(uri)) {
+                await launchUrl(uri, mode: LaunchMode.externalApplication);
+              }
+            },
+          );
+        }).toList();
+
+    // Map WhatsApp
+    Widget? whatsappTile;
+    if (whatsappSocial.url.isNotEmpty) {
+      whatsappTile = _buildMockSocialTile(
+        icon: _buildBrandIcon('whatsapp', whatsappSocial.icon, Colors.green),
+        title: 'WhatsApp',
+        subtitle: whatsappSocial.handle.isNotEmpty ? whatsappSocial.handle : 'Chat with me',
+        onTap: () async {
+          final uri = Uri.parse(whatsappSocial.url);
+          if (await canLaunchUrl(uri)) {
+            await launchUrl(uri, mode: LaunchMode.externalApplication);
+          }
+        },
+      );
+    }
+
+    // Map CV
+    final cvTile = _buildMockSocialTile(
+      icon: _buildBrandIcon('cv', '', const Color(0xFF0052FF)),
+      title: 'Download My CV / Resume',
+      subtitle: 'View & Download',
+      onTap: () {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('CV download will be available soon.')),
+        );
+      },
+    );
+
+    // Map Portfolio
+    Widget? portfolioTile;
+    if (portfolioSocial.url.isNotEmpty) {
+      portfolioTile = _buildMockSocialTile(
+        icon: _buildBrandIcon('website', '', const Color(0xFF0052FF)),
+        title: 'Portfolio Link',
+        subtitle: portfolioSocial.url.replaceFirst(RegExp(r'^https?://'), ''),
+        onTap: () async {
+          final uri = Uri.parse(portfolioSocial.url);
+          if (await canLaunchUrl(uri)) {
+            await launchUrl(uri, mode: LaunchMode.externalApplication);
+          }
+        },
+      );
+    }
+
+    // Map Behance
+    Widget? behanceTile;
+    if (behanceSocial.url.isNotEmpty) {
+      behanceTile = _buildMockSocialTile(
+        icon: _buildBrandIcon('behance', behanceSocial.icon, const Color(0xFF1769FF)),
+        title: 'Behance',
+        subtitle: behanceSocial.handle.isNotEmpty ? behanceSocial.handle : 'Behance Profile',
+        onTap: () async {
+          final uri = Uri.parse(behanceSocial.url);
+          if (await canLaunchUrl(uri)) {
+            await launchUrl(uri, mode: LaunchMode.externalApplication);
+          }
+        },
+      );
+    }
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header: "tapfolio" + score
+          // ─── Greeting Name Header ───
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              const Text('👋 ', style: TextStyle(fontSize: 16)),
               Text(
-                'tapfolio',
-                style: GoogleFonts.outfit(
-                  color: _textColor,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.2,
-                ),
-              ),
-              Text(
-                '$_score',
+                'Hey, i am',
                 style: GoogleFonts.outfit(
                   color: _subtitleColor,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 24),
-
-          // "Hey, iam Abhinand"
+          const SizedBox(height: 2),
           Text(
-            'Hey, iam ${profile.name}',
+            profile.name,
             style: GoogleFonts.outfit(
-              color: _textColor,
+              color: const Color(0xFF0B1B3D),
               fontSize: 28,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w800,
             ),
           ),
           const SizedBox(height: 4),
-          Text(
-            "Let's connect!",
-            style: GoogleFonts.outfit(
-              color: _subtitleColor,
-              fontSize: 18,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          // Avatar with gradient border
-          Center(
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: const LinearGradient(
-                      colors: [Colors.orange, Colors.pink, Colors.purple],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(3.0),
-                    child: CircleAvatar(
-                      radius: 57,
-                      backgroundColor: Colors.black,
-                      backgroundImage: avatarUrl,
-                    ),
-                  ),
-                ),
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: GestureDetector(
-                    onTap: _saving ? null : _pickAndUploadImage,
-                    child: Container(
-                      width: 36,
-                      height: 36,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF6366F1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: _saving
-                          ? const SizedBox(
-                              width: 18,
-                              height: 18,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
-                              ),
-                            )
-                          : const Icon(
-                              Icons.camera_alt,
-                              size: 18,
-                              color: Colors.white,
-                            ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 24),
-
-          // Role & Location tags
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ...roleTags.map(
-                (tag) => _buildChip(tag.text, const Color(0xFF6366F1)),
+              Text(
+                profile.tagline,
+                style: GoogleFonts.outfit(
+                  color: const Color(0xFF0052FF),
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              ...locationTags.map(
-                (tag) => _buildChip(tag.text, Colors.tealAccent),
+              const SizedBox(height: 2),
+              Container(
+                width: profile.tagline.length * 7.5,
+                constraints: const BoxConstraints(maxWidth: 200),
+                height: 2,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0052FF),
+                  borderRadius: BorderRadius.circular(1),
+                ),
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 24),
 
-          // Bio
-          if (profile.bio.isNotEmpty)
+          // ─── Avatar and Chips Row ───
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Avatar with Double Border & Green Status Dot
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Container(
+                    width: 104,
+                    height: 104,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: const Color(0xFF0052FF),
+                        width: 1.5,
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: CircleAvatar(
+                        radius: 48,
+                        backgroundColor: Colors.white,
+                        backgroundImage: avatarUrl,
+                      ),
+                    ),
+                  ),
+                  if (profile.isOnline)
+                    Positioned(
+                      bottom: 4,
+                      right: 4,
+                      child: Container(
+                        width: 16,
+                        height: 16,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF4ADE80),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.white,
+                            width: 2.5,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(width: 20),
+              // Chips List
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: chips,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+
+          // ─── Bio Description ───
+          if (profile.bio.isNotEmpty) ...[
             Text(
               profile.bio,
               style: GoogleFonts.outfit(
-                color: _subtitleColor,
-                fontSize: 16,
+                color: const Color(0xFF374151),
+                fontSize: 15,
                 height: 1.5,
+                fontWeight: FontWeight.w400,
               ),
             ),
-          const SizedBox(height: 24),
-
-          // Connect with me
-          Text(
-            'Connect with me',
-            style: GoogleFonts.outfit(
-              color: _textColor,
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 12),
-          ...socials
-              .where(
-                (s) =>
-                    s.platform.toLowerCase() != 'whatsapp' &&
-                    s.platform.toLowerCase() != 'behance',
-              )
-              .map((social) => _buildSocialTile(social)),
-          const SizedBox(height: 16),
-
-          // Chat with me (WhatsApp)
-          if (whatsappSocial.url.isNotEmpty) ...[
-            Text(
-              'Chat with me',
-              style: GoogleFonts.outfit(
-                color: _textColor,
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 12),
-            _buildSocialTile(whatsappSocial),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
           ],
 
-          // Action buttons: Download CV, Portfolio, Behance
-          Text(
-            'Download My CV / Resume',
-            style: GoogleFonts.outfit(
-              color: _textColor,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 8),
-          _buildActionButton(
-            icon: Icons.download,
-            label: 'View & Download',
-            onPressed: () {
-              // Replace with actual CV URL from your profile model or a constant
-              // For now, we'll show a snackbar
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('CV download will be available soon.'),
+          // ─── SINGLE LARGE CARD FOR ALL SOCIALS & ACTIONS ───
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: const Color(0xFFEEF2F6)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.02),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
                 ),
-              );
-            },
-          ),
-          const SizedBox(height: 12),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Connect Header Dots
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('···', style: GoogleFonts.outfit(color: const Color(0xFF0052FF), fontWeight: FontWeight.bold, fontSize: 16)),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Connect with me',
+                      style: GoogleFonts.outfit(
+                        color: const Color(0xFF0052FF),
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Text('···', style: GoogleFonts.outfit(color: const Color(0xFF0052FF), fontWeight: FontWeight.bold, fontSize: 16)),
+                  ],
+                ),
+                const SizedBox(height: 20),
 
-          if (portfolioSocial.url.isNotEmpty) ...[
-            Text(
-              'Portfolio Link',
-              style: GoogleFonts.outfit(
-                color: _textColor,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 8),
-            _buildActionButton(
-              icon: Icons.link,
-              label: portfolioSocial.url.replaceFirst(
-                RegExp(r'^https?://'),
-                '',
-              ),
-              onPressed: () async {
-                final uri = Uri.parse(portfolioSocial.url);
-                if (await canLaunchUrl(uri)) {
-                  await launchUrl(uri, mode: LaunchMode.externalApplication);
-                }
-              },
-            ),
-            const SizedBox(height: 12),
-          ],
+                // All Link Tiles
+                ...socialTilesList,
+                if (whatsappTile != null) whatsappTile,
+                cvTile,
+                if (portfolioTile != null) portfolioTile,
+                if (behanceTile != null) behanceTile,
+                const SizedBox(height: 12),
 
-          if (behanceSocial.url.isNotEmpty) ...[
-            Text(
-              'Behance',
-              style: GoogleFonts.outfit(
-                color: _textColor,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 8),
-            _buildActionButton(
-              icon: Icons.brush,
-              label: behanceSocial.handle.isNotEmpty
-                  ? behanceSocial.handle
-                  : 'Behance',
-              onPressed: () async {
-                final uri = Uri.parse(behanceSocial.url);
-                if (await canLaunchUrl(uri)) {
-                  await launchUrl(uri, mode: LaunchMode.externalApplication);
-                }
-              },
-            ),
-            const SizedBox(height: 12),
-          ],
-
-          // Quote
-          const SizedBox(height: 20),
-          Center(
-            child: Text(
-              'Design is not just what it looks like,\nit\'s how it connects.',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.outfit(
-                color: _subtitleColor,
-                fontSize: 14,
-                fontStyle: FontStyle.italic,
-                height: 1.6,
-              ),
+                // Blue Quote Container
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF0052FF),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.format_quote_rounded, color: Colors.white24, size: 24),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          "Design is not just what it looks like, it's how it connects.",
+                          style: GoogleFonts.outfit(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            height: 1.4,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        profile.name.split(' ')[0], // First name as signature
+                        style: GoogleFonts.yellowtail(
+                          color: Colors.white,
+                          fontSize: 22,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -1064,118 +1106,138 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildChip(String label, Color color) {
+  Widget _buildMockChip(IconData icon, String text) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withValues(alpha: 0.4)),
+        color: const Color(0xFF0052FF).withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(10),
       ),
-      child: Text(
-        label,
-        style: GoogleFonts.outfit(
-          color: color,
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: const Color(0xFF0052FF), size: 15),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text(
+              text,
+              style: GoogleFonts.outfit(
+                color: const Color(0xFF1F2937),
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildSocialTile(SocialLink social) {
+  Widget _buildMockSocialTile({
+    required Widget icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
     return GestureDetector(
-      onTap: () async {
-        final uri = Uri.parse(social.url);
-        if (await canLaunchUrl(uri)) {
-          await launchUrl(uri, mode: LaunchMode.externalApplication);
-        }
-      },
+      onTap: onTap,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: _cardBg,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: _cardBorder),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0xFFEEF2F6)),
         ),
         child: Row(
           children: [
-            _buildSocialIcon(social.icon, parseHexColor(social.color)),
-            const SizedBox(width: 12),
-            Text(
-              social.handle.isNotEmpty ? social.handle : social.url,
-              style: GoogleFonts.outfit(
-                color: _subtitleColor,
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
+            icon,
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: GoogleFonts.outfit(
+                      color: const Color(0xFF1F2937),
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: GoogleFonts.outfit(
+                      color: const Color(0xFF6B7280),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
               ),
             ),
-            const Spacer(),
-            Icon(Icons.chevron_right, color: _subtitleColor.withValues(alpha: 0.35), size: 18),
+            const Icon(Icons.chevron_right_rounded, color: Colors.black26, size: 20),
           ],
         ),
       ),
     );
   }
 
-  /// Builds the correct icon widget for a social platform.
-  /// Uses [FaIcon] for FontAwesome icons and [Icon] for Material icons,
-  /// avoiding the FalconData → IconData cast error in font_awesome_flutter v11.
-  Widget _buildSocialIcon(String iconName, Color color) {
-    const double size = 22;
-    switch (iconName) {
-      case 'github':
-        return FaIcon(FontAwesomeIcons.github, color: color, size: size);
-      case 'linkedin':
-        return FaIcon(FontAwesomeIcons.linkedin, color: color, size: size);
-      case 'twitter':
-        return FaIcon(FontAwesomeIcons.xTwitter, color: color, size: size);
-      case 'instagram':
-        return FaIcon(FontAwesomeIcons.instagram, color: color, size: size);
-      case 'youtube':
-        return FaIcon(FontAwesomeIcons.youtube, color: color, size: size);
-      case 'telegram':
-        return FaIcon(FontAwesomeIcons.telegram, color: color, size: size);
-      case 'whatsapp':
-        return FaIcon(FontAwesomeIcons.whatsapp, color: color, size: size);
-      case 'behance':
-        return FaIcon(FontAwesomeIcons.behance, color: color, size: size);
-      case 'globe':
-        return Icon(Icons.language, color: color, size: size);
-      default:
-        return Icon(Icons.link, color: color, size: size);
-    }
-  }
+  Widget _buildBrandIcon(String platformName, String iconName, Color fallbackColor) {
+    final String pName = platformName.toLowerCase();
 
-  Widget _buildActionButton({
-    required IconData icon,
-    required String label,
-    required VoidCallback onPressed,
-  }) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: _cardBg,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: _cardBorder),
-      ),
-      child: TextButton.icon(
-        onPressed: onPressed,
-        icon: Icon(icon, color: _subtitleColor, size: 20),
-        label: Text(
-          label,
-          style: GoogleFonts.outfit(
-            color: _subtitleColor,
-            fontSize: 15,
-            fontWeight: FontWeight.w500,
+    if (pName == 'instagram') {
+      return Container(
+        width: 38,
+        height: 38,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          gradient: const LinearGradient(
+            colors: [Color(0xFF833AB4), Color(0xFFFD1D1D), Color(0xFFF56040)],
+            begin: Alignment.bottomLeft,
+            end: Alignment.topRight,
           ),
         ),
-        style: TextButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-          alignment: Alignment.centerLeft,
-        ),
+        alignment: Alignment.center,
+        child: const FaIcon(FontAwesomeIcons.instagram, color: Colors.white, size: 18),
+      );
+    }
+
+    Color bgColor = fallbackColor;
+    Widget iconWidget = const Icon(Icons.link, color: Colors.white, size: 18);
+
+    if (pName == 'linkedin') {
+      bgColor = const Color(0xFF0A66C2);
+      iconWidget = const FaIcon(FontAwesomeIcons.linkedin, color: Colors.white, size: 18);
+    } else if (pName == 'telegram') {
+      bgColor = const Color(0xFF229ED9);
+      iconWidget = const FaIcon(FontAwesomeIcons.telegram, color: Colors.white, size: 18);
+    } else if (pName == 'whatsapp') {
+      bgColor = const Color(0xFF25D366);
+      iconWidget = const FaIcon(FontAwesomeIcons.whatsapp, color: Colors.white, size: 18);
+    } else if (pName == 'behance') {
+      bgColor = const Color(0xFF1769FF);
+      iconWidget = const FaIcon(FontAwesomeIcons.behance, color: Colors.white, size: 18);
+    } else if (pName == 'website' || pName == 'portfolio') {
+      bgColor = const Color(0xFF0052FF);
+      iconWidget = const Icon(Icons.link, color: Colors.white, size: 18);
+    } else if (pName == 'cv' || pName == 'resume') {
+      bgColor = const Color(0xFF0052FF);
+      iconWidget = const Icon(Icons.description, color: Colors.white, size: 18);
+    }
+
+    return Container(
+      width: 38,
+      height: 38,
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(10),
       ),
+      alignment: Alignment.center,
+      child: iconWidget,
     );
   }
 
@@ -2126,7 +2188,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     if (_profile == null) {
       return Scaffold(
-        backgroundColor: const Color(0xFF06070D),
+        backgroundColor: _isLight ? const Color(0xFFF3F4F6) : const Color(0xFF06070D),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -2142,7 +2204,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Text(
                   'Unable to load profile card.',
                   style: GoogleFonts.outfit(
-                    color: Colors.white,
+                    color: _textColor,
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
                   ),
@@ -2152,7 +2214,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   'Please check your internet connection and try again.',
                   textAlign: TextAlign.center,
                   style: GoogleFonts.outfit(
-                    color: Colors.white38,
+                    color: _subtitleColor,
                     fontSize: 13,
                   ),
                 ),
@@ -2182,35 +2244,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     return Scaffold(
       backgroundColor: _isLight ? const Color(0xFFF3F4F6) : const Color(0xFF0A0A0F),
-      floatingActionButtonLocation: const _OffsetFABLocation(80),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            _isEditing = !_isEditing;
-          });
-        },
-        backgroundColor: const Color(0xFF6366F1),
-        child: Icon(_isEditing ? Icons.visibility : Icons.edit),
-      ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.only(bottom: 80),
-          child: _isEditing ? _buildEditForm() : _buildProfileCard(),
+        child: RefreshIndicator(
+          onRefresh: _fetchProfile,
+          color: const Color(0xFF0052FF),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: _buildProfileCard(),
+          ),
         ),
       ),
     );
-  }
-}
-
-class _OffsetFABLocation extends FloatingActionButtonLocation {
-  final double offsetY;
-
-  const _OffsetFABLocation(this.offsetY);
-
-  @override
-  Offset getOffset(ScaffoldPrelayoutGeometry scaffoldGeometry) {
-    final Offset standardOffset =
-        FloatingActionButtonLocation.endFloat.getOffset(scaffoldGeometry);
-    return Offset(standardOffset.dx, standardOffset.dy - offsetY);
   }
 }

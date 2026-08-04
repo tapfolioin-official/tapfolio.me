@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:ui';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -18,7 +19,12 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final ApiService _apiService = ApiService();
-  final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    clientId: Platform.isIOS
+        ? '533947683458-f16dl0kle0is987gqoqum4255pqerhta.apps.googleusercontent.com'
+        : null,
+    scopes: ['email'],
+  );
 
   int _step = 1;
   bool _isLoading = false;
@@ -194,6 +200,211 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
   }
 
+  Future<bool> _showOtpVerificationDialog(String email) async {
+    String otpCode = '';
+    bool isVerifyingOtp = false;
+    String? otpError;
+    int resendCountdown = 60;
+    Timer? countdownTimer;
+
+    final verified = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            if (countdownTimer == null) {
+              countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+                if (resendCountdown > 0) {
+                  setModalState(() {
+                    resendCountdown--;
+                  });
+                } else {
+                  timer.cancel();
+                }
+              });
+            }
+
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: _isLight ? Colors.white : const Color(0xFF0F1122),
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                  border: Border.all(color: _cardBorder),
+                ),
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Verify Email',
+                          style: GoogleFonts.outfit(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: _textColor,
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.close, color: _subtitleColor),
+                          onPressed: () {
+                            countdownTimer?.cancel();
+                            Navigator.pop(context, false);
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'We have sent a 6-digit verification code to:',
+                      style: GoogleFonts.outfit(color: _subtitleColor, fontSize: 13),
+                    ),
+                    Text(
+                      email,
+                      style: GoogleFonts.outfit(
+                        color: Theme.of(context).primaryColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    if (otpError != null) ...[
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                        margin: const EdgeInsets.only(bottom: 16),
+                        decoration: BoxDecoration(
+                          color: Colors.redAccent.withValues(alpha: 0.08),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.redAccent.withValues(alpha: 0.2)),
+                        ),
+                        child: Text(
+                          otpError!,
+                          style: GoogleFonts.outfit(color: Colors.redAccent, fontSize: 13),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
+                    Container(
+                      decoration: BoxDecoration(
+                        color: _isLight ? const Color(0xFFF9FAFB) : Colors.white.withValues(alpha: 0.04),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: _cardBorder),
+                      ),
+                      child: TextField(
+                        keyboardType: TextInputType.number,
+                        style: GoogleFonts.outfit(color: _textColor, letterSpacing: 8, fontSize: 18),
+                        textAlign: TextAlign.center,
+                        maxLength: 6,
+                        decoration: InputDecoration(
+                          hintText: '000000',
+                          hintStyle: GoogleFonts.outfit(color: _subtitleColor.withValues(alpha: 0.3), letterSpacing: 8),
+                          counterText: '',
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                        ),
+                        onChanged: (val) {
+                          otpCode = val.trim();
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 48,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context).primaryColor,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        ),
+                        onPressed: isVerifyingOtp
+                            ? null
+                            : () async {
+                                if (otpCode.length != 6) {
+                                  setModalState(() {
+                                    otpError = 'Please enter all 6 digits.';
+                                  });
+                                  return;
+                                }
+                                setModalState(() {
+                                  isVerifyingOtp = true;
+                                  otpError = null;
+                                });
+                                final res = await _apiService.verifyOtp(email, otpCode);
+                                if (res['success'] == true) {
+                                  countdownTimer?.cancel();
+                                  Navigator.pop(context, true);
+                                } else {
+                                  setModalState(() {
+                                    isVerifyingOtp = false;
+                                    otpError = res['error'];
+                                  });
+                                }
+                              },
+                        child: isVerifyingOtp
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                              )
+                            : Text(
+                                'Verify & Continue',
+                                style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white),
+                              ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Center(
+                      child: resendCountdown > 0
+                          ? Text(
+                              'Resend code in $resendCountdown seconds',
+                              style: GoogleFonts.outfit(color: _subtitleColor, fontSize: 12),
+                            )
+                          : TextButton(
+                              onPressed: () async {
+                                setModalState(() {
+                                  resendCountdown = 60;
+                                  otpError = null;
+                                });
+                                countdownTimer?.cancel();
+                                countdownTimer = null;
+                                final res = await _apiService.resendOtp(email);
+                                if (res['success'] != true) {
+                                  setModalState(() {
+                                    otpError = res['error'] ?? 'Failed to resend code.';
+                                  });
+                                }
+                              },
+                              child: Text(
+                                'Resend Verification Code',
+                                style: GoogleFonts.outfit(
+                                  color: Theme.of(context).primaryColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+
+    countdownTimer?.cancel();
+    return verified ?? false;
+  }
+
   Future<void> _handleStep2Submit() async {
     if (!_formKey2.currentState!.validate()) return;
 
@@ -206,10 +417,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final email = _emailController.text.trim();
     final password = _passwordController.text;
 
-    // Register user — JWT is now captured directly from the register response
+    final sendRes = await _apiService.sendOtp(email);
+    if (sendRes['success'] != true) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = sendRes['error'];
+      });
+      return;
+    }
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    final isVerified = await _showOtpVerificationDialog(email);
+    if (!isVerified) {
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
     final regRes = await _apiService.register(name, '', email, password);
     if (regRes['success'] == true) {
-      // Init profile (idempotent — if it fails, profile was likely already created by backend)
       final initRes = await _apiService.initProfile();
       final generatedUsername = (initRes['profile'] != null)
           ? (initRes['profile']['username'] ?? '')
@@ -218,7 +449,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         if (generatedUsername.isNotEmpty) {
           _usernameController.text = generatedUsername;
         }
-        _step = 3; // Go to success celebration regardless of initProfile result
+        _step = 3;
         _isLoading = false;
       });
     } else {
@@ -555,14 +786,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         style: GoogleFonts.outfit(
                           fontSize: 22,
                           fontWeight: FontWeight.w800,
-                          color: Colors.white,
+                          color: _textColor,
                         ),
                       ),
                       TextButton(
                         onPressed: () => Navigator.pop(context),
                         child: Text(
                           'Cancel',
-                          style: GoogleFonts.outfit(color: Colors.white54),
+                          style: GoogleFonts.outfit(color: _subtitleColor),
                         ),
                       )
                     ],
@@ -578,654 +809,657 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Expanded(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                        child: Container(
-                          padding: const EdgeInsets.all(24),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.02),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (_errorMessage != null) ...[
-                                Container(
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                                  margin: const EdgeInsets.only(bottom: 16),
-                                  decoration: BoxDecoration(
-                                    color: Colors.redAccent.withValues(alpha: 0.08),
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(color: Colors.redAccent.withValues(alpha: 0.2)),
-                                  ),
-                                  child: Text(
-                                    _errorMessage!,
-                                    style: GoogleFonts.outfit(color: Colors.redAccent, fontSize: 13),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                              ],
+                    child: Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: _isLight ? Colors.white : Colors.white.withValues(alpha: 0.02),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: _cardBorder),
+                        boxShadow: _isLight
+                            ? [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.03),
+                                  blurRadius: 15,
+                                  offset: const Offset(0, 5),
+                                )
+                              ]
+                            : null,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (_errorMessage != null) ...[
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                              margin: const EdgeInsets.only(bottom: 16),
+                              decoration: BoxDecoration(
+                                color: Colors.redAccent.withValues(alpha: 0.08),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: Colors.redAccent.withValues(alpha: 0.2)),
+                              ),
+                              child: Text(
+                                _errorMessage!,
+                                style: GoogleFonts.outfit(color: Colors.redAccent, fontSize: 13),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ],
 
-                              // STEP 1: WELCOME SCREEN
-                              if (_step == 1) ...[
-                                Align(
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    'Your professional identity.\nOne tap away.',
-                                    style: GoogleFonts.outfit(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.w800,
-                                      color: Colors.white,
-                                      height: 1.3,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
+                          // STEP 1: WELCOME SCREEN
+                          if (_step == 1) ...[
+                            Align(
+                              alignment: Alignment.center,
+                              child: Text(
+                                'Your professional identity.\nOne tap away.',
+                                style: GoogleFonts.outfit(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w800,
+                                  color: _textColor,
+                                  height: 1.3,
                                 ),
-                                const SizedBox(height: 8),
-                                Align(
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    'Build and share a premium digital NFC profile in seconds.',
-                                    style: GoogleFonts.outfit(fontSize: 13, color: Colors.white60),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                                const SizedBox(height: 24),
-                                
-                                // Benefits List
-                                Container(
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withValues(alpha: 0.02),
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(color: Colors.white.withValues(alpha: 0.04)),
-                                  ),
-                                  child: Column(
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Align(
+                              alignment: Alignment.center,
+                              child: Text(
+                                'Build and share a premium digital NFC profile in seconds.',
+                                style: GoogleFonts.outfit(fontSize: 13, color: _subtitleColor),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            
+                            // Benefits List
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: _isLight ? const Color(0xFFF9FAFB) : Colors.white.withValues(alpha: 0.02),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: _cardBorder),
+                              ),
+                              child: Column(
+                                children: [
+                                  Row(
                                     children: [
-                                      Row(
-                                        children: [
-                                          const Icon(Icons.bolt, color: Colors.amberAccent, size: 20),
-                                          const SizedBox(width: 12),
-                                          Expanded(
-                                            child: Text(
-                                              'Share your profile instantly via NFC',
-                                              style: GoogleFonts.outfit(color: Colors.white70, fontSize: 13),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 12),
-                                      Row(
-                                        children: [
-                                          Icon(Icons.people_outline, color: Theme.of(context).primaryColor, size: 20),
-                                          const SizedBox(width: 12),
-                                          Expanded(
-                                            child: Text(
-                                              'Connect and network with nearby builders',
-                                              style: GoogleFonts.outfit(color: Colors.white70, fontSize: 13),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 12),
-                                      Row(
-                                        children: [
-                                          const Icon(Icons.lock_outline, color: Colors.greenAccent, size: 20),
-                                          const SizedBox(width: 12),
-                                          Expanded(
-                                            child: Text(
-                                              'Fully control your sharing visibilities',
-                                              style: GoogleFonts.outfit(color: Colors.white70, fontSize: 13),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 24),
-
-                                // Action Buttons
-                                SizedBox(
-                                  width: double.infinity,
-                                  height: 48,
-                                  child: OutlinedButton.icon(
-                                    style: OutlinedButton.styleFrom(
-                                      side: BorderSide(color: Colors.white.withValues(alpha: 0.12)),
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                      backgroundColor: Colors.white.withValues(alpha: 0.02),
-                                    ),
-                                    onPressed: _handleGoogleSignIn,
-                                    icon: const FaIcon(
-                                      FontAwesomeIcons.google,
-                                      color: Color(0xFF4285F4),
-                                      size: 20,
-                                    ),
-                                    label: Text(
-                                      'Continue with Google',
-                                      style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 12),
-                                SizedBox(
-                                  width: double.infinity,
-                                  height: 48,
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Theme.of(context).primaryColor,
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                    ),
-                                    onPressed: () => setState(() => _step = 2),
-                                    child: Text(
-                                      'Continue with Email',
-                                      style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 24),
-                                Align(
-                                  alignment: Alignment.center,
-                                  child: InkWell(
-                                    onTap: () => Navigator.pop(context),
-                                    child: RichText(
-                                      text: TextSpan(
-                                        text: 'Already have an account? ',
-                                        style: GoogleFonts.outfit(color: Colors.white54, fontSize: 13),
-                                        children: [
-                                          TextSpan(
-                                            text: 'Sign In',
-                                            style: GoogleFonts.outfit(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-
-                              // STEP 2: ACCOUNT CREATION (Name, Email, Pass only)
-                              if (_step == 2) ...[
-                                Text(
-                                  'Create Account',
-                                  style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  'Register to go live instantly',
-                                  style: GoogleFonts.outfit(fontSize: 13, color: Colors.white54),
-                                ),
-                                const SizedBox(height: 16),
-                                Form(
-                                  key: _formKey2,
-                                  child: Column(
-                                    children: [
-                                      _buildGlassTextField(
-                                        controller: _nameController,
-                                        label: 'Full Name',
-                                        icon: Icons.person_outline,
-                                        validator: (val) => val == null || val.trim().isEmpty ? 'Name is required' : null,
-                                      ),
-                                      _buildGlassTextField(
-                                        controller: _emailController,
-                                        label: 'Email Address',
-                                        icon: Icons.email_outlined,
-                                        validator: (val) => val == null || !val.contains('@') ? 'Enter a valid email' : null,
-                                      ),
-                                      _buildGlassTextField(
-                                        controller: _passwordController,
-                                        label: 'Password',
-                                        icon: Icons.lock_outline,
-                                        obscureText: _obscurePassword,
-                                        validator: (val) => val == null || val.length < 6 ? 'Password must be 6+ characters' : null,
-                                        suffixIcon: IconButton(
-                                          icon: Icon(
-                                            _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                                            color: Colors.white54,
-                                            size: 20,
-                                          ),
-                                          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 16),
-                                      SizedBox(
-                                        width: double.infinity,
-                                        height: 48,
-                                        child: ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Theme.of(context).primaryColor,
-                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                          ),
-                                          onPressed: _isLoading ? null : _handleStep2Submit,
-                                          child: _isLoading
-                                              ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                                              : Text('Create Account', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
+                                      const Icon(Icons.bolt, color: Colors.amber, size: 20),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Text(
+                                          'Share your profile instantly via NFC',
+                                          style: GoogleFonts.outfit(color: _textColor, fontSize: 13),
                                         ),
                                       ),
                                     ],
                                   ),
-                                ),
-                              ],
-
-                              // STEP 3: FIRST SUCCESS MOMENT
-                              if (_step == 3) ...[
-                                Align(
-                                  alignment: Alignment.center,
-                                  child: Column(
+                                  const SizedBox(height: 12),
+                                  Row(
                                     children: [
-                                      Text(
-                                        'Welcome, ${_nameController.text.split(" ")[0]}! 🎉',
-                                        style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        'Your profile is live!',
-                                        style: GoogleFonts.outfit(fontSize: 16, color: Colors.greenAccent, fontWeight: FontWeight.bold),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                      const SizedBox(height: 24),
-
-                                      // Glassmorphic preview card representation
-                                      Container(
-                                        width: double.infinity,
-                                        padding: const EdgeInsets.all(24),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white.withValues(alpha: 0.04),
-                                          borderRadius: BorderRadius.circular(16),
-                                          border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
-                                              blurRadius: 20,
-                                              spreadRadius: 2,
-                                            ),
-                                          ],
-                                        ),
-                                        child: Column(
-                                          children: [
-                                            Container(
-                                              width: 64,
-                                              height: 64,
-                                              decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                color: Colors.purple.withValues(alpha: 0.3),
-                                                border: Border.all(color: Theme.of(context).primaryColor, width: 2),
-                                              ),
-                                              child: Center(
-                                                child: Text(
-                                                  _nameController.text.isNotEmpty ? _nameController.text.substring(0, 1).toUpperCase() : 'T',
-                                                  style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 22),
-                                                ),
-                                              ),
-                                            ),
-                                            const SizedBox(height: 12),
-                                            Text(
-                                              _nameController.text,
-                                              style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white),
-                                            ),
-                                            Text(
-                                              '@${_usernameController.text}',
-                                              style: GoogleFonts.outfit(fontSize: 13, color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
-                                            ),
-                                            const SizedBox(height: 12),
-                                            Text(
-                                              'tapfolio.me/@${_usernameController.text}',
-                                              style: GoogleFonts.outfit(fontSize: 13, color: Colors.white54),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      const SizedBox(height: 28),
-
-                                      SizedBox(
-                                        width: double.infinity,
-                                        height: 48,
-                                        child: ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Theme.of(context).primaryColor,
-                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                          ),
-                                          onPressed: () => setState(() => _step = 4),
-                                          child: Text('Continue Setup (Recommended)', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 12),
-                                      SizedBox(
-                                        width: double.infinity,
-                                        height: 48,
-                                        child: OutlinedButton(
-                                          style: OutlinedButton.styleFrom(
-                                            side: BorderSide(color: Colors.white.withValues(alpha: 0.12)),
-                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                          ),
-                                          onPressed: widget.onLoginSuccess,
-                                          child: Text('Explore Dashboard', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white60)),
+                                      Icon(Icons.people_outline, color: Theme.of(context).primaryColor, size: 20),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Text(
+                                          'Connect and network with nearby builders',
+                                          style: GoogleFonts.outfit(color: _textColor, fontSize: 13),
                                         ),
                                       ),
                                     ],
                                   ),
-                                ),
-                              ],
+                                  const SizedBox(height: 12),
+                                  Row(
+                                    children: [
+                                      Icon(Icons.lock_outline, color: _isLight ? const Color(0xFF10B981) : Colors.greenAccent, size: 20),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Text(
+                                          'Fully control your sharing visibilities',
+                                          style: GoogleFonts.outfit(color: _textColor, fontSize: 13),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 24),
 
-                              // STEP 4: USERNAME CUSTOMIZATION
-                              if (_step == 4) ...[
-                                Text(
-                                  'Choose Username',
-                                  style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                            // Action Buttons
+                            SizedBox(
+                              width: double.infinity,
+                              height: 48,
+                              child: OutlinedButton.icon(
+                                style: OutlinedButton.styleFrom(
+                                  side: BorderSide(color: _isLight ? const Color(0xFFE5E7EB) : Colors.white.withValues(alpha: 0.12)),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                  backgroundColor: _isLight ? Colors.white : Colors.white.withValues(alpha: 0.02),
                                 ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  'Customize your Tapfolio link prefix',
-                                  style: GoogleFonts.outfit(fontSize: 13, color: Colors.white54),
+                                onPressed: _handleGoogleSignIn,
+                                icon: const FaIcon(
+                                  FontAwesomeIcons.google,
+                                  color: Color(0xFF4285F4),
+                                  size: 20,
                                 ),
-                                const SizedBox(height: 16),
-                                _buildGlassTextField(
-                                  controller: _usernameController,
-                                  label: 'Handle (@username)',
-                                  icon: Icons.alternate_email,
+                                label: Text(
+                                  'Continue with Google',
+                                  style: GoogleFonts.outfit(color: _textColor, fontWeight: FontWeight.bold),
                                 ),
-                                
-                                // Username checking indicators
-                                if (_isCheckingUsername)
-                                  const Padding(
-                                    padding: EdgeInsets.only(bottom: 12.0),
-                                    child: Text('🔄 Checking availability...', style: TextStyle(color: Colors.white54, fontSize: 12)),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            SizedBox(
+                              width: double.infinity,
+                              height: 48,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Theme.of(context).primaryColor,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                ),
+                                onPressed: () => setState(() => _step = 2),
+                                child: Text(
+                                  'Continue with Email',
+                                  style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            Align(
+                              alignment: Alignment.center,
+                              child: InkWell(
+                                onTap: () => Navigator.pop(context),
+                                child: RichText(
+                                  text: TextSpan(
+                                    text: 'Already have an account? ',
+                                    style: GoogleFonts.outfit(color: _subtitleColor, fontSize: 13),
+                                    children: [
+                                      TextSpan(
+                                        text: 'Sign In',
+                                        style: GoogleFonts.outfit(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+                                      ),
+                                    ],
                                   ),
-                                if (_isUsernameAvailable && _usernameController.text.trim().isNotEmpty && !_isCheckingUsername)
-                                  const Padding(
-                                    padding: EdgeInsets.only(bottom: 12.0),
-                                    child: Text('✅ Username available!', style: TextStyle(color: Colors.greenAccent, fontSize: 12, fontWeight: FontWeight.bold)),
+                                ),
+                              ),
+                            ),
+                          ],
+
+                          // STEP 2: ACCOUNT CREATION (Name, Email, Pass only)
+                          if (_step == 2) ...[
+                            Text(
+                              'Create Account',
+                              style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: _textColor),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Register to go live instantly',
+                              style: GoogleFonts.outfit(fontSize: 13, color: _subtitleColor),
+                            ),
+                            const SizedBox(height: 16),
+                            Form(
+                              key: _formKey2,
+                              child: Column(
+                                children: [
+                                  _buildGlassTextField(
+                                    controller: _nameController,
+                                    label: 'Full Name',
+                                    icon: Icons.person_outline,
+                                    validator: (val) => val == null || val.trim().isEmpty ? 'Name is required' : null,
                                   ),
-                                if (!_isUsernameAvailable && _usernameController.text.trim().isNotEmpty && !_isCheckingUsername)
-                                  Padding(
-                                    padding: const EdgeInsets.only(bottom: 12.0),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text('❌ Taken: ${_usernameError ?? "Try another."}', style: const TextStyle(color: Colors.redAccent, fontSize: 12)),
-                                        if (_usernameSuggestions.isNotEmpty) ...[
-                                          const SizedBox(height: 8),
-                                          Text('Suggestions:', style: GoogleFonts.outfit(fontSize: 11, color: Colors.white38)),
-                                          const SizedBox(height: 4),
-                                          Wrap(
-                                            spacing: 8,
-                                            children: _usernameSuggestions.map((s) => ActionChip(
-                                              backgroundColor: Colors.white.withValues(alpha: 0.05),
-                                              label: Text(s, style: TextStyle(color: Theme.of(context).primaryColor, fontSize: 11)),
-                                              onPressed: () {
-                                                _usernameController.text = s;
-                                                setState(() {
-                                                  _isUsernameAvailable = true;
-                                                });
-                                              },
-                                            )).toList(),
-                                          ),
-                                        ],
+                                  _buildGlassTextField(
+                                    controller: _emailController,
+                                    label: 'Email Address',
+                                    icon: Icons.email_outlined,
+                                    validator: (val) => val == null || !val.contains('@') ? 'Enter a valid email' : null,
+                                  ),
+                                  _buildGlassTextField(
+                                    controller: _passwordController,
+                                    label: 'Password',
+                                    icon: Icons.lock_outline,
+                                    obscureText: _obscurePassword,
+                                    validator: (val) => val == null || val.length < 6 ? 'Password must be 6+ characters' : null,
+                                    suffixIcon: IconButton(
+                                      icon: Icon(
+                                        _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                                        color: _subtitleColor,
+                                        size: 20,
+                                      ),
+                                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    height: 48,
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Theme.of(context).primaryColor,
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                      ),
+                                      onPressed: _isLoading ? null : _handleStep2Submit,
+                                      child: _isLoading
+                                          ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                                          : Text('Create Account', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+
+                          // STEP 3: FIRST SUCCESS MOMENT
+                          if (_step == 3) ...[
+                            Align(
+                              alignment: Alignment.center,
+                              child: Column(
+                                children: [
+                                  Text(
+                                    'Welcome, ${_nameController.text.split(" ")[0]}! 🎉',
+                                    style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.bold, color: _textColor),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'Your profile is live!',
+                                    style: GoogleFonts.outfit(fontSize: 16, color: _isLight ? const Color(0xFF10B981) : Colors.greenAccent, fontWeight: FontWeight.bold),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  const SizedBox(height: 24),
+
+                                  // Glassmorphic preview card representation
+                                  Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.all(24),
+                                    decoration: BoxDecoration(
+                                      color: _isLight ? const Color(0xFFF9FAFB) : Colors.white.withValues(alpha: 0.04),
+                                      borderRadius: BorderRadius.circular(16),
+                                      border: Border.all(color: _cardBorder),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Theme.of(context).primaryColor.withValues(alpha: _isLight ? 0.05 : 0.1),
+                                          blurRadius: 20,
+                                          spreadRadius: 2,
+                                        ),
                                       ],
                                     ),
-                                  ),
-                                const SizedBox(height: 16),
-
-                                SizedBox(
-                                  width: double.infinity,
-                                  height: 48,
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Theme.of(context).primaryColor,
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                    ),
-                                    onPressed: _isLoading || !_isUsernameAvailable ? null : _handleStep4Submit,
-                                    child: _isLoading
-                                        ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                                        : Text('Save Username', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
-                                  ),
-                                ),
-                                const SizedBox(height: 12),
-                                SizedBox(
-                                  width: double.infinity,
-                                  height: 48,
-                                  child: OutlinedButton(
-                                    style: OutlinedButton.styleFrom(
-                                      side: BorderSide(color: Colors.white.withValues(alpha: 0.12)),
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                    ),
-                                    onPressed: () => setState(() => _step = 5),
-                                    child: Text('Skip', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white60)),
-                                  ),
-                                ),
-                              ],
-
-                              // STEP 5: PROFILE DETAILS (Essentials)
-                              if (_step == 5) ...[
-                                Text(
-                                  'Profile Essentials',
-                                  style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  'Add profile visuals and headlines',
-                                  style: GoogleFonts.outfit(fontSize: 13, color: Colors.white54),
-                                ),
-                                const SizedBox(height: 16),
-                                
-                                // Preset Avatars selector
-                                Text('Choose Preset Color Avatar:', style: GoogleFonts.outfit(color: Colors.white70, fontSize: 13)),
-                                const SizedBox(height: 12),
-                                SizedBox(
-                                  height: 44,
-                                  child: ListView.builder(
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: 6,
-                                    itemBuilder: (context, idx) {
-                                      final colors = [
-                                        [const Color(0xFFf59e0b), const Color(0xFFef4444)],
-                                        [const Color(0xFF10b981), const Color(0xFF3b82f6)],
-                                        [const Color(0xFF6366f1), const Color(0xFFa855f7)],
-                                        [const Color(0xFFec4899), const Color(0xFFf43f5e)],
-                                        [const Color(0xFF06b6d4), const Color(0xFF0891b2)],
-                                        [const Color(0xFF84cc16), const Color(0xFF10b981)]
-                                      ];
-                                      final isSelected = _selectedPresetIdx == idx;
-                                      return GestureDetector(
-                                        onTap: () => _selectPresetAvatar(idx),
-                                        child: Container(
-                                          width: 36,
-                                          height: 36,
-                                          margin: const EdgeInsets.only(right: 12),
+                                    child: Column(
+                                      children: [
+                                        Container(
+                                          width: 64,
+                                          height: 64,
                                           decoration: BoxDecoration(
                                             shape: BoxShape.circle,
-                                            gradient: LinearGradient(colors: colors[idx]),
-                                            border: Border.all(
-                                              color: isSelected ? Colors.white : Colors.transparent,
-                                              width: 2.5,
-                                            ),
+                                            color: Colors.purple.withValues(alpha: 0.3),
+                                            border: Border.all(color: Theme.of(context).primaryColor, width: 2),
                                           ),
                                           child: Center(
                                             child: Text(
                                               _nameController.text.isNotEmpty ? _nameController.text.substring(0, 1).toUpperCase() : 'T',
-                                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.white),
+                                              style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 22),
                                             ),
                                           ),
                                         ),
-                                      );
-                                    },
+                                        const SizedBox(height: 12),
+                                        Text(
+                                          _nameController.text,
+                                          style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 18, color: _textColor),
+                                        ),
+                                        Text(
+                                          '@${_usernameController.text}',
+                                          style: GoogleFonts.outfit(fontSize: 13, color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+                                        ),
+                                        const SizedBox(height: 12),
+                                        Text(
+                                          'tapfolio.me/@${_usernameController.text}',
+                                          style: GoogleFonts.outfit(fontSize: 13, color: _subtitleColor),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(height: 20),
+                                  const SizedBox(height: 28),
 
-                                _buildGlassTextField(
-                                  controller: _taglineController,
-                                  label: 'Headline / Professional tagline',
-                                  icon: Icons.title_outlined,
-                                ),
-                                Container(
-                                  margin: const EdgeInsets.only(bottom: 16),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withValues(alpha: 0.04),
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
-                                  ),
-                                  child: TextFormField(
-                                    controller: _bioController,
-                                    maxLines: 3,
-                                    style: GoogleFonts.outfit(color: Colors.white),
-                                    decoration: InputDecoration(
-                                      labelText: 'Bio (Optional)',
-                                      labelStyle: GoogleFonts.outfit(color: Colors.white60, fontSize: 14),
-                                      prefixIcon: Icon(Icons.info_outline, color: Theme.of(context).primaryColor),
-                                      border: InputBorder.none,
-                                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    height: 48,
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Theme.of(context).primaryColor,
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                      ),
+                                      onPressed: () => setState(() => _step = 4),
+                                      child: Text('Continue Setup (Recommended)', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
                                     ),
                                   ),
-                                ),
-                                const SizedBox(height: 16),
-                                SizedBox(
-                                  width: double.infinity,
-                                  height: 48,
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Theme.of(context).primaryColor,
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                  const SizedBox(height: 12),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    height: 48,
+                                    child: OutlinedButton(
+                                      style: OutlinedButton.styleFrom(
+                                        side: BorderSide(color: _isLight ? const Color(0xFFE5E7EB) : Colors.white.withValues(alpha: 0.12)),
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                      ),
+                                      onPressed: widget.onLoginSuccess,
+                                      child: Text('Explore Dashboard', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: _textColor)),
                                     ),
-                                    onPressed: () {
-                                      _saveOnboardingDraft();
-                                      setState(() => _step = 6);
-                                    },
-                                    child: Text('Continue', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
+                            ),
+                          ],
 
-                              // STEP 6: PRIVACY PREFERENCES
-                              if (_step == 6) ...[
-                                Text(
-                                  'Sharing Preferences',
-                                  style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                          // STEP 4: USERNAME CUSTOMIZATION
+                          if (_step == 4) ...[
+                            Text(
+                              'Choose Username',
+                              style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: _textColor),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Customize your Tapfolio link prefix',
+                              style: GoogleFonts.outfit(fontSize: 13, color: _subtitleColor),
+                            ),
+                            const SizedBox(height: 16),
+                            _buildGlassTextField(
+                              controller: _usernameController,
+                              label: 'Handle (@username)',
+                              icon: Icons.alternate_email,
+                            ),
+                            
+                            // Username checking indicators
+                            if (_isCheckingUsername)
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 12.0),
+                                child: Text('🔄 Checking availability...', style: TextStyle(color: _subtitleColor, fontSize: 12)),
+                              ),
+                            if (_isUsernameAvailable && _usernameController.text.trim().isNotEmpty && !_isCheckingUsername)
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 12.0),
+                                child: Text('✅ Username available!', style: TextStyle(color: _isLight ? const Color(0xFF10B981) : Colors.greenAccent, fontSize: 12, fontWeight: FontWeight.bold)),
+                              ),
+                            if (!_isUsernameAvailable && _usernameController.text.trim().isNotEmpty && !_isCheckingUsername)
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 12.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('❌ Taken: ${_usernameError ?? "Try another."}', style: const TextStyle(color: Colors.redAccent, fontSize: 12)),
+                                    if (_usernameSuggestions.isNotEmpty) ...[
+                                      const SizedBox(height: 8),
+                                      Text('Suggestions:', style: GoogleFonts.outfit(fontSize: 11, color: _subtitleColor)),
+                                      const SizedBox(height: 4),
+                                      Wrap(
+                                        spacing: 8,
+                                        children: _usernameSuggestions.map((s) => ActionChip(
+                                          backgroundColor: _isLight ? const Color(0xFFF3F4F6) : Colors.white.withValues(alpha: 0.05),
+                                          label: Text(s, style: TextStyle(color: Theme.of(context).primaryColor, fontSize: 11)),
+                                          onPressed: () {
+                                            _usernameController.text = s;
+                                            setState(() {
+                                              _isUsernameAvailable = true;
+                                            });
+                                          },
+                                        )).toList(),
+                                      ),
+                                    ],
+                                  ],
                                 ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  'Choose your default sharing settings',
-                                  style: GoogleFonts.outfit(fontSize: 13, color: Colors.white54),
-                                ),
-                                const SizedBox(height: 16),
-                                SwitchListTile(
-                                  title: const Text('Display Name', style: TextStyle(color: Colors.white)),
-                                  subtitle: const Text('Required', style: TextStyle(color: Colors.white38, fontSize: 11)),
-                                  value: _shareName,
-                                  onChanged: null, // Always checked & disabled
-                                  activeThumbColor: Theme.of(context).primaryColor,
-                                ),
-                                SwitchListTile(
-                                  title: const Text('Email Address', style: TextStyle(color: Colors.white)),
-                                  value: _shareEmail,
-                                  onChanged: (val) => setState(() => _shareEmail = val),
-                                  activeThumbColor: Theme.of(context).primaryColor,
-                                ),
-                                SwitchListTile(
-                                  title: const Text('Phone Number', style: TextStyle(color: Colors.white)),
-                                  value: _sharePhone,
-                                  onChanged: (val) => setState(() => _sharePhone = val),
-                                  activeThumbColor: Theme.of(context).primaryColor,
-                                ),
-                                SwitchListTile(
-                                  title: const Text('WhatsApp', style: TextStyle(color: Colors.white)),
-                                  value: _shareWhatsapp,
-                                  onChanged: (val) => setState(() => _shareWhatsapp = val),
-                                  activeThumbColor: Theme.of(context).primaryColor,
-                                ),
-                                SwitchListTile(
-                                  title: const Text('Location', style: TextStyle(color: Colors.white)),
-                                  value: _shareLocation,
-                                  onChanged: (val) => setState(() => _shareLocation = val),
-                                  activeThumbColor: Theme.of(context).primaryColor,
-                                ),
-                                const SizedBox(height: 24),
-                                SizedBox(
-                                  width: double.infinity,
-                                  height: 48,
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Theme.of(context).primaryColor,
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                    ),
-                                    onPressed: () {
-                                      _saveOnboardingDraft();
-                                      setState(() => _step = 7);
-                                    },
-                                    child: Text('Continue', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
-                                  ),
-                                ),
-                              ],
+                              ),
+                            const SizedBox(height: 16),
 
-                              // STEP 7: SOCIAL LINKS
-                              if (_step == 7) ...[
-                                Text(
-                                  'Link Socials (Optional)',
-                                  style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                            SizedBox(
+                              width: double.infinity,
+                              height: 48,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Theme.of(context).primaryColor,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                 ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  'Connect your links to build your network',
-                                  style: GoogleFonts.outfit(fontSize: 13, color: Colors.white54),
+                                onPressed: _isLoading || !_isUsernameAvailable ? null : _handleStep4Submit,
+                                child: _isLoading
+                                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                                    : Text('Save Username', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            SizedBox(
+                              width: double.infinity,
+                              height: 48,
+                              child: OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  side: BorderSide(color: _isLight ? const Color(0xFFE5E7EB) : Colors.white.withValues(alpha: 0.12)),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                 ),
-                                const SizedBox(height: 16),
-                                _buildGlassTextField(
-                                  controller: _linkedinController,
-                                  label: 'LinkedIn Handle',
-                                  icon: Icons.link,
-                                ),
-                                _buildGlassTextField(
-                                  controller: _githubController,
-                                  label: 'GitHub Username',
-                                  icon: Icons.code,
-                                ),
-                                _buildGlassTextField(
-                                  controller: _instagramController,
-                                  label: 'Instagram Handle',
-                                  icon: Icons.photo_camera,
-                                ),
-                                _buildGlassTextField(
-                                  controller: _portfolioController,
-                                  label: 'Portfolio Website',
-                                  icon: Icons.public,
-                                ),
-                                const SizedBox(height: 16),
-                                SizedBox(
-                                  width: double.infinity,
-                                  height: 48,
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Theme.of(context).primaryColor,
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                onPressed: () => setState(() => _step = 5),
+                                child: Text('Skip', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: _textColor)),
+                              ),
+                            ),
+                          ],
+
+                          // STEP 5: PROFILE DETAILS (Essentials)
+                          if (_step == 5) ...[
+                            Text(
+                              'Profile Essentials',
+                              style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: _textColor),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Add profile visuals and headlines',
+                              style: GoogleFonts.outfit(fontSize: 13, color: _subtitleColor),
+                            ),
+                            const SizedBox(height: 16),
+                            
+                            // Preset Avatars selector
+                            Text('Choose Preset Color Avatar:', style: GoogleFonts.outfit(color: _textColor, fontSize: 13)),
+                            const SizedBox(height: 12),
+                            SizedBox(
+                              height: 44,
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: 6,
+                                itemBuilder: (context, idx) {
+                                  final colors = [
+                                    [const Color(0xFFf59e0b), const Color(0xFFef4444)],
+                                    [const Color(0xFF10b981), const Color(0xFF3b82f6)],
+                                    [const Color(0xFF6366f1), const Color(0xFFa855f7)],
+                                    [const Color(0xFFec4899), const Color(0xFFf43f5e)],
+                                    [const Color(0xFF06b6d4), const Color(0xFF0891b2)],
+                                    [const Color(0xFF84cc16), const Color(0xFF10b981)]
+                                  ];
+                                  final isSelected = _selectedPresetIdx == idx;
+                                  return GestureDetector(
+                                    onTap: () => _selectPresetAvatar(idx),
+                                    child: Container(
+                                      width: 36,
+                                      height: 36,
+                                      margin: const EdgeInsets.only(right: 12),
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        gradient: LinearGradient(colors: colors[idx]),
+                                        border: Border.all(
+                                          color: isSelected ? const Color(0xFF0052FF) : Colors.transparent,
+                                          width: 2.5,
+                                        ),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          _nameController.text.isNotEmpty ? _nameController.text.substring(0, 1).toUpperCase() : 'T',
+                                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.white),
+                                        ),
+                                      ),
                                     ),
-                                    onPressed: _isLoading ? null : () => _handleFinalSubmit(skip: false),
-                                    child: _isLoading
-                                        ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                                        : Text('Save & Continue', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
-                                  ),
+                                  );
+                                },
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+
+                            _buildGlassTextField(
+                              controller: _taglineController,
+                              label: 'Headline / Professional tagline',
+                              icon: Icons.title_outlined,
+                            ),
+                            Container(
+                              margin: const EdgeInsets.only(bottom: 16),
+                              decoration: BoxDecoration(
+                                color: _isLight ? const Color(0xFFF9FAFB) : Colors.white.withValues(alpha: 0.04),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: _cardBorder),
+                              ),
+                              child: TextFormField(
+                                controller: _bioController,
+                                maxLines: 3,
+                                style: GoogleFonts.outfit(color: _textColor),
+                                decoration: InputDecoration(
+                                  labelText: 'Bio (Optional)',
+                                  labelStyle: GoogleFonts.outfit(color: _subtitleColor, fontSize: 14),
+                                  prefixIcon: Icon(Icons.info_outline, color: Theme.of(context).primaryColor),
+                                  border: InputBorder.none,
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                                 ),
-                                const SizedBox(height: 12),
-                                SizedBox(
-                                  width: double.infinity,
-                                  height: 48,
-                                  child: OutlinedButton(
-                                    style: OutlinedButton.styleFrom(
-                                      side: BorderSide(color: Colors.white.withValues(alpha: 0.12)),
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                    ),
-                                    onPressed: _isLoading ? null : () => _handleFinalSubmit(skip: true),
-                                    child: Text('Skip For Now', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white60)),
-                                  ),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            SizedBox(
+                              width: double.infinity,
+                              height: 48,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Theme.of(context).primaryColor,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                 ),
-                              ],
-                            ],
-                          ),
-                        ),
+                                onPressed: () {
+                                  _saveOnboardingDraft();
+                                  setState(() => _step = 6);
+                                },
+                                child: Text('Continue', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
+                              ),
+                            ),
+                          ],
+
+                          // STEP 6: PRIVACY PREFERENCES
+                          if (_step == 6) ...[
+                            Text(
+                              'Sharing Preferences',
+                              style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: _textColor),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Choose your default sharing settings',
+                              style: GoogleFonts.outfit(fontSize: 13, color: _subtitleColor),
+                            ),
+                            const SizedBox(height: 16),
+                            SwitchListTile(
+                              title: Text('Display Name', style: TextStyle(color: _textColor)),
+                              subtitle: Text('Required', style: TextStyle(color: _subtitleColor, fontSize: 11)),
+                              value: _shareName,
+                              onChanged: null,
+                              activeThumbColor: Theme.of(context).primaryColor,
+                            ),
+                            SwitchListTile(
+                              title: Text('Email Address', style: TextStyle(color: _textColor)),
+                              value: _shareEmail,
+                              onChanged: (val) => setState(() => _shareEmail = val),
+                              activeThumbColor: Theme.of(context).primaryColor,
+                            ),
+                            SwitchListTile(
+                              title: Text('Phone Number', style: TextStyle(color: _textColor)),
+                              value: _sharePhone,
+                              onChanged: (val) => setState(() => _sharePhone = val),
+                              activeThumbColor: Theme.of(context).primaryColor,
+                            ),
+                            SwitchListTile(
+                              title: Text('WhatsApp', style: TextStyle(color: _textColor)),
+                              value: _shareWhatsapp,
+                              onChanged: (val) => setState(() => _shareWhatsapp = val),
+                              activeThumbColor: Theme.of(context).primaryColor,
+                            ),
+                            SwitchListTile(
+                              title: Text('Location', style: TextStyle(color: _textColor)),
+                              value: _shareLocation,
+                              onChanged: (val) => setState(() => _shareLocation = val),
+                              activeThumbColor: Theme.of(context).primaryColor,
+                            ),
+                            const SizedBox(height: 24),
+                            SizedBox(
+                              width: double.infinity,
+                              height: 48,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Theme.of(context).primaryColor,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                ),
+                                onPressed: () {
+                                  _saveOnboardingDraft();
+                                  setState(() => _step = 7);
+                                },
+                                child: Text('Continue', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
+                              ),
+                            ),
+                          ],
+
+                          // STEP 7: SOCIAL LINKS
+                          if (_step == 7) ...[
+                            Text(
+                              'Link Socials (Optional)',
+                              style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold, color: _textColor),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Connect your links to build your network',
+                              style: GoogleFonts.outfit(fontSize: 13, color: _subtitleColor),
+                            ),
+                            const SizedBox(height: 16),
+                            _buildGlassTextField(
+                              controller: _linkedinController,
+                              label: 'LinkedIn Handle',
+                              icon: Icons.link,
+                            ),
+                            _buildGlassTextField(
+                              controller: _githubController,
+                              label: 'GitHub Username',
+                              icon: Icons.code,
+                            ),
+                            _buildGlassTextField(
+                              controller: _instagramController,
+                              label: 'Instagram Handle',
+                              icon: Icons.photo_camera,
+                            ),
+                            _buildGlassTextField(
+                              controller: _portfolioController,
+                              label: 'Portfolio Website',
+                              icon: Icons.public,
+                            ),
+                            const SizedBox(height: 16),
+                            SizedBox(
+                              width: double.infinity,
+                              height: 48,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Theme.of(context).primaryColor,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                ),
+                                onPressed: _isLoading ? null : () => _handleFinalSubmit(skip: false),
+                                child: _isLoading
+                                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                                    : Text('Save & Continue', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white)),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            SizedBox(
+                              width: double.infinity,
+                              height: 48,
+                              child: OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  side: BorderSide(color: _isLight ? const Color(0xFFE5E7EB) : Colors.white.withValues(alpha: 0.12)),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                ),
+                                  onPressed: _isLoading ? null : () => _handleFinalSubmit(skip: true),
+                                child: Text('Skip For Now', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: _textColor)),
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
                     ),
                   ),

@@ -1,18 +1,10 @@
 import 'package:flutter/material.dart' hide CardTheme, ButtonTheme;
 import 'package:google_fonts/google_fonts.dart';
 import 'controller/theme_studio_controller.dart';
-import 'controller/search_controller.dart';
 import 'widgets/preview/interactive_preview.dart';
-import 'widgets/navigation/category_selector.dart';
-import 'widgets/common/autosave_indicator.dart';
-import 'widgets/editors/presets_gallery.dart';
-import 'widgets/editors/background_editor.dart';
-import 'widgets/editors/color_editor.dart';
-import 'widgets/editors/typography_editor.dart';
-import 'widgets/editors/button_editor.dart';
-import 'widgets/editors/card_editor.dart';
-import 'widgets/editors/section_editor.dart';
-import 'services/theme_import_export.dart';
+import 'services/preset_service.dart';
+import '../../models/profile.dart';
+import '../../services/api_service.dart';
 
 class ThemeStudioScreen extends StatefulWidget {
   final bool isPremium;
@@ -24,21 +16,42 @@ class ThemeStudioScreen extends StatefulWidget {
 
 class _ThemeStudioScreenState extends State<ThemeStudioScreen> {
   final ThemeStudioController _controller = ThemeStudioController();
-  final TextEditingController _searchCtrl = TextEditingController();
-  String _searchQuery = '';
+  late PageController _pageController;
+  int _currentPage = 0;
+  Profile? _profile;
+  bool _loadingProfile = true;
 
   @override
   void initState() {
     super.initState();
+    _pageController = PageController();
     _controller.addListener(_onControllerChanged);
     _controller.loadTheme();
+    _fetchProfile();
+  }
+
+  Future<void> _fetchProfile() async {
+    try {
+      final res = await ApiService().getProfile();
+      if (res != null && res['profile'] != null) {
+        setState(() {
+          _profile = res['profile'];
+          _loadingProfile = false;
+        });
+      } else {
+        setState(() => _loadingProfile = false);
+      }
+    } catch (e) {
+      debugPrint('[THEME-STUDIO] Fetch profile error: $e');
+      setState(() => _loadingProfile = false);
+    }
   }
 
   @override
   void dispose() {
+    _pageController.dispose();
     _controller.removeListener(_onControllerChanged);
     _controller.dispose();
-    _searchCtrl.dispose();
     super.dispose();
   }
 
@@ -46,339 +59,220 @@ class _ThemeStudioScreenState extends State<ThemeStudioScreen> {
     if (mounted) setState(() {});
   }
 
+  void _showPremiumGate(BuildContext context, String title) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(
+          '🔒 Premium Theme',
+          style: GoogleFonts.outfit(color: const Color(0xFF1F2937), fontWeight: FontWeight.bold),
+        ),
+        content: Text(
+          '$title is a Premium member theme. Upgrade your Tapfolio membership to unlock all styles.',
+          style: GoogleFonts.outfit(color: const Color(0xFF4B5563)),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancel', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_controller.loading) {
       return const Scaffold(
-        backgroundColor: Color(0xFF0A0A0F),
-        body: Center(child: CircularProgressIndicator(color: Color(0xFF6366F1))),
+        backgroundColor: Color(0xFFF9FAFB),
+        body: Center(child: CircularProgressIndicator(color: Color(0xFF0052FF))),
       );
     }
 
-    return Scaffold(
-      backgroundColor: const Color(0xFF0A0A0F),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF0F0F1A),
-        title: Text(
-          'Theme Studio',
-          style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
-        ),
-        iconTheme: const IconThemeData(color: Colors.white),
-        actions: [
-          AutosaveIndicator(state: _controller.autosaveState),
-          const SizedBox(width: 8),
-          IconButton(
-            icon: const Icon(Icons.undo, color: Colors.white),
-            onPressed: _controller.canUndo ? _controller.undo : null,
-          ),
-          IconButton(
-            icon: const Icon(Icons.redo, color: Colors.white),
-            onPressed: _controller.canRedo ? _controller.redo : null,
-          ),
-          IconButton(
-            icon: const Icon(Icons.refresh_rounded, color: Colors.redAccent),
-            onPressed: () => _confirmReset(context),
-          ),
-        ],
-      ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Top Section: Interactive sticky preview
-            Expanded(
-              flex: 4,
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: InteractivePreview(settings: _controller.settings),
-              ),
-            ),
+    final presets = PresetService.getPresets();
 
-            // Middle Section: Primary Categories Navigation Tabs
-            CategorySelector(
-              activeCategory: _controller.category,
-              onSelected: (cat) {
-                _controller.setCategory(cat);
-                // Auto-set the first sub-editor of the category
-                if (cat == 'Appearance') {
-                  _controller.setEditor('Presets');
-                } else if (cat == 'Layout') {
-                  _controller.setEditor('Cards');
-                } else if (cat == 'Content') {
-                  _controller.setEditor('Sections');
-                } else if (cat == 'Advanced') {
-                  _controller.setEditor('Import');
-                }
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Stack(
+        children: [
+          // Full-screen PageView preview background and layout
+          Positioned.fill(
+            child: PageView.builder(
+              controller: _pageController,
+              itemCount: presets.length,
+              onPageChanged: (page) {
+                setState(() {
+                  _currentPage = page;
+                });
+              },
+              itemBuilder: (context, idx) {
+                final preset = presets[idx];
+                return InteractivePreview(settings: preset.settings, profile: _profile);
               },
             ),
+          ),
 
-            // Bottom Section: Customizer Options / Editors drawer area
-            Expanded(
-              flex: 5,
-              child: Container(
-                color: const Color(0xFF0F0F1A),
-                child: Column(
-                  children: [
-                    // Search and pin headers
-                    _buildSubCategoryNavBar(),
-
-                    Expanded(
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.all(16),
-                        child: _searchQuery.isNotEmpty
-                            ? _buildSearchResults()
-                            : _buildActiveEditor(),
-                      ),
-                    ),
+          // Custom floating transparent header bar overlaid at the top
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              padding: EdgeInsets.only(
+                top: MediaQuery.of(context).padding.top + 8,
+                bottom: 16,
+                left: 16,
+                right: 16,
+              ),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.black.withOpacity(0.5),
+                    Colors.transparent,
                   ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Close button
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.black38,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.white10),
+                      ),
+                      child: const Icon(Icons.close, color: Colors.white, size: 20),
+                    ),
+                  ),
+
+                  // Center indicator titles & tracker dots
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        presets[_currentPage].label,
+                        style: GoogleFonts.outfit(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '${_currentPage + 1} of ${presets.length}',
+                        style: GoogleFonts.outfit(
+                          color: Colors.white70,
+                          fontSize: 10,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      // Dot indicators inside header
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: List.generate(
+                          presets.length > 5 ? 5 : presets.length,
+                          (idx) {
+                            final displayIdx = _currentPage % 5;
+                            final active = displayIdx == idx;
+                            return Container(
+                              width: active ? 16 : 6,
+                              height: 6,
+                              margin: const EdgeInsets.symmetric(horizontal: 2),
+                              decoration: BoxDecoration(
+                                color: active ? const Color(0xFF0052FF) : Colors.white24,
+                                borderRadius: BorderRadius.circular(3),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  // Save / Unlock Premium action button
+                  Builder(
+                    builder: (context) {
+                      final preset = presets[_currentPage];
+                      final locked = preset.premium && !widget.isPremium;
+
+                      return SizedBox(
+                        height: 38,
+                        child: ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: locked ? Colors.amber[800] : const Color(0xFF0052FF),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(100),
+                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            elevation: 0,
+                          ),
+                          onPressed: () {
+                            if (locked) {
+                              _showPremiumGate(context, preset.label);
+                            } else {
+                              _controller.updateSettings(preset.settings, 'Applied Preset: ${preset.label}');
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('${preset.label} theme saved successfully!'),
+                                  backgroundColor: const Color(0xFF10B981),
+                                  behavior: SnackBarBehavior.floating,
+                                ),
+                              );
+                            }
+                          },
+                          icon: Icon(
+                            locked ? Icons.lock : Icons.save_outlined,
+                            color: Colors.white,
+                            size: 16,
+                          ),
+                          label: Text(
+                            locked ? 'Unlock' : 'Save Theme',
+                            style: GoogleFonts.outfit(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // Down arrow scroll indicator overlay at the bottom
+          Positioned(
+            bottom: 24,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Container(
+                width: 36,
+                height: 36,
+                decoration: const BoxDecoration(
+                  color: Colors.black26,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.keyboard_arrow_down,
+                  color: Colors.white60,
+                  size: 24,
                 ),
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSubCategoryNavBar() {
-    List<String> subEditors = [];
-    if (_controller.category == 'Appearance') {
-      subEditors = ['Presets', 'Background', 'Colors', 'Typography', 'Avatar', 'Buttons'];
-    } else if (_controller.category == 'Layout') {
-      subEditors = ['Cards', 'Sections'];
-    } else if (_controller.category == 'Content') {
-      subEditors = ['Sections'];
-    } else if (_controller.category == 'Advanced') {
-      subEditors = ['Import', 'Export'];
-    }
-
-    return Container(
-      height: 44,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      decoration: const BoxDecoration(
-        color: Color(0xFF0C0C14),
-        border: Border(bottom: BorderSide(color: Colors.white10)),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: subEditors.length,
-              itemBuilder: (context, idx) {
-                final sub = subEditors[idx];
-                final active = _controller.editor == sub;
-                return Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: ChoiceChip(
-                    label: Text(sub),
-                    selected: active,
-                    onSelected: (val) {
-                      if (val) {
-                        _controller.setEditor(sub);
-                        setState(() {
-                          _searchQuery = '';
-                          _searchCtrl.clear();
-                        });
-                      }
-                    },
-                    backgroundColor: Colors.transparent,
-                    selectedColor: const Color(0xFF6366F1).withValues(alpha: 0.2),
-                    side: BorderSide(
-                      color: active ? const Color(0xFF6366F1) : Colors.white12,
-                    ),
-                    labelStyle: GoogleFonts.outfit(
-                      color: active ? const Color(0xFF6366F1) : Colors.white60,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-          const SizedBox(width: 8),
-          // Search Icon
-          IconButton(
-            icon: const Icon(Icons.search, color: Colors.white70, size: 20),
-            onPressed: () => _showSearchDialog(context),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActiveEditor() {
-    switch (_controller.editor) {
-      case 'Presets':
-        return PresetsGallery(controller: _controller, isPremiumUser: widget.isPremium);
-      case 'Background':
-        return BackgroundEditor(controller: _controller);
-      case 'Colors':
-        return ColorEditor(controller: _controller);
-      case 'Typography':
-        return TypographyEditor(controller: _controller);
-      case 'Buttons':
-        return ButtonEditor(controller: _controller);
-      case 'Cards':
-        return CardEditor(controller: _controller);
-      case 'Sections':
-        return SectionEditor(controller: _controller);
-      case 'Import':
-        return _buildImportTab();
-      case 'Export':
-        return _buildExportTab();
-      default:
-        return const SizedBox();
-    }
-  }
-
-  Widget _buildSearchResults() {
-    final results = ThemeSearchController.search(_searchQuery);
-    if (results.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Text(
-            'No results match your search.',
-            style: GoogleFonts.outfit(color: Colors.white38),
-          ),
-        ),
-      );
-    }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: results.map((res) {
-        return ListTile(
-          title: Text(res.title, style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
-          subtitle: Text('${res.category} > ${res.subEditor}', style: GoogleFonts.outfit(color: Colors.white38, fontSize: 11)),
-          trailing: const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white30, size: 14),
-          onTap: () {
-            setState(() {
-              _controller.setCategory(res.category);
-              _controller.setEditor(res.subEditor);
-              _searchQuery = '';
-              _searchCtrl.clear();
-            });
-          },
-        );
-      }).toList(),
-    );
-  }
-
-  Widget _buildImportTab() {
-    final textController = TextEditingController();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Import theme.json',
-          style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
-        ),
-        const SizedBox(height: 8),
-        TextField(
-          controller: textController,
-          maxLines: 6,
-          style: GoogleFonts.outfit(color: Colors.white, fontSize: 12),
-          decoration: InputDecoration(
-            hintText: 'Paste theme.json code here...',
-            hintStyle: GoogleFonts.outfit(color: Colors.white30),
-            filled: true,
-            fillColor: Colors.white.withValues(alpha: 0.05),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-          ),
-        ),
-        const SizedBox(height: 12),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF6366F1)),
-          onPressed: () {
-            final imported = ThemeImportExport.importTheme(textController.text);
-            if (imported != null) {
-              _controller.updateSettings(imported, 'Imported Custom JSON Theme');
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Theme imported successfully!'), backgroundColor: Colors.green),
-              );
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Invalid JSON formatting.'), backgroundColor: Colors.redAccent),
-              );
-            }
-          },
-          child: Text('Import Settings', style: GoogleFonts.outfit(color: Colors.white)),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildExportTab() {
-    final exported = ThemeImportExport.exportTheme(_controller.settings);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Export Config String',
-          style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
-        ),
-        const SizedBox(height: 8),
-        SelectableText(
-          exported,
-          style: GoogleFonts.outfit(color: Colors.white70, fontSize: 12),
-        ),
-      ],
-    );
-  }
-
-  void _showSearchDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          backgroundColor: const Color(0xFF1a1a2e),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          title: TextField(
-            controller: _searchCtrl,
-            style: GoogleFonts.outfit(color: Colors.white),
-            decoration: InputDecoration(
-              hintText: 'Search settings...',
-              hintStyle: GoogleFonts.outfit(color: Colors.white30),
-              prefixIcon: const Icon(Icons.search, color: Colors.white60),
-              border: InputBorder.none,
-            ),
-            onChanged: (val) {
-              setState(() {
-                _searchQuery = val;
-              });
-            },
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Close'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _confirmReset(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        backgroundColor: const Color(0xFF1a1a2e),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text('Reset Theme', style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
-        content: Text('Are you sure you want to discard all theme settings?', style: GoogleFonts.outfit(color: Colors.white70)),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
-            onPressed: () {
-              _controller.resetToDefault();
-              Navigator.pop(context);
-            },
-            child: const Text('Reset'),
           ),
         ],
       ),

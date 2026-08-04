@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart' hide CardTheme, ButtonTheme;
 import 'package:google_fonts/google_fonts.dart';
 import '../../models/theme_models.dart';
+import '../../../../models/profile.dart';
+import '../../../../services/api_service.dart';
+import '../../../../core/utils/image_helper.dart';
 
 class InteractivePreview extends StatefulWidget {
   final ThemeSettings settings;
-  const InteractivePreview({super.key, required this.settings});
+  final Profile? profile;
+  const InteractivePreview({super.key, required this.settings, this.profile});
 
   @override
   State<InteractivePreview> createState() => _InteractivePreviewState();
@@ -23,19 +27,21 @@ class _InteractivePreviewState extends State<InteractivePreview> {
     final avatar = widget.settings.avatar;
 
     // Parse Solid background
-    Color bgColor = _isDark ? const Color(0xFF0F0F1A) : const Color(0xFFF9FAFB);
-    if (bg.type == 'solid') {
-      try {
-        final val = bg.value.replaceAll('#', '');
-        bgColor = Color(int.parse('FF$val', radix: 16));
-      } catch (_) {}
-    } else if (bg.type == 'aurora') {
+    Color bgColor = const Color(0xFFF9FAFB);
+    try {
+      final val = colors.background.replaceAll('#', '');
+      bgColor = Color(int.parse('FF$val', radix: 16));
+    } catch (_) {}
+
+    if (bg.type == 'aurora') {
       bgColor = const Color(0xFF0C1020);
     } else if (bg.type == 'animated_gradient') {
       bgColor = const Color(0xFF1E1B4B);
     } else if (bg.type == 'particles') {
       bgColor = const Color(0xFF020617);
     }
+
+    final bool isBackgroundDark = bgColor.computeLuminance() < 0.5;
 
     // Styles for Card
     double cardRadius = 16.0;
@@ -44,16 +50,28 @@ class _InteractivePreviewState extends State<InteractivePreview> {
       cardRadius = numVal.toDouble();
     } catch (_) {}
 
-    Color cardBg = _isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.03);
+    Color cardBg = isBackgroundDark ? Colors.white.withOpacity(0.06) : Colors.black.withOpacity(0.04);
     try {
       final val = colors.card.replaceAll('#', '');
       cardBg = Color(int.parse('FF$val', radix: 16)).withOpacity(cards.opacity);
     } catch (_) {}
 
+    Color textColor = isBackgroundDark ? Colors.white : const Color(0xFF111827);
+    try {
+      final val = colors.text.replaceAll('#', '');
+      textColor = Color(int.parse('FF$val', radix: 16));
+    } catch (_) {}
+
+    Color subtextColor = isBackgroundDark ? Colors.white70 : const Color(0xFF4B5563);
+    try {
+      final val = colors.subtext.replaceAll('#', '');
+      subtextColor = Color(int.parse('FF$val', radix: 16));
+    } catch (_) {}
+
     // Styles for Typography
     TextStyle headingStyle = GoogleFonts.getFont(
       typo.headingFont,
-      color: _isDark ? Colors.white : Colors.black,
+      color: textColor,
       fontSize: typo.headingSize,
       fontWeight: typo.weight == '800' ? FontWeight.w800 : typo.weight == '500' ? FontWeight.w500 : FontWeight.bold,
       letterSpacing: typo.letterSpacing,
@@ -61,7 +79,7 @@ class _InteractivePreviewState extends State<InteractivePreview> {
 
     TextStyle bodyStyle = GoogleFonts.getFont(
       typo.bodyFont,
-      color: _isDark ? Colors.white70 : Colors.black87,
+      color: subtextColor,
       fontSize: typo.bodySize,
       height: typo.lineHeight,
     );
@@ -83,275 +101,242 @@ class _InteractivePreviewState extends State<InteractivePreview> {
       btnColor = Color(int.parse('FF$val', radix: 16));
     } catch (_) {}
 
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFF09090F),
-        borderRadius: BorderRadius.circular(36),
-        border: Border.all(color: Colors.white12, width: 3),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(33),
-        child: Stack(
-          children: [
-            // Dynamic Background
-            Positioned.fill(
-              child: Container(
-                color: bgColor,
-              ),
-            ),
+    return Stack(
+      children: [
+        // Dynamic Background
+        Positioned.fill(
+          child: Container(
+            color: bgColor,
+          ),
+        ),
 
-            if (bg.type == 'aurora')
-              Positioned.fill(
-                child: Opacity(
-                  opacity: bg.overlayOpacity,
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      gradient: RadialGradient(
-                        colors: [Color(0xFF14B8A6), Colors.transparent],
-                        center: Alignment(-0.6, -0.6),
-                        radius: 1.0,
-                      ),
-                    ),
+        if (bg.type == 'aurora')
+          Positioned.fill(
+            child: Opacity(
+              opacity: bg.overlayOpacity,
+              child: Container(
+                decoration: const BoxDecoration(
+                  gradient: RadialGradient(
+                    colors: [Color(0xFF14B8A6), Colors.transparent],
+                    center: Alignment(-0.6, -0.6),
+                    radius: 1.0,
                   ),
                 ),
               ),
+            ),
+          ),
 
-            // Main View
-            Column(
-              children: [
-                // App Bar / Top Frame Controls
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'tapfolio',
-                        style: GoogleFonts.outfit(
-                          color: _isDark ? Colors.white : Colors.black,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+        // Main View
+        Column(
+          children: [
+            // Profile Body (WYSIWYG Layout)
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(16, 120, 16, 16),
+                child: Column(
+                  children: [
+                    // 1. HERO CARD CONTAINER
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(22),
+                      decoration: BoxDecoration(
+                        color: cardBg,
+                        borderRadius: BorderRadius.circular(cardRadius),
+                        border: Border.all(color: textColor.withOpacity(0.08)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.04),
+                            blurRadius: 16,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
-                      Row(
+                      child: Column(
                         children: [
-                          GestureDetector(
-                            onTap: () => setState(() => _isDark = !_isDark),
-                            child: Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                color: Colors.white10,
-                                borderRadius: BorderRadius.circular(8),
+                          // Circular Avatar
+                          Container(
+                            width: 80,
+                            height: 80,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: textColor.withOpacity(0.2),
+                                width: 3,
                               ),
-                              child: Icon(
-                                _isDark ? Icons.light_mode : Icons.dark_mode,
-                                color: _isDark ? Colors.white : Colors.black,
-                                size: 16,
+                              image: widget.profile != null
+                                  ? DecorationImage(
+                                      image: getAvatarImage(widget.profile!.avatar, ApiService().baseUrl),
+                                      fit: BoxFit.cover,
+                                    )
+                                  : null,
+                            ),
+                            child: widget.profile == null
+                                ? const Icon(Icons.person, color: Colors.white, size: 36)
+                                : null,
+                          ),
+                          const SizedBox(height: 16),
+
+                          // Name and Verified Badge
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  typo.uppercase
+                                      ? (widget.profile?.name ?? 'ALEX RIVERA').toUpperCase()
+                                      : (widget.profile?.name ?? 'Alex Rivera'),
+                                  style: headingStyle.copyWith(fontSize: 18),
+                                  textAlign: TextAlign.center,
+                                ),
                               ),
+                              const SizedBox(width: 6),
+                              const Icon(Icons.verified_rounded, color: Color(0xFF1D9BF0), size: 16),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+
+                          // Tagline / Subtitle
+                          Text(
+                            widget.profile?.tagline ?? 'Design Lead & Creative Producer',
+                            style: bodyStyle.copyWith(fontSize: 12),
+                            textAlign: TextAlign.center,
+                          ),
+                          
+                          if (widget.profile?.location != null && widget.profile!.location!.isNotEmpty) ...[
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.location_on_rounded, size: 13, color: subtextColor),
+                                const SizedBox(width: 4),
+                                Text(
+                                  widget.profile!.location!,
+                                  style: bodyStyle.copyWith(fontSize: 12),
+                                ),
+                              ],
+                            ),
+                          ],
+
+                          const SizedBox(height: 18),
+
+                          // Action Button: "Save Contact" or "Connect with me"
+                          Container(
+                            width: double.infinity,
+                            height: 44,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: btnColor,
+                              borderRadius: BorderRadius.circular(btnRadius),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(Icons.bookmark_outline, color: Colors.white, size: 16),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Save Contact',
+                                  style: GoogleFonts.outfit(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
-                    ],
-                  ),
-                ),
-
-                // Profile Body (WYSIWYG Layout)
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      children: [
-                        // Avatar
-                        Center(
-                          child: Container(
-                            width: avatar.size,
-                            height: avatar.size,
-                            decoration: BoxDecoration(
-                              shape: avatar.shape == 'circle'
-                                  ? BoxShape.circle
-                                  : BoxShape.rectangle,
-                              borderRadius: avatar.shape == 'rounded'
-                                  ? BorderRadius.circular(16)
-                                  : avatar.shape == 'square'
-                                      ? BorderRadius.circular(0)
-                                      : null,
-                              border: Border.all(
-                                color: _isDark ? Colors.white : Colors.black26,
-                                width: 2,
-                              ),
-                              color: Colors.blueAccent,
-                            ),
-                            child: const Icon(Icons.person, color: Colors.white, size: 36),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Name and Title
-                        Text(
-                          typo.uppercase ? 'ALEX RIVERA' : 'Alex Rivera',
-                          style: headingStyle,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Design Lead & Creative Producer',
-                          style: bodyStyle.copyWith(color: _isDark ? Colors.white60 : Colors.black54),
-                        ),
-                        const SizedBox(height: 20),
-
-                        // DYNAMIC SECTIONS LAYOUT (Instantly Reacts to customizer)
-                        ...widget.settings.sections.order.map((secName) {
-                          final isVisible = widget.settings.sections.visibility[secName] ?? true;
-                          if (!isVisible) return const SizedBox.shrink();
-
-                          Widget child = const SizedBox.shrink();
-                          if (secName == 'about') {
-                            child = Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'About Me',
-                                  style: headingStyle.copyWith(fontSize: 16),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  'Building premium digital portfolios and interactive mobile layouts for builders globally.',
-                                  style: bodyStyle.copyWith(fontSize: 13),
-                                ),
-                              ],
-                            );
-                          } else if (secName == 'contact') {
-                            child = Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Contact',
-                                  style: headingStyle.copyWith(fontSize: 16),
-                                ),
-                                const SizedBox(height: 8),
-                                Row(
-                                  children: [
-                                    Icon(Icons.email_outlined, color: _isDark ? Colors.white70 : Colors.black87, size: 14),
-                                    const SizedBox(width: 8),
-                                    Text('alex@tapfolio.me', style: bodyStyle.copyWith(fontSize: 13)),
-                                  ],
-                                ),
-                                const SizedBox(height: 6),
-                                Row(
-                                  children: [
-                                    Icon(Icons.location_on_outlined, color: _isDark ? Colors.white70 : Colors.black87, size: 14),
-                                    const SizedBox(width: 8),
-                                    Text('San Francisco, CA', style: bodyStyle.copyWith(fontSize: 13)),
-                                  ],
-                                ),
-                              ],
-                            );
-                          } else if (secName == 'socials') {
-                            child = Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Social Connections',
-                                  style: headingStyle.copyWith(fontSize: 14),
-                                ),
-                                const SizedBox(height: 8),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    _mockSocialIcon(Icons.code),
-                                    _mockSocialIcon(Icons.camera_alt),
-                                    _mockSocialIcon(Icons.work),
-                                  ],
-                                ),
-                              ],
-                            );
-                          } else if (secName == 'portfolio') {
-                            child = Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Interactive Portfolio',
-                                  style: headingStyle.copyWith(fontSize: 14),
-                                ),
-                                Icon(Icons.arrow_forward_ios, color: _isDark ? Colors.white70 : Colors.black54, size: 14),
-                              ],
-                            );
-                          } else if (secName == 'projects') {
-                            child = Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Featured Projects',
-                                  style: headingStyle.copyWith(fontSize: 14),
-                                ),
-                                const SizedBox(height: 8),
-                                Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withValues(alpha: 0.05),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      const Icon(Icons.folder, color: Colors.blueAccent),
-                                      const SizedBox(width: 8),
-                                      Text('Tapfolio Mobile App', style: bodyStyle.copyWith(fontSize: 13, fontWeight: FontWeight.bold)),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            );
-                          }
-
-                          return Container(
-                            width: double.infinity,
-                            margin: const EdgeInsets.only(bottom: 12),
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: cardBg,
-                              borderRadius: BorderRadius.circular(cardRadius),
-                              border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
-                            ),
-                            child: child,
-                          );
-                        }),
-                        const SizedBox(height: 8),
-
-                        // Save Action Button preview
-                        GestureDetector(
-                          onTap: () {},
-                          child: Container(
-                            width: double.infinity,
-                            height: double.parse(btn.height.replaceAll('px', '')),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: btn.style == 'solid' || btn.style == 'pill' ? btnColor : Colors.transparent,
-                              border: btn.style == 'outlined'
-                                  ? Border.all(color: btnColor, width: 2)
-                                  : null,
-                              borderRadius: BorderRadius.circular(btnRadius),
-                              gradient: btn.style == 'gradient'
-                                  ? const LinearGradient(colors: [Colors.indigo, Colors.blue])
-                                  : null,
-                            ),
-                            child: Text(
-                              'Save Contact',
-                              style: GoogleFonts.outfit(
-                                color: btn.style == 'outlined' ? btnColor : Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
                     ),
-                  ),
+
+                    const SizedBox(height: 16),
+
+                    // 2. ACCORDION ROWS & SOCIAL GRID
+                    ...widget.settings.sections.order.map((secName) {
+                      final isVisible = widget.settings.sections.visibility[secName] ?? true;
+                      if (!isVisible) return const SizedBox.shrink();
+
+                      // If socials section, render as a 3-column Grid directly
+                      if (secName == 'socials') {
+                        final socials = widget.profile?.socials ?? [];
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 12),
+                            GridView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 3,
+                                crossAxisSpacing: 10,
+                                mainAxisSpacing: 10,
+                                childAspectRatio: 1.15,
+                              ),
+                              itemCount: socials.isEmpty ? 3 : socials.length,
+                              itemBuilder: (context, index) {
+                                if (socials.isEmpty) {
+                                  // Mock social cards
+                                  final mockPlatforms = ['Instagram', 'LinkedIn', 'GitHub'];
+                                  final mockIcons = [Icons.camera_alt, Icons.work, Icons.code];
+                                  final mockColors = [const Color(0xFFE1306C), const Color(0xFF0077B5), const Color(0xFF333333)];
+                                  return _buildCreativeSocialCard(
+                                    mockPlatforms[index],
+                                    mockIcons[index],
+                                    mockColors[index],
+                                    cardBg,
+                                    textColor,
+                                  );
+                                }
+                                final s = socials[index];
+                                return _buildCreativeSocialCard(
+                                  s.platform,
+                                  _getSocialIconData(s.icon),
+                                  _parseHexColor(s.color),
+                                  cardBg,
+                                  textColor,
+                                );
+                              },
+                            ),
+                            const SizedBox(height: 12),
+                          ],
+                        );
+                      }
+
+                      // For Portfolio & Projects, render as neat accordion rows
+                      String title = '';
+                      if (secName == 'about') title = 'About Me';
+                      else if (secName == 'contact') title = 'Contact';
+                      else if (secName == 'portfolio') title = 'Portfolio';
+                      else if (secName == 'projects') title = 'Featured Projects';
+                      else return const SizedBox.shrink();
+
+                      return Container(
+                        width: double.infinity,
+                        margin: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                        decoration: BoxDecoration(
+                          color: cardBg,
+                          borderRadius: BorderRadius.circular(cardRadius),
+                          border: Border.all(color: textColor.withOpacity(0.08)),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              title,
+                              style: headingStyle.copyWith(fontSize: 15),
+                            ),
+                            Icon(Icons.arrow_forward_ios, color: subtextColor, size: 14),
+                          ],
+                        ),
+                      );
+                    }),
+                  ],
                 ),
-              ],
+              ),
             ),
           ],
         ),
-      ),
+      ],
     );
   }
 
@@ -364,5 +349,76 @@ class _InteractivePreviewState extends State<InteractivePreview> {
       ),
       child: Icon(icon, color: Colors.white, size: 16),
     );
+  }
+
+  Widget _buildContactCircleButton(IconData icon, VoidCallback onTap, Color cardBg, Color iconColor) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 48,
+        height: 48,
+        decoration: BoxDecoration(
+          color: cardBg,
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: iconColor.withOpacity(0.15),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.02),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Icon(icon, color: iconColor, size: 20),
+      ),
+    );
+  }
+
+  Widget _buildCreativeSocialCard(String platform, IconData icon, Color color, Color cardBg, Color txtColor) {
+    return Container(
+      decoration: BoxDecoration(
+        color: cardBg,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: txtColor.withOpacity(0.15),
+        ),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 28, color: color),
+          const SizedBox(height: 8),
+          Text(
+            platform,
+            style: GoogleFonts.outfit(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: txtColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  IconData _getSocialIconData(String name) {
+    switch (name.toLowerCase()) {
+      case 'instagram': return Icons.camera_alt;
+      case 'linkedin': return Icons.work;
+      case 'github': return Icons.code;
+      case 'twitter': return Icons.alternate_email;
+      default: return Icons.link;
+    }
+  }
+
+  Color _parseHexColor(String hex) {
+    try {
+      final val = hex.replaceAll('#', '');
+      return Color(int.parse('FF$val', radix: 16));
+    } catch (_) {
+      return const Color(0xFF0052FF);
+    }
   }
 }

@@ -245,11 +245,11 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                                     style: GoogleFonts.outfit(color: const Color(0xFF6366F1), fontSize: 12, fontWeight: FontWeight.bold),
                                   ),
                                   const SizedBox(width: 12),
-                                  Icon(Icons.bolt, size: 14, color: Colors.tealAccent),
+                                  Icon(Icons.bolt, size: 14, color: _isLight ? const Color(0xFF0F766E) : Colors.tealAccent),
                                   const SizedBox(width: 4),
                                   Text(
                                     '${profile.tapCount} Taps',
-                                    style: GoogleFonts.outfit(color: Colors.tealAccent, fontSize: 12, fontWeight: FontWeight.bold),
+                                    style: GoogleFonts.outfit(color: _isLight ? const Color(0xFF0F766E) : Colors.tealAccent, fontSize: 12, fontWeight: FontWeight.bold),
                                   ),
                                 ],
                               ),
@@ -264,16 +264,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => Scaffold(
-                                  backgroundColor: _isLight ? const Color(0xFFF3F4F6) : const Color(0xFF06070D),
-                                  appBar: AppBar(
-                                    backgroundColor: _isLight ? Colors.white : const Color(0xFF0F1122),
-                                    title: Text('Profile View', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: _textColor)),
-                                    iconTheme: IconThemeData(color: _textColor),
-                                    elevation: 0,
-                                  ),
-                                  body: ProfileViewScreen(userId: profile.userId),
-                                ),
+                                builder: (context) => ProfileViewScreen(userId: profile.userId),
                               ),
                             );
                           },

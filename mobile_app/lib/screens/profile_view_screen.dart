@@ -1,6 +1,9 @@
+import 'dart:async';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/profile.dart';
+import '../models/profile_theme.dart';
 import '../core/utils/color_parser.dart';
 import '../core/utils/image_helper.dart';
 import '../services/api_service.dart';
@@ -64,6 +67,8 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
 
     final res = await _apiService.getProfile(userId: userId);
 
+    if (!mounted) return;
+
     if (res != null) {
       setState(() {
         _profile = res['profile'];
@@ -90,6 +95,8 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
 
     final res = await _apiService.sendConnectionRequest(_profile!.username, via: 'app');
 
+    if (!mounted) return;
+
     setState(() {
       _connecting = false;
     });
@@ -99,20 +106,23 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
         _connectionStatus = 'pending';
       });
     } else {
-      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(res['error'] ?? 'Failed to connect'), backgroundColor: Colors.redAccent),
       );
     }
   }
 
-  Widget _buildGlassCard({required List<Widget> children}) {
+  Widget _buildGlassCard({required List<Widget> children, ProfileThemeSettings? theme}) {
+    final customBorderRadius = theme != null ? BorderRadius.circular(theme.cardBorderRadius) : BorderRadius.circular(24);
+    final customCardBg = theme != null ? theme.surfaceColor.withValues(alpha: theme.cardOpacity) : _cardBg;
+    final customBorderColor = theme != null ? theme.borderColor : _cardBorder;
+
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: _cardBg,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: _cardBorder),
+        color: customCardBg,
+        borderRadius: customBorderRadius,
+        border: Border.all(color: customBorderColor),
       ),
       child: Column(
         children: children,
@@ -120,94 +130,177 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
     );
   }
 
+  Widget _buildAvatar(ProfileThemeSettings? theme) {
+    final avatarImage = getAvatarImage(_profile!.avatar, _apiService.baseUrl);
+
+    Widget shapedAvatar;
+    if (theme != null && theme.avatarShape == 'rounded') {
+      shapedAvatar = ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          width: 100,
+          height: 100,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: avatarImage,
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+      );
+    } else if (theme != null && theme.avatarShape == 'square') {
+      shapedAvatar = ClipRRect(
+        borderRadius: BorderRadius.zero,
+        child: Container(
+          width: 100,
+          height: 100,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: avatarImage,
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+      );
+    } else {
+      shapedAvatar = CircleAvatar(
+        radius: 50,
+        backgroundImage: avatarImage,
+      );
+    }
+
+    if (theme != null && theme.avatarGlow) {
+      return Container(
+        decoration: BoxDecoration(
+          shape: theme.avatarShape == 'circle' ? BoxShape.circle : BoxShape.rectangle,
+          borderRadius: theme.avatarShape != 'circle' ? BorderRadius.circular(16) : null,
+          boxShadow: [
+            BoxShadow(
+              color: theme.primaryColor.withValues(alpha: 0.5),
+              blurRadius: 16,
+              spreadRadius: 2,
+            ),
+          ],
+        ),
+        child: shapedAvatar,
+      );
+    }
+
+    return shapedAvatar;
+  }
+
+  Widget _buildBackground({required ProfileThemeSettings theme, required Widget child}) {
+    final bgType = theme.bgType;
+    final bgValue = theme.bgValue;
+    final primary = theme.primaryColor;
+    final accent = theme.accentColor;
+
+    if (bgType == 'image' && bgValue.isNotEmpty) {
+      final imageUrl = bgValue.startsWith('http') ? bgValue : '${_apiService.baseUrl}$bgValue';
+      return Stack(
+        children: [
+          Positioned.fill(
+            child: Image.network(
+              imageUrl,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(color: theme.bgColor),
+            ),
+          ),
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: theme.bgBlur, sigmaY: theme.bgBlur),
+              child: Container(
+                color: Colors.black.withValues(alpha: theme.bgOverlayOpacity),
+              ),
+            ),
+          ),
+          child,
+        ],
+      );
+    }
+
+    if (bgType == 'gradient') {
+      return Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [primary, accent],
+          ),
+        ),
+        child: child,
+      );
+    }
+
+    return Container(
+      color: theme.bgColor,
+      child: child,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     debugPrint('[TRACE-PROFILEVIEW] build() called.');
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        children: [
-          // Search UI (only if not loaded directly)
-          if (widget.userId == null) ...[
-            Container(
-              margin: const EdgeInsets.only(bottom: 24),
-              decoration: BoxDecoration(
-                color: _isLight ? const Color(0xFFF9FAFB) : Colors.white.withValues(alpha: 0.04),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: _cardBorder),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _searchController,
-                      keyboardType: TextInputType.number,
-                      style: GoogleFonts.outfit(color: _textColor),
-                      decoration: InputDecoration(
-                        hintText: 'Enter User ID to view profile',
-                        hintStyle: TextStyle(color: _subtitleColor.withValues(alpha: 0.5)),
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.search, color: Color(0xFF6366F1)),
-                    onPressed: () {
-                      final val = int.tryParse(_searchController.text.trim());
-                      if (val != null) {
-                        _loadProfile(val);
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Please enter a valid numeric ID')),
-                        );
-                      }
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ],
+    final customTheme = _profile?.theme != null ? ProfileThemeSettings.fromJson(_profile!.theme) : null;
+    
+    final scaffoldBg = customTheme == null 
+        ? (_isLight ? const Color(0xFFF3F4F6) : const Color(0xFF06070D))
+        : Colors.transparent;
 
-          if (_loading)
-            const Center(child: CircularProgressIndicator(color: Color(0xFF6366F1)))
-          else if (_error != null)
-            Center(child: Text(_error!, style: const TextStyle(color: Colors.redAccent)))
-          else if (_profile == null && widget.userId == null)
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 40.0),
-                child: Column(
-                  children: [
-                    Icon(Icons.nfc_outlined, size: 80, color: _subtitleColor.withValues(alpha: 0.25)),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Search a user above, or tap a user in the Leaderboard to view their card.',
-                      style: GoogleFonts.outfit(color: _subtitleColor, fontSize: 14),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
+    final textColor = customTheme?.textColor ?? _textColor;
+    final subtitleColor = customTheme?.mutedTextColor ?? _subtitleColor;
+    final cardBorder = customTheme?.borderColor ?? _cardBorder;
+
+    Widget mainContent;
+
+    if (_loading) {
+      mainContent = const Center(child: CircularProgressIndicator(color: Color(0xFF0052FF)));
+    } else if (_error != null) {
+      mainContent = Center(child: Text(_error!, style: const TextStyle(color: Colors.redAccent)));
+    } else if (_profile == null && widget.userId == null) {
+      mainContent = Center(
+        child: Padding(
+          padding: const EdgeInsets.only(top: 40.0, left: 24, right: 24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.nfc_outlined, size: 80, color: _subtitleColor.withValues(alpha: 0.25)),
+              const SizedBox(height: 16),
+              Text(
+                'Search a user above, or tap a user in the Leaderboard to view their card.',
+                style: GoogleFonts.outfit(color: _subtitleColor, fontSize: 14),
+                textAlign: TextAlign.center,
               ),
-            )
-          else if (_profile != null) ...[
+            ],
+          ),
+        ),
+      );
+    } else if (_profile != null) {
+      final btnBg = _connectionStatus == 'accepted'
+          ? const Color(0xFF10B981)
+          : _connectionStatus == 'pending'
+              ? const Color(0xFFf59e0b)
+              : (customTheme?.primaryColor ?? const Color(0xFF0052FF));
+
+      mainContent = SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
             _buildGlassCard(
+              theme: customTheme,
               children: [
                 // Header (Avatar, name, tagline)
-                CircleAvatar(
-                  radius: 50,
-                  backgroundImage: getAvatarImage(_profile!.avatar, _apiService.baseUrl),
-                ),
+                _buildAvatar(customTheme),
                 const SizedBox(height: 16),
                 Text(
                   _profile!.name,
-                  style: GoogleFonts.outfit(color: _textColor, fontSize: 24, fontWeight: FontWeight.bold),
+                  style: GoogleFonts.outfit(color: textColor, fontSize: 24, fontWeight: FontWeight.bold),
                 ),
                 if (_profile!.tagline.isNotEmpty) ...[
                   const SizedBox(height: 4),
                   Text(
                     _profile!.tagline,
-                    style: GoogleFonts.outfit(color: _subtitleColor, fontSize: 15),
+                    style: GoogleFonts.outfit(color: subtitleColor, fontSize: 15),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -219,12 +312,13 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
                   height: 50,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: _connectionStatus == 'accepted'
-                          ? const Color(0xFF10B981)
-                          : _connectionStatus == 'pending'
-                              ? const Color(0xFFf59e0b)
-                              : const Color(0xFF6366F1),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      backgroundColor: btnBg,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: customTheme != null
+                            ? BorderRadius.circular(customTheme.cardBorderRadius * 0.75)
+                            : BorderRadius.circular(12),
+                      ),
+                      elevation: 0,
                     ),
                     onPressed: _connecting || _connectionStatus == 'accepted' || _connectionStatus == 'pending' || _connectionStatus == 'blocked'
                         ? null
@@ -251,7 +345,7 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
                     const SizedBox(width: 4),
                     Text(
                       '${_profile!.tapCount} total connections',
-                      style: GoogleFonts.outfit(color: _subtitleColor, fontSize: 13),
+                      style: GoogleFonts.outfit(color: subtitleColor, fontSize: 13),
                     ),
                   ],
                 ),
@@ -261,12 +355,14 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
-                    color: _isLight ? const Color(0xFFF9FAFB) : Colors.white.withValues(alpha: 0.02),
+                    color: customTheme != null
+                        ? customTheme.surfaceColor.withValues(alpha: 0.1)
+                        : (_isLight ? const Color(0xFFF9FAFB) : Colors.white.withValues(alpha: 0.02)),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     '“Design is not just what it looks like, it’s how it connects.”',
-                    style: GoogleFonts.outfit(color: _subtitleColor.withValues(alpha: 0.7), fontSize: 12, fontStyle: FontStyle.italic),
+                    style: GoogleFonts.outfit(color: subtitleColor.withValues(alpha: 0.7), fontSize: 12, fontStyle: FontStyle.italic),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -278,7 +374,7 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       'About',
-                      style: GoogleFonts.outfit(color: _textColor, fontSize: 16, fontWeight: FontWeight.bold),
+                      style: GoogleFonts.outfit(color: textColor, fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -286,7 +382,7 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       _profile!.bio,
-                      style: GoogleFonts.outfit(color: _subtitleColor, fontSize: 14, height: 1.4),
+                      style: GoogleFonts.outfit(color: subtitleColor, fontSize: 14, height: 1.4),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -301,12 +397,14 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
                     children: _profile!.tags.map((t) {
                       final isLoc = t.type == 'location';
                       return Chip(
-                        backgroundColor: _isLight ? const Color(0xFFF3F4F6) : Colors.white.withValues(alpha: 0.05),
-                        side: BorderSide(color: _cardBorder),
+                        backgroundColor: customTheme != null
+                            ? customTheme.surfaceColor.withValues(alpha: 0.15)
+                            : (_isLight ? const Color(0xFFF3F4F6) : Colors.white.withValues(alpha: 0.05)),
+                        side: BorderSide(color: cardBorder),
                         avatar: Text(isLoc ? '📍' : '⚙️'),
                         label: Text(
                           t.text,
-                          style: GoogleFonts.outfit(color: _textColor, fontSize: 12),
+                          style: GoogleFonts.outfit(color: textColor, fontSize: 12),
                         ),
                       );
                     }).toList(),
@@ -320,7 +418,7 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
                     alignment: Alignment.centerLeft,
                     child: Text(
                       'Links',
-                      style: GoogleFonts.outfit(color: _textColor, fontSize: 16, fontWeight: FontWeight.bold),
+                      style: GoogleFonts.outfit(color: textColor, fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -330,8 +428,12 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
                       margin: const EdgeInsets.only(bottom: 12),
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: _isLight ? const Color(0xFFF9FAFB) : Colors.white.withValues(alpha: 0.02),
-                        borderRadius: BorderRadius.circular(12),
+                        color: customTheme != null
+                            ? customTheme.surfaceColor.withValues(alpha: 0.1)
+                            : (_isLight ? const Color(0xFFF9FAFB) : Colors.white.withValues(alpha: 0.02)),
+                        borderRadius: customTheme != null
+                            ? BorderRadius.circular(customTheme.cardBorderRadius * 0.75)
+                            : BorderRadius.circular(12),
                         border: Border.all(color: cardColor.withValues(alpha: 0.3)),
                       ),
                       child: Row(
@@ -342,11 +444,11 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
                             children: [
                               Text(
                                 link.platform,
-                                style: GoogleFonts.outfit(color: _textColor, fontWeight: FontWeight.bold),
+                                style: GoogleFonts.outfit(color: textColor, fontWeight: FontWeight.bold),
                               ),
                               Text(
                                 link.handle,
-                                style: GoogleFonts.outfit(color: _subtitleColor, fontSize: 12),
+                                style: GoogleFonts.outfit(color: subtitleColor, fontSize: 12),
                               ),
                             ],
                           ),
@@ -359,7 +461,83 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
               ],
             ),
           ],
+        ),
+      );
+    } else {
+      mainContent = const SizedBox.shrink();
+    }
+
+    Widget rootWidget = mainContent;
+
+    if (customTheme != null) {
+      rootWidget = _buildBackground(theme: customTheme, child: mainContent);
+    }
+
+    if (widget.userId == null) {
+      return Column(
+        children: [
+          // Search UI (only if not loaded directly)
+          Container(
+            margin: const EdgeInsets.only(bottom: 24, left: 16, right: 16, top: 16),
+            decoration: BoxDecoration(
+              color: _isLight ? const Color(0xFFF9FAFB) : Colors.white.withValues(alpha: 0.04),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: _cardBorder),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _searchController,
+                    keyboardType: TextInputType.number,
+                    style: GoogleFonts.outfit(color: _textColor),
+                    decoration: InputDecoration(
+                      hintText: 'Enter User ID to view profile',
+                      hintStyle: TextStyle(color: _subtitleColor.withValues(alpha: 0.5)),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.search, color: Color(0xFF0052FF)),
+                  onPressed: () {
+                    final val = int.tryParse(_searchController.text.trim());
+                    if (val != null) {
+                      _loadProfile(val);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Please enter a valid numeric ID')),
+                      );
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+          Expanded(child: rootWidget),
         ],
+      );
+    }
+
+    return Scaffold(
+      backgroundColor: scaffoldBg,
+      appBar: AppBar(
+        backgroundColor: customTheme != null ? Colors.transparent : (_isLight ? Colors.white : const Color(0xFF0F1122)),
+        elevation: 0,
+        title: Text(
+          _profile?.name ?? 'Profile View',
+          style: GoogleFonts.outfit(
+            fontWeight: FontWeight.bold,
+            color: textColor,
+          ),
+        ),
+        iconTheme: IconThemeData(color: textColor),
+      ),
+      extendBodyBehindAppBar: customTheme != null,
+      body: SafeArea(
+        top: customTheme == null,
+        child: rootWidget,
       ),
     );
   }

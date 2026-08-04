@@ -9,6 +9,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:video_player/video_player.dart';
 import '../models/tag.dart';
 import '../models/social_link.dart';
+import '../models/profile_theme.dart';
 import '../core/utils/color_parser.dart';
 import '../services/api_service.dart';
 
@@ -149,15 +150,15 @@ class _PublicProfileScreenState extends State<PublicProfileScreen>
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF0F1020),
+        backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text('Sign in to Connect',
-            style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold)),
+            style: GoogleFonts.outfit(color: const Color(0xFF111827), fontWeight: FontWeight.bold)),
         content: Text('Create a free Tapfolio account to send a connection request.',
-            style: GoogleFonts.outfit(color: Colors.white60, fontSize: 14)),
+            style: GoogleFonts.outfit(color: const Color(0xFF4B5563), fontSize: 14)),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx),
-              child: Text('Cancel', style: GoogleFonts.outfit(color: Colors.white38))),
+              child: Text('Cancel', style: GoogleFonts.outfit(color: Colors.black45))),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF6366F1),
@@ -192,13 +193,13 @@ class _PublicProfileScreenState extends State<PublicProfileScreen>
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        systemOverlayStyle: SystemUiOverlayStyle.light,
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
         leading: Padding(
           padding: const EdgeInsets.all(8),
           child: GestureDetector(
@@ -207,19 +208,19 @@ class _PublicProfileScreenState extends State<PublicProfileScreen>
                 : Navigator.pushReplacementNamed(context, '/'),
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.10),
+                color: Colors.black.withOpacity(0.06),
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.white.withOpacity(0.15)),
+                border: Border.all(color: Colors.black.withOpacity(0.1)),
               ),
-              child: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 18),
+              child: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF1F2937), size: 18),
             ),
           ),
         ),
       ),
       body: _loading
-          ? Container(color: const Color(0xFF07080F), child: _buildSkeleton())
+          ? Container(color: const Color(0xFFF3F4F6), child: _buildSkeleton())
           : _error != null
-              ? Container(color: const Color(0xFF07080F), child: _buildError())
+              ? Container(color: const Color(0xFFF3F4F6), child: _buildError())
               : _buildProfile(),
     );
   }
@@ -253,7 +254,7 @@ class _PublicProfileScreenState extends State<PublicProfileScreen>
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [const Color(0xFF6366F1).withOpacity(0.18), Colors.transparent],
+          colors: [const Color(0xFF6366F1).withOpacity(0.1), Colors.transparent],
         ),
       ),
       child: Column(children: [
@@ -270,7 +271,7 @@ class _PublicProfileScreenState extends State<PublicProfileScreen>
     width: w, height: h,
     margin: const EdgeInsets.symmetric(vertical: 4),
     decoration: BoxDecoration(
-      color: Colors.white.withOpacity(0.07),
+      color: Colors.black.withOpacity(0.06),
       borderRadius: BorderRadius.circular(14),
     ),
   );
@@ -279,7 +280,7 @@ class _PublicProfileScreenState extends State<PublicProfileScreen>
     width: size, height: size,
     decoration: BoxDecoration(
       shape: BoxShape.circle,
-      color: Colors.white.withOpacity(0.09),
+      color: Colors.black.withOpacity(0.08),
     ),
   );
 
@@ -294,17 +295,17 @@ class _PublicProfileScreenState extends State<PublicProfileScreen>
           padding: const EdgeInsets.all(28),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: Colors.white.withOpacity(0.05),
+            color: Colors.black.withOpacity(0.05),
           ),
           child: Icon(
             isNotFound ? Icons.person_search_outlined : Icons.wifi_off_rounded,
-            size: 72, color: Colors.white24,
+            size: 72, color: Colors.black26,
           ),
         ),
         const SizedBox(height: 28),
         Text(
           isNotFound ? 'Profile Not Found' : 'Connection Error',
-          style: GoogleFonts.outfit(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+          style: GoogleFonts.outfit(color: const Color(0xFF111827), fontSize: 24, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 12),
         Text(
@@ -312,7 +313,7 @@ class _PublicProfileScreenState extends State<PublicProfileScreen>
               ? '@${widget.username} doesn\'t exist or has been removed.'
               : 'Check your internet connection and try again.',
           textAlign: TextAlign.center,
-          style: GoogleFonts.outfit(color: Colors.white54, fontSize: 15, height: 1.55),
+          style: GoogleFonts.outfit(color: const Color(0xFF4B5563), fontSize: 15, height: 1.55),
         ),
         const SizedBox(height: 36),
         ElevatedButton.icon(
@@ -1160,151 +1161,7 @@ class _ProfileAccordionState extends State<ProfileAccordion> {
 // ProfileThemeSettings & Helper classes
 // ─────────────────────────────────────────────────────────────────────────────
 
-class ProfileThemeSettings {
-  final Color primaryColor;
-  final Color accentColor;
-  final Color bgColor;
-  final Color surfaceColor;
-  final Color textColor;
-  final Color mutedTextColor;
-  final Color borderColor;
-
-  final String bgType;
-  final String bgValue;
-  final double bgBrightness;
-  final double bgBlur;
-  final double bgOverlayOpacity;
-
-  final String cardStyle;
-  final double cardBorderRadius;
-  final double cardOpacity;
-
-  final String avatarShape;
-  final bool avatarGlow;
-
-  final String layoutAlignment;
-  final List<String> sectionsOrder;
-  final Map<String, bool> sectionsVisibility;
-
-  ProfileThemeSettings({
-    required this.primaryColor,
-    required this.accentColor,
-    required this.bgColor,
-    required this.surfaceColor,
-    required this.textColor,
-    required this.mutedTextColor,
-    required this.borderColor,
-    required this.bgType,
-    required this.bgValue,
-    required this.bgBrightness,
-    required this.bgBlur,
-    required this.bgOverlayOpacity,
-    required this.cardStyle,
-    required this.cardBorderRadius,
-    required this.cardOpacity,
-    required this.avatarShape,
-    required this.avatarGlow,
-    required this.layoutAlignment,
-    required this.sectionsOrder,
-    required this.sectionsVisibility,
-  });
-
-  factory ProfileThemeSettings.fromJson(Map<String, dynamic>? json) {
-    final colors = json?['colors'] as Map<String, dynamic>?;
-    final bg = json?['background'] as Map<String, dynamic>?;
-    final cards = json?['cards'] as Map<String, dynamic>?;
-    final avatar = json?['avatar'] as Map<String, dynamic>?;
-    final layout = json?['layout'] as Map<String, dynamic>?;
-    final sections = json?['sections'] as Map<String, dynamic>?;
-
-    final order = (sections?['order'] as List?)?.map((e) => e.toString()).toList() ??
-        ['about', 'contact', 'socials', 'portfolio', 'projects'];
-    final visibilityMap = sections?['visibility'] as Map<String, dynamic>?;
-    final visibility = <String, bool>{
-      'about': visibilityMap?['about'] != false,
-      'contact': visibilityMap?['contact'] != false,
-      'socials': visibilityMap?['socials'] != false,
-      'portfolio': visibilityMap?['portfolio'] != false,
-      'projects': visibilityMap?['projects'] != false,
-    };
-
-    return ProfileThemeSettings(
-      primaryColor: _parseColor(colors?['primary'], const Color(0xFF6366F1)),
-      accentColor: _parseColor(colors?['accent'], const Color(0xFF8B5CF6)),
-      bgColor: _parseColor(colors?['background'], const Color(0xFF07080F)),
-      surfaceColor: _parseColor(colors?['surface'], const Color(0xFFFFFFFF)), // default white surface
-      textColor: _parseColor(colors?['text'], const Color(0xFF111827)), // default dark text
-      mutedTextColor: _parseColor(colors?['mutedText'], const Color(0xFF6B7280)),
-      borderColor: _parseColor(colors?['border'], const Color(0xFFE5E7EB)), // default grey borders
-
-      bgType: bg?['type'] as String? ?? 'solid',
-      bgValue: bg?['value'] as String? ?? '',
-      bgBrightness: _toDouble(bg?['brightness']) ?? 0.8,
-      bgBlur: _toDouble(bg?['blur']) ?? 0.0,
-      bgOverlayOpacity: _toDouble(bg?['overlayOpacity']) ?? 0.3,
-
-      cardStyle: cards?['style'] as String? ?? 'rounded',
-      cardBorderRadius: _parseRadius(cards?['borderRadius']) ?? 16.0,
-      cardOpacity: _toDouble(cards?['opacity']) ?? 1.0,
-
-      avatarShape: avatar?['shape'] as String? ?? 'circle',
-      avatarGlow: avatar?['glow'] == 'glow',
-
-      layoutAlignment: layout?['alignment'] as String? ?? 'center',
-      sectionsOrder: order,
-      sectionsVisibility: visibility,
-    );
-  }
-
-  static Color _parseColor(dynamic val, Color fallback) {
-    if (val == null) return fallback;
-    final str = val.toString().trim();
-    if (str.startsWith('rgba')) {
-      try {
-        final match = RegExp(r'rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d.]+)\s*\)').firstMatch(str);
-        if (match != null) {
-          final r = int.parse(match.group(1)!);
-          final g = int.parse(match.group(2)!);
-          final b = int.parse(match.group(3)!);
-          final a = double.parse(match.group(4)!);
-          return Color.fromARGB((a * 255).round(), r, g, b);
-        }
-      } catch (_) {}
-    } else if (str.startsWith('rgb')) {
-      try {
-        final match = RegExp(r'rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)').firstMatch(str);
-        if (match != null) {
-          final r = int.parse(match.group(1)!);
-          final g = int.parse(match.group(2)!);
-          final b = int.parse(match.group(3)!);
-          return Color.fromARGB(255, r, g, b);
-        }
-      } catch (_) {}
-    }
-    return parseHexColor(str, fallback: fallback);
-  }
-
-  static double? _toDouble(dynamic val) {
-    if (val == null) return null;
-    if (val is num) return val.toDouble();
-    if (val is String) return double.tryParse(val);
-    return null;
-  }
-
-  static double? _parseRadius(dynamic val) {
-    if (val == null) return null;
-    if (val is num) return val.toDouble();
-    if (val is String) {
-      final clean = val.replaceAll(RegExp(r'[a-zA-Z%]'), '');
-      final parsed = double.tryParse(clean);
-      if (parsed != null) {
-        if (val.endsWith('rem')) return parsed * 16.0;
-        return parsed;
-      }
-    }
-    return null;
-  }
-}
+// ProfileThemeSettings is imported from models/profile_theme.dart
 
 class VideoBackground extends StatefulWidget {
   final String url;

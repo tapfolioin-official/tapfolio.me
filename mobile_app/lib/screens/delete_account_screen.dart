@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -23,7 +24,12 @@ class DeleteAccountScreen extends StatefulWidget {
 class _DeleteAccountScreenState extends State<DeleteAccountScreen>
     with TickerProviderStateMixin {
   final ApiService _apiService = ApiService();
-  final GoogleSignIn _googleSignIn = GoogleSignIn(scopes: ['email']);
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    clientId: Platform.isIOS
+        ? '533947683458-f16dl0kle0is987gqoqum4255pqerhta.apps.googleusercontent.com'
+        : null,
+    scopes: ['email'],
+  );
   final _confirmController = TextEditingController();
 
   bool _isLoading = false;
@@ -119,12 +125,12 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF06070D),
+      backgroundColor: _isLight ? const Color(0xFFF3F4F6) : const Color(0xFF06070D),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0F1122),
+        backgroundColor: _isLight ? Colors.white : const Color(0xFF0F1122),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back, color: _textColor),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(

@@ -131,54 +131,92 @@ class _ConnectionsScreenState extends State<ConnectionsScreen>
         backgroundColor: _isLight ? Colors.white : const Color(0xFF0F1122),
         elevation: 0,
         automaticallyImplyLeading: false,
-        title: Row(
-          children: [
-            Text('Connections', style: GoogleFonts.outfit(
-              fontSize: 20, fontWeight: FontWeight.bold, color: _textColor,
-            )),
-            if (_pending.isNotEmpty) ...[
-              const SizedBox(width: 10),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: Colors.redAccent,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  '${_pending.length}',
-                  style: GoogleFonts.outfit(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ],
-          ],
+        title: Text(
+          'Connections',
+          style: GoogleFonts.outfit(
+            fontSize: 22,
+            fontWeight: FontWeight.w800,
+            color: _textColor,
+          ),
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.settings, color: _isLight ? const Color(0xFF374151) : Colors.white70),
+            icon: Icon(Icons.settings_outlined, color: _isLight ? const Color(0xFF374151) : Colors.white70),
             onPressed: _showGlobalSharingSettings,
           ),
           IconButton(
-            icon: Icon(Icons.refresh, color: _isLight ? const Color(0xFF374151) : Colors.white70),
+            icon: Icon(Icons.refresh_rounded, color: _isLight ? const Color(0xFF374151) : Colors.white70),
             onPressed: _refresh,
           ),
         ],
-        bottom: TabBar(
-          controller: _tabController,
-          indicatorColor: const Color(0xFF6366F1),
-          labelColor: const Color(0xFF6366F1),
-          unselectedLabelColor: _isLight ? Colors.black38 : Colors.white38,
-          labelStyle: GoogleFonts.outfit(fontWeight: FontWeight.w600),
-          tabs: [
-            Tab(text: 'Requests${_pending.isNotEmpty ? ' (${_pending.length})' : ''}'),
-            const Tab(text: 'My Connections'),
-          ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(56),
+          child: Padding(
+            padding: const EdgeInsets.only(left: 16, right: 16, bottom: 12),
+            child: Container(
+              height: 44,
+              decoration: BoxDecoration(
+                color: _isLight ? const Color(0xFFF3F4F6) : const Color(0xFF1E293B),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: TabBar(
+                controller: _tabController,
+                indicator: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: const Color(0xFF0052FF),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF0052FF).withValues(alpha: 0.25),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    )
+                  ],
+                ),
+                indicatorSize: TabBarIndicatorSize.tab,
+                labelColor: Colors.white,
+                unselectedLabelColor: _isLight ? const Color(0xFF6B7280) : const Color(0xFF9CA3AF),
+                labelStyle: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 14),
+                unselectedLabelStyle: GoogleFonts.outfit(fontWeight: FontWeight.w500, fontSize: 14),
+                dividerColor: Colors.transparent,
+                tabs: [
+                  const Tab(text: 'My Connections'),
+                  Tab(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text('Requests'),
+                        if (_pending.isNotEmpty) ...[
+                          const SizedBox(width: 6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: Colors.redAccent,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Text(
+                              '${_pending.length}',
+                              style: GoogleFonts.outfit(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
       body: TabBarView(
         controller: _tabController,
         children: [
-          _buildPendingTab(),
           _buildConnectionsTab(),
+          _buildPendingTab(),
         ],
       ),
     );
@@ -188,157 +226,192 @@ class _ConnectionsScreenState extends State<ConnectionsScreen>
 
   Widget _buildPendingTab() {
     if (_loadingPending) {
-      return const Center(child: CircularProgressIndicator(color: Color(0xFF6366F1)));
+      return const Center(child: CircularProgressIndicator(color: Color(0xFF0052FF)));
     }
     if (_pending.isEmpty) {
       return _emptyState(Icons.inbox_outlined, 'No pending requests', 'When someone wants to connect, it\'ll show up here.');
     }
     return RefreshIndicator(
-      color: const Color(0xFF6366F1),
+      color: const Color(0xFF0052FF),
       onRefresh: _refresh,
       child: ListView.separated(
         padding: const EdgeInsets.all(16),
         itemCount: _pending.length,
-        separatorBuilder: (_, _) => const SizedBox(height: 10),
+        separatorBuilder: (_, _) => const SizedBox(height: 12),
         itemBuilder: (_, i) => _buildRequestCard(_pending[i]),
       ),
     );
   }
 
   Widget _buildRequestCard(PendingRequest req) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: _cardBg,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: _cardBorder),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 26,
-                  backgroundImage: getAvatarImage(req.requesterAvatar, _api.baseUrl),
-                  backgroundColor: _cardBorder,
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: _cardBg,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: _cardBorder),
+        boxShadow: _isLight
+            ? [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.02),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                )
+              ]
+            : null,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 26,
+                backgroundImage: getAvatarImage(req.requesterAvatar, _api.baseUrl),
+                backgroundColor: _cardBorder,
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      req.requesterName,
+                      style: GoogleFonts.outfit(color: _textColor, fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                    if (req.requesterTagline.isNotEmpty)
                       Text(
-                        req.requesterName,
-                        style: GoogleFonts.outfit(color: _textColor, fontWeight: FontWeight.bold, fontSize: 15),
+                        req.requesterTagline,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.outfit(color: _subtitleColor, fontSize: 13),
                       ),
-                      if (req.requesterTagline.isNotEmpty)
-                        Text(
-                          req.requesterTagline,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.outfit(color: _subtitleColor, fontSize: 12),
+                  ],
+                ),
+              ),
+              if (req.via == 'nfc')
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF0052FF).withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.nfc, size: 12, color: Color(0xFF0052FF)),
+                      const SizedBox(width: 4),
+                      Text(
+                        'NFC',
+                        style: GoogleFonts.outfit(
+                          color: const Color(0xFF0052FF),
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
                         ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Text(
-                            '💎 ${req.requesterDiamonds}',
-                            style: GoogleFonts.outfit(color: Colors.amber, fontSize: 11, fontWeight: FontWeight.w600),
-                          ),
-                          const SizedBox(width: 10),
-                          Text(
-                            '👥 ${req.requesterConnectionCount} connections',
-                            style: GoogleFonts.outfit(color: Colors.teal, fontSize: 11),
-                          ),
-                          const SizedBox(width: 10),
-                          Text(
-                            '⚡ ${req.requesterTapCount} taps',
-                            style: GoogleFonts.outfit(color: Colors.purple, fontSize: 11),
-                          ),
-                          if (req.via == 'nfc') ...[
-                            const SizedBox(width: 10),
-                            Text(
-                              'via NFC',
-                              style: GoogleFonts.outfit(color: const Color(0xFF6366F1), fontSize: 11, fontWeight: FontWeight.w600),
-                            ),
-                          ]
-                        ],
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(width: 8),
-                Column(
-                  children: [
-                    SizedBox(
-                      width: 80,
-                      child: ElevatedButton(
-                        onPressed: () => _accept(req),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF6366f1),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                          elevation: 0,
-                          textStyle: GoogleFonts.outfit(fontWeight: FontWeight.w600, fontSize: 13),
-                        ),
-                        child: const Text('Accept'),
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    SizedBox(
-                      width: 80,
-                      child: OutlinedButton(
-                        onPressed: () => _reject(req),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: _subtitleColor,
-                          side: BorderSide(color: _cardBorder),
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                          textStyle: GoogleFonts.outfit(fontSize: 13),
-                        ),
-                        child: const Text('Reject'),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            if (req.requesterTags.isNotEmpty) ...[
-              const SizedBox(height: 12),
-              Divider(color: _cardBorder, height: 1),
-              const SizedBox(height: 10),
-              Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                children: req.requesterTags.map((t) {
-                  final isLoc = t.type == 'location';
-                  return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
+            ],
+          ),
+          const SizedBox(height: 12),
+          // Stats row
+          Row(
+            children: [
+              _buildRequestStat('💎', req.requesterDiamonds, Colors.amber),
+              const SizedBox(width: 12),
+              _buildRequestStat('👥', '${req.requesterConnectionCount}', Colors.teal),
+              const SizedBox(width: 12),
+              _buildRequestStat('⚡', '${req.requesterTapCount}', Colors.purple),
+            ],
+          ),
+          if (req.requesterTags.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              children: req.requesterTags.map((t) {
+                final isLoc = t.type == 'location';
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: isLoc
+                        ? const Color(0xFF10b981).withValues(alpha: 0.06)
+                        : const Color(0xFF0052FF).withValues(alpha: 0.06),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
                       color: isLoc
-                          ? const Color(0xFF10b981).withValues(alpha: 0.08)
-                          : const Color(0xFF6366f1).withValues(alpha: 0.08),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: isLoc
-                            ? const Color(0xFF10b981).withValues(alpha: 0.2)
-                            : const Color(0xFF6366f1).withValues(alpha: 0.2),
-                      ),
+                          ? const Color(0xFF10b981).withValues(alpha: 0.15)
+                          : const Color(0xFF0052FF).withValues(alpha: 0.15),
                     ),
-                    child: Text(
-                      '${isLoc ? '📍' : '⚙️'} ${t.text}',
-                      style: GoogleFonts.outfit(fontSize: 11, color: _subtitleColor),
-                    ),
-                  );
-                }).toList(),
+                  ),
+                  child: Text(
+                    '${isLoc ? '📍' : '⚙️'} ${t.text}',
+                    style: GoogleFonts.outfit(fontSize: 11, color: _subtitleColor),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () => _reject(req),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: _isLight ? const Color(0xFF4B5563) : Colors.white70,
+                    side: BorderSide(color: _cardBorder),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    textStyle: GoogleFonts.outfit(fontWeight: FontWeight.w600, fontSize: 13),
+                  ),
+                  child: const Text('Reject'),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () => _accept(req),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0052FF),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 0,
+                    textStyle: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13),
+                  ),
+                  child: const Text('Accept'),
+                ),
               ),
             ],
-          ],
-        ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRequestStat(String icon, String value, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(icon, style: const TextStyle(fontSize: 12)),
+          const SizedBox(width: 4),
+          Text(
+            value,
+            style: GoogleFonts.outfit(
+              color: _isLight ? color : color.withValues(alpha: 0.9),
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -347,18 +420,18 @@ class _ConnectionsScreenState extends State<ConnectionsScreen>
 
   Widget _buildConnectionsTab() {
     if (_loadingConnections) {
-      return const Center(child: CircularProgressIndicator(color: Color(0xFF6366F1)));
+      return const Center(child: CircularProgressIndicator(color: Color(0xFF0052FF)));
     }
     if (_connections.isEmpty) {
       return _emptyState(Icons.people_outline, 'No connections yet', 'Start connecting by sharing your Tapfolio link or NFC card.');
     }
     return RefreshIndicator(
-      color: const Color(0xFF6366F1),
+      color: const Color(0xFF0052FF),
       onRefresh: _refresh,
       child: ListView.separated(
         padding: const EdgeInsets.all(16),
         itemCount: _connections.length,
-        separatorBuilder: (_, _) => const SizedBox(height: 10),
+        separatorBuilder: (_, _) => const SizedBox(height: 12),
         itemBuilder: (_, i) => _buildConnectionCard(_connections[i]),
       ),
     );
@@ -367,41 +440,124 @@ class _ConnectionsScreenState extends State<ConnectionsScreen>
   Widget _buildConnectionCard(Connection conn) {
     final other = conn.other;
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
+    return GestureDetector(
+      onTap: () => _showConnectionDetail(conn),
       child: Container(
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: _cardBg,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(color: _cardBorder),
+          boxShadow: _isLight
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.015),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : null,
         ),
-        child: ListTile(
-          onTap: () => _showConnectionDetail(conn),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          leading: CircleAvatar(
-            radius: 26,
-            backgroundImage: getAvatarImage(other.avatar, _api.baseUrl),
-            backgroundColor: _cardBorder,
-          ),
-          title: Text(
-            other.name ?? 'Anonymous',
-            style: GoogleFonts.outfit(color: _textColor, fontWeight: FontWeight.w600),
-          ),
-          subtitle: Text(
-            other.tagline,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.outfit(color: _subtitleColor, fontSize: 12),
-          ),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (conn.via == 'nfc')
-                const Icon(Icons.nfc, size: 16, color: Color(0xFF6366F1)),
-              const SizedBox(width: 4),
-              Icon(Icons.chevron_right, color: _subtitleColor.withValues(alpha: 0.35)),
-            ],
-          ),
+        child: Row(
+          children: [
+            Stack(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: const Color(0xFF0052FF).withValues(alpha: 0.15),
+                      width: 1.5,
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(2.0),
+                    child: CircleAvatar(
+                      radius: 26,
+                      backgroundImage: getAvatarImage(other.avatar, _api.baseUrl),
+                      backgroundColor: _cardBorder,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    other.name ?? 'Anonymous',
+                    style: GoogleFonts.outfit(
+                      color: _textColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    other.tagline.isNotEmpty ? other.tagline : 'No tagline',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.outfit(
+                      color: _subtitleColor,
+                      fontSize: 12,
+                    ),
+                  ),
+                  if (other.tags.isNotEmpty) ...[
+                    const SizedBox(height: 6),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: other.tags.take(2).map((t) {
+                          final isLoc = t.type == 'location';
+                          return Container(
+                            margin: const EdgeInsets.only(right: 6),
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: isLoc
+                                  ? const Color(0xFF10b981).withValues(alpha: 0.06)
+                                  : const Color(0xFF0052FF).withValues(alpha: 0.06),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              t.text,
+                              style: GoogleFonts.outfit(
+                                fontSize: 9,
+                                fontWeight: FontWeight.bold,
+                                color: isLoc ? const Color(0xFF10b981) : const Color(0xFF0052FF),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (conn.via == 'nfc')
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0052FF).withValues(alpha: 0.06),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: const Icon(Icons.nfc, size: 14, color: Color(0xFF0052FF)),
+                  ),
+                const SizedBox(width: 8),
+                Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 14,
+                  color: _subtitleColor.withValues(alpha: 0.3),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
@@ -415,7 +571,7 @@ class _ConnectionsScreenState extends State<ConnectionsScreen>
       backgroundColor: Colors.transparent,
       builder: (_) => Container(
         decoration: BoxDecoration(
-          color: _isLight ? Colors.white : const Color(0xFF1a1a2e),
+          color: _isLight ? Colors.white : const Color(0xFF0F1122),
           borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         ),
         padding: const EdgeInsets.all(24),
@@ -531,13 +687,44 @@ class _ConnectionsScreenState extends State<ConnectionsScreen>
   }
 
   Widget _detailRow(IconData icon, String value, {bool isLink = false}) {
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: Icon(icon, color: const Color(0xFF6366F1), size: 20),
-      title: Text(value, style: GoogleFonts.outfit(color: _subtitleColor, fontSize: 14)),
+    return InkWell(
       onTap: isLink
           ? () => launchUrl(Uri.parse(value), mode: LaunchMode.externalApplication)
           : null,
+      borderRadius: BorderRadius.circular(10),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: const Color(0xFF0052FF).withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, color: const Color(0xFF0052FF), size: 18),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Text(
+                value,
+                style: GoogleFonts.outfit(
+                  color: _textColor,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  decoration: isLink ? TextDecoration.underline : null,
+                ),
+              ),
+            ),
+            if (isLink)
+              Icon(
+                Icons.open_in_new_rounded,
+                size: 14,
+                color: _subtitleColor.withValues(alpha: 0.4),
+              ),
+          ],
+        ),
+      ),
     );
   }
 

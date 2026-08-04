@@ -19,6 +19,7 @@ class Profile {
   final int tapCount;
   final List<Tag> tags;
   final List<SocialLink> socials;
+  final Map<String, dynamic>? theme;
 
   Profile({
     required this.id,
@@ -37,6 +38,7 @@ class Profile {
     required this.tapCount,
     required this.tags,
     required this.socials,
+    this.theme,
   }) {
     debugPrint('[PROFILE-CONSTRUCTOR-BODY] Successfully entered constructor body!');
   }
@@ -57,6 +59,7 @@ class Profile {
         tapCount: 0,
         tags: const [],
         socials: const [],
+        theme: null,
       );
     }
 
@@ -83,6 +86,7 @@ class Profile {
       tapCount: json['tapCount'] as int? ?? 0,
       tags: tagsList.map((i) => Tag.fromJson(i as Map<String, dynamic>?)).toList(),
       socials: socialsList.map((i) => SocialLink.fromJson(i as Map<String, dynamic>?)).toList(),
+      theme: json['theme'] as Map<String, dynamic>?,
     );
   }
 
@@ -104,6 +108,7 @@ class Profile {
       'tapCount': tapCount,
       'tags': tags.map((i) => i.toJson()).toList(),
       'socials': socials.map((i) => i.toJson()).toList(),
+      if (theme != null) 'theme': theme,
     };
   }
 }

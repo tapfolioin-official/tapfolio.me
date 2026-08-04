@@ -1,6 +1,12 @@
 class ApiEndpoints {
   static const String login = '/api/auth/login';
   static const String register = '/api/auth/register';
+  static const String sendOtp = '/api/auth/send-otp';
+  static const String resendOtp = '/api/auth/resend-otp';
+  static const String verifyOtp = '/api/auth/verify-otp';
+  static const String forgotSendOtp = '/api/auth/forgot-password/send-otp';
+  static const String forgotVerifyOtp = '/api/auth/forgot-password/verify-otp';
+  static const String forgotReset = '/api/auth/forgot-password/reset';
   static const String googleLogin = '/api/auth/google';
   static const String usernameCheck = '/api/auth/username-check';
   static const String onboarding = '/api/profile/onboarding';

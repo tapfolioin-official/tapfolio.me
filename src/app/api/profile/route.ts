@@ -24,7 +24,10 @@ export async function GET(request: Request) {
             select: {
               profileReady: true,
               sharingSettings: true,
-              connectionCount: true
+              connectionCount: true,
+              profileThemes: {
+                where: { isDefault: true }
+              }
             }
           }
         }
@@ -40,7 +43,10 @@ export async function GET(request: Request) {
               email: true,
               profileReady: true,
               sharingSettings: true,
-              connectionCount: true
+              connectionCount: true,
+              profileThemes: {
+                where: { isDefault: true }
+              }
             }
           }
         }
@@ -65,7 +71,10 @@ export async function GET(request: Request) {
               email: true,
               profileReady: true,
               sharingSettings: true,
-              connectionCount: true
+              connectionCount: true,
+              profileThemes: {
+                where: { isDefault: true }
+              }
             }
           }
         }
@@ -108,6 +117,7 @@ export async function GET(request: Request) {
             tapCount: 0,
             tags: [],
             socials: [],
+            theme: null,
             user: {
               email: userObj.email,
               profileReady: userObj.profileReady,
@@ -154,7 +164,10 @@ export async function GET(request: Request) {
 
     return NextResponse.json({
       success: true,
-      profile,
+      profile: {
+        ...profile,
+        theme: profile.user?.profileThemes?.[0]?.settings || null,
+      },
       score: scoreData.score,
       items: scoreData.items,
       qualifiesForLeaderboard: scoreData.qualifiesForLeaderboard,

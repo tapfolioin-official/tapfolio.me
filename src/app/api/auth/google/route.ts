@@ -47,15 +47,14 @@ export async function POST(request: Request) {
       try {
         const JWKS = jose.createRemoteJWKSet(new URL('https://www.googleapis.com/oauth2/v3/certs'));
         const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-
-        if (!clientId) {
-          console.error('[AUTH] Google Sign-In Error: NEXT_PUBLIC_GOOGLE_CLIENT_ID environment variable is missing.');
-          return NextResponse.json({ error: 'Google Client ID is not configured on the server.' }, { status: 500 });
-        }
+        const iosClientId = '533947683458-f16dl0kle0is987gqoqum4255pqerhta.apps.googleusercontent.com';
+        
+        // Allow verification using either the backend custom config client ID, or the direct iOS client ID
+        const allowedAudiences = clientId ? [clientId, iosClientId] : [iosClientId];
 
         const { payload } = await jose.jwtVerify(idToken, JWKS, {
           issuer: ['accounts.google.com', 'https://accounts.google.com'],
-          audience: clientId,
+          audience: allowedAudiences,
         });
 
         if (payload.email_verified !== true) {

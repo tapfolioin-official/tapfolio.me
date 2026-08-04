@@ -1,9 +1,14 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../core/api/api_client.dart';
 import '../core/api/api_endpoints.dart';
 import '../core/storage/local_storage.dart';
+import '../core/storage/offline_cache.dart';
+import '../core/storage/cache_keys.dart';
+import '../core/utils/error_handler.dart';
 import '../models/user.dart';
 import '../models/profile.dart';
 import '../models/checklist_item.dart';
@@ -19,12 +24,39 @@ class ApiService {
 
   final ApiClient _apiClient = ApiClient();
   final LocalStorage _storage = LocalStorage();
+  final OfflineCache _cache = OfflineCache();
 
   String get baseUrl => _apiClient.baseUrl;
   bool get isAuthenticated => _storage.isAuthenticated;
 
   Future<void> init() async {
     await _storage.init();
+    await _cache.init();
+  }
+
+  /// Returns true if [error] is a network/connectivity issue (the kind
+  /// where we should fall back to cache) as opposed to an HTTP-level
+  /// error like 401/403/500 where we must NOT serve stale data.
+  bool _isNetworkError(dynamic error) {
+    if (error is SocketException) return true;
+    if (error is TimeoutException) return true;
+    if (error is HandshakeException) return true;
+    if (error is AppError) {
+      // AppError wraps SocketException / HttpException from the error handler
+      final details = error.technicalDetails ?? '';
+      return details.contains('SocketException') ||
+          details.contains('TimeoutException') ||
+          details.contains('HandshakeException') ||
+          details.contains('Connection failed') ||
+          details.contains('Connection refused');
+    }
+    // Catch-all for other connectivity-related exceptions
+    final msg = error.toString().toLowerCase();
+    return msg.contains('socketexception') ||
+        msg.contains('connection refused') ||
+        msg.contains('network is unreachable') ||
+        msg.contains('no address associated') ||
+        msg.contains('failed host lookup');
   }
 
   Future<Map<String, dynamic>> login(String email, String password) async {
@@ -70,6 +102,114 @@ class ApiService {
         return {'success': true, 'user': data['user']};
       }
       return {'success': false, 'error': data?['error'] ?? 'Registration failed.'};
+    } catch (e) {
+      return {'success': false, 'error': e.toString()};
+    }
+  }
+
+  Future<Map<String, dynamic>> sendOtp(String email) async {
+    try {
+      final response = await _apiClient.sendRequest(
+        'POST',
+        ApiEndpoints.sendOtp,
+        authenticated: false,
+        body: jsonEncode({'email': email}),
+      );
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 && data != null && data['success'] == true) {
+        return {'success': true, 'message': data['message']};
+      }
+      return {'success': false, 'error': data?['error'] ?? 'Failed to send OTP.'};
+    } catch (e) {
+      return {'success': false, 'error': e.toString()};
+    }
+  }
+
+  Future<Map<String, dynamic>> resendOtp(String email) async {
+    try {
+      final response = await _apiClient.sendRequest(
+        'POST',
+        ApiEndpoints.resendOtp,
+        authenticated: false,
+        body: jsonEncode({'email': email}),
+      );
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 && data != null && data['success'] == true) {
+        return {'success': true, 'message': data['message']};
+      }
+      return {'success': false, 'error': data?['error'] ?? 'Failed to resend OTP.'};
+    } catch (e) {
+      return {'success': false, 'error': e.toString()};
+    }
+  }
+
+  Future<Map<String, dynamic>> verifyOtp(String email, String otp) async {
+    try {
+      final response = await _apiClient.sendRequest(
+        'POST',
+        ApiEndpoints.verifyOtp,
+        authenticated: false,
+        body: jsonEncode({'email': email, 'otp': otp}),
+      );
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 && data != null && data['success'] == true) {
+        return {'success': true, 'message': data['message']};
+      }
+      return {'success': false, 'error': data?['error'] ?? 'Verification failed.'};
+    } catch (e) {
+      return {'success': false, 'error': e.toString()};
+    }
+  }
+
+  Future<Map<String, dynamic>> forgotSendOtp(String email) async {
+    try {
+      final response = await _apiClient.sendRequest(
+        'POST',
+        ApiEndpoints.forgotSendOtp,
+        authenticated: false,
+        body: jsonEncode({'email': email}),
+      );
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 && data != null && data['success'] == true) {
+        return {'success': true, 'message': data['message']};
+      }
+      return {'success': false, 'error': data?['error'] ?? 'Failed to send OTP.'};
+    } catch (e) {
+      return {'success': false, 'error': e.toString()};
+    }
+  }
+
+  Future<Map<String, dynamic>> forgotVerifyOtp(String email, String otp) async {
+    try {
+      final response = await _apiClient.sendRequest(
+        'POST',
+        ApiEndpoints.forgotVerifyOtp,
+        authenticated: false,
+        body: jsonEncode({'email': email, 'otp': otp}),
+      );
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 && data != null && data['success'] == true) {
+        return {'success': true, 'message': data['message']};
+      }
+      return {'success': false, 'error': data?['error'] ?? 'Verification failed.'};
+    } catch (e) {
+      return {'success': false, 'error': e.toString()};
+    }
+  }
+
+  Future<Map<String, dynamic>> forgotReset(String email, String password) async {
+    try {
+      final response = await _apiClient.sendRequest(
+        'POST',
+        ApiEndpoints.forgotReset,
+        authenticated: false,
+        body: jsonEncode({'email': email, 'password': password}),
+      );
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200 && data != null && data['success'] == true) {
+        return {'success': true, 'message': data['message']};
+      }
+      return {'success': false, 'error': data?['error'] ?? 'Reset failed.'};
     } catch (e) {
       return {'success': false, 'error': e.toString()};
     }
@@ -159,6 +299,7 @@ class ApiService {
       }
     } catch (_) {}
     await _storage.clearJwtToken();
+    await _cache.clearAll();
   }
 
   Future<User?> getMe() async {
@@ -167,16 +308,32 @@ class ApiService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data != null && data['success'] == true && data['user'] != null) {
+          // Cache the raw user JSON on success
+          await _cache.saveJson(CacheKeys.me, data['user']);
           return User.fromJson(data['user'] as Map<String, dynamic>?);
         }
       }
+      // Non-200 (e.g. 401) — do NOT serve stale cache
+      if (response.statusCode == 401) {
+        await _cache.clear(CacheKeys.me);
+      }
     } catch (e, stackTrace) {
       debugPrint('[EXCEPTION] getMe error: $e\n$stackTrace');
+      // Fall back to cache only on network errors
+      if (_isNetworkError(e)) {
+        final cached = _cache.loadJson(CacheKeys.me);
+        if (cached != null) {
+          debugPrint('[OFFLINE-CACHE] Returning cached user (getMe)');
+          return User.fromJson(cached as Map<String, dynamic>?);
+        }
+      }
     }
     return null;
   }
 
   Future<Map<String, dynamic>?> getProfile({int? userId, int? profileId}) async {
+    // Only cache the user's own profile (no userId/profileId params)
+    final isOwnProfile = userId == null && profileId == null;
     try {
       String query = '';
       if (userId != null) {
@@ -189,6 +346,16 @@ class ApiService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data != null && data['success'] == true) {
+          // Cache the raw response payload for own profile
+          if (isOwnProfile) {
+            await _cache.saveJson(CacheKeys.profile, {
+              'profile': data['profile'],
+              'score': data['score'],
+              'qualifiesForLeaderboard': data['qualifiesForLeaderboard'],
+              'items': data['items'],
+            });
+          }
+
           final profile = Profile.fromJson(data['profile'] as Map<String, dynamic>?);
           final score = data['score'] as int? ?? 0;
           final qualifies = data['qualifiesForLeaderboard'] as bool? ?? false;
@@ -205,6 +372,24 @@ class ApiService {
       }
     } catch (e, stackTrace) {
       debugPrint('[EXCEPTION] getProfile error: $e\n$stackTrace');
+      if (_isNetworkError(e) && isOwnProfile) {
+        final cached = _cache.loadJson(CacheKeys.profile);
+        if (cached != null) {
+          debugPrint('[OFFLINE-CACHE] Returning cached profile');
+          final c = cached as Map<String, dynamic>;
+          final profile = Profile.fromJson(c['profile'] as Map<String, dynamic>?);
+          final score = c['score'] as int? ?? 0;
+          final qualifies = c['qualifiesForLeaderboard'] as bool? ?? false;
+          final itemsList = c['items'] as List? ?? [];
+          final checklist = itemsList.map((i) => ChecklistItem.fromJson(i as Map<String, dynamic>?)).toList();
+          return {
+            'profile': profile,
+            'score': score,
+            'qualifiesForLeaderboard': qualifies,
+            'checklist': checklist,
+          };
+        }
+      }
     }
     return null;
   }
@@ -303,11 +488,20 @@ class ApiService {
         final data = jsonDecode(response.body);
         if (data != null && data['success'] == true) {
           final list = data['events'] as List? ?? [];
+          await _cache.saveJson(CacheKeys.history, list);
           return list.map((h) => HistoryEvent.fromJson(h as Map<String, dynamic>?)).toList();
         }
       }
     } catch (e, stackTrace) {
       debugPrint('[EXCEPTION] getHistory error: $e\n$stackTrace');
+      if (_isNetworkError(e)) {
+        final cached = _cache.loadJson(CacheKeys.history);
+        if (cached != null) {
+          debugPrint('[OFFLINE-CACHE] Returning cached history');
+          final list = cached as List;
+          return list.map((h) => HistoryEvent.fromJson(h as Map<String, dynamic>?)).toList();
+        }
+      }
     }
     return [];
   }
@@ -319,11 +513,20 @@ class ApiService {
         final data = jsonDecode(response.body);
         if (data != null && data['success'] == true) {
           final list = data['leaderboard'] as List? ?? [];
+          await _cache.saveJson(CacheKeys.leaderboard, list);
           return list.map((p) => Profile.fromJson(p as Map<String, dynamic>?)).toList();
         }
       }
     } catch (e, stackTrace) {
       debugPrint('[EXCEPTION] getLeaderboard error: $e\n$stackTrace');
+      if (_isNetworkError(e)) {
+        final cached = _cache.loadJson(CacheKeys.leaderboard);
+        if (cached != null) {
+          debugPrint('[OFFLINE-CACHE] Returning cached leaderboard');
+          final list = cached as List;
+          return list.map((p) => Profile.fromJson(p as Map<String, dynamic>?)).toList();
+        }
+      }
     }
     return [];
   }
@@ -405,10 +608,20 @@ class ApiService {
         final data = jsonDecode(response.body);
         if (data != null && data['success'] == true) {
           final list = data['requests'] as List? ?? [];
+          await _cache.saveJson(CacheKeys.pendingRequests, list);
           return list.map((i) => PendingRequest.fromJson(i as Map<String, dynamic>?)).toList();
         }
       }
-    } catch (_) {}
+    } catch (e) {
+      if (_isNetworkError(e)) {
+        final cached = _cache.loadJson(CacheKeys.pendingRequests);
+        if (cached != null) {
+          debugPrint('[OFFLINE-CACHE] Returning cached pending requests');
+          final list = cached as List;
+          return list.map((i) => PendingRequest.fromJson(i as Map<String, dynamic>?)).toList();
+        }
+      }
+    }
     return [];
   }
 
@@ -458,10 +671,20 @@ class ApiService {
         final data = jsonDecode(response.body);
         if (data != null && data['success'] == true) {
           final list = data['connections'] as List? ?? [];
+          await _cache.saveJson(CacheKeys.connections, list);
           return list.map((c) => Connection.fromJson(c as Map<String, dynamic>?)).toList();
         }
       }
-    } catch (_) {}
+    } catch (e) {
+      if (_isNetworkError(e)) {
+        final cached = _cache.loadJson(CacheKeys.connections);
+        if (cached != null) {
+          debugPrint('[OFFLINE-CACHE] Returning cached connections');
+          final list = cached as List;
+          return list.map((c) => Connection.fromJson(c as Map<String, dynamic>?)).toList();
+        }
+      }
+    }
     return [];
   }
 
@@ -471,10 +694,19 @@ class ApiService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data != null && data['success'] == true) {
+          await _cache.saveJson(CacheKeys.sharingSettings, data['settings']);
           return ConnectionPermissionData.fromJson(data['settings'] as Map<String, dynamic>?);
         }
       }
-    } catch (_) {}
+    } catch (e) {
+      if (_isNetworkError(e)) {
+        final cached = _cache.loadJson(CacheKeys.sharingSettings);
+        if (cached != null) {
+          debugPrint('[OFFLINE-CACHE] Returning cached sharing settings');
+          return ConnectionPermissionData.fromJson(cached as Map<String, dynamic>?);
+        }
+      }
+    }
     return null;
   }
 
@@ -488,6 +720,8 @@ class ApiService {
 
       final data = jsonDecode(response.body);
       if (response.statusCode == 200 && data != null && data['success'] == true) {
+        // Update cache with newly saved settings
+        await _cache.saveJson(CacheKeys.sharingSettings, data['settings']);
         return {
           'success': true,
           'settings': ConnectionPermissionData.fromJson(data['settings'] as Map<String, dynamic>?),
@@ -546,10 +780,23 @@ class ApiService {
         final data = jsonDecode(response.body);
         if (data != null && data['success'] == true && data['notifications'] != null) {
           final list = data['notifications'] as List? ?? [];
+          // Only cache the full (non-filtered) notification list
+          if (!unreadOnly) {
+            await _cache.saveJson(CacheKeys.notifications, list);
+          }
           return list.map((n) => AppNotification.fromJson(n as Map<String, dynamic>)).toList();
         }
       }
-    } catch (_) {}
+    } catch (e) {
+      if (_isNetworkError(e)) {
+        final cached = _cache.loadJson(CacheKeys.notifications);
+        if (cached != null) {
+          debugPrint('[OFFLINE-CACHE] Returning cached notifications');
+          final list = cached as List;
+          return list.map((n) => AppNotification.fromJson(n as Map<String, dynamic>)).toList();
+        }
+      }
+    }
     return [];
   }
 
@@ -559,10 +806,20 @@ class ApiService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data != null && data['success'] == true && data['count'] != null) {
-          return data['count'] as int? ?? 0;
+          final count = data['count'] as int? ?? 0;
+          await _cache.saveJson(CacheKeys.unreadCount, count);
+          return count;
         }
       }
-    } catch (_) {}
+    } catch (e) {
+      if (_isNetworkError(e)) {
+        final cached = _cache.loadJson(CacheKeys.unreadCount);
+        if (cached != null) {
+          debugPrint('[OFFLINE-CACHE] Returning cached unread count');
+          return cached as int;
+        }
+      }
+    }
     return 0;
   }
 
@@ -612,10 +869,18 @@ class ApiService {
       final response = await _apiClient.sendRequest('GET', ApiEndpoints.theme);
       final data = jsonDecode(response.body);
       if (response.statusCode == 200 && data != null && data['success'] == true) {
+        await _cache.saveJson(CacheKeys.theme, data['theme']);
         return {'success': true, 'theme': data['theme']};
       }
       return {'success': false, 'error': data?['error'] ?? 'Failed to load theme.'};
     } catch (e) {
+      if (_isNetworkError(e)) {
+        final cached = _cache.loadJson(CacheKeys.theme);
+        if (cached != null) {
+          debugPrint('[OFFLINE-CACHE] Returning cached theme');
+          return {'success': true, 'theme': cached};
+        }
+      }
       return {'success': false, 'error': e.toString()};
     }
   }
