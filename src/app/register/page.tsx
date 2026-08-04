@@ -159,7 +159,10 @@ export default function RegisterPage() {
     router.refresh();
   };
 
-  const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+  const GOOGLE_WEB_CLIENT_ID = '533947683458-3tn9eggu70uob8pv4g1kj7kj4j3rjilk.apps.googleusercontent.com';
+  const googleClientId = (process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID && process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID.includes('3tn9eggu'))
+    ? process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
+    : GOOGLE_WEB_CLIENT_ID;
 
   const handleCredentialResponse = async (response: any) => {
     setLoading(true);
