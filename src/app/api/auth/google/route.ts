@@ -46,19 +46,19 @@ export async function POST(request: Request) {
     } else if (idToken) {
       try {
         const JWKS = jose.createRemoteJWKSet(new URL('https://www.googleapis.com/oauth2/v3/certs'));
-        const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-        const webClientId = '533947683458-3tn9eggu70uob8pv4g1kj7kj4j3rjilk.apps.googleusercontent.com';
-        const iosClientId = '533947683458-f16dl0kle0is987gqoqum4255pqerhta.apps.googleusercontent.com';
-        const androidReleaseClientId = '533947683458-nvpu2vo3v4aiokejavlkpa0aettdhm1s.apps.googleusercontent.com';
-        const androidDebugClientId = '533947683458-omcg95pfltc2n27lnom8l2fmp4of8hkc.apps.googleusercontent.com';
         
-        const allowedAudiences = Array.from(new Set([
-          process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-          webClientId,
-          iosClientId,
-          androidReleaseClientId,
-          androidDebugClientId,
-        ].filter(Boolean) as string[]));
+        // Allowed audiences: driven by environment variables only.
+        // Set these in .env / Vercel env vars — do not hardcode Client IDs here.
+        const allowedAudiences = [
+          process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,        // Web OAuth Client ID
+          process.env.GOOGLE_IOS_CLIENT_ID,                // iOS OAuth Client ID (optional)
+          process.env.GOOGLE_ANDROID_CLIENT_ID,            // Android OAuth Client ID (optional)
+        ].filter(Boolean) as string[];
+
+        if (allowedAudiences.length === 0) {
+          console.error('[AUTH] No Google OAuth Client IDs configured. Set NEXT_PUBLIC_GOOGLE_CLIENT_ID in env vars.');
+          return NextResponse.json({ error: 'Google Sign-In is not configured.' }, { status: 500 });
+        }
 
         const { payload } = await jose.jwtVerify(idToken, JWKS, {
           issuer: ['accounts.google.com', 'https://accounts.google.com'],
