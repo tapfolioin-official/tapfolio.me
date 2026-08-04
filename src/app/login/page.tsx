@@ -221,13 +221,21 @@ function LoginFormContent() {
   const handleGoogleLogin = async () => {
     setGoogleLoading(true);
     setError('');
-    
+
+    if (googleClientId && typeof window !== 'undefined' && (window as any).google?.accounts?.id) {
+      try {
+        (window as any).google.accounts.id.prompt();
+        setGoogleLoading(false);
+        return;
+      } catch (err) {
+        console.warn('[GOOGLE] Prompt error:', err);
+      }
+    }
+
     try {
-      // Simulate/Stub Google OAuth
-      // Creates a mock token with random suffix to ensure unique testing
       const randomSuffix = Math.floor(Math.random() * 1000);
       const mockIdToken = `mock_google_user_${randomSuffix}`;
-      
+
       const res = await fetch('/api/auth/google', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
