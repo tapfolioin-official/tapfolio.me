@@ -96,10 +96,10 @@ export default function Navbar() {
           Order
         </button>
         <a
-          href="/docs"
+          href="/blog"
           className="text-blue-600 hover:text-blue-800 font-semibold transition-colors cursor-pointer"
         >
-          Docs
+          Blog
         </a>
       </div>
 

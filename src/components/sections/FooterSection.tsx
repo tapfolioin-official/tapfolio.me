@@ -32,7 +32,7 @@ export default function FooterSection() {
               <li><a href="/#technology" className="hover:text-blue-600 transition-colors">Profile Builder</a></li>
               <li><a href="/#technology" className="hover:text-blue-600 transition-colors">Analytics Dashboard</a></li>
               <li><a href="/#technology" className="hover:text-blue-600 transition-colors">Lead Capture</a></li>
-              <li><a href="/docs" className="hover:text-blue-600 transition-colors font-semibold text-blue-600">Developer API Docs</a></li>
+              <li><a href="/blog" className="hover:text-blue-600 transition-colors font-semibold text-blue-600">Blog & Articles</a></li>
             </ul>
           </div>
 
