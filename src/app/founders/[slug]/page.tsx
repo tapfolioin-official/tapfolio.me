@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import Navbar from "../_components/Navbar";
 import Footer from "../_components/Footer";
 import AvatarImage from "../_components/AvatarImage";
-import { foundersData } from "../_data/founders";
+import { foundersData, getFounderBySlug } from "../_data/founders";
 import {
   getPersonEntitySchema,
   getProfilePageSchema,
@@ -20,14 +20,18 @@ interface FounderPageProps {
 }
 
 export async function generateStaticParams() {
-  return Object.keys(foundersData).map((slug) => ({
-    slug,
-  }));
+  return [
+    { slug: "abhinand" },
+    { slug: "mohammed-nibrasul-haqq" },
+    { slug: "nibras" },
+    { slug: "nibrasulhaqq" },
+    { slug: "abhinand-ks" }
+  ];
 }
 
 export async function generateMetadata({ params }: FounderPageProps): Promise<Metadata> {
   const resolvedParams = await params;
-  const founder = foundersData[resolvedParams.slug];
+  const founder = getFounderBySlug(resolvedParams.slug);
 
   if (!founder) {
     return {
@@ -82,7 +86,7 @@ export async function generateMetadata({ params }: FounderPageProps): Promise<Me
 
 export default async function FounderProfilePage({ params }: FounderPageProps) {
   const resolvedParams = await params;
-  const founder = foundersData[resolvedParams.slug];
+  const founder = getFounderBySlug(resolvedParams.slug);
 
   if (!founder) {
     notFound();

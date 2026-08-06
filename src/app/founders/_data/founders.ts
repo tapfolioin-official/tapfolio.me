@@ -585,3 +585,23 @@ export const foundersData: Record<string, FounderProfile> = {
     ]
   }
 };
+
+const slugAliasMap: Record<string, string> = {
+  "abhinand": "abhinand",
+  "abhinand-ks": "abhinand",
+  "abhinand-k-s": "abhinand",
+  "abhinand_ks": "abhinand",
+  "mohammed-nibrasul-haqq": "mohammed-nibrasul-haqq",
+  "nibras": "mohammed-nibrasul-haqq",
+  "nibrasulhaqq": "mohammed-nibrasul-haqq",
+  "nibrasul-haqq": "mohammed-nibrasul-haqq",
+  "mohammed-nibras": "mohammed-nibrasul-haqq"
+};
+
+export function getFounderBySlug(slug: string): FounderProfile | undefined {
+  if (!slug) return undefined;
+  const normalized = slug.toLowerCase().trim();
+  const targetKey = slugAliasMap[normalized] || normalized;
+  return foundersData[targetKey];
+}
+
