@@ -484,7 +484,6 @@ class _ProfileDetailsSettingsScreenState extends State<ProfileDetailsSettingsScr
 
   late Profile _profile;
   bool _saving = false;
-  String _tagType = 'skill';
 
   bool get _isLight => Theme.of(context).brightness == Brightness.light;
   Color get _textColor => _isLight ? const Color(0xFF1F2937) : Colors.white;
@@ -611,11 +610,11 @@ class _ProfileDetailsSettingsScreenState extends State<ProfileDetailsSettingsScr
     if (text.isEmpty) return;
 
     final updatedTags = List<Tag>.from(_profile.tags);
-    if (updatedTags.any((t) => t.text.toLowerCase() == text.toLowerCase() && t.type == _tagType)) {
+    if (updatedTags.any((t) => t.text.toLowerCase() == text.toLowerCase())) {
       return;
     }
 
-    updatedTags.add(Tag(text: text, type: _tagType));
+    updatedTags.add(Tag(text: text, type: 'skill'));
 
     setState(() => _saving = true);
 
@@ -812,14 +811,13 @@ class _ProfileDetailsSettingsScreenState extends State<ProfileDetailsSettingsScr
             _buildGlassCard(
               children: [
                 Text(
-                  'Skills & Location Tags',
+                  'Profile Skills & Tags',
                   style: GoogleFonts.outfit(color: _textColor, fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
                 Row(
                   children: [
                     Expanded(
-                      flex: 3,
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12),
                         decoration: BoxDecoration(
@@ -831,36 +829,11 @@ class _ProfileDetailsSettingsScreenState extends State<ProfileDetailsSettingsScr
                           controller: _tagController,
                           style: GoogleFonts.outfit(color: _textColor),
                           decoration: InputDecoration(
-                            hintText: 'e.g. Next.js, Kochi',
+                            hintText: 'e.g. Next.js, UI/UX Designer',
                             hintStyle: TextStyle(color: _hintColor, fontSize: 13),
                             border: InputBorder.none,
                           ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      flex: 2,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        decoration: BoxDecoration(
-                          color: _inputBg,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: _inputBorder),
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                            dropdownColor: _cardBg,
-                            value: _tagType,
-                            style: GoogleFonts.outfit(color: _textColor, fontSize: 13, fontWeight: FontWeight.w600),
-                            onChanged: (String? val) {
-                              if (val != null) setState(() => _tagType = val);
-                            },
-                            items: const [
-                              DropdownMenuItem(value: 'skill', child: Text('Skill')),
-                              DropdownMenuItem(value: 'location', child: Text('Location')),
-                            ],
-                          ),
+                          onSubmitted: (_) => _addTag(),
                         ),
                       ),
                     ),

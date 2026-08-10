@@ -58,7 +58,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   // Tags states
   final _tagController = TextEditingController();
-  String _tagType = 'role';
 
   // Socials states
   String _socialPlatform = 'GitHub';
@@ -440,12 +439,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     final updatedTags = List<Tag>.from(_profile!.tags);
     if (updatedTags.any(
-      (t) => t.text.toLowerCase() == text.toLowerCase() && t.type == _tagType,
+      (t) => t.text.toLowerCase() == text.toLowerCase(),
     )) {
       return;
     }
 
-    updatedTags.add(Tag(text: text, type: _tagType));
+    updatedTags.add(Tag(text: text, type: 'role'));
 
     setState(() {
       _saving = true;
@@ -1826,7 +1825,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         _buildGlassCard(
           children: [
             Text(
-              'Skills & Location Tags',
+              'Profile Skills & Tags',
               style: GoogleFonts.outfit(
                 color: _textColor,
                 fontSize: 18,
@@ -1847,7 +1846,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       controller: _tagController,
                       style: GoogleFonts.outfit(color: _textColor),
                       decoration: InputDecoration(
-                        hintText: 'Tag name',
+                        hintText: 'e.g. Next.js, UI/UX Designer',
                         hintStyle: TextStyle(color: _hintColor),
                         border: InputBorder.none,
                         contentPadding: const EdgeInsets.symmetric(
@@ -1855,39 +1854,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           vertical: 10,
                         ),
                       ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  decoration: BoxDecoration(
-                    color: _inputBg,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: _inputBorder),
-                  ),
-                  child: DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
-                      dropdownColor: _dropdownBg,
-                      value: _tagType,
-                      style: GoogleFonts.outfit(color: _textColor),
-                      onChanged: (String? newVal) {
-                        if (newVal != null) {
-                          setState(() {
-                            _tagType = newVal;
-                          });
-                        }
-                      },
-                      items: const [
-                        DropdownMenuItem(
-                          value: 'role',
-                          child: Text('Role/Skill'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'location',
-                          child: Text('Location'),
-                        ),
-                      ],
+                      onSubmitted: (_) => _addTag(),
                     ),
                   ),
                 ),
