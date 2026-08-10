@@ -70,7 +70,7 @@ export default function SupportPage() {
             <span className="text-4xl">✉️</span>
             <h3 className="font-bold text-white text-lg">Email Support</h3>
             <p className="text-xs text-slate-400 leading-relaxed max-w-xs">Our engineering and billing support teams respond to inquiries within 12-24 business hours.</p>
-            <a href="mailto:hello@tapfolio.me" className="text-blue-400 font-bold hover:underline mt-2">hello@tapfolio.me →</a>
+            <a href="mailto:tapfolio.in@gmail.com" className="text-blue-400 font-bold hover:underline mt-2">tapfolio.in@gmail.com →</a>
           </div>
           <div className="border border-slate-800 bg-slate-900/20 rounded-3xl p-8 flex flex-col gap-4 items-center text-center">
             <span className="text-4xl">📄</span>

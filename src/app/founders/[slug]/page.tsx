@@ -680,7 +680,7 @@ export default async function FounderProfilePage({ params }: FounderPageProps) {
               GitHub ↗
             </a>
             <a
-              href={`mailto:${founder.email || "hello@tapfolio.me"}`}
+              href={`mailto:${founder.email || "tapfolio.in@gmail.com"}`}
               className="bg-gray-900 hover:bg-gray-800 text-white font-semibold text-xs px-5 py-3 rounded-full transition-all"
             >
               Contact {founder.name.split(" ")[0]}

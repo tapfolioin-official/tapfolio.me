@@ -529,8 +529,8 @@ export default function AboutPage() {
               </svg>
             </div>
             <h3 className="font-bold text-gray-900">Email</h3>
-            <a href="mailto:hello@tapfolio.me" className="text-blue-600 hover:underline">
-              hello@tapfolio.me
+            <a href="mailto:tapfolio.in@gmail.com" className="text-blue-600 hover:underline">
+              tapfolio.in@gmail.com
             </a>
           </div>
           <div className="flex flex-col items-center text-center">

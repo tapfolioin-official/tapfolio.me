@@ -12,7 +12,7 @@ export default function FooterSection() {
               The smartest business card on the planet. Eco-friendly, always updated, and designed for modern professionals.
             </p>
             <div className="text-gray-900 font-medium text-sm">
-              hello@tapfolio.me
+              tapfolio.in@gmail.com
             </div>
           </div>
           

@@ -95,7 +95,7 @@ export default function MediaKitSection() {
                 Download Official Portrait (PNG) ↓
               </a>
               <a
-                href="mailto:hello@tapfolio.me?subject=Media/Speaking%20Inquiry%20-%20Mohammed%20Nibrasul%20Haqq"
+                href="mailto:tapfolio.in@gmail.com?subject=Media/Speaking%20Inquiry%20-%20Mohammed%20Nibrasul%20Haqq"
                 className="bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-5 py-3 rounded-full transition-all border border-white/15"
               >
                 Inquire for Speaking / Press →

@@ -73,7 +73,7 @@ const orgJsonLd = {
   "foundingDate": "2026",
   "contactPoint": {
     "@type": "ContactPoint",
-    "email": "hello@tapfolio.me",
+    "email": "tapfolio.in@gmail.com",
     "contactType": "customer support"
   },
   "founders": [

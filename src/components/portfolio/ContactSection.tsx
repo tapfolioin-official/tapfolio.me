@@ -17,7 +17,7 @@ export default function ContactSection() {
 
   const handleCopyEmail = async () => {
     try {
-      await navigator.clipboard.writeText("hello@tapfolio.me");
+      await navigator.clipboard.writeText("tapfolio.in@gmail.com");
       setCopied(true);
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       timeoutRef.current = setTimeout(() => setCopied(false), 2500);
@@ -102,10 +102,10 @@ export default function ContactSection() {
           {/* Action CTAs */}
           <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
             <a
-              href="mailto:hello@tapfolio.me"
+              href="mailto:tapfolio.in@gmail.com"
               className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-space-grotesk font-bold rounded-full text-xs uppercase tracking-widest transition-all shadow-lg shadow-blue-600/25 hover:scale-105"
             >
-              Send Email (hello@tapfolio.me) →
+              Send Email (tapfolio.in@gmail.com) →
             </a>
 
             <button
@@ -116,7 +116,7 @@ export default function ContactSection() {
             </button>
 
             <a
-              href="mailto:hello@tapfolio.me?subject=Schedule%20a%20Meeting%20Request"
+              href="mailto:tapfolio.in@gmail.com?subject=Schedule%20a%20Meeting%20Request"
               className="px-6 py-4 bg-purple-950/60 hover:bg-purple-900/80 text-purple-300 font-space-grotesk font-semibold rounded-full text-xs uppercase tracking-widest transition-all border border-purple-500/30 hover:scale-105"
             >
               Schedule a Meeting 📅

@@ -72,7 +72,7 @@ export default function RefundPage() {
 
             <h2 className="text-white font-bold text-lg pt-2">2. Hardware Defect & Replacement Warranty</h2>
             <p>
-              Every Tapfolio card includes a **lifetime warranty** against microchip failures. If your card's internal NFC tag stops scanning or fails to operate under normal usage parameters, contact us at <a href="mailto:hello@tapfolio.me" className="text-blue-400 hover:underline">hello@tapfolio.me</a>. We will ship a replacement card of the same tier for free.
+              Every Tapfolio card includes a **lifetime warranty** against microchip failures. If your card's internal NFC tag stops scanning or fails to operate under normal usage parameters, contact us at <a href="mailto:tapfolio.in@gmail.com" className="text-blue-400 hover:underline">tapfolio.in@gmail.com</a>. We will ship a replacement card of the same tier for free.
             </p>
 
             <h2 className="text-white font-bold text-lg pt-2">3. Shipping Discrepancies</h2>
