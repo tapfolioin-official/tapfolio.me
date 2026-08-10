@@ -19,7 +19,7 @@ export const PRODUCTS: Record<string, Product> = {
     slug: "classic-nfc-card",
     name: "Tapfolio Classic NFC Card",
     description: "Premium matte-finished recycled polymer card with dynamic NFC capabilities and a custom QR code override. A durable and lightweight standard profile card built for daily networking.",
-    price: "$29",
+    price: "₹1,000",
     category: "PVC Cards",
     variants: [
       { name: "Matte Black", hex: "#111" },
@@ -55,7 +55,7 @@ export const PRODUCTS: Record<string, Product> = {
     slug: "premium-nfc-card",
     name: "Tapfolio Premium NFC Card",
     description: "Laser-engraved card with custom branding options, optimized for agency owners and independent professionals seeking a premium touch.",
-    price: "$39",
+    price: "₹1,500",
     category: "PVC Cards",
     variants: [
       { name: "Slate Matte", hex: "#334155" },
@@ -87,7 +87,7 @@ export const PRODUCTS: Record<string, Product> = {
     slug: "black-edition",
     name: "Tapfolio Black Edition",
     description: "Anodized matte-black steel card with direct silver laser etching. Projects ultimate authority and corporate excellence.",
-    price: "$79",
+    price: "₹2,500",
     category: "Metal Cards",
     variants: [
       { name: "Matte Black Steel", hex: "#0f172a" }
@@ -118,7 +118,7 @@ export const PRODUCTS: Record<string, Product> = {
     slug: "metal-nfc-card",
     name: "Tapfolio Metal Card",
     description: "Sleek metallic steel smart card crafted from marine-grade stainless steel. Engineered for innovators who value structural longevity and visual elegance.",
-    price: "$89",
+    price: "₹2,500",
     category: "Metal Cards",
     variants: [
       { name: "Brushed Chrome", hex: "#94a3b8" },

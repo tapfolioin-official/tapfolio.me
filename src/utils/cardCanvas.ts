@@ -1,3 +1,27 @@
+export function isLightColorHex(color: string): boolean {
+  if (!color) return false;
+  const c = color.trim().toLowerCase();
+  if (c === "#ffffff" || c === "#f8f9fa" || c === "#fff" || c === "white" || c === "#e0e0e0" || c === "#f5f5f7") {
+    return true;
+  }
+  const cleanHex = c.replace("#", "");
+  let r = 0, g = 0, b = 0;
+  if (cleanHex.length === 3) {
+    r = parseInt(cleanHex[0] + cleanHex[0], 16);
+    g = parseInt(cleanHex[1] + cleanHex[1], 16);
+    b = parseInt(cleanHex[2] + cleanHex[2], 16);
+  } else if (cleanHex.length === 6) {
+    r = parseInt(cleanHex.substring(0, 2), 16);
+    g = parseInt(cleanHex.substring(2, 4), 16);
+    b = parseInt(cleanHex.substring(4, 6), 16);
+  } else {
+    return false;
+  }
+  // Standard perceptual luminance formula
+  const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+  return luminance > 165;
+}
+
 /**
  * Dynamically draws the card's front design on an HTML Canvas.
  */
@@ -16,6 +40,7 @@ export function drawCardFront(
 
   const w = canvas.width;
   const h = canvas.height;
+  const isLight = isLightColorHex(color);
 
   // 1. Draw Background
   ctx.clearRect(0, 0, w, h);
@@ -23,18 +48,18 @@ export function drawCardFront(
   if (material === "metal") {
     // Premium brushed metal gradient
     const grad = ctx.createLinearGradient(0, 0, w, h);
-    if (color === "#ffffff") {
-      grad.addColorStop(0, "#e0e0e0");
-      grad.addColorStop(0.5, "#f5f5f7");
-      grad.addColorStop(1, "#d1d1d6");
-    } else if (color === "#111111" || color === "#0a0a0a") {
+    if (isLight) {
+      grad.addColorStop(0, "#e5e7eb");
+      grad.addColorStop(0.5, "#f9fafb");
+      grad.addColorStop(1, "#d1d5db");
+    } else if (color === "#111111" || color === "#0a0a0a" || !color) {
       grad.addColorStop(0, "#1c1c1e");
       grad.addColorStop(0.5, "#2c2c2e");
       grad.addColorStop(1, "#111112");
     } else {
       // Metallic colored card
       grad.addColorStop(0, color);
-      grad.addColorStop(0.5, "#ffffffaa");
+      grad.addColorStop(0.5, "#ffffff66");
       grad.addColorStop(1, color);
     }
     ctx.fillStyle = grad;
@@ -42,7 +67,7 @@ export function drawCardFront(
 
     // Subtle brushed metal texture strokes
     if (finish === "brushed") {
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
+      ctx.strokeStyle = isLight ? "rgba(0, 0, 0, 0.04)" : "rgba(255, 255, 255, 0.05)";
       ctx.lineWidth = 1;
       for (let i = 0; i < h; i += 2) {
         ctx.beginPath();
@@ -53,23 +78,23 @@ export function drawCardFront(
     }
   } else {
     // PVC solid background
-    ctx.fillStyle = color;
+    ctx.fillStyle = color || (isLight ? "#f8f9fa" : "#0a0a0a");
     ctx.fillRect(0, 0, w, h);
 
     // Subtle gloss reflections for glossy pvc
     if (finish === "glossy") {
       const grad = ctx.createLinearGradient(0, 0, w, h);
-      grad.addColorStop(0, "rgba(255, 255, 255, 0.06)");
+      grad.addColorStop(0, isLight ? "rgba(255, 255, 255, 0.4)" : "rgba(255, 255, 255, 0.08)");
       grad.addColorStop(0.3, "rgba(255, 255, 255, 0.0)");
       grad.addColorStop(0.7, "rgba(0, 0, 0, 0.0)");
-      grad.addColorStop(1, "rgba(0, 0, 0, 0.1)");
+      grad.addColorStop(1, isLight ? "rgba(0, 0, 0, 0.06)" : "rgba(0, 0, 0, 0.15)");
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, w, h);
     }
   }
 
-  // 2. Draw card border outline (thin metallic stroke)
-  ctx.strokeStyle = material === "metal" ? "rgba(255, 255, 255, 0.2)" : "rgba(255, 255, 255, 0.08)";
+  // 2. Draw card border outline
+  ctx.strokeStyle = isLight ? "rgba(0, 0, 0, 0.12)" : "rgba(255, 255, 255, 0.12)";
   ctx.lineWidth = 4;
   ctx.strokeRect(10, 10, w - 20, h - 20);
 
@@ -81,13 +106,13 @@ export function drawCardFront(
   
   // Chip Base (gold/silver)
   const chipGrad = ctx.createLinearGradient(chipX, chipY, chipX + chipW, chipY + chipH);
-  if (material === "metal" && color === "#ffffff") {
-    chipGrad.addColorStop(0, "#d1d1d6");
-    chipGrad.addColorStop(1, "#8e8e93");
+  if (material === "metal" && isLight) {
+    chipGrad.addColorStop(0, "#d1d5db");
+    chipGrad.addColorStop(1, "#9ca3af");
   } else {
-    chipGrad.addColorStop(0, "#ffe8a3");
-    chipGrad.addColorStop(0.5, "#d4af37");
-    chipGrad.addColorStop(1, "#aa7c11");
+    chipGrad.addColorStop(0, "#fde68a");
+    chipGrad.addColorStop(0.5, "#d97706");
+    chipGrad.addColorStop(1, "#92400e");
   }
   ctx.fillStyle = chipGrad;
   ctx.beginPath();
@@ -95,7 +120,7 @@ export function drawCardFront(
   ctx.fill();
 
   // Chip Wireframe lines
-  ctx.strokeStyle = "rgba(0, 0, 0, 0.35)";
+  ctx.strokeStyle = "rgba(0, 0, 0, 0.45)";
   ctx.lineWidth = 2;
   ctx.strokeRect(chipX + 10, chipY + 10, chipW - 20, chipH - 20);
   
@@ -115,10 +140,9 @@ export function drawCardFront(
     // Draw uploaded logo
     ctx.drawImage(logoImg, logoX, logoY, logoSize, logoSize);
   } else {
-    // Draw default abstract geometric "T" logo
-    ctx.fillStyle = color === "#ffffff" ? "#111111" : "#ffffff";
+    // Draw default abstract geometric "T." logo
+    ctx.fillStyle = isLight ? "#0a0a0a" : "#ffffff";
     ctx.beginPath();
-    // Beautiful dynamic logo shape (abstract overlapping polygons)
     ctx.moveTo(logoX + 10, logoY + 10);
     ctx.lineTo(logoX + 54, logoY + 10);
     ctx.lineTo(logoX + 54, logoY + 22);
@@ -130,39 +154,38 @@ export function drawCardFront(
     ctx.closePath();
     ctx.fill();
 
-    // Floating dot
-    ctx.fillStyle = "#FF3B30";
+    // Floating red dot
+    ctx.fillStyle = "#EF4444";
     ctx.beginPath();
     ctx.arc(logoX + 48, logoY + 48, 6, 0, Math.PI * 2);
     ctx.fill();
   }
 
   // 5. Draw Typography (Name, Role, Company)
-  const isDarkBg = color !== "#ffffff";
-  const textPrimary = isDarkBg ? "#FFFFFF" : "#111111";
-  const textSecondary = isDarkBg ? "rgba(255, 255, 255, 0.6)" : "rgba(17, 17, 17, 0.6)";
+  const textPrimary = isLight ? "#050505" : "#FFFFFF";
+  const textSecondary = isLight ? "rgba(10, 10, 10, 0.75)" : "rgba(255, 255, 255, 0.75)";
 
   ctx.textAlign = "left";
 
-  // Name
+  // Name (Deep Crisp Bold)
   ctx.fillStyle = textPrimary;
-  ctx.font = "bold 44px Outfit, system-ui, sans-serif";
-  ctx.fillText(name || "John Doe", 80, h - 140);
+  ctx.font = "bold 44px Outfit, -apple-system, sans-serif";
+  ctx.fillText(name || "Alex Sterling", 80, h - 140);
 
   // Role
   ctx.fillStyle = textSecondary;
-  ctx.font = "500 24px Outfit, system-ui, sans-serif";
-  ctx.fillText(role || "Creative Director", 80, h - 95);
+  ctx.font = "600 24px Outfit, -apple-system, sans-serif";
+  ctx.fillText(role || "CEO & Founder", 80, h - 95);
 
   // Company
   ctx.fillStyle = textSecondary;
-  ctx.font = "bold 20px Outfit, system-ui, sans-serif";
-  ctx.fillText(company || "TAPFOLIO INC.", 80, h - 55);
+  ctx.font = "bold 20px Outfit, -apple-system, sans-serif";
+  ctx.fillText(company || "TAPFOLIO", 80, h - 55);
 
   // Brand Stamp
   ctx.textAlign = "right";
   ctx.fillStyle = textSecondary;
-  ctx.font = "bold 14px Outfit, system-ui, sans-serif";
+  ctx.font = "bold 14px Outfit, -apple-system, sans-serif";
   ctx.fillText("TAPFOLIO NFC v2", w - 80, h - 55);
 }
 
@@ -181,30 +204,31 @@ export function drawCardBack(
 
   const w = canvas.width;
   const h = canvas.height;
+  const isLight = isLightColorHex(color);
 
   // 1. Draw Background
   ctx.clearRect(0, 0, w, h);
   
   if (material === "metal") {
     const grad = ctx.createLinearGradient(0, 0, w, h);
-    if (color === "#ffffff") {
-      grad.addColorStop(0, "#e0e0e0");
-      grad.addColorStop(0.5, "#f5f5f7");
-      grad.addColorStop(1, "#d1d1d6");
-    } else if (color === "#111111" || color === "#0a0a0a") {
+    if (isLight) {
+      grad.addColorStop(0, "#e5e7eb");
+      grad.addColorStop(0.5, "#f9fafb");
+      grad.addColorStop(1, "#d1d5db");
+    } else if (color === "#111111" || color === "#0a0a0a" || !color) {
       grad.addColorStop(0, "#1c1c1e");
       grad.addColorStop(0.5, "#2c2c2e");
       grad.addColorStop(1, "#111112");
     } else {
       grad.addColorStop(0, color);
-      grad.addColorStop(0.5, "#ffffffaa");
+      grad.addColorStop(0.5, "#ffffff66");
       grad.addColorStop(1, color);
     }
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, w, h);
 
     if (finish === "brushed") {
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
+      ctx.strokeStyle = isLight ? "rgba(0, 0, 0, 0.04)" : "rgba(255, 255, 255, 0.05)";
       ctx.lineWidth = 1;
       for (let i = 0; i < h; i += 2) {
         ctx.beginPath();
@@ -214,28 +238,35 @@ export function drawCardBack(
       }
     }
   } else {
-    ctx.fillStyle = color;
+    ctx.fillStyle = color || (isLight ? "#f8f9fa" : "#0a0a0a");
     ctx.fillRect(0, 0, w, h);
   }
 
   // Border
-  ctx.strokeStyle = material === "metal" ? "rgba(255, 255, 255, 0.2)" : "rgba(255, 255, 255, 0.08)";
+  ctx.strokeStyle = isLight ? "rgba(0, 0, 0, 0.12)" : "rgba(255, 255, 255, 0.12)";
   ctx.lineWidth = 4;
   ctx.strokeRect(10, 10, w - 20, h - 20);
 
-  const isDarkBg = color !== "#ffffff";
-  const textPrimary = isDarkBg ? "#FFFFFF" : "#111111";
-  const textSecondary = isDarkBg ? "rgba(255, 255, 255, 0.6)" : "rgba(17, 17, 17, 0.6)";
+  const textPrimary = isLight ? "#050505" : "#FFFFFF";
+  const textSecondary = isLight ? "rgba(10, 10, 10, 0.75)" : "rgba(255, 255, 255, 0.75)";
 
   // 2. Draw Simulated QR Code (Right Side)
   const qrX = w - 240;
   const qrY = h / 2 - 80;
   const qrSize = 160;
 
-  ctx.fillStyle = textPrimary;
-  // Outer frame
+  // QR Container background for ultra high contrast
+  if (!isLight) {
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.roundRect?.(qrX - 8, qrY - 8, qrSize + 16, qrSize + 16, 8);
+    ctx.fill();
+  }
+
+  const qrColor = "#050505";
+  ctx.fillStyle = qrColor;
   ctx.lineWidth = 3;
-  ctx.strokeStyle = textPrimary;
+  ctx.strokeStyle = qrColor;
   ctx.strokeRect(qrX, qrY, qrSize, qrSize);
   
   // Custom futuristic qr alignment patterns
@@ -248,13 +279,11 @@ export function drawCardBack(
   ctx.fillRect(qrX + 10, qrY + qrSize - 50, 40, 40);
   ctx.clearRect(qrX + 20, qrY + qrSize - 40, 20, 20);
 
-  // Tiny tech blocks simulating QR pixels
-  ctx.fillStyle = textPrimary;
+  // QR Pixel Matrix
+  ctx.fillStyle = qrColor;
   for (let r = 0; r < 8; r++) {
     for (let c = 0; c < 8; c++) {
-      // Don't overwrite the 3 big corner anchors
       if ((r < 3 && c < 3) || (r < 3 && c > 4) || (r > 4 && c < 3)) continue;
-      // Random grid pattern
       if ((Math.sin(r * 12.5 + c * 33.7) > 0)) {
         ctx.fillRect(qrX + 25 + c * 15, qrY + 25 + r * 15, 10, 10);
       }
@@ -265,7 +294,6 @@ export function drawCardBack(
   const signalX = 100;
   const signalY = h / 2;
 
-  // Signal waves
   ctx.strokeStyle = textPrimary;
   ctx.lineWidth = 6;
   ctx.lineCap = "round";
@@ -287,14 +315,14 @@ export function drawCardBack(
 
   // Tap Icon
   ctx.fillStyle = textPrimary;
-  ctx.font = "bold 16px Outfit, system-ui, sans-serif";
+  ctx.font = "bold 16px Outfit, -apple-system, sans-serif";
   ctx.textAlign = "left";
   ctx.fillText("TAP TO SHARE", signalX + 60, signalY + 5);
 
   // 4. URL and Instructions
-  const formattedSlug = (name || "John Doe").toLowerCase().replace(/[^a-z0-9]+/g, "");
+  const formattedSlug = (name || "alex").toLowerCase().replace(/[^a-z0-9]+/g, "");
   ctx.fillStyle = textSecondary;
-  ctx.font = "bold 20px Outfit, system-ui, sans-serif";
+  ctx.font = "bold 20px Outfit, -apple-system, sans-serif";
   ctx.textAlign = "left";
   ctx.fillText(`tapfolio.me/${formattedSlug}`, 80, h - 55);
 }

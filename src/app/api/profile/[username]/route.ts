@@ -27,7 +27,8 @@ export async function GET(
             connectionCount: true,
             email: true,
             profileThemes: {
-              where: { isDefault: true }
+              orderBy: [{ isDefault: 'desc' }, { updatedAt: 'desc' }],
+              take: 1
             }
           },
         },
@@ -38,9 +39,49 @@ export async function GET(
       return NextResponse.json({ error: 'Profile not found.' }, { status: 404 });
     }
 
+    // Check connection status if caller is authenticated
+    let connectionStatus: string | null = null;
+    let connectionId: number | null = null;
+
+    try {
+      const { cookies } = await import('next/headers');
+      const { verifyJWT } = await import('@/lib/auth');
+      const cookieStore = await cookies();
+      let token = cookieStore.get('pertap_jwt')?.value;
+      if (!token) {
+        const authHeader = request.headers.get('authorization');
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+          token = authHeader.substring(7);
+        }
+      }
+      if (!token) {
+        token = request.headers.get('x-pertap-token') || undefined;
+      }
+
+      if (token) {
+        const payload = await verifyJWT(token);
+        if (payload && payload.userId !== profile.userId) {
+          const conn = await prisma.connection.findFirst({
+            where: {
+              OR: [
+                { requesterId: payload.userId, receiverId: profile.userId },
+                { requesterId: profile.userId, receiverId: payload.userId },
+              ],
+            },
+          });
+          if (conn) {
+            connectionStatus = conn.status;
+            connectionId = conn.id;
+          }
+        }
+      }
+    } catch (_) {}
+
     return NextResponse.json(
       {
         success: true,
+        connectionStatus,
+        connectionId,
         profile: {
           id: profile.id,
           userId: profile.userId,

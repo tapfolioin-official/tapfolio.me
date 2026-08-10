@@ -9,13 +9,22 @@ export async function GET() {
       },
       include: {
         tags: true,
-        socials: true
+        socials: true,
+        user: {
+          select: {
+            profileThemes: {
+              orderBy: [{ isDefault: 'desc' }, { updatedAt: 'desc' }],
+              take: 1
+            }
+          }
+        }
       }
     });
 
     const filteredLeaderboard = profiles
       .map((p: any) => ({
         ...p,
+        theme: p.user?.profileThemes?.[0]?.settings || null,
         score: parseInt(p.diamonds || '0', 10)
       }))
       .sort((a: any, b: any) => b.score - a.score);

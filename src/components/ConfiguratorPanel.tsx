@@ -140,7 +140,7 @@ export default function ConfiguratorPanel({ config, setConfig }: ConfigProps) {
               className={`toggle-btn ${config.material === "metal" ? "active" : ""}`}
               onClick={() => toggleMaterial("metal")}
             >
-              Tactile Metal
+              Tactile Metal (₹2,500)
             </button>
           </div>
         </div>
@@ -153,17 +153,17 @@ export default function ConfiguratorPanel({ config, setConfig }: ConfigProps) {
               <>
                 <button
                   type="button"
-                  className={`toggle-btn ${config.finish === "matte" ? "active" : ""}`}
-                  onClick={() => selectFinish("matte")}
-                >
-                  Soft Matte
-                </button>
-                <button
-                  type="button"
                   className={`toggle-btn ${config.finish === "glossy" ? "active" : ""}`}
                   onClick={() => selectFinish("glossy")}
                 >
-                  High Gloss
+                  PVC Glossy (₹1,000)
+                </button>
+                <button
+                  type="button"
+                  className={`toggle-btn ${config.finish === "matte" ? "active" : ""}`}
+                  onClick={() => selectFinish("matte")}
+                >
+                  PVC Matte (₹1,500)
                 </button>
               </>
             ) : (
@@ -173,14 +173,14 @@ export default function ConfiguratorPanel({ config, setConfig }: ConfigProps) {
                   className={`toggle-btn ${config.finish === "brushed" ? "active" : ""}`}
                   onClick={() => selectFinish("brushed")}
                 >
-                  Brushed
+                  Brushed (₹2,500)
                 </button>
                 <button
                   type="button"
                   className={`toggle-btn ${config.finish === "matte" ? "active" : ""}`}
                   onClick={() => selectFinish("matte")}
                 >
-                  Satin Matte
+                  Satin Matte (₹2,500)
                 </button>
               </>
             )}

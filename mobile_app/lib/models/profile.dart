@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'tag.dart';
 import 'social_link.dart';
@@ -69,6 +70,23 @@ class Profile {
     final rawIsOnline = json['isOnline'];
     final rawIsPremium = json['isPremium'];
 
+    Map<String, dynamic>? parsedTheme;
+    if (json['theme'] is Map) {
+      parsedTheme = Map<String, dynamic>.from(json['theme'] as Map);
+    } else if (json['theme'] is String && (json['theme'] as String).isNotEmpty) {
+      try {
+        final decoded = jsonDecode(json['theme'] as String);
+        if (decoded is Map) {
+          parsedTheme = Map<String, dynamic>.from(decoded);
+        }
+      } catch (_) {}
+    }
+
+    final rawTapCount = json['tapCount'];
+    final int tapCountVal = rawTapCount is int 
+        ? rawTapCount 
+        : int.tryParse(rawTapCount?.toString() ?? '') ?? 0;
+
     return Profile(
       id: json['id'] as int? ?? 0,
       userId: json['userId'] as int? ?? 0,
@@ -81,12 +99,12 @@ class Profile {
       phone: json['phone'] as String?,
       whatsapp: json['whatsapp'] as String?,
       location: json['location'] as String?,
-      diamonds: json['diamonds'] as String? ?? '0',
+      diamonds: json['diamonds']?.toString() ?? '0',
       isPremium: (rawIsPremium is bool) ? rawIsPremium : false,
-      tapCount: json['tapCount'] as int? ?? 0,
+      tapCount: tapCountVal,
       tags: tagsList.map((i) => Tag.fromJson(i as Map<String, dynamic>?)).toList(),
       socials: socialsList.map((i) => SocialLink.fromJson(i as Map<String, dynamic>?)).toList(),
-      theme: json['theme'] as Map<String, dynamic>?,
+      theme: parsedTheme,
     );
   }
 

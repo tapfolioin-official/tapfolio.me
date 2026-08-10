@@ -55,7 +55,7 @@ export default function TrustCompanySection() {
           <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden group hover:border-blue-100 transition-colors">
             <div className="absolute top-0 right-0 w-2 h-full bg-blue-600 transform translate-x-full group-hover:translate-x-0 transition-transform" />
             <div className="mb-4">
-              <span className="text-4xl font-black text-gray-900">$0</span>
+              <span className="text-4xl font-black text-gray-900">₹0</span>
               <span className="block text-sm font-bold text-blue-600 tracking-wider uppercase mt-1">Printing Costs</span>
             </div>
             <p className="text-gray-600 text-base leading-relaxed italic mb-4">

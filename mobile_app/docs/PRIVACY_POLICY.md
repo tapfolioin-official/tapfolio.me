@@ -40,6 +40,6 @@ We believe in full transparency and data ownership. You have the right to delete
 5.  Click the **Permanently Delete My Account** button.
 
 ### Alternative Deletion Request:
-You may request manual deletion of all your databases records, files, and credentials by sending an email to **support@tapfolio.me**. We will process and wipe your data within 48 hours.
+You may request manual deletion of all your databases records, files, and credentials by sending an email to **tapfolio.in@gmail.com**. We will process and wipe your data within 48 hours.
 
 **Note:** Once deleted, your custom username will be released, your NFC cards will immediately stop linking, and your connection history cannot be retrieved.

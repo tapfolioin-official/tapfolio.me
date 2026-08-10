@@ -13,7 +13,11 @@ class ThemeSerializer {
       }
     }
     if (rawData is Map) {
-      return ThemeSettings.fromJson(Map<String, dynamic>.from(rawData));
+      try {
+        return ThemeSettings.fromJson(Map<String, dynamic>.from(rawData));
+      } catch (_) {
+        return ThemeSettings.defaultValue();
+      }
     }
     return ThemeSettings.defaultValue();
   }

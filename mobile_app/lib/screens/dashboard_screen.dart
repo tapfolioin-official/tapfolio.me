@@ -16,7 +16,6 @@ import '../widgets/image_crop_dialog.dart';
 import 'theme_studio/theme_studio_screen.dart';
 import '../features/card_export/dialog/share_card_dialog.dart';
 
-
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
 
@@ -34,15 +33,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
   bool _loading = true;
   bool _saving = false;
   int _pendingCount = 0;
-  bool _isEditing = false; // Toggle between view and edit
 
   bool get _isLight => Theme.of(context).brightness == Brightness.light;
   Color get _textColor => _isLight ? const Color(0xFF1F2937) : Colors.white;
-  Color get _subtitleColor => _isLight ? const Color(0xFF4B5563) : Colors.white70;
-  Color get _cardBg => _isLight ? Colors.white : Colors.white.withValues(alpha: 0.05);
+  Color get _subtitleColor =>
+      _isLight ? const Color(0xFF4B5563) : Colors.white70;
+  Color get _cardBg =>
+      _isLight ? Colors.white : Colors.white.withValues(alpha: 0.05);
   Color get _cardBorder => _isLight ? Colors.black12 : Colors.white10;
-  Color get _inputBg => _isLight ? const Color(0xFFF3F4F6) : Colors.white.withValues(alpha: 0.04);
-  Color get _inputBorder => _isLight ? Colors.black12 : Colors.white.withValues(alpha: 0.08);
+  Color get _inputBg =>
+      _isLight ? const Color(0xFFF3F4F6) : Colors.white.withValues(alpha: 0.04);
+  Color get _inputBorder =>
+      _isLight ? Colors.black12 : Colors.white.withValues(alpha: 0.08);
   Color get _hintColor => _isLight ? Colors.black38 : Colors.white24;
   Color get _dropdownBg => _isLight ? Colors.white : const Color(0xFF0F1122);
 
@@ -280,11 +282,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
           _nameController.text = _profile!.name;
           _taglineController.text = _profile!.tagline;
           _bioController.text = _profile!.bio;
-          _phoneController.text = (_profile!.phone != null && _profile!.phone!.isNotEmpty)
-              ? (_profile!.phone!.startsWith('+') ? _profile!.phone! : (_profile!.phone!.replaceAll(RegExp(r'\D'), '').length == 10 ? '+91${_profile!.phone!.replaceAll(RegExp(r'\D'), '')}' : _profile!.phone!))
+          _phoneController.text =
+              (_profile!.phone != null && _profile!.phone!.isNotEmpty)
+              ? (_profile!.phone!.startsWith('+')
+                    ? _profile!.phone!
+                    : (_profile!.phone!.replaceAll(RegExp(r'\D'), '').length ==
+                              10
+                          ? '+91${_profile!.phone!.replaceAll(RegExp(r'\D'), '')}'
+                          : _profile!.phone!))
               : '+91';
-          _whatsappController.text = (_profile!.whatsapp != null && _profile!.whatsapp!.isNotEmpty)
-              ? (_profile!.whatsapp!.startsWith('+') ? _profile!.whatsapp! : (_profile!.whatsapp!.replaceAll(RegExp(r'\D'), '').length == 10 ? '+91${_profile!.whatsapp!.replaceAll(RegExp(r'\D'), '')}' : _profile!.whatsapp!))
+          _whatsappController.text =
+              (_profile!.whatsapp != null && _profile!.whatsapp!.isNotEmpty)
+              ? (_profile!.whatsapp!.startsWith('+')
+                    ? _profile!.whatsapp!
+                    : (_profile!.whatsapp!
+                                  .replaceAll(RegExp(r'\D'), '')
+                                  .length ==
+                              10
+                          ? '+91${_profile!.whatsapp!.replaceAll(RegExp(r'\D'), '')}'
+                          : _profile!.whatsapp!))
               : '+91';
           _locationController.text = _profile!.location ?? '';
         });
@@ -820,7 +836,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
         )
         .map((social) {
           return _buildMockSocialTile(
-            icon: _buildBrandIcon(social.platform, social.icon, parseHexColor(social.color)),
+            icon: _buildBrandIcon(
+              social.platform,
+              social.icon,
+              parseHexColor(social.color),
+            ),
             title: social.platform,
             subtitle: social.handle.isNotEmpty ? social.handle : social.url,
             onTap: () async {
@@ -830,7 +850,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
               }
             },
           );
-        }).toList();
+        })
+        .toList();
 
     // Map WhatsApp
     Widget? whatsappTile;
@@ -838,7 +859,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
       whatsappTile = _buildMockSocialTile(
         icon: _buildBrandIcon('whatsapp', whatsappSocial.icon, Colors.green),
         title: 'WhatsApp',
-        subtitle: whatsappSocial.handle.isNotEmpty ? whatsappSocial.handle : 'Chat with me',
+        subtitle: whatsappSocial.handle.isNotEmpty
+            ? whatsappSocial.handle
+            : 'Chat with me',
         onTap: () async {
           final uri = Uri.parse(whatsappSocial.url);
           if (await canLaunchUrl(uri)) {
@@ -880,9 +903,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
     Widget? behanceTile;
     if (behanceSocial.url.isNotEmpty) {
       behanceTile = _buildMockSocialTile(
-        icon: _buildBrandIcon('behance', behanceSocial.icon, const Color(0xFF1769FF)),
+        icon: _buildBrandIcon(
+          'behance',
+          behanceSocial.icon,
+          const Color(0xFF1769FF),
+        ),
         title: 'Behance',
-        subtitle: behanceSocial.handle.isNotEmpty ? behanceSocial.handle : 'Behance Profile',
+        subtitle: behanceSocial.handle.isNotEmpty
+            ? behanceSocial.handle
+            : 'Behance Profile',
         onTap: () async {
           final uri = Uri.parse(behanceSocial.url);
           if (await canLaunchUrl(uri)) {
@@ -983,10 +1012,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         decoration: BoxDecoration(
                           color: const Color(0xFF4ADE80),
                           shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Colors.white,
-                            width: 2.5,
-                          ),
+                          border: Border.all(color: Colors.white, width: 2.5),
                         ),
                       ),
                     ),
@@ -1040,7 +1066,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('···', style: GoogleFonts.outfit(color: const Color(0xFF0052FF), fontWeight: FontWeight.bold, fontSize: 16)),
+                    Text(
+                      '···',
+                      style: GoogleFonts.outfit(
+                        color: const Color(0xFF0052FF),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
                     const SizedBox(width: 12),
                     Text(
                       'Connect with me',
@@ -1051,7 +1084,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                     ),
                     const SizedBox(width: 12),
-                    Text('···', style: GoogleFonts.outfit(color: const Color(0xFF0052FF), fontWeight: FontWeight.bold, fontSize: 16)),
+                    Text(
+                      '···',
+                      style: GoogleFonts.outfit(
+                        color: const Color(0xFF0052FF),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 20),
@@ -1067,14 +1107,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 // Blue Quote Container
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 16,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF0052FF),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.format_quote_rounded, color: Colors.white24, size: 24),
+                      const Icon(
+                        Icons.format_quote_rounded,
+                        color: Colors.white24,
+                        size: 24,
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
@@ -1179,14 +1226,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right_rounded, color: Colors.black26, size: 20),
+            const Icon(
+              Icons.chevron_right_rounded,
+              color: Colors.black26,
+              size: 20,
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildBrandIcon(String platformName, String iconName, Color fallbackColor) {
+  Widget _buildBrandIcon(
+    String platformName,
+    String iconName,
+    Color fallbackColor,
+  ) {
     final String pName = platformName.toLowerCase();
 
     if (pName == 'instagram') {
@@ -1202,7 +1257,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ),
         alignment: Alignment.center,
-        child: const FaIcon(FontAwesomeIcons.instagram, color: Colors.white, size: 18),
+        child: const FaIcon(
+          FontAwesomeIcons.instagram,
+          color: Colors.white,
+          size: 18,
+        ),
       );
     }
 
@@ -1211,16 +1270,32 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     if (pName == 'linkedin') {
       bgColor = const Color(0xFF0A66C2);
-      iconWidget = const FaIcon(FontAwesomeIcons.linkedin, color: Colors.white, size: 18);
+      iconWidget = const FaIcon(
+        FontAwesomeIcons.linkedin,
+        color: Colors.white,
+        size: 18,
+      );
     } else if (pName == 'telegram') {
       bgColor = const Color(0xFF229ED9);
-      iconWidget = const FaIcon(FontAwesomeIcons.telegram, color: Colors.white, size: 18);
+      iconWidget = const FaIcon(
+        FontAwesomeIcons.telegram,
+        color: Colors.white,
+        size: 18,
+      );
     } else if (pName == 'whatsapp') {
       bgColor = const Color(0xFF25D366);
-      iconWidget = const FaIcon(FontAwesomeIcons.whatsapp, color: Colors.white, size: 18);
+      iconWidget = const FaIcon(
+        FontAwesomeIcons.whatsapp,
+        color: Colors.white,
+        size: 18,
+      );
     } else if (pName == 'behance') {
       bgColor = const Color(0xFF1769FF);
-      iconWidget = const FaIcon(FontAwesomeIcons.behance, color: Colors.white, size: 18);
+      iconWidget = const FaIcon(
+        FontAwesomeIcons.behance,
+        color: Colors.white,
+        size: 18,
+      );
     } else if (pName == 'website' || pName == 'portfolio') {
       bgColor = const Color(0xFF0052FF);
       iconWidget = const Icon(Icons.link, color: Colors.white, size: 18);
@@ -1320,7 +1395,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       const SizedBox(height: 4),
                       Text(
                         'Change colors, background, layouts & more',
-                        style: GoogleFonts.outfit(color: _subtitleColor, fontSize: 13),
+                        style: GoogleFonts.outfit(
+                          color: _subtitleColor,
+                          fontSize: 13,
+                        ),
                       ),
                     ],
                   ),
@@ -1342,9 +1420,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => ThemeStudioScreen(
-                        isPremium: profile.isPremium,
-                      ),
+                      builder: (_) =>
+                          ThemeStudioScreen(isPremium: profile.isPremium),
                     ),
                   ).then((_) => _fetchProfile());
                 },
@@ -1389,9 +1466,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     decoration: BoxDecoration(
                       color: _inputBg,
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: _inputBorder,
-                      ),
+                      border: Border.all(color: _inputBorder),
                     ),
                     child: Text(
                       publicLink,
@@ -1442,7 +1517,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
                 onPressed: () {
-
                   ShareCardDialog.show(
                     context,
                     name: profile.name,
@@ -1458,7 +1532,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     socials: profile.socials,
                   );
                 },
-                icon: const Icon(Icons.share_rounded, color: Colors.white, size: 18),
+                icon: const Icon(
+                  Icons.share_rounded,
+                  color: Colors.white,
+                  size: 18,
+                ),
                 label: Text(
                   'Share or Download Card',
                   style: GoogleFonts.outfit(
@@ -1510,7 +1588,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
               borderRadius: BorderRadius.circular(6),
               child: LinearProgressIndicator(
                 value: _score / 100,
-                backgroundColor: _isLight ? Colors.black.withValues(alpha: 0.05) : Colors.white.withValues(alpha: 0.1),
+                backgroundColor: _isLight
+                    ? Colors.black.withValues(alpha: 0.05)
+                    : Colors.white.withValues(alpha: 0.1),
                 color: const Color(0xFF6366F1),
                 minHeight: 12,
               ),
@@ -1671,7 +1751,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 children: [
                   CircleAvatar(
                     radius: 50,
-                    backgroundColor: _isLight ? Colors.black.withValues(alpha: 0.05) : Colors.white10,
+                    backgroundColor: _isLight
+                        ? Colors.black.withValues(alpha: 0.05)
+                        : Colors.white10,
                     backgroundImage: getAvatarImage(
                       profile.avatar,
                       _apiService.baseUrl,
@@ -1759,9 +1841,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     decoration: BoxDecoration(
                       color: _inputBg,
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: _inputBorder,
-                      ),
+                      border: Border.all(color: _inputBorder),
                     ),
                     child: TextField(
                       controller: _tagController,
@@ -1784,9 +1864,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   decoration: BoxDecoration(
                     color: _inputBg,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: _inputBorder,
-                    ),
+                    border: Border.all(color: _inputBorder),
                   ),
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
@@ -1895,9 +1973,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   decoration: BoxDecoration(
                     color: _inputBg,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: _inputBorder,
-                    ),
+                    border: Border.all(color: _inputBorder),
                   ),
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
@@ -1958,9 +2034,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     decoration: BoxDecoration(
                       color: _inputBg,
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: _inputBorder,
-                      ),
+                      border: Border.all(color: _inputBorder),
                     ),
                     child: TextField(
                       controller: _socialHandleController,
@@ -1987,9 +2061,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     decoration: BoxDecoration(
                       color: _inputBg,
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: _inputBorder,
-                      ),
+                      border: Border.all(color: _inputBorder),
                     ),
                     child: TextField(
                       controller: _socialUrlController,
@@ -2028,7 +2100,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   vertical: 10,
                 ),
                 decoration: BoxDecoration(
-                  color: _isLight ? const Color(0xFFF9FAFB) : Colors.white.withValues(alpha: 0.02),
+                  color: _isLight
+                      ? const Color(0xFFF9FAFB)
+                      : Colors.white.withValues(alpha: 0.02),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: cardColor.withValues(alpha: 0.2)),
                 ),
@@ -2188,7 +2262,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     if (_profile == null) {
       return Scaffold(
-        backgroundColor: _isLight ? const Color(0xFFF3F4F6) : const Color(0xFF06070D),
+        backgroundColor: _isLight
+            ? const Color(0xFFF3F4F6)
+            : const Color(0xFF06070D),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -2243,7 +2319,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
 
     return Scaffold(
-      backgroundColor: _isLight ? const Color(0xFFF3F4F6) : const Color(0xFF0A0A0F),
+      backgroundColor: _isLight
+          ? const Color(0xFFF3F4F6)
+          : const Color(0xFF0A0A0F),
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: _fetchProfile,

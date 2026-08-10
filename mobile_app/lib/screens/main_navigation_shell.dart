@@ -4,10 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'dashboard_screen.dart';
 import 'leaderboard_screen.dart';
-import 'history_screen.dart';
-import 'profile_view_screen.dart';
 import 'connections_screen.dart';
-import 'delete_account_screen.dart';
 import 'notification_screen.dart';
 import 'edit_profile_screen.dart';
 import 'manage_socials_screen.dart';
@@ -229,7 +226,6 @@ class _MainNavigationShellState extends State<MainNavigationShell>
     final isLight = Theme.of(context).brightness == Brightness.light;
     final scaffoldBg = isLight ? const Color(0xFFF3F4F6) : const Color(0xFF06070D);
     final appBarBg = isLight ? Colors.white : const Color(0xFF0F1122);
-    final logoTextColor = isLight ? const Color(0xFF111827) : Colors.white;
     final iconColor = isLight ? const Color(0xFF374151) : Colors.white70;
 
     return Scaffold(

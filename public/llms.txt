@@ -27,7 +27,7 @@
 - Support Channels: Email support, custom setup guides, and troubleshooting lines.
   - Link: https://www.tapfolio.me/support
   - General: hello@tapfolio.me
-  - Tech Support: support@tapfolio.me
+  - Tech Support: tapfolio.in@gmail.com
   - Enterprise Sales: enterprise@tapfolio.me
 
 ## Official Canonical Resources

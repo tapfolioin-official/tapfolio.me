@@ -61,8 +61,8 @@ export default function ContactPage() {
       icon: "🛠️",
       title: "Technical Support",
       desc: "Help with your card, dashboard, or API.",
-      info: "support@tapfolio.me",
-      href: "mailto:support@tapfolio.me",
+      info: "tapfolio.in@gmail.com",
+      href: "mailto:tapfolio.in@gmail.com",
     },
   ];
 

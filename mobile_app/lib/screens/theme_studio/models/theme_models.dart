@@ -1,4 +1,36 @@
 
+double _toDouble(dynamic val, double fallback) {
+  if (val == null) return fallback;
+  if (val is num) return val.toDouble();
+  if (val is String) return double.tryParse(val) ?? fallback;
+  return fallback;
+}
+
+int _toInt(dynamic val, int fallback) {
+  if (val == null) return fallback;
+  if (val is num) return val.toInt();
+  if (val is String) return int.tryParse(val) ?? fallback;
+  return fallback;
+}
+
+bool _toBool(dynamic val, bool fallback) {
+  if (val == null) return fallback;
+  if (val is bool) return val;
+  if (val is String) {
+    final lower = val.trim().toLowerCase();
+    if (lower == 'true' || lower == '1') return true;
+    if (lower == 'false' || lower == '0') return false;
+  }
+  if (val is num) return val != 0;
+  return fallback;
+}
+
+String _toString(dynamic val, String fallback) {
+  if (val == null) return fallback;
+  if (val is String) return val;
+  return val.toString();
+}
+
 // ─── ColorTheme ──────────────────────────────────────────────────────────────
 class ColorTheme {
   final String primary;
@@ -30,18 +62,18 @@ class ColorTheme {
   });
 
   factory ColorTheme.fromJson(Map<String, dynamic> json) => ColorTheme(
-        primary: json['primary'] ?? '#6366F1',
-        secondary: json['secondary'] ?? '#4F46E5',
-        accent: json['accent'] ?? '#10B981',
-        background: json['background'] ?? '#0A0A0F',
-        surface: json['surface'] ?? '#1F2937',
-        card: json['card'] ?? '#111827',
-        text: json['text'] ?? '#FFFFFF',
-        subtext: json['subtext'] ?? '#9CA3AF',
-        border: json['border'] ?? '#374151',
-        success: json['success'] ?? '#10B981',
-        warning: json['warning'] ?? '#F59E0B',
-        error: json['error'] ?? '#EF4444',
+        primary: _toString(json['primary'], '#6366F1'),
+        secondary: _toString(json['secondary'], '#4F46E5'),
+        accent: _toString(json['accent'], '#10B981'),
+        background: _toString(json['background'], '#0A0A0F'),
+        surface: _toString(json['surface'], '#1F2937'),
+        card: _toString(json['card'], '#111827'),
+        text: _toString(json['text'], '#FFFFFF'),
+        subtext: _toString(json['subtext'], '#9CA3AF'),
+        border: _toString(json['border'], '#374151'),
+        success: _toString(json['success'], '#10B981'),
+        warning: _toString(json['warning'], '#F59E0B'),
+        error: _toString(json['error'], '#EF4444'),
       );
 
   Map<String, dynamic> toJson() => {
@@ -106,11 +138,11 @@ class BackgroundTheme {
   });
 
   factory BackgroundTheme.fromJson(Map<String, dynamic> json) => BackgroundTheme(
-        type: json['type'] ?? 'solid',
-        value: json['value'] ?? '#f0f2f8',
-        brightness: (json['brightness'] as num?)?.toDouble() ?? 0.8,
-        blur: (json['blur'] as num?)?.toDouble() ?? 0.0,
-        overlayOpacity: (json['overlayOpacity'] as num?)?.toDouble() ?? 0.3,
+        type: _toString(json['type'], 'solid'),
+        value: _toString(json['value'], '#f0f2f8'),
+        brightness: _toDouble(json['brightness'], 0.8),
+        blur: _toDouble(json['blur'], 0.0),
+        overlayOpacity: _toDouble(json['overlayOpacity'], 0.3),
       );
 
   Map<String, dynamic> toJson() => {
@@ -162,15 +194,15 @@ class TypographyTheme {
   });
 
   factory TypographyTheme.fromJson(Map<String, dynamic> json) => TypographyTheme(
-        headingFont: json['headingFont'] ?? 'Outfit',
-        bodyFont: json['bodyFont'] ?? 'Inter',
-        weight: json['weight'] ?? '700',
-        letterSpacing: (json['letterSpacing'] as num?)?.toDouble() ?? 0.0,
-        lineHeight: (json['lineHeight'] as num?)?.toDouble() ?? 1.5,
-        headingSize: (json['headingSize'] as num?)?.toDouble() ?? 28.0,
-        bodySize: (json['bodySize'] as num?)?.toDouble() ?? 15.0,
-        uppercase: json['uppercase'] ?? false,
-        shadow: json['shadow'] ?? false,
+        headingFont: _toString(json['headingFont'], 'Outfit'),
+        bodyFont: _toString(json['bodyFont'], 'Inter'),
+        weight: _toString(json['weight'], '700'),
+        letterSpacing: _toDouble(json['letterSpacing'], 0.0),
+        lineHeight: _toDouble(json['lineHeight'], 1.5),
+        headingSize: _toDouble(json['headingSize'], 28.0),
+        bodySize: _toDouble(json['bodySize'], 15.0),
+        uppercase: _toBool(json['uppercase'], false),
+        shadow: _toBool(json['shadow'], false),
       );
 
   Map<String, dynamic> toJson() => {
@@ -232,14 +264,14 @@ class CardTheme {
   });
 
   factory CardTheme.fromJson(Map<String, dynamic> json) => CardTheme(
-        borderRadius: json['borderRadius'] ?? '16px',
-        opacity: (json['opacity'] as num?)?.toDouble() ?? 1.0,
-        blur: (json['blur'] as num?)?.toDouble() ?? 0.0,
-        shadow: json['shadow'] ?? 'none',
-        border: json['border'] ?? '1px solid rgba(255, 255, 255, 0.08)',
-        padding: json['padding'] ?? '16px',
-        spacing: json['spacing'] ?? '16px',
-        elevation: (json['elevation'] as num?)?.toDouble() ?? 0.0,
+        borderRadius: _toString(json['borderRadius'], '16px'),
+        opacity: _toDouble(json['opacity'], 1.0),
+        blur: _toDouble(json['blur'], 0.0),
+        shadow: _toString(json['shadow'], 'none'),
+        border: _toString(json['border'], '1px solid rgba(255, 255, 255, 0.08)'),
+        padding: _toString(json['padding'], '16px'),
+        spacing: _toString(json['spacing'], '16px'),
+        elevation: _toDouble(json['elevation'], 0.0),
       );
 
   Map<String, dynamic> toJson() => {
@@ -298,14 +330,14 @@ class ButtonTheme {
   });
 
   factory ButtonTheme.fromJson(Map<String, dynamic> json) => ButtonTheme(
-        style: json['style'] ?? 'solid',
-        radius: json['radius'] ?? '100px',
-        height: json['height'] ?? '44px',
-        shadow: json['shadow'] ?? 'none',
-        border: json['border'] ?? 'none',
-        padding: json['padding'] ?? '12px 24px',
-        iconPosition: json['iconPosition'] ?? 'left',
-        animation: json['animation'] ?? 'none',
+        style: _toString(json['style'], 'solid'),
+        radius: _toString(json['radius'], '100px'),
+        height: _toString(json['height'], '44px'),
+        shadow: _toString(json['shadow'], 'none'),
+        border: _toString(json['border'], 'none'),
+        padding: _toString(json['padding'], '12px 24px'),
+        iconPosition: _toString(json['iconPosition'], 'left'),
+        animation: _toString(json['animation'], 'none'),
       );
 
   Map<String, dynamic> toJson() => {
@@ -364,14 +396,14 @@ class AvatarTheme {
   });
 
   factory AvatarTheme.fromJson(Map<String, dynamic> json) => AvatarTheme(
-        shape: json['shape'] ?? 'circle',
-        border: json['border'] ?? '2px solid #6366F1',
-        shadow: json['shadow'] ?? 'none',
-        glow: json['glow'] ?? 'none',
-        gradientBorder: json['gradientBorder'] ?? false,
-        size: (json['size'] as num?)?.toDouble() ?? 80.0,
-        alignment: json['alignment'] ?? 'center',
-        animation: json['animation'] ?? 'none',
+        shape: _toString(json['shape'], 'circle'),
+        border: _toString(json['border'], '2px solid #6366F1'),
+        shadow: _toString(json['shadow'], 'none'),
+        glow: _toString(json['glow'], 'none'),
+        gradientBorder: _toBool(json['gradientBorder'], false),
+        size: _toDouble(json['size'], 80.0),
+        alignment: _toString(json['alignment'], 'center'),
+        animation: _toString(json['animation'], 'none'),
       );
 
   Map<String, dynamic> toJson() => {
@@ -416,7 +448,7 @@ class LayoutTheme {
   });
 
   factory LayoutTheme.fromJson(Map<String, dynamic> json) => LayoutTheme(
-        style: json['style'] ?? 'default',
+        style: _toString(json['style'], 'default'),
       );
 
   Map<String, dynamic> toJson() => {
@@ -442,8 +474,8 @@ class AnimationTheme {
   });
 
   factory AnimationTheme.fromJson(Map<String, dynamic> json) => AnimationTheme(
-        style: json['style'] ?? 'fade',
-        cursorGlow: json['cursorGlow'] ?? false,
+        style: _toString(json['style'], 'fade'),
+        cursorGlow: _toBool(json['cursorGlow'], false),
       );
 
   Map<String, dynamic> toJson() => {
@@ -472,17 +504,28 @@ class SectionTheme {
   });
 
   factory SectionTheme.fromJson(Map<String, dynamic> json) {
-    final rawOrder = json['order'] as List? ?? ['about', 'contact', 'socials', 'portfolio', 'projects'];
-    final rawVisibility = json['visibility'] as Map? ?? {
+    List<String> orderList = ['about', 'contact', 'socials', 'portfolio', 'projects'];
+    if (json['order'] is List) {
+      orderList = (json['order'] as List).map((e) => e.toString()).toList();
+    }
+    
+    final Map<String, bool> visMap = {
       'about': true,
       'contact': true,
       'socials': true,
       'portfolio': true,
       'projects': true,
     };
+    
+    if (json['visibility'] is Map) {
+      (json['visibility'] as Map).forEach((k, v) {
+        visMap[k.toString()] = _toBool(v, true);
+      });
+    }
+
     return SectionTheme(
-      order: rawOrder.cast<String>(),
-      visibility: Map<String, bool>.from(rawVisibility),
+      order: orderList,
+      visibility: visMap,
     );
   }
 
@@ -530,17 +573,17 @@ class EffectTheme {
   });
 
   factory EffectTheme.fromJson(Map<String, dynamic> json) => EffectTheme(
-        glass: json['glass'] ?? false,
-        noise: json['noise'] ?? false,
-        gradientOverlay: json['gradientOverlay'] ?? false,
-        glow: json['glow'] ?? false,
-        blur: (json['blur'] as num?)?.toDouble() ?? 0.0,
-        reflection: json['reflection'] ?? false,
-        borderShine: json['borderShine'] ?? false,
-        shadow: json['shadow'] ?? false,
-        intensity: (json['intensity'] as num?)?.toDouble() ?? 0.5,
-        speed: (json['speed'] as num?)?.toDouble() ?? 1.0,
-        opacity: (json['opacity'] as num?)?.toDouble() ?? 1.0,
+        glass: _toBool(json['glass'], false),
+        noise: _toBool(json['noise'], false),
+        gradientOverlay: _toBool(json['gradientOverlay'], false),
+        glow: _toBool(json['glow'], false),
+        blur: _toDouble(json['blur'], 0.0),
+        reflection: _toBool(json['reflection'], false),
+        borderShine: _toBool(json['borderShine'], false),
+        shadow: _toBool(json['shadow'], false),
+        intensity: _toDouble(json['intensity'], 0.5),
+        speed: _toDouble(json['speed'], 1.0),
+        opacity: _toDouble(json['opacity'], 1.0),
       );
 
   Map<String, dynamic> toJson() => {
@@ -611,18 +654,26 @@ class ThemeSettings {
     required this.effects,
   });
 
-  factory ThemeSettings.fromJson(Map<String, dynamic> json) => ThemeSettings(
-        colors: ColorTheme.fromJson(json['colors'] ?? {}),
-        background: BackgroundTheme.fromJson(json['background'] ?? {}),
-        typography: TypographyTheme.fromJson(json['typography'] ?? {}),
-        cards: CardTheme.fromJson(json['cards'] ?? {}),
-        buttons: ButtonTheme.fromJson(json['buttons'] ?? {}),
-        avatar: AvatarTheme.fromJson(json['avatar'] ?? {}),
-        layout: LayoutTheme.fromJson(json['layout'] ?? {}),
-        animations: AnimationTheme.fromJson(json['animations'] ?? {}),
-        sections: SectionTheme.fromJson(json['sections'] ?? {}),
-        effects: EffectTheme.fromJson(json['effects'] ?? {}),
-      );
+  factory ThemeSettings.fromJson(Map<String, dynamic> json) {
+    Map<String, dynamic> getMap(String key) {
+      final val = json[key];
+      if (val is Map) return Map<String, dynamic>.from(val);
+      return {};
+    }
+
+    return ThemeSettings(
+      colors: ColorTheme.fromJson(getMap('colors')),
+      background: BackgroundTheme.fromJson(getMap('background')),
+      typography: TypographyTheme.fromJson(getMap('typography')),
+      cards: CardTheme.fromJson(getMap('cards')),
+      buttons: ButtonTheme.fromJson(getMap('buttons')),
+      avatar: AvatarTheme.fromJson(getMap('avatar')),
+      layout: LayoutTheme.fromJson(getMap('layout')),
+      animations: AnimationTheme.fromJson(getMap('animations')),
+      sections: SectionTheme.fromJson(getMap('sections')),
+      effects: EffectTheme.fromJson(getMap('effects')),
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         'colors': colors.toJson(),

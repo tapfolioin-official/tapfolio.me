@@ -1,13 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:app/main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:app/core/storage/local_storage.dart';
+import 'package:app/screens/splash_screen.dart';
 
 void main() {
-  testWidgets('App initialization smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+    await LocalStorage().init();
+  });
 
-    // Verify that the app starts with a loading indicator during auth check.
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+  testWidgets('SplashScreen renders properly and fires completion callback', (WidgetTester tester) async {
+    bool completed = false;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: SplashScreen(
+          onComplete: () {
+            completed = true;
+          },
+        ),
+      ),
+    );
+
+    expect(find.byType(SplashScreen), findsOneWidget);
+    await tester.pump(const Duration(seconds: 4));
+    expect(completed, isTrue);
   });
 }

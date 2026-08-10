@@ -35,6 +35,45 @@ void main() async {
     return true;
   };
 
+  // Custom ErrorWidget Builder — renders exception details clearly
+  ErrorWidget.builder = (FlutterErrorDetails details) {
+    return Material(
+      color: const Color(0xFF0F172A),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Row(
+                  children: [
+                    Icon(Icons.error_outline, color: Colors.redAccent, size: 28),
+                    SizedBox(width: 8),
+                    Text(
+                      'Flutter Render Exception',
+                      style: TextStyle(color: Colors.redAccent, fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  details.exceptionAsString(),
+                  style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  details.stack.toString(),
+                  style: const TextStyle(color: Colors.white70, fontSize: 10, fontFamily: 'monospace'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  };
+
   // Load stored JWT from SharedPreferences before anything else
   try {
     final apiService = ApiService();

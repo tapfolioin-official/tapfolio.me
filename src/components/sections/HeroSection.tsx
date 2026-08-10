@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
+import Link from "next/link";
 import { ArrowRight, Play } from "lucide-react";
 import Hero3DCanvas from "@/components/hero/Hero3DCanvas";
 import gsap from "gsap";
@@ -48,12 +49,12 @@ export default function HeroSection() {
           </p>
 
           <div className="hero-stagger flex flex-wrap items-center gap-4">
-            <button
-              onClick={() => scrollToSection("order")}
+            <Link
+              href="/order"
               className="bg-gray-950 hover:bg-blue-600 text-white font-medium py-4 px-8 rounded-full flex items-center gap-2 transition-all shadow-lg hover:shadow-blue-500/25 cursor-pointer"
             >
               Order Now <ArrowRight size={18} />
-            </button>
+            </Link>
             <button
               onClick={() => scrollToSection("demo")}
               className="bg-white hover:bg-gray-50 text-gray-900 border border-gray-200 font-medium py-4 px-8 rounded-full flex items-center gap-2 transition-all cursor-pointer"

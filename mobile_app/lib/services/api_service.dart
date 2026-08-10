@@ -367,6 +367,8 @@ class ApiService {
             'score': score,
             'qualifiesForLeaderboard': qualifies,
             'checklist': checklist,
+            'connectionStatus': data['connectionStatus'],
+            'connectionId': data['connectionId'],
           };
         }
       }
@@ -387,12 +389,35 @@ class ApiService {
             'score': score,
             'qualifiesForLeaderboard': qualifies,
             'checklist': checklist,
+            'connectionStatus': null,
+            'connectionId': null,
           };
         }
       }
     }
     return null;
   }
+
+  Future<Map<String, dynamic>?> getPublicProfile(String username) async {
+    try {
+      final response = await _apiClient.sendRequest('GET', '/api/profile/$username');
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data != null && data['success'] == true) {
+          final profile = Profile.fromJson(data['profile'] as Map<String, dynamic>?);
+          return {
+            'profile': profile,
+            'connectionStatus': data['connectionStatus'],
+            'connectionId': data['connectionId'],
+          };
+        }
+      }
+    } catch (e) {
+      debugPrint('[EXCEPTION] getPublicProfile error: $e');
+    }
+    return null;
+  }
+
 
   Future<Map<String, dynamic>> updateProfile(Map<String, dynamic> updateData) async {
     try {

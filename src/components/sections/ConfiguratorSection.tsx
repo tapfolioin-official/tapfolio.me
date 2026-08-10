@@ -27,6 +27,12 @@ export default function ConfiguratorSection() {
     qrPosition: "back" as "front" | "back" | "hidden",
   });
 
+  const getPrice = () => {
+    if (config.material === 'metal') return '₹2,500';
+    if (config.finish === 'matte') return '₹1,500';
+    return '₹1,000';
+  };
+
   return (
     <section id="order" className="w-full py-16 md:py-32 bg-[#050505] text-white flex justify-center overflow-hidden">
       <div className="max-w-[1400px] w-full px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
@@ -52,7 +58,7 @@ export default function ConfiguratorSection() {
           </div>
 
           <button className="w-full max-w-[400px] bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 sm:py-5 px-6 sm:px-8 rounded-full flex items-center justify-center gap-3 transition-colors text-base sm:text-lg shadow-lg shadow-blue-600/20 cursor-pointer">
-            Get My Card — {config.material === 'metal' ? '$89' : '$39'}
+            Get My Card — {getPrice()}
             <ShoppingBag size={20} />
           </button>
           <p className="text-gray-500 text-xs mt-3 sm:mt-4 text-center">Includes free shipping and lifetime profile hosting.</p>

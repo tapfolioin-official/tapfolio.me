@@ -1,39 +1,52 @@
 import React from 'react';
+import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 
 export default function ProductsSection() {
   const products = [
     {
-      name: "PVC",
+      name: "PVC Glossy",
       tier: "Entry",
-      description: "Matte-finished recycled polymer.",
-      price: "$39",
+      slug: "pvc-glossy",
+      material: "pvc",
+      finish: "glossy",
+      description: "High-gloss resilient polymer.",
+      price: "₹1,000",
       bg: "bg-gray-50",
+      textColor: "text-gray-900"
+    },
+    {
+      name: "PVC Matte",
+      tier: "Standard",
+      slug: "pvc-matte",
+      material: "pvc",
+      finish: "matte",
+      description: "Matte-finished recycled polymer.",
+      price: "₹1,500",
+      bg: "bg-gray-100",
       textColor: "text-gray-900"
     },
     {
       name: "Metal",
       tier: "Premium",
+      slug: "metal",
+      material: "metal",
+      finish: "brushed",
       description: "Brushed military-grade steel.",
-      price: "$89",
+      price: "₹2,500",
       bg: "bg-[#0a0a0a]",
-      textColor: "text-white"
-    },
-    {
-      name: "Team",
-      tier: "Business",
-      description: "Unified corporate branding.",
-      price: "$299/mo",
-      bg: "bg-blue-600",
       textColor: "text-white"
     },
     {
       name: "Custom",
       tier: "Enterprise",
+      slug: "custom",
+      material: "metal",
+      finish: "matte",
       description: "Direct API & laser etching.",
       price: "Custom",
-      bg: "bg-gray-100",
-      textColor: "text-gray-900"
+      bg: "bg-blue-600",
+      textColor: "text-white"
     }
   ];
 
@@ -52,9 +65,10 @@ export default function ProductsSection() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {products.map((prod, idx) => (
-            <div 
+            <Link 
               key={idx} 
-              className={`group rounded-3xl p-8 flex flex-col justify-between h-[420px] transition-transform hover:-translate-y-2 ${prod.bg} ${prod.textColor}`}
+              href={`/order?card=${prod.slug}`}
+              className={`group rounded-3xl p-8 flex flex-col justify-between h-[420px] transition-all hover:-translate-y-2 hover:shadow-xl cursor-pointer ${prod.bg} ${prod.textColor}`}
             >
               <div>
                 <span className={`text-xs font-bold tracking-widest uppercase mb-2 block opacity-70`}>
@@ -72,12 +86,12 @@ export default function ProductsSection() {
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="font-medium">{prod.price}</span>
-                <button className="w-8 h-8 rounded-full bg-current opacity-20 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                  <ArrowRight size={14} className={prod.textColor === "text-white" ? "text-black" : "text-white"} />
-                </button>
+                <span className="font-bold text-lg">{prod.price}</span>
+                <div className="w-9 h-9 rounded-full bg-current opacity-20 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                  <ArrowRight size={15} className={prod.textColor === "text-white" ? "text-black" : "text-white"} />
+                </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 
@@ -85,3 +99,4 @@ export default function ProductsSection() {
     </section>
   );
 }
+

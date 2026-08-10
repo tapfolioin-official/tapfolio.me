@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../services/api_service.dart';
@@ -390,7 +389,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen>
               // ── Privacy reminder ─────────────────────────────────────────
               Center(
                 child: Text(
-                  'If you have concerns about your data, contact us at\nsupport@tapfolio.me',
+                  'If you have concerns about your data, contact us at\ntapfolio.in@gmail.com',
                   textAlign: TextAlign.center,
                   style: GoogleFonts.outfit(
                     color: _subtitleColor,

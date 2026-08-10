@@ -5,29 +5,32 @@ class LocalStorage {
   factory LocalStorage() => _instance;
   LocalStorage._internal();
 
-  late final SharedPreferences _prefs;
+  SharedPreferences? _prefs;
   bool _initialized = false;
 
   Future<void> init() async {
-    if (_initialized) return;
+    if (_initialized && _prefs != null) return;
     _prefs = await SharedPreferences.getInstance();
     _initialized = true;
   }
 
   Future<bool> setString(String key, String value) async {
-    return _prefs.setString(key, value);
+    if (_prefs == null) await init();
+    return _prefs?.setString(key, value) ?? false;
   }
 
   String? getString(String key) {
-    return _prefs.getString(key);
+    return _prefs?.getString(key);
   }
 
   Future<bool> remove(String key) async {
-    return _prefs.remove(key);
+    if (_prefs == null) await init();
+    return _prefs?.remove(key) ?? false;
   }
 
   Future<bool> clear() async {
-    return _prefs.clear();
+    if (_prefs == null) await init();
+    return _prefs?.clear() ?? false;
   }
 
   String? get jwtToken => getString('pertap_jwt');

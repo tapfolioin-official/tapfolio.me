@@ -1,5 +1,8 @@
 import React from "react";
 import Link from "next/link";
+import Navbar from "@/components/navigation/Navbar";
+import FooterSection from "@/components/sections/FooterSection";
+import { ShieldCheck, Lock, Database, Trash2, Eye, UserCheck, CheckCircle2, ArrowRight } from "lucide-react";
 
 export const metadata = {
   title: "Privacy Policy | Tapfolio",
@@ -8,7 +11,7 @@ export const metadata = {
     canonical: "https://www.tapfolio.me/privacy",
   },
   metadataBase: new URL("https://www.tapfolio.me"),
-  keywords: ["NFC profile", "tap portfolio", "digital business card", "networking tracker", "Tapfolio"],
+  keywords: ["NFC profile", "tap portfolio", "digital business card", "networking tracker", "Tapfolio", "privacy policy"],
   robots: {
     index: true,
     follow: true,
@@ -37,139 +40,281 @@ export const metadata = {
 };
 
 export default function PrivacyPolicy() {
+  const highlights = [
+    {
+      icon: <Lock size={22} className="text-blue-600" />,
+      title: "Encrypted & Secure",
+      desc: "All profile transmissions and API endpoints use TLS 1.3 encryption."
+    },
+    {
+      icon: <Eye size={22} className="text-blue-600" />,
+      title: "Granular Privacy",
+      desc: "You control which fields (email, phone, socials) are visible publicly."
+    },
+    {
+      icon: <Database size={22} className="text-blue-600" />,
+      title: "No Data Selling",
+      desc: "We never sell, rent, or monetize your personal or networking data."
+    },
+    {
+      icon: <Trash2 size={22} className="text-blue-600" />,
+      title: "One-Click Deletion",
+      desc: "Permanently delete your profile, avatars, and history at any time."
+    }
+  ];
+
   return (
-    <div className="bg-[#0F0F16] text-white min-h-screen font-sans selection:bg-indigo-500/30">
-      {/* Simplified Header */}
-      <header className="fixed top-0 left-0 w-full h-20 bg-[#141420]/80 backdrop-blur-md border-b border-white/5 z-50 flex items-center justify-between px-6 md:px-24">
-        <Link href="/" className="flex items-center gap-1 cursor-pointer">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-1">
-            <path d="M5 14C6.10457 14 7 13.1046 7 12C7 10.8954 6.10457 10 5 10C3.89543 10 3 10.8954 3 12C3 13.1046 3.89543 14 5 14Z" fill="#818CF8"/>
-            <path d="M9 8C11.2091 8 13 9.79086 13 12C13 14.2091 11.2091 16 9 16" stroke="#6366F1" strokeWidth="2.5" strokeLinecap="round"/>
-            <path d="M13 4C17.4183 4 21 7.58172 21 12C21 16.4183 17.4183 20 13 20" stroke="#4F46E5" strokeWidth="3" strokeLinecap="round"/>
-          </svg>
-          <span className="font-bold text-2xl tracking-tight text-white">
-            Tap<span className="text-indigo-400">folio</span>
-          </span>
-        </Link>
-        <Link href="/" className="text-sm font-semibold text-indigo-400 hover:text-indigo-300 transition-colors">
-          Back to Home
-        </Link>
-      </header>
+    <div className="bg-white min-h-screen font-sans text-gray-900 selection:bg-blue-200 flex flex-col">
+      <Navbar />
 
-      {/* Content Area */}
-      <main className="max-w-4xl mx-auto px-6 pt-32 pb-24">
-        <h1 className="text-4xl font-extrabold tracking-tight mb-2 text-white">
-          Privacy Policy
-        </h1>
-        <p className="text-sm text-gray-400 mb-8">
-          Last Updated: July 3, 2026
-        </p>
-
-        <div className="space-y-8 text-gray-300 leading-relaxed">
-          <section>
-            <h2 className="text-xl font-bold text-white mb-3">1. Introduction</h2>
-            <p>
-              Welcome to Tapfolio ("we," "our," or "us"). We are committed to protecting your personal information and your right to privacy. This Privacy Policy describes how your information is collected, used, and safeguarded when you use our mobile application (the "App"), visit our website at <Link href="https://tapfolio.me" className="text-indigo-400 hover:underline">tapfolio.me</Link> (the "Site"), or use any of our NFC-enabled networking products.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-bold text-white mb-3">2. Information We Collect</h2>
-            <p className="mb-4">
-              We collect information that you voluntarily provide to us when you register for an account, set up or modify your profile, or use the interactive features of the App. This includes:
-            </p>
-            <ul className="list-disc pl-6 space-y-2">
-              <li><strong>Account Credentials:</strong> Full name, email address, password, and custom username.</li>
-              <li><strong>Google Sign-In:</strong> If you choose to log in using Google OAuth, we receive your email address, name, profile picture, and Google authentication token.</li>
-              <li><strong>Profile Information:</strong> Professional tagline, bio, phone number, WhatsApp contact link, location, social media links (GitHub, LinkedIn, Twitter, Instagram, etc.), and avatar image.</li>
-              <li><strong>NFC Interaction Data:</strong> We record tap events (who tapped whom, timestamps, and geolocation if enabled) to build your digital connection history.</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-bold text-white mb-3">3. How We Use Your Information</h2>
-            <p className="mb-4">We use the collected information for various business and user-facing purposes, including to:</p>
-            <ul className="list-disc pl-6 space-y-2">
-              <li>Create and manage your professional digital profile.</li>
-              <li>Facilitate networking connections through physical NFC taps or digital deep links.</li>
-              <li>Maintain your connections list, connection logs, and global leaderboard rankings.</li>
-              <li>Communicate with you regarding updates, support queries, or system notifications.</li>
-              <li>Protect against unauthorized access, fraudulent actions, or terms violations.</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-bold text-white mb-3">4. Cookies and Session Storage</h2>
-            <p>
-              We use secure cookies and local storage to manage your logged-in session state. The mobile app stores a JWT authentication token securely in your device's preferences. On the Web, we use a secure HttpOnly cookie to keep you signed in. No tracking or marketing cookies are used.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-bold text-white mb-3">5. Data Sharing and Third-Party Services</h2>
-            <p className="mb-4">
-              Your profile details (name, tagline, bio, social links, etc.) are public and accessible to anyone who visits your profile link or scans your physical Tapfolio card. However, you can control the visibility of specific items (like email and phone number) in your profile settings. We do not sell or lease your personal data. We utilize:
-            </p>
-            <ul className="list-disc pl-6 space-y-2">
-              <li><strong>Database Services:</strong> To securely host and save your connection records and user profile data.</li>
-              <li><strong>Google Cloud:</strong> For managing secure user authentication credentials and SSO.</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-bold text-white mb-3">6. User Rights and Choices</h2>
-            <p>
-              You have the right to access, update, correct, or download your personal data. You can perform all of these actions directly by logging into your profile dashboard inside the App or Web interface.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-bold text-white mb-3">7. Account and Data Deletion</h2>
-            <p className="mb-4">
-              We respect your right to be forgotten. You can delete your account and all associated data permanently at any time.
-            </p>
-            <div className="bg-[#141420] border border-red-500/20 p-5 rounded-xl space-y-3">
-              <p className="font-semibold text-red-400">How to Delete Your Account:</p>
-              <ul className="list-decimal pl-6 space-y-1">
-                <li>Open the <strong>Tapfolio App</strong> on your device.</li>
-                <li>Tap the <strong>More (3 dots)</strong> menu in the upper right corner of the dashboard/navigation shell.</li>
-                <li>Select <strong>Delete Account</strong> from the drop-down options.</li>
-                <li>Read the warning checklist and type <strong>DELETE</strong> in the text box.</li>
-                <li>Tap <strong>Permanently Delete My Account</strong> to complete the process.</li>
-              </ul>
-              <p className="text-sm text-gray-400">
-                Alternatively, you can request account deletion by emailing us at <span className="text-indigo-400">support@tapfolio.me</span>. Once deleted, all profile details, avatars, connection history, and auth records are wiped from our production database immediately and cannot be recovered.
+      <main className="flex-1 w-full pt-28 pb-20">
+        {/* Hero Section */}
+        <section className="w-full bg-gradient-to-b from-gray-50/80 via-gray-50/40 to-white py-16 border-b border-gray-100">
+          <div className="max-w-[1200px] mx-auto px-6">
+            <div className="max-w-3xl">
+              <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 border border-blue-100 mb-6">
+                <ShieldCheck size={14} /> Trust & Transparency
+              </span>
+              <h1 className="font-display font-bold text-4xl md:text-5xl lg:text-6xl text-gray-950 tracking-tight mb-6">
+                Privacy Policy
+              </h1>
+              <p className="text-gray-600 text-lg md:text-xl leading-relaxed mb-6">
+                Your privacy and data ownership are fundamental to how TapFolio is built. Here is a clear breakdown of how we safeguard your identity and connections.
               </p>
+              <div className="flex items-center gap-3 text-xs font-bold text-gray-500 uppercase tracking-wider">
+                <span>Last Updated: August 2026</span>
+                <span>•</span>
+                <span>Version 2.4</span>
+              </div>
             </div>
-          </section>
 
-          <section>
-            <h2 className="text-xl font-bold text-white mb-3">8. Security of Your Data</h2>
-            <p>
-              We implement comprehensive security measures including SSL/TLS encryption for all api traffic, secure storage of authentication tokens, API request rate limiting, and password hashing to keep your professional networking data safe.
-            </p>
-          </section>
+            {/* Highlights Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
+              {highlights.map((item, idx) => (
+                <div 
+                  key={idx}
+                  className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-blue-100 transition-all duration-300 flex flex-col"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center mb-4">
+                    {item.icon}
+                  </div>
+                  <h3 className="font-bold text-gray-900 text-base mb-2">{item.title}</h3>
+                  <p className="text-gray-500 text-sm leading-relaxed">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
 
-          <section>
-            <h2 className="text-xl font-bold text-white mb-3">9. Contact Information</h2>
-            <p>
-              If you have any questions or concerns regarding this Privacy Policy or your data, please contact us at:
-              <br />
-              <strong>Email:</strong> <span className="text-indigo-400">support@tapfolio.me</span>
-            </p>
-          </section>
+        {/* Policy Content Sections */}
+        <div className="max-w-[1200px] mx-auto px-6 py-16 grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+          
+          {/* Left Sidebar / Table of Contents */}
+          <aside className="hidden lg:block lg:col-span-4 sticky top-28 space-y-4">
+            <div className="bg-gray-50/80 border border-gray-100 rounded-3xl p-6 shadow-sm">
+              <h4 className="font-bold text-xs uppercase tracking-widest text-gray-400 mb-4">
+                Policy Navigation
+              </h4>
+              <nav className="space-y-2 text-sm font-medium">
+                <a href="#intro" className="block text-gray-600 hover:text-blue-600 transition-colors py-1">1. Introduction</a>
+                <a href="#collection" className="block text-gray-600 hover:text-blue-600 transition-colors py-1">2. Information We Collect</a>
+                <a href="#usage" className="block text-gray-600 hover:text-blue-600 transition-colors py-1">3. How We Use Your Data</a>
+                <a href="#cookies" className="block text-gray-600 hover:text-blue-600 transition-colors py-1">4. Cookies & Session Storage</a>
+                <a href="#sharing" className="block text-gray-600 hover:text-blue-600 transition-colors py-1">5. Data Sharing & Third Parties</a>
+                <a href="#rights" className="block text-gray-600 hover:text-blue-600 transition-colors py-1">6. User Rights & Ownership</a>
+                <a href="#deletion" className="block text-gray-600 hover:text-blue-600 transition-colors py-1">7. Account & Data Deletion</a>
+                <a href="#security" className="block text-gray-600 hover:text-blue-600 transition-colors py-1">8. Security Infrastructure</a>
+                <a href="#contact" className="block text-gray-600 hover:text-blue-600 transition-colors py-1">9. Contact Information</a>
+              </nav>
+            </div>
+
+            <div className="bg-blue-600 rounded-3xl p-6 text-white shadow-lg shadow-blue-600/15">
+              <h4 className="font-bold text-lg mb-2">Have a question?</h4>
+              <p className="text-blue-100 text-xs leading-relaxed mb-4">
+                Our security and compliance team is available to assist with inquiries.
+              </p>
+              <a 
+                href="mailto:tapfolio.in@gmail.com" 
+                className="inline-flex items-center gap-2 bg-white text-blue-600 font-bold text-xs px-4 py-2.5 rounded-full hover:bg-blue-50 transition-colors"
+              >
+                tapfolio.in@gmail.com <ArrowRight size={14} />
+              </a>
+            </div>
+          </aside>
+
+          {/* Right Main Policy Text */}
+          <div className="lg:col-span-8 space-y-12 text-gray-600 leading-relaxed text-base">
+            
+            <section id="intro" className="bg-white p-8 md:p-10 rounded-3xl border border-gray-100 shadow-sm">
+              <h2 className="font-display font-bold text-2xl md:text-3xl text-gray-950 mb-4">
+                1. Introduction
+              </h2>
+              <p className="mb-4">
+                Welcome to Tapfolio ("we," "our," or "us"). We are dedicated to providing modern, dynamic professional networking tools while giving you total ownership of your personal and business data.
+              </p>
+              <p>
+                This Privacy Policy explains how information is collected, processed, encrypted, and safeguarded when you use our mobile applications, access our web platform at <Link href="https://tapfolio.me" className="text-blue-600 font-semibold hover:underline">tapfolio.me</Link>, or scan any of our physical NFC-enabled networking cards.
+              </p>
+            </section>
+
+            <section id="collection" className="bg-white p-8 md:p-10 rounded-3xl border border-gray-100 shadow-sm">
+              <h2 className="font-display font-bold text-2xl md:text-3xl text-gray-950 mb-4">
+                2. Information We Collect
+              </h2>
+              <p className="mb-6">
+                We only collect information that is strictly required to power your dynamic profile, configure your physical smart card, and track your networking performance:
+              </p>
+              <div className="space-y-4">
+                <div className="p-4 rounded-2xl bg-gray-50 border border-gray-100">
+                  <h4 className="font-bold text-gray-900 mb-1">Account & Identity Credentials</h4>
+                  <p className="text-sm text-gray-500">Full name, email address, password hash, and unique profile handle.</p>
+                </div>
+                <div className="p-4 rounded-2xl bg-gray-50 border border-gray-100">
+                  <h4 className="font-bold text-gray-900 mb-1">Professional Profile Information</h4>
+                  <p className="text-sm text-gray-500">Designation, company, bio, phone number, WhatsApp link, website, social handles (LinkedIn, X, Instagram, YouTube), and avatar image.</p>
+                </div>
+                <div className="p-4 rounded-2xl bg-gray-50 border border-gray-100">
+                  <h4 className="font-bold text-gray-900 mb-1">Google Single Sign-On (OAuth)</h4>
+                  <p className="text-sm text-gray-500">If you authenticate via Google, we securely receive your verified email, display name, and avatar picture.</p>
+                </div>
+                <div className="p-4 rounded-2xl bg-gray-50 border border-gray-100">
+                  <h4 className="font-bold text-gray-900 mb-1">Tap & Engagement Analytics</h4>
+                  <p className="text-sm text-gray-500">Aggregated tap timestamps, rough city-level geolocation (when shared), and link click counts to populate your analytics dashboard.</p>
+                </div>
+              </div>
+            </section>
+
+            <section id="usage" className="bg-white p-8 md:p-10 rounded-3xl border border-gray-100 shadow-sm">
+              <h2 className="font-display font-bold text-2xl md:text-3xl text-gray-950 mb-4">
+                3. How We Use Your Data
+              </h2>
+              <p className="mb-4">
+                We process your data strictly to deliver and enhance the core TapFolio product experience:
+              </p>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3 text-gray-700">
+                  <CheckCircle2 size={18} className="text-blue-600 shrink-0 mt-1" />
+                  <span>Instantly render your responsive digital profile when your physical NFC card or QR code is scanned.</span>
+                </li>
+                <li className="flex items-start gap-3 text-gray-700">
+                  <CheckCircle2 size={18} className="text-blue-600 shrink-0 mt-1" />
+                  <span>Maintain your connection records, lead capture inbox, and analytics charts.</span>
+                </li>
+                <li className="flex items-start gap-3 text-gray-700">
+                  <CheckCircle2 size={18} className="text-blue-600 shrink-0 mt-1" />
+                  <span>Send essential security notifications, password resets, and hardware order updates.</span>
+                </li>
+                <li className="flex items-start gap-3 text-gray-700">
+                  <CheckCircle2 size={18} className="text-blue-600 shrink-0 mt-1" />
+                  <span>Prevent fraudulent interactions, unauthorized API spam, or terms of service violations.</span>
+                </li>
+              </ul>
+            </section>
+
+            <section id="cookies" className="bg-white p-8 md:p-10 rounded-3xl border border-gray-100 shadow-sm">
+              <h2 className="font-display font-bold text-2xl md:text-3xl text-gray-950 mb-4">
+                4. Cookies & Session Storage
+              </h2>
+              <p className="mb-4">
+                We prioritize user privacy and avoid third-party marketing trackers:
+              </p>
+              <p>
+                On the Web, we use secure, encrypted <strong>HttpOnly session cookies</strong> to maintain your dashboard login state. On mobile applications, authentication tokens are stored inside your device’s secure hardware keychain. <strong>We do not use tracking pixels, cross-site trackers, or advertising cookies.</strong>
+              </p>
+            </section>
+
+            <section id="sharing" className="bg-white p-8 md:p-10 rounded-3xl border border-gray-100 shadow-sm">
+              <h2 className="font-display font-bold text-2xl md:text-3xl text-gray-950 mb-4">
+                5. Data Sharing & Third Parties
+              </h2>
+              <p className="mb-4">
+                Your profile information is made available to people you choose to connect with when they tap your card or open your link. You have individual privacy switches to hide sensitive fields like phone number or email address.
+              </p>
+              <p className="mb-4">
+                We work only with vetted, enterprise-grade cloud providers for infrastructure:
+              </p>
+              <ul className="list-disc pl-6 space-y-2 text-sm text-gray-600">
+                <li><strong>Database & Cloud Hosting:</strong> Secure SOC2-compliant servers with automated TLS encryption at rest and in transit.</li>
+                <li><strong>Authentication Services:</strong> Google Identity Services for secure Single Sign-On.</li>
+              </ul>
+            </section>
+
+            <section id="rights" className="bg-white p-8 md:p-10 rounded-3xl border border-gray-100 shadow-sm">
+              <h2 className="font-display font-bold text-2xl md:text-3xl text-gray-950 mb-4">
+                6. User Rights & Data Ownership
+              </h2>
+              <p className="mb-4">
+                You retain complete ownership of all personal and professional information entered into Tapfolio. You have the right to:
+              </p>
+              <ul className="space-y-2">
+                <li className="flex items-center gap-2 font-medium text-gray-800">
+                  <UserCheck size={18} className="text-blue-600" /> Access and review your data anytime in your dashboard
+                </li>
+                <li className="flex items-center gap-2 font-medium text-gray-800">
+                  <UserCheck size={18} className="text-blue-600" /> Update your contact links, company, role, or avatar in real time
+                </li>
+                <li className="flex items-center gap-2 font-medium text-gray-800">
+                  <UserCheck size={18} className="text-blue-600" /> Export your connection history to standard CSV/vCard format
+                </li>
+              </ul>
+            </section>
+
+            <section id="deletion" className="bg-white p-8 md:p-10 rounded-3xl border border-gray-100 shadow-sm">
+              <h2 className="font-display font-bold text-2xl md:text-3xl text-gray-950 mb-4">
+                7. Account & Data Deletion
+              </h2>
+              <p className="mb-6">
+                We uphold your right to be forgotten. You can permanently delete your account and all associated profile data at any moment.
+              </p>
+              
+              <div className="bg-red-50/50 border border-red-100 p-6 rounded-2xl">
+                <h4 className="font-bold text-red-900 text-sm mb-3">Self-Service Account Deletion Flow:</h4>
+                <ol className="list-decimal pl-5 space-y-2 text-sm text-red-800">
+                  <li>Open the <strong>Tapfolio App</strong> or log in to your web dashboard.</li>
+                  <li>Navigate to <strong>Settings</strong> &gt; <strong>Account Security</strong>.</li>
+                  <li>Select <strong>Delete Account</strong> and review the confirmation prompt.</li>
+                  <li>Type <strong>DELETE</strong> to confirm permanent erasure.</li>
+                </ol>
+                <p className="text-xs text-red-700 mt-4">
+                  Upon confirmation, all database records, authentication credentials, and uploaded media are permanently wiped within seconds.
+                </p>
+              </div>
+            </section>
+
+            <section id="security" className="bg-white p-8 md:p-10 rounded-3xl border border-gray-100 shadow-sm">
+              <h2 className="font-display font-bold text-2xl md:text-3xl text-gray-950 mb-4">
+                8. Security Infrastructure
+              </h2>
+              <p className="mb-4">
+                Security is built into every layer of the TapFolio ecosystem:
+              </p>
+              <ul className="list-disc pl-6 space-y-2 text-sm text-gray-600">
+                <li><strong>Read-Only NFC Hardware:</strong> NFC chips are locked to prevent malicious overwriting or tampering in the field.</li>
+                <li><strong>End-to-End Encryption:</strong> All client-to-server traffic is forced over HTTPS with modern cipher suites.</li>
+                <li><strong>Rate Limiting & Protection:</strong> API gateways actively shield against brute force attacks and credential stuffing.</li>
+              </ul>
+            </section>
+
+            <section id="contact" className="bg-gray-50 p-8 md:p-10 rounded-3xl border border-gray-100 shadow-sm">
+              <h2 className="font-display font-bold text-2xl md:text-3xl text-gray-950 mb-4">
+                9. Contact Information
+              </h2>
+              <p className="mb-4 text-gray-600">
+                For questions regarding this policy, data protection inquiries, or assistance with account management:
+              </p>
+              <div className="space-y-1 text-sm font-medium text-gray-900">
+                <p><strong>Email:</strong> <a href="mailto:tapfolio.in@gmail.com" className="text-blue-600 hover:underline">tapfolio.in@gmail.com</a></p>
+                <p><strong>Entity:</strong> TapFolio Inc.</p>
+              </div>
+            </section>
+
+          </div>
+
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-white/5 bg-[#141420] py-12 px-6 text-center text-sm text-gray-500">
-        <p className="mb-2">© {new Date().getFullYear()} Tapfolio. All rights reserved.</p>
-        <div className="flex justify-center gap-4 text-indigo-400">
-          <Link href="/privacy" className="hover:underline">Privacy Policy</Link>
-          <span>•</span>
-          <Link href="/terms" className="hover:underline">Terms of Service</Link>
-        </div>
-      </footer>
+      <FooterSection />
     </div>
   );
 }
+

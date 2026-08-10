@@ -167,7 +167,6 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
 
                   return Container(
                     margin: const EdgeInsets.only(bottom: 16),
-                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: _cardBg,
                       borderRadius: BorderRadius.circular(16),
@@ -181,95 +180,106 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                                     : _cardBorder,
                       ),
                     ),
-                    child: Row(
-                      children: [
-                        // Rank Number
-                        _getRankBadge(rank),
-                        const SizedBox(width: 12),
-
-                        // Avatar
-                        CircleAvatar(
-                          radius: 24,
-                          backgroundColor: _cardBorder,
-                          backgroundImage: getAvatarImage(profile.avatar, _apiService.baseUrl),
-                        ),
-                        const SizedBox(width: 12),
-
-                        // Details
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(16),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ProfileViewScreen(
+                                userId: profile.userId,
+                                username: profile.username,
+                                initialProfile: profile,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Row(
                             children: [
-                              Row(
-                                children: [
-                                  Flexible(
-                                    child: Text(
-                                      profile.name,
-                                      style: GoogleFonts.outfit(
-                                        color: _textColor,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                      ),
+                              // Rank Number
+                              _getRankBadge(rank),
+                              const SizedBox(width: 12),
+
+                              // Avatar
+                              CircleAvatar(
+                                radius: 24,
+                                backgroundColor: _cardBorder,
+                                backgroundImage: getAvatarImage(profile.avatar, _apiService.baseUrl),
+                              ),
+                              const SizedBox(width: 12),
+
+                              // Details
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Flexible(
+                                          child: Text(
+                                            profile.name,
+                                            style: GoogleFonts.outfit(
+                                              color: _textColor,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                          decoration: BoxDecoration(
+                                            color: Colors.amber.withValues(alpha: 0.15),
+                                            borderRadius: BorderRadius.circular(6),
+                                          ),
+                                          child: Text(
+                                            '💎 Premium',
+                                            style: GoogleFonts.outfit(color: Colors.amber, fontSize: 10, fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      profile.tagline,
+                                      style: GoogleFonts.outfit(color: _subtitleColor, fontSize: 12),
+                                      maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                     ),
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                    decoration: BoxDecoration(
-                                      color: Colors.amber.withValues(alpha: 0.15),
-                                      borderRadius: BorderRadius.circular(6),
+                                    const SizedBox(height: 6),
+                                    // Score stats
+                                    Row(
+                                      children: [
+                                        Icon(Icons.check_circle_outline, size: 14, color: const Color(0xFF6366F1)),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          '${profile.diamonds} Pts',
+                                          style: GoogleFonts.outfit(color: const Color(0xFF6366F1), fontSize: 12, fontWeight: FontWeight.bold),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Icon(Icons.bolt, size: 14, color: _isLight ? const Color(0xFF0F766E) : Colors.tealAccent),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          '${profile.tapCount} Taps',
+                                          style: GoogleFonts.outfit(color: _isLight ? const Color(0xFF0F766E) : Colors.tealAccent, fontSize: 12, fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
                                     ),
-                                    child: Text(
-                                      '💎 Premium',
-                                      style: GoogleFonts.outfit(color: Colors.amber, fontSize: 10, fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                              const SizedBox(height: 2),
-                              Text(
-                                profile.tagline,
-                                style: GoogleFonts.outfit(color: _subtitleColor, fontSize: 12),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 6),
-                              // Score stats
-                              Row(
-                                children: [
-                                  Icon(Icons.check_circle_outline, size: 14, color: const Color(0xFF6366F1)),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    '${profile.diamonds} Pts',
-                                    style: GoogleFonts.outfit(color: const Color(0xFF6366F1), fontSize: 12, fontWeight: FontWeight.bold),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Icon(Icons.bolt, size: 14, color: _isLight ? const Color(0xFF0F766E) : Colors.tealAccent),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    '${profile.tapCount} Taps',
-                                    style: GoogleFonts.outfit(color: _isLight ? const Color(0xFF0F766E) : Colors.tealAccent, fontSize: 12, fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
+
+                              // Action button
+                              Icon(Icons.arrow_forward_ios, color: _subtitleColor.withValues(alpha: 0.5), size: 16),
                             ],
                           ),
                         ),
-
-                        // Action button
-                        IconButton(
-                          icon: Icon(Icons.arrow_forward_ios, color: _subtitleColor.withValues(alpha: 0.5), size: 18),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ProfileViewScreen(userId: profile.userId),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
+                      ),
                     ),
                   );
                 }),

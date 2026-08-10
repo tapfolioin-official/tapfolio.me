@@ -40,4 +40,4 @@ Use this checklist to track all the steps required before promoting the Tapfolio
 - [ ] Phone Screenshots: At least 2, maximum 8 (16:9 or 9:16 aspect ratio).
 - [ ] 7-inch Tablet Screenshots: At least 2.
 - [ ] 10-inch Tablet Screenshots: At least 2.
-- [ ] Contact Email: `support@tapfolio.me`
+- [ ] Contact Email: `tapfolio.in@gmail.com`

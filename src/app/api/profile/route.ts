@@ -26,7 +26,8 @@ export async function GET(request: Request) {
               sharingSettings: true,
               connectionCount: true,
               profileThemes: {
-                where: { isDefault: true }
+                orderBy: [{ isDefault: 'desc' }, { updatedAt: 'desc' }],
+                take: 1
               }
             }
           }
@@ -45,7 +46,8 @@ export async function GET(request: Request) {
               sharingSettings: true,
               connectionCount: true,
               profileThemes: {
-                where: { isDefault: true }
+                orderBy: [{ isDefault: 'desc' }, { updatedAt: 'desc' }],
+                take: 1
               }
             }
           }
@@ -73,7 +75,8 @@ export async function GET(request: Request) {
               sharingSettings: true,
               connectionCount: true,
               profileThemes: {
-                where: { isDefault: true }
+                orderBy: [{ isDefault: 'desc' }, { updatedAt: 'desc' }],
+                take: 1
               }
             }
           }
@@ -143,7 +146,17 @@ export async function GET(request: Request) {
     let connectionId: number | null = null;
 
     const cookieStore = await cookies();
-    const token = cookieStore.get('pertap_jwt')?.value;
+    let token = cookieStore.get('pertap_jwt')?.value;
+    if (!token) {
+      const authHeader = request.headers.get('authorization');
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        token = authHeader.substring(7);
+      }
+    }
+    if (!token) {
+      token = request.headers.get('x-pertap-token') || undefined;
+    }
+
     if (token) {
       const payload = await verifyJWT(token);
       if (payload && payload.userId !== profile.userId) {

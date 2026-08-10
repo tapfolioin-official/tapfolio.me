@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'dart:ui';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import '../core/storage/local_storage.dart';
 import '../services/api_service.dart';
 import '../services/google_auth_service.dart';

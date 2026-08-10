@@ -118,7 +118,7 @@ export default function TermsOfService() {
           <section>
             <h2 className="text-xl font-bold text-white mb-3">7. Account Termination and Deletion</h2>
             <p>
-              We reserve the right, without notice or liability, to suspend or terminate your account if you violate these Terms of Service. You may terminate your agreement with us at any time by deleting your account through the Settings page inside the mobile app or request deletion at <span className="text-indigo-400">support@tapfolio.me</span>. Refer to our Privacy Policy for details on data wiping.
+              We reserve the right, without notice or liability, to suspend or terminate your account if you violate these Terms of Service. You may terminate your agreement with us at any time by deleting your account through the Settings page inside the mobile app or request deletion at <span className="text-indigo-400">tapfolio.in@gmail.com</span>. Refer to our Privacy Policy for details on data wiping.
             </p>
           </section>
 
@@ -141,7 +141,7 @@ export default function TermsOfService() {
             <p>
               If you have any questions about these Terms of Service, please contact us:
               <br />
-              <strong>Email:</strong> <span className="text-indigo-400">support@tapfolio.me</span>
+              <strong>Email:</strong> <span className="text-indigo-400">tapfolio.in@gmail.com</span>
             </p>
           </section>
         </div>

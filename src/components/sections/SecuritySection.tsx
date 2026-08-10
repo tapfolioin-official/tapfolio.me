@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { ShieldCheck, Lock, Database, Server } from 'lucide-react';
 
 export default function SecuritySection() {
@@ -37,7 +38,9 @@ export default function SecuritySection() {
           <p className="text-gray-500 text-base leading-relaxed mb-8">
             When you tap your card, you are securely routing data through enterprise-grade infrastructure. We protect your professional identity with military-grade encryption.
           </p>
-          <a href="#" className="text-blue-600 font-bold hover:underline">Read our Security Policy →</a>
+          <Link href="/privacy" className="text-blue-600 font-bold hover:underline inline-flex items-center gap-1">
+            Read our Security Policy →
+          </Link>
         </div>
 
         <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
