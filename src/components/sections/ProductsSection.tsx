@@ -36,17 +36,6 @@ export default function ProductsSection() {
       price: "₹2,500",
       bg: "bg-[#0a0a0a]",
       textColor: "text-white"
-    },
-    {
-      name: "Custom",
-      tier: "Enterprise",
-      slug: "custom",
-      material: "metal",
-      finish: "matte",
-      description: "Direct API & laser etching.",
-      price: "Custom",
-      bg: "bg-blue-600",
-      textColor: "text-white"
     }
   ];
 
@@ -63,7 +52,7 @@ export default function ProductsSection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {products.map((prod, idx) => (
             <Link 
               key={idx} 

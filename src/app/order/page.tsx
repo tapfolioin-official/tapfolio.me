@@ -81,17 +81,6 @@ const CARD_TIERS: CardTier[] = [
     badge: "Executive Edition",
     description: "Brushed military-grade steel with silver core laser etching.",
     features: ["Precision CNC stainless steel", "Engineered NFC signal window", "Laser engraved branding", "Heavy 24g luxury weight"]
-  },
-  {
-    id: "custom",
-    name: "Custom Enterprise",
-    material: "metal",
-    finish: "matte",
-    priceNumber: 2500,
-    priceFormatted: "Custom / ₹2,500",
-    badge: "Team Deployments",
-    description: "Full bespoke corporate design, API sync, and centralized admin.",
-    features: ["Custom bespoke shapes & etching", "Team admin & CRM auto-sync", "Dedicated account onboarding", "Volume corporate discounts"]
   }
 ];
 
@@ -400,7 +389,7 @@ function OrderContent() {
                     Choose Your Hardware Tier
                   </h2>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     {CARD_TIERS.map(tier => {
                       const isSelected = selectedTier.id === tier.id;
                       return (
