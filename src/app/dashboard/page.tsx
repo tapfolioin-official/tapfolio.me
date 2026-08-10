@@ -389,7 +389,6 @@ export default function Dashboard() {
   // Tags states
   const [tags, setTags] = useState<Tag[]>([]);
   const [newTagText, setNewTagText] = useState('');
-  const [newTagType, setNewTagType] = useState('role');
 
   // Socials states
   const [socials, setSocials] = useState<SocialLink[]>([]);
@@ -872,11 +871,11 @@ export default function Dashboard() {
     e.preventDefault();
     if (!newTagText.trim()) return;
     const isDuplicate = tags.some(
-      (t) => t.text.toLowerCase() === newTagText.trim().toLowerCase() && t.type === newTagType
+      (t) => t.text.toLowerCase() === newTagText.trim().toLowerCase()
     );
     if (isDuplicate) return;
 
-    setTags([...tags, { text: newTagText.trim(), type: newTagType }]);
+    setTags([...tags, { text: newTagText.trim(), type: 'role' }]);
     setNewTagText('');
   };
 
@@ -1679,7 +1678,7 @@ export default function Dashboard() {
                         <h5 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-1.5">
                           🏷️ Profile Tags
                         </h5>
-                        <p className="text-xs text-gray-500 mb-4">Add keywords/tags to display on your public profile. For example: roles (e.g. Developer, Designer) or locations.</p>
+                        <p className="text-xs text-gray-500 mb-4">Add keywords/tags to display on your public profile. For example: roles or skills (e.g. Developer, Designer, Next.js).</p>
 
                         {/* Tags list */}
                         <div className="flex flex-wrap gap-2 mb-4">
@@ -1692,7 +1691,7 @@ export default function Dashboard() {
                                 }`}
                             >
                               <span className="opacity-60 uppercase text-[9px] tracking-wider font-bold">
-                                {tag.type}
+                                {tag.type === 'location' ? 'location' : 'role'}
                               </span>
                               <span className="font-bold text-gray-900">{tag.text}</span>
                               <button
@@ -1711,17 +1710,9 @@ export default function Dashboard() {
 
                         {/* Add tag form */}
                         <div className="flex flex-col sm:flex-row gap-3">
-                          <select
-                            value={newTagType}
-                            onChange={(e) => setNewTagType(e.target.value)}
-                            className="px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 font-semibold outline-none focus:border-blue-500"
-                          >
-                            <option value="role">Role / Skill</option>
-                            <option value="location">Location</option>
-                          </select>
                           <input
                             type="text"
-                            placeholder="Tag text (e.g. Next.js, Austin TX)"
+                            placeholder="Tag text (e.g. Next.js, UI/UX Designer)"
                             value={newTagText}
                             onChange={(e) => setNewTagText(e.target.value)}
                             className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 font-semibold outline-none focus:border-blue-500"
