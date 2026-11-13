@@ -68,21 +68,30 @@ export function isAllowedOrigin(origin: string | null): boolean {
   try {
     const url = new URL(origin);
     const hostname = url.hostname.toLowerCase();
-    if (TRUSTED_HOSTS.has(hostname) || hostname.endsWith('.vercel.app')) {
-      return true;
-    }
-  } catch (_) {}
-
-  if (process.env.NODE_ENV !== 'production') {
     if (
-      origin.startsWith('http://localhost:') ||
-      origin.startsWith('http://127.0.0.1:') ||
-      origin === 'http://localhost' ||
-      origin === 'http://127.0.0.1'
+      TRUSTED_HOSTS.has(hostname) ||
+      hostname.endsWith('.vercel.app') ||
+      hostname.endsWith('.tapfolio.me') ||
+      hostname === 'tapfolio.me' ||
+      hostname === 'www.tapfolio.me'
     ) {
       return true;
     }
-  }
+
+    if (process.env.NODE_ENV !== 'production') {
+      if (
+        hostname === 'localhost' ||
+        hostname === '127.0.0.1' ||
+        hostname === '0.0.0.0' ||
+        hostname.startsWith('192.168.') ||
+        hostname.startsWith('10.') ||
+        hostname.endsWith('.local')
+      ) {
+        return true;
+      }
+    }
+  } catch (_) {}
+
   return false;
 }
 
@@ -90,17 +99,35 @@ export function isAllowedOrigin(origin: string | null): boolean {
  * Validates if the given host / x-forwarded-host header is legitimate.
  */
 export function isAllowedHost(host: string | null): boolean {
-  if (!host) return false;
+  if (!host) return true;
+
   // Handle multiple comma-separated hosts from proxies/load balancers
   const primaryHost = host.split(',')[0].trim();
   const hostWithoutPort = primaryHost.split(':')[0].toLowerCase();
-  if (TRUSTED_HOSTS.has(hostWithoutPort)) return true;
-  if (hostWithoutPort.endsWith('.vercel.app')) return true;
+
+  if (
+    TRUSTED_HOSTS.has(hostWithoutPort) ||
+    hostWithoutPort.endsWith('.vercel.app') ||
+    hostWithoutPort.endsWith('.tapfolio.me') ||
+    hostWithoutPort === 'tapfolio.me' ||
+    hostWithoutPort === 'www.tapfolio.me'
+  ) {
+    return true;
+  }
+
   if (process.env.NODE_ENV !== 'production') {
-    if (hostWithoutPort === 'localhost' || hostWithoutPort === '127.0.0.1') {
+    if (
+      hostWithoutPort === 'localhost' ||
+      hostWithoutPort === '127.0.0.1' ||
+      hostWithoutPort === '0.0.0.0' ||
+      hostWithoutPort.startsWith('192.168.') ||
+      hostWithoutPort.startsWith('10.') ||
+      hostWithoutPort.endsWith('.local')
+    ) {
       return true;
     }
   }
+
   return false;
 }
 

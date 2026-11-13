@@ -27,12 +27,16 @@ const FooterSection = dynamic(() => import("@/components/sections/FooterSection"
 export default function HomeClient() {
   const [preloaderComplete, setPreloaderComplete] = useState(false);
 
+  const handlePreloaderComplete = React.useCallback(() => {
+    setPreloaderComplete(true);
+  }, []);
+
   return (
     <div className="bg-white min-h-screen font-sans selection:bg-blue-200">
       <Navbar />
 
       {!preloaderComplete && (
-        <Preloader onComplete={() => setPreloaderComplete(true)} />
+        <Preloader onComplete={handlePreloaderComplete} />
       )}
 
       <LenisScrollProvider>

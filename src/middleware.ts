@@ -36,13 +36,15 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // 2. Host Validation
-  const host = request.headers.get('x-forwarded-host') || request.headers.get('host');
-  if (!isAllowedHost(host)) {
-    return NextResponse.json(
-      { error: 'Invalid or untrusted Host header.', code: 'INVALID_HOST' },
-      { status: 400 }
-    );
+  // 2. Host Validation for API routes
+  if (pathname.startsWith('/api/')) {
+    const host = request.headers.get('x-forwarded-host') || request.headers.get('host');
+    if (!isAllowedHost(host)) {
+      return NextResponse.json(
+        { error: 'Invalid or untrusted Host header.', code: 'INVALID_HOST' },
+        { status: 400 }
+      );
+    }
   }
 
   // 3. CORS Preflight Pre-emption

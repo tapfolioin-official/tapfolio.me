@@ -16,18 +16,15 @@ export default function Preloader({
 }: PreloaderProps) {
   const [stage, setStage] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
-  const [startTime] = useState(Date.now());
+  const onCompleteRef = React.useRef(onComplete);
+  onCompleteRef.current = onComplete;
 
-  // Memoized complete function to ensure min display time
   const handleComplete = useCallback(() => {
-    const elapsedTime = Date.now() - startTime;
-    const remainingTime = Math.max(0, minDisplayTime - elapsedTime);
-
-    setTimeout(() => {
-      setIsVisible(false);
-      onComplete();
-    }, remainingTime);
-  }, [onComplete, minDisplayTime, startTime]);
+    setIsVisible(false);
+    if (onCompleteRef.current) {
+      onCompleteRef.current();
+    }
+  }, []);
 
   // Skip preloader functionality
   const handleSkip = useCallback(() => {
@@ -43,8 +40,7 @@ export default function Preloader({
     const isBot = typeof window !== "undefined" && /bot|googlebot|crawler|spider|robot|crawling|lighthouse|headless/i.test(navigator.userAgent);
     
     if (isMobile || isBot) {
-      setIsVisible(false);
-      onComplete();
+      handleComplete();
       return;
     }
 
@@ -55,9 +51,8 @@ export default function Preloader({
 
     // Safety timeout to prevent infinite loading
     const safetyTimer = setTimeout(() => {
-      console.warn("Preloader safety timeout triggered");
       handleComplete();
-    }, minDisplayTime + 1000);
+    }, minDisplayTime + 600);
 
     return () => {
       clearTimeout(stage1Timer);
@@ -65,7 +60,7 @@ export default function Preloader({
       clearTimeout(completeTimer);
       clearTimeout(safetyTimer);
     };
-  }, [handleComplete, minDisplayTime, enableSkip, onComplete]);
+  }, [handleComplete, minDisplayTime]);
 
   // Keyboard skip support
   useEffect(() => {
