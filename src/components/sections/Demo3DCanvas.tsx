@@ -2,7 +2,9 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import { Canvas, useFrame, ThreeEvent, useThree } from "@react-three/fiber";
-import { OrbitControls, Environment, ContactShadows } from "@react-three/drei";
+import { OrbitControls, ContactShadows } from "@react-three/drei";
+import StudioEnvironment from "@/components/canvas/StudioEnvironment";
+import { CanvasErrorBoundary } from "@/components/canvas/CanvasErrorBoundary";
 import * as THREE from "three";
 import { drawCardFront, drawCardBack } from "@/utils/cardCanvas";
 import { drawProfileScreen } from "@/utils/profileCanvas";
@@ -296,13 +298,15 @@ function DemoScene({ isPlaying }: { isPlaying: boolean }) {
 export default function Demo3DCanvas({ isPlaying }: { isPlaying: boolean }) {
   return (
     <div className="w-full h-full">
-      <Canvas camera={{ position: [0, 0, 6], fov: 45 }}>
-        <ambientLight intensity={0.8} />
-        <directionalLight position={[5, 10, 5]} intensity={2.0} castShadow />
-        <pointLight position={[-5, -5, -5]} intensity={1.0} color="#aaddff" />
-        <Environment preset="city" />
-        <DemoScene isPlaying={isPlaying} />
-      </Canvas>
+      <CanvasErrorBoundary>
+        <Canvas camera={{ position: [0, 0, 6], fov: 45 }}>
+          <ambientLight intensity={0.8} />
+          <directionalLight position={[5, 10, 5]} intensity={2.0} castShadow />
+          <pointLight position={[-5, -5, -5]} intensity={1.0} color="#aaddff" />
+          <StudioEnvironment />
+          <DemoScene isPlaying={isPlaying} />
+        </Canvas>
+      </CanvasErrorBoundary>
     </div>
   );
 }

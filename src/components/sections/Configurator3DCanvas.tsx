@@ -2,7 +2,9 @@
 
 import React, { useRef, useState, useEffect, Suspense } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Float, Environment, ContactShadows } from "@react-three/drei";
+import { OrbitControls, Float, ContactShadows } from "@react-three/drei";
+import StudioEnvironment from "@/components/canvas/StudioEnvironment";
+import { CanvasErrorBoundary } from "@/components/canvas/CanvasErrorBoundary";
 import * as THREE from "three";
 import { drawCardFront, drawCardBack } from "@/utils/cardCanvas";
 import { RotateCw } from "lucide-react";
@@ -212,35 +214,37 @@ export default function Configurator3DCanvas({ config }: { config: ConfiguratorS
         </button>
       </div>
 
-      <Suspense fallback={
-        <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">
-          Loading 3D Canvas...
-        </div>
-      }>
-        <Canvas 
-          camera={{ position: [0, 0, 4.5], fov: 50 }}
-          gl={{ antialias: true, alpha: true }}
-          dpr={[1, 2]}
-        >
-          <ambientLight intensity={0.5} />
-          <directionalLight position={[5, 5, 5]} intensity={1.5} />
-          <directionalLight position={[-5, -5, -5]} intensity={0.5} />
-          <Environment preset="city" />
-          
-          <Float speed={autoRotate ? 0 : 2} rotationIntensity={autoRotate ? 0 : 0.4} floatIntensity={autoRotate ? 0 : 0.8}>
-            <ConfigCardMesh 
-              config={config} 
-              autoRotate={autoRotate} 
-              targetRotation={targetRotation} 
+      <CanvasErrorBoundary>
+        <Suspense fallback={
+          <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">
+            Loading 3D Canvas...
+          </div>
+        }>
+          <Canvas 
+            camera={{ position: [0, 0, 4.5], fov: 50 }}
+            gl={{ antialias: true, alpha: true }}
+            dpr={[1, 2]}
+          >
+            <ambientLight intensity={0.7} />
+            <directionalLight position={[5, 5, 5]} intensity={1.5} />
+            <directionalLight position={[-5, -5, -5]} intensity={0.5} />
+            <StudioEnvironment />
+            
+            <Float speed={autoRotate ? 0 : 2} rotationIntensity={autoRotate ? 0 : 0.4} floatIntensity={autoRotate ? 0 : 0.8}>
+              <ConfigCardMesh 
+                config={config} 
+                autoRotate={autoRotate} 
+                targetRotation={targetRotation} 
+              />
+            </Float>
+            
+            <OrbitControls 
+              enableZoom={false} 
+              enablePan={false} 
             />
-          </Float>
-          
-          <OrbitControls 
-            enableZoom={false} 
-            enablePan={false} 
-          />
-        </Canvas>
-      </Suspense>
+          </Canvas>
+        </Suspense>
+      </CanvasErrorBoundary>
     </div>
   );
 }

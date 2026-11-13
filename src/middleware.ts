@@ -25,11 +25,12 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // 1. Production HTTPS Redirection
-  if (process.env.NODE_ENV === 'production') {
+  // Vercel edge network natively terminates and enforces HTTPS redirection at the DNS/CDN boundary.
+  // We only enforce application-level 301 redirection when running in non-Vercel production environments
+  // to prevent infinite redirect loops with Cloudflare and Vercel edge proxies.
+  if (process.env.NODE_ENV === 'production' && !process.env.VERCEL) {
     const proto = request.headers.get('x-forwarded-proto');
-    // On Vercel, HTTPS is already terminated and redirected at the edge.
-    // Avoid double redirect loops on internal Vercel edge proxies.
-    if (proto === 'http' && !request.headers.get('x-vercel-id')) {
+    if (proto === 'http') {
       const httpsUrl = request.nextUrl.clone();
       httpsUrl.protocol = 'https:';
       return NextResponse.redirect(httpsUrl, 301);

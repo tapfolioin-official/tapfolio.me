@@ -2,12 +2,13 @@ import type { NextConfig } from "next";
 
 const cspHeader = `
   default-src 'self';
-  script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com https://www.googletagmanager.com;
-  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  script-src 'self' 'unsafe-inline' 'unsafe-eval' https://accounts.google.com/gsi/client https://apis.google.com https://www.googletagmanager.com https://www.gstatic.com https://vercel.live;
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://www.gstatic.com;
   font-src 'self' https://fonts.gstatic.com data:;
-  img-src 'self' data: blob: https://res.cloudinary.com https://i.pravatar.cc https://lh3.googleusercontent.com https://*.googleusercontent.com;
-  connect-src 'self' https://accounts.google.com/gsi/ https://*.firebaseio.com https://*.googleapis.com https://*.google-analytics.com https://analytics.google.com https://stats.g.doubleclick.net https://api.cloudinary.com https://api.web3forms.com;
-  frame-src 'self' https://accounts.google.com/gsi/ https://accounts.google.com/;
+  img-src 'self' data: blob: https://res.cloudinary.com https://i.pravatar.cc https://lh3.googleusercontent.com https://*.googleusercontent.com https://api.qrserver.com https://*.google.com https://www.googletagmanager.com https://raw.githack.com;
+  connect-src 'self' https://accounts.google.com/gsi/ https://*.firebaseio.com https://*.googleapis.com https://*.google-analytics.com https://analytics.google.com https://stats.g.doubleclick.net https://api.cloudinary.com https://api.web3forms.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://*.vercel-insights.com https://vercel.live https://raw.githack.com https://*.githack.com;
+  worker-src 'self' blob:;
+  frame-src 'self' https://accounts.google.com/gsi/ https://accounts.google.com/ https://vercel.live;
   frame-ancestors 'self';
   object-src 'none';
   base-uri 'self';

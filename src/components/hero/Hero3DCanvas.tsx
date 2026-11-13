@@ -2,9 +2,11 @@
 
 import React, { useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { OrbitControls, Float, Environment } from "@react-three/drei";
+import { OrbitControls, Float } from "@react-three/drei";
 import * as THREE from "three";
 import { drawCardFront, drawCardBack } from "@/utils/cardCanvas";
+import StudioEnvironment from "@/components/canvas/StudioEnvironment";
+import { CanvasErrorBoundary } from "@/components/canvas/CanvasErrorBoundary";
 
 function CardMesh() {
   const meshRef = useRef<THREE.Group>(null);
@@ -106,16 +108,18 @@ function CardMesh() {
 export default function Hero3DCanvas() {
   return (
     <div className="w-full h-full min-h-[400px]">
-      <Canvas camera={{ position: [0, 0, 4.5], fov: 50 }}>
-        <ambientLight intensity={0.5} />
-        <directionalLight position={[5, 5, 5]} intensity={1.5} />
-        <directionalLight position={[-5, -5, -5]} intensity={0.5} />
-        <Environment preset="city" />
-        <Float speed={2} rotationIntensity={0.5} floatIntensity={1}>
-          <CardMesh />
-        </Float>
-        <OrbitControls enableZoom={false} enablePan={false} />
-      </Canvas>
+      <CanvasErrorBoundary>
+        <Canvas camera={{ position: [0, 0, 4.5], fov: 50 }}>
+          <ambientLight intensity={0.7} />
+          <directionalLight position={[5, 5, 5]} intensity={1.5} />
+          <directionalLight position={[-5, -5, -5]} intensity={0.5} />
+          <StudioEnvironment />
+          <Float speed={2} rotationIntensity={0.5} floatIntensity={1}>
+            <CardMesh />
+          </Float>
+          <OrbitControls enableZoom={false} enablePan={false} />
+        </Canvas>
+      </CanvasErrorBoundary>
     </div>
   );
 }
