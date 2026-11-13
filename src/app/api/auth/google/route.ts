@@ -3,6 +3,7 @@ import prisma from '@/lib/db';
 import { signJWT } from '@/lib/auth';
 import { ensureUserSetup } from '@/lib/user-setup';
 import { rateLimit } from '@/lib/rate-limit';
+import { deriveSessionKey } from '@/lib/security';
 import * as jose from 'jose';
 
 // Cache helper to convert Google profile picture to base64 Data URL
@@ -162,6 +163,7 @@ export async function POST(request: Request) {
     const response = NextResponse.json({
       success: true,
       token,
+      transactionKey: await deriveSessionKey(token),
       user: {
         id: user.id,
         name: user.name,

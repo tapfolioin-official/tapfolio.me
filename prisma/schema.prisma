@@ -33,6 +33,7 @@ model User {
   receivedNotifications Notification[]   @relation("NotificationReceiver")
   fcmTokens             FcmToken[]
   profileThemes         ProfileTheme[]
+  cards                 Card[]
 }
 
 model Account {
@@ -519,6 +520,51 @@ model JobApplication {
   createdAt   DateTime @default(now())
 
   @@map("job_applications")
+}
+
+model Card {
+  id            String   @id @default(uuid())
+  userId        Int      @map("user_id")
+  publicToken   String   @unique @default(uuid()) @map("public_token")
+  name          String
+  title         String   // e.g. "Personal Card", "Import & Export Business"
+  designation   String?  // e.g. "Full Stack Developer", "Consultant"
+  tagline       String?
+  bio           String?  @db.Text
+  avatar        String?
+  themeColor    String   @default("0xFF0052FF") @map("theme_color")
+  skills        String[] @default([])
+  collectLeads  Boolean  @default(false) @map("collect_leads")
+  isDefault     Boolean  @default(false) @map("is_default")
+  isActive      Boolean  @default(false) @map("is_active")
+  views         Int      @default(0)
+  scans         Int      @default(0)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([publicToken])
+  @@map("cards")
+}
+
+model IdempotencyRecord {
+  id           String   @id @default(uuid())
+  key          String   @unique
+  userId       Int?     @map("user_id")
+  path         String
+  method       String
+  requestHash  String   @map("request_hash")
+  status       String   @default("PENDING") // PENDING, COMPLETED, FAILED
+  responseCode Int?     @map("response_code")
+  responseBody String?  @map("response_body") @db.Text
+  createdAt    DateTime @default(now()) @map("created_at")
+  expiresAt    DateTime @map("expires_at")
+
+  @@index([key])
+  @@index([expiresAt])
+  @@map("idempotency_records")
 }
 
 

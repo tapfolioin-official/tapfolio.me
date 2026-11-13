@@ -33,9 +33,17 @@ class ApiEndpoints {
   static const String connections = '/api/connections';
   static const String connectionSettings = '/api/connections/settings';
   static const String connectionVisibility = '/api/connections/visibility';
+  static const String connectionRemove = '/api/connections/remove';
 
   static const String notifications = '/api/notifications';
   static const String unreadNotificationCount = '/api/notifications/unread-count';
   static const String readNotification = '/api/notifications/read';
   static const String fcmRegisterToken = '/api/notifications/register-token';
+
+  // Multi-Card System
+  static const String cards = '/api/cards';
+  static const String cardsActive = '/api/cards/active';
+  static String cardById(String id) => '/api/cards/$id';
+  static String cardActivate(String id) => '/api/cards/$id/activate';
+  static String cardPublic(String token) => '/api/cards/public/$token';
 }

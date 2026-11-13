@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
 
 /// Supported card themes — each provides a fundamentally different visual style.
-///
-/// Inspired by Spotify / YouTube Music share-card theme pickers:
-///  • Aurora  – Purple/blue mesh gradient (default)
-///  • Midnight – Pure dark, clean, monochrome
-///  • Ember   – Warm gold/amber aesthetic
-enum CardThemeType { aurora, midnight, ember }
+enum CardThemeType { light, aurora, midnight, ember }
 
 /// All color/style tokens for a single card theme.
 ///
@@ -103,6 +98,8 @@ class CardExportThemeData {
   /// Factory: get the theme data for a given theme type.
   static CardExportThemeData fromType(CardThemeType type) {
     switch (type) {
+      case CardThemeType.light:
+        return _light;
       case CardThemeType.aurora:
         return _aurora;
       case CardThemeType.midnight:
@@ -113,7 +110,45 @@ class CardExportThemeData {
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // Aurora — Purple/Blue mesh gradient (default)
+  // Light — Clean modern light theme with subtle blue/slate tones (Default)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  static const _light = CardExportThemeData(
+    type: CardThemeType.light,
+    label: 'Light',
+    selectorColor: Color(0xFF3B82F6),
+    textPrimary: Color(0xFF111827),
+    textSecondary: Color(0xFF4B5563),
+    textMuted: Color(0xFF9CA3AF),
+    brandAccent: Color(0xFF2563EB),
+    avatarRingColors: [Color(0xFF3B82F6), Color(0xFF60A5FA), Color(0xFF93C5FD)],
+    avatarRingGlow: Color(0x333B82F6),
+    qrBorderGradient: [Color(0xFFDBEAFE), Color(0xFFEFF6FF), Color(0xFFFFFFFF)],
+    qrBackground: Color(0xFFFFFFFF),
+    qrDotColor: Color(0xFF111827),
+    qrIconColor: Color(0xFF2563EB),
+    qrGlowColor: Color(0x1A3B82F6),
+    verifiedColor: Color(0xFF3B82F6),
+    verifiedGlow: Color(0x333B82F6),
+    onlineDotColor: Color(0xFF10B981),
+    onlineDotGlow: Color(0x3310B981),
+    tagRoleGradient: [Color(0xFF2563EB), Color(0xFF3B82F6)],
+    tagSkillBg: Color(0xFFEFF6FF),
+    tagSkillBorder: Color(0xFFBFDBFE),
+    tagTextColor: Color(0xFF1E40AF),
+    detailIconColor: Color(0xFF3B82F6),
+    dividerColor: Color(0xFFE5E7EB),
+    socialIconColor: Color(0xFF111827),
+    socialBg: Color(0xFFF3F4F6),
+    socialBorder: Color(0xFFE5E7EB),
+    footerUrlColor: Color(0xFF2563EB),
+    footerPillBg: Color(0xFFEFF6FF),
+    footerPillBorder: Color(0xFFBFDBFE),
+    footerPillText: Color(0xFF2563EB),
+  );
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Aurora — Purple/Blue mesh gradient
   // ═══════════════════════════════════════════════════════════════════════════
 
   static const _aurora = CardExportThemeData(

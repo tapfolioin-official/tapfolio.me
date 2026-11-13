@@ -95,5 +95,32 @@
 	<string>Tapfolio requires access to your microphone to record audio for videos.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Tapfolio requires access to your photo library to save cards and QR codes.</string>
+	<key>UIApplicationShortcutItems</key>
+	<array>
+		<dict>
+			<key>UIApplicationShortcutItemType</key>
+			<string>com.tapfolio.qr</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>My QR Code</string>
+			<key>UIApplicationShortcutItemIconType</key>
+			<string>UIApplicationShortcutIconTypeShare</string>
+		</dict>
+		<dict>
+			<key>UIApplicationShortcutItemType</key>
+			<string>com.tapfolio.connections</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>My Connections</string>
+			<key>UIApplicationShortcutItemIconType</key>
+			<string>UIApplicationShortcutIconTypeContact</string>
+		</dict>
+		<dict>
+			<key>UIApplicationShortcutItemType</key>
+			<string>com.tapfolio.analytics</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>Analytics</string>
+			<key>UIApplicationShortcutItemIconType</key>
+			<string>UIApplicationShortcutIconTypeSearch</string>
+		</dict>
+	</array>
 </dict>
 </plist>

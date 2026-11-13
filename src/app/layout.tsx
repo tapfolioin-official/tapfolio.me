@@ -150,6 +150,7 @@ const jsonLd = {
 };
 
 import FirebaseAnalytics from "@/components/FirebaseAnalytics";
+import CsrfProtection from "@/components/CsrfProtection";
 
 export default function RootLayout({
   children,
@@ -166,6 +167,7 @@ export default function RootLayout({
           }}
         />
         <FirebaseAnalytics />
+        <CsrfProtection />
         {children}
       </body>
     </html>

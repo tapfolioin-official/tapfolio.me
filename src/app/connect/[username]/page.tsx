@@ -9,6 +9,9 @@ type PageProps = {
   params: Promise<{
     username: string;
   }>;
+  searchParams?: Promise<{
+    card?: string;
+  }>;
 };
 
 export async function generateMetadata({
@@ -42,8 +45,11 @@ export async function generateMetadata({
 
 export default async function ConnectRedirectPage({
   params,
+  searchParams,
 }: PageProps) {
   const { username } = await params;
+  const resolvedSearchParams = searchParams ? await searchParams : undefined;
+  const cardToken = resolvedSearchParams?.card;
 
   const slug = username.toLowerCase().trim();
 
@@ -80,6 +86,7 @@ export default async function ConnectRedirectPage({
   return (
     <ConnectClientPage
       username={slug}
+      cardToken={cardToken}
       profile={{
         id: profile.id,
         userId: profile.userId,

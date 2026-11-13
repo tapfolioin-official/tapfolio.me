@@ -4,6 +4,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'services/api_service.dart';
 import 'services/deep_link_service.dart';
 import 'services/push_notification_service.dart';
+import 'services/quick_action_service.dart';
+import 'core/widget/tapfolio_widget_service.dart';
+import 'core/widget/widget_deep_link_handler.dart';
 import 'screens/login_screen.dart';
 import 'screens/main_navigation_shell.dart';
 import 'screens/splash_screen.dart';
@@ -93,6 +96,18 @@ void main() async {
   }
 
   try {
+    TapfolioWidgetService().init();
+  } catch (e) {
+    debugPrint('[MAIN] TapfolioWidgetService init error: $e');
+  }
+
+  try {
+    QuickActionService().init();
+  } catch (e) {
+    debugPrint('[MAIN] QuickActionService init error: $e');
+  }
+
+  try {
     DeepLinkService().captureInitialLink();
   } catch (e) {
     debugPrint('[MAIN] DeepLinkService captureInitialLink error: $e');
@@ -178,12 +193,14 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       _isAuthenticated = true;
     });
+    WidgetDeepLinkHandler().resumePendingRoute();
   }
 
   void _handleLogout() {
     debugPrint(
-      '[TRACE] _handleLogout() triggered. Rebuilding to show LoginScreen.',
+      '[TRACE] _handleLogout() triggered. Clearing widget data and showing LoginScreen.',
     );
+    TapfolioWidgetService().clearWidgetData();
     setState(() {
       _isAuthenticated = false;
     });

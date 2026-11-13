@@ -45,3 +45,6 @@ next-env.d.ts
 # android binaries
 public/**/*.apk
 *.sql
+Doc.pdf
+Relese-to-ios.txt
+

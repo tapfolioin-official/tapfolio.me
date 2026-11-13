@@ -1,14 +1,20 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:app_links/app_links.dart';
+import 'package:home_widget/home_widget.dart';
+import '../core/widget/widget_deep_link_handler.dart';
 
 /// Singleton service that listens for incoming deep links and routes them.
 ///
 /// Handles:
+///   tapfolio://profile                    — Widget / Quick action profile
+///   tapfolio://connections                — Widget / Quick action connections
+///   tapfolio://analytics                  — Widget / Quick action analytics
+///   tapfolio://home                       — Widget home
+///   tapfolio://qr                         — Quick action QR share
 ///   https://tapfolio.me/USERNAME          — NFC card direct slug
 ///   https://tapfolio.me/connect/USERNAME  — legacy connect path
 ///   tapfolio://USERNAME                   — custom scheme
-///   tapfolio://connect/USERNAME           — custom scheme legacy
 class DeepLinkService {
   static final DeepLinkService _instance = DeepLinkService._internal();
   factory DeepLinkService() => _instance;
@@ -16,6 +22,7 @@ class DeepLinkService {
 
   final AppLinks _appLinks = AppLinks();
   StreamSubscription<Uri>? _subscription;
+  StreamSubscription<Uri?>? _widgetSubscription;
   GlobalKey<NavigatorState>? _navigatorKey;
 
   /// Username that arrived during cold start, before the navigator was ready.
@@ -35,6 +42,9 @@ class DeepLinkService {
     'connections',
     'history',
     'profile',
+    'analytics',
+    'home',
+    'qr',
     'api',
     'auth',
   };
@@ -42,6 +52,7 @@ class DeepLinkService {
   /// Call once from main.dart after the navigator is ready.
   void init(GlobalKey<NavigatorState> navigatorKey) {
     _navigatorKey = navigatorKey;
+    WidgetDeepLinkHandler().init(navigatorKey);
 
     // Cold-start: if there was already a pending username, navigate now.
     if (_pendingUsername != null) {
@@ -52,21 +63,49 @@ class DeepLinkService {
       );
     }
 
+    // Check if launched from iOS Home Screen Widget
+    HomeWidget.initiallyLaunchedFromHomeWidget().then((Uri? uri) {
+      if (uri != null) {
+        debugPrint('[DeepLink] App launched from Home Screen Widget: $uri');
+        _handleUri(uri);
+      }
+    }).catchError((e) {
+      debugPrint('[DeepLink] initiallyLaunchedFromHomeWidget error: $e');
+    });
+
+    // Listen for widget clicks while app is in background/foreground
+    _widgetSubscription = HomeWidget.widgetClicked.listen((Uri? uri) {
+      if (uri != null) {
+        debugPrint('[DeepLink] Widget clicked stream event: $uri');
+        _handleUri(uri);
+      }
+    });
+
     // Hot links while the app is running
     _subscription = _appLinks.uriLinkStream.listen(_handleUri);
   }
 
   /// Must be called before [init] so cold-start links are captured.
   Future<void> captureInitialLink() async {
-    final uri = await _appLinks.getInitialLink();
-    if (uri != null) {
-      _handleUri(uri, isPrecapture: true);
+    try {
+      final uri = await _appLinks.getInitialLink();
+      if (uri != null) {
+        _handleUri(uri, isPrecapture: true);
+      }
+    } catch (e) {
+      debugPrint('[DeepLink] captureInitialLink error: $e');
     }
   }
 
   void _handleUri(Uri uri, {bool isPrecapture = false}) {
     debugPrint('[DeepLink] Received URI: $uri');
 
+    // 1. Process Widget & Quick Action routes through unified handler
+    if (WidgetDeepLinkHandler().handleUri(uri)) {
+      return;
+    }
+
+    // 2. Process Public Profile / NFC card URLs
     final username = _extractUsername(uri);
     if (username == null) return;
 
@@ -127,5 +166,6 @@ class DeepLinkService {
 
   void dispose() {
     _subscription?.cancel();
+    _widgetSubscription?.cancel();
   }
 }

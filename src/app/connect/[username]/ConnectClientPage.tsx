@@ -6,6 +6,7 @@ import styles from './page.module.css';
 
 interface ConnectClientPageProps {
   username: string;
+  cardToken?: string;
   profile: {
     id: number;
     userId: number;
@@ -197,6 +198,7 @@ const getPlatformIcon = (platform: string) => {
 
 export default function ConnectClientPage({
   username,
+  cardToken,
   profile,
   isLoggedIn,
   previewTheme,
@@ -237,7 +239,13 @@ export default function ConnectClientPage({
 
     async function loadPublicData() {
       try {
-        const res = await fetch(`/api/profile/${username}?t=${Date.now()}`, { cache: 'no-store' });
+        let token = cardToken;
+        if (!token && typeof window !== 'undefined') {
+          const params = new URLSearchParams(window.location.search);
+          token = params.get('card') || undefined;
+        }
+        const cardQuery = token ? `&card=${encodeURIComponent(token)}` : '';
+        const res = await fetch(`/api/profile/${username}?t=${Date.now()}${cardQuery}`, { cache: 'no-store' });
         const data = await res.json();
         if (res.ok && data.success) {
           setProfileData(data.profile);

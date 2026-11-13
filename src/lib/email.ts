@@ -93,34 +93,44 @@ function getVerificationEmailHtml(otp: string): string {
   `;
 }
 
-let cachedTransporter: any = null;
-
 function getTransporter() {
-  if (cachedTransporter) return cachedTransporter;
-
   const smtpUser = process.env.SMTP_USER || 'tapfolio.in@gmail.com';
   const smtpPass = process.env.SMTP_PASS; // App Password (e.g. Gmail App Password)
   const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
   const smtpPort = parseInt(process.env.SMTP_PORT || '587');
 
-  if (smtpPass) {
-    cachedTransporter = nodemailer.createTransport({
-      host: smtpHost,
-      port: smtpPort,
-      secure: smtpPort === 465, // Use SSL/TLS for port 465, STARTTLS for port 587
+  if (!smtpPass) return null;
+
+  const cleanPass = smtpPass.replace(/\s+/g, '');
+
+  if (smtpHost === 'smtp.gmail.com' || smtpHost.includes('gmail')) {
+    return nodemailer.createTransport({
+      service: 'gmail',
       auth: {
         user: smtpUser,
-        pass: smtpPass.replace(/\s+/g, ''),
+        pass: cleanPass,
       },
+      connectionTimeout: 8000,
+      greetingTimeout: 8000,
     });
-    return cachedTransporter;
   }
-  return null;
+
+  return nodemailer.createTransport({
+    host: smtpHost,
+    port: smtpPort,
+    secure: smtpPort === 465, // Use SSL/TLS for port 465, STARTTLS for port 587
+    auth: {
+      user: smtpUser,
+      pass: cleanPass,
+    },
+    connectionTimeout: 8000,
+    greetingTimeout: 8000,
+  });
 }
 
 /**
  * Sends the verification code to the target email.
- * Supports SMTP (Nodemailer), Resend API, and falls back to terminal console logs.
+ * Supports SMTP (Nodemailer), Resend API, and falls back to terminal console logs in dev mode.
  */
 export async function sendVerificationEmail(email: string, otp: string): Promise<boolean> {
   const smtpUser = process.env.SMTP_USER || 'tapfolio.in@gmail.com';
@@ -133,7 +143,7 @@ export async function sendVerificationEmail(email: string, otp: string): Promise
       await transporter.sendMail({
         from: `"Tapfolio Verification" <${smtpUser}>`,
         to: email,
-        subject: 'Verify your email address',
+        subject: `${otp} is your Tapfolio verification code`,
         html: getVerificationEmailHtml(otp),
       });
 
@@ -158,7 +168,7 @@ export async function sendVerificationEmail(email: string, otp: string): Promise
         body: JSON.stringify({
           from: fromEmail,
           to: email,
-          subject: 'Verify your email address',
+          subject: `${otp} is your Tapfolio verification code`,
           html: getVerificationEmailHtml(otp),
         }),
       });
@@ -172,6 +182,17 @@ export async function sendVerificationEmail(email: string, otp: string): Promise
     } catch (error) {
       console.error('Resend fetch error:', error);
     }
+  }
+
+  // 3. Development Mode Fallback: print OTP in terminal so local registration is never blocked
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('\n' + '='.repeat(60));
+    console.log(`🔑 [DEV MODE OTP FALLBACK] Email: ${email}`);
+    console.log(`👉 OTP CODE: ${otp}`);
+    console.log(`ℹ️  Note: Email could not be delivered (check SMTP/Resend credentials).`);
+    console.log(`    Use the OTP code above to test verification on localhost.`);
+    console.log('='.repeat(60) + '\n');
+    return true;
   }
 
   console.error(`[Email Error] No email provider configured, or all delivery attempts failed for email=${email}`);

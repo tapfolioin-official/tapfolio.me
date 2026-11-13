@@ -126,22 +126,23 @@ class ProfileHeader extends StatelessWidget {
             ),
             boxShadow: [
               BoxShadow(
-                color: t.avatarRingGlow.withValues(alpha: 0.55),
-                blurRadius: r * 0.60,
-                spreadRadius: r * 0.04,
+                color: t.avatarRingGlow.withValues(alpha: t.type == CardThemeType.light ? 0.25 : 0.55),
+                blurRadius: r * 0.50,
+                spreadRadius: r * 0.02,
               ),
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.40),
-                blurRadius: r * 0.40,
-                offset: Offset(0, r * 0.17),
-              ),
+              if (t.type != CardThemeType.light)
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.40),
+                  blurRadius: r * 0.40,
+                  offset: Offset(0, r * 0.17),
+                ),
             ],
           ),
           child: Container(
             padding: EdgeInsets.all(innerPad),
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Color(0xff0F172A),
+              color: t.type == CardThemeType.light ? Colors.white : const Color(0xff0F172A),
             ),
             child: SizedBox.square(
               dimension: r * 2,
@@ -340,7 +341,7 @@ class _AvatarContentState extends State<_AvatarContent> {
             ),
           );
         },
-        errorBuilder: (_, __, ___) => ColoredBox(
+        errorBuilder: (context, error, stackTrace) => ColoredBox(
           color: const Color(0xff1F2937),
           child: Center(
             child: Text(

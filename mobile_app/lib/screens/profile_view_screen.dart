@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart' hide CardTheme, ButtonTheme;
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:share_plus/share_plus.dart';
 import '../models/profile.dart';
 import '../models/social_link.dart';
 import '../screens/theme_studio/models/theme_models.dart';
@@ -31,6 +34,7 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
 
   Profile? _profile;
   int? _userId;
+  int? _connectionId;
   bool _loading = false;
   String? _error;
   bool _connecting = false;
@@ -99,6 +103,8 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
         setState(() {
           _profile = res['profile'];
           _connectionStatus = res['connectionStatus'];
+          final rawConnId = res['connectionId'];
+          _connectionId = (rawConnId is int) ? rawConnId : int.tryParse(rawConnId?.toString() ?? '');
           _connected = _connectionStatus == 'accepted';
         });
       } else if (widget.username != null && widget.username!.isNotEmpty) {
@@ -143,6 +149,8 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
         setState(() {
           _profile = res['profile'];
           _connectionStatus = res['connectionStatus'];
+          final rawConnId = res['connectionId'];
+          _connectionId = (rawConnId is int) ? rawConnId : int.tryParse(rawConnId?.toString() ?? '');
           _connected = _connectionStatus == 'accepted';
         });
       } else if (_profile == null) {
@@ -184,6 +192,8 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
     if (res['success'] == true) {
       setState(() {
         _connectionStatus = 'pending';
+        final rawConnId = res['connectionId'];
+        _connectionId = (rawConnId is int) ? rawConnId : int.tryParse(rawConnId?.toString() ?? '');
       });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Connection request sent!'), backgroundColor: Colors.teal),
@@ -195,26 +205,286 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
     }
   }
 
-  void _handleSaveContact() {
+  void _handleConnectedOptions() {
     if (_profile == null) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Saving ${_profile!.name} to contacts...'),
-        backgroundColor: const Color(0xFF0F172A),
-        behavior: SnackBarBehavior.floating,
+    final isLight = Theme.of(context).brightness == Brightness.light;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (_) => Container(
+        decoration: BoxDecoration(
+          color: isLight ? Colors.white : const Color(0xFF0F1122),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey.withValues(alpha: 0.35),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 18),
+            Text(
+              'Connection Options',
+              style: GoogleFonts.outfit(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: isLight ? const Color(0xFF0F172A) : Colors.white,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Manage your connection with ${_profile!.name.isNotEmpty ? _profile!.name : _profile!.username}',
+              style: GoogleFonts.outfit(
+                fontSize: 13,
+                color: isLight ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                icon: const Icon(Icons.person_remove_alt_1_rounded, size: 16),
+                label: Text(
+                  'Remove Connection',
+                  style: GoogleFonts.outfit(fontWeight: FontWeight.w600, fontSize: 14),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                  _confirmRemoveConnection();
+                },
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: const Color(0xFFEF4444),
+                  side: BorderSide(
+                    color: const Color(0xFFEF4444).withValues(alpha: 0.30),
+                    width: 1.5,
+                  ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+          ],
+        ),
       ),
     );
   }
 
-  void _handleShare() {
+  void _confirmRemoveConnection() {
     if (_profile == null) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Profile link: tapfolio.me/${_profile!.username}'),
-        backgroundColor: const Color(0xFF0F172A),
-        behavior: SnackBarBehavior.floating,
+    final name = _profile!.name.isNotEmpty ? _profile!.name : _profile!.username;
+    final isLight = Theme.of(context).brightness == Brightness.light;
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: isLight ? Colors.white : const Color(0xFF13131F),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            const Icon(Icons.warning_amber_rounded, color: Color(0xFFEF4444), size: 24),
+            const SizedBox(width: 10),
+            Flexible(
+              child: Text(
+                'Remove Connection',
+                style: GoogleFonts.outfit(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 18,
+                  color: isLight ? const Color(0xFF0F172A) : Colors.white,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          'Are you sure you want to remove $name from your connections? This action cannot be undone.',
+          style: GoogleFonts.outfit(
+            fontSize: 14,
+            height: 1.5,
+            color: isLight ? const Color(0xFF64748B) : const Color(0xFF94A3B8),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('Cancel', style: GoogleFonts.outfit(fontWeight: FontWeight.w600)),
+          ),
+          ElevatedButton.icon(
+            onPressed: () {
+              Navigator.pop(ctx);
+              _removeConnection();
+            },
+            icon: const Icon(Icons.person_remove_alt_1_rounded, size: 16, color: Colors.white),
+            label: Text('Remove', style: GoogleFonts.outfit(fontWeight: FontWeight.w700, color: Colors.white)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFEF4444),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              elevation: 0,
+            ),
+          ),
+        ],
       ),
     );
+  }
+
+  Future<void> _removeConnection() async {
+    if (_profile == null) return;
+    final res = await _apiService.removeConnection(
+      connectionId: _connectionId,
+      targetUserId: _profile!.userId > 0 ? _profile!.userId : _userId,
+      targetUsername: _profile!.username,
+    );
+    if (!mounted) return;
+    if (res['success'] == true) {
+      setState(() {
+        _connected = false;
+        _connectionStatus = null;
+        _connectionId = null;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Connection removed.'), backgroundColor: Color(0xFF374151)),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(res['error'] ?? 'Failed to remove connection.'), backgroundColor: Colors.redAccent),
+      );
+    }
+  }
+
+  Future<void> _handleSaveContact() async {
+    if (_profile == null) return;
+    HapticFeedback.lightImpact();
+    final username = _profile!.username;
+    final url = '${_apiService.baseUrl}/api/profile/$username/vcard';
+    try {
+      final uri = Uri.parse(url);
+      final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!launched) {
+        await launchUrl(uri, mode: LaunchMode.platformDefault);
+      }
+    } catch (e) {
+      debugPrint('[PROFILE-VIEW] Error downloading vcard: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not download contact card: $e'), backgroundColor: Colors.redAccent),
+        );
+      }
+    }
+  }
+
+  void _handleShare() {
+    if (_profile == null) return;
+    HapticFeedback.lightImpact();
+    final username = _profile!.username;
+    final name = _profile!.name.isNotEmpty ? _profile!.name : username;
+    final url = '${_apiService.baseUrl}/$username';
+    Share.share('Check out $name\'s profile on Tapfolio: $url', subject: '$name on Tapfolio');
+  }
+
+  Future<void> _launchPhone(String phone) async {
+    HapticFeedback.lightImpact();
+    final cleanPhone = phone.replaceAll(RegExp(r'[^0-9+]'), '');
+    final uri = Uri(scheme: 'tel', path: cleanPhone);
+    try {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (e) {
+      debugPrint('[PROFILE-VIEW] Error launching phone: $e');
+    }
+  }
+
+  Future<void> _launchWhatsApp(String whatsapp) async {
+    HapticFeedback.lightImpact();
+    final digits = whatsapp.replaceAll(RegExp(r'[^0-9]'), '');
+    final uri = Uri.parse('https://wa.me/$digits');
+    try {
+      final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!launched) {
+        await launchUrl(uri, mode: LaunchMode.platformDefault);
+      }
+    } catch (e) {
+      debugPrint('[PROFILE-VIEW] Error launching WhatsApp: $e');
+    }
+  }
+
+  Future<void> _launchMaps(String location) async {
+    HapticFeedback.lightImpact();
+    final query = Uri.encodeComponent(location);
+    final uri = Uri.parse('https://www.google.com/maps/search/?api=1&query=$query');
+    try {
+      final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!launched) {
+        await launchUrl(uri, mode: LaunchMode.platformDefault);
+      }
+    } catch (e) {
+      debugPrint('[PROFILE-VIEW] Error launching Maps: $e');
+    }
+  }
+
+  Future<void> _launchSocialLink(dynamic link) async {
+    String url = '';
+    if (link is SocialLink) {
+      url = link.url;
+    } else if (link is Map) {
+      url = link['url']?.toString() ?? '';
+    } else {
+      url = link.url?.toString() ?? '';
+    }
+
+    final platform = (link.platform?.toString() ?? '').toLowerCase();
+    final handle = (link.handle?.toString() ?? '').trim();
+
+    // If URL is empty or lacks scheme, construct from platform and handle
+    if (url.isEmpty || (!url.startsWith('http://') && !url.startsWith('https://') && !url.startsWith('mailto:') && !url.startsWith('tel:'))) {
+      if (url.isNotEmpty && (url.contains('.') || url.contains('/'))) {
+        url = 'https://$url';
+      } else if (handle.isNotEmpty) {
+        final cleanHandle = handle.replaceAll('@', '').trim();
+        if (platform.contains('instagram')) {
+          url = 'https://instagram.com/$cleanHandle';
+        } else if (platform.contains('linkedin')) {
+          url = cleanHandle.startsWith('http') ? cleanHandle : 'https://linkedin.com/in/$cleanHandle';
+        } else if (platform.contains('twitter') || platform.contains('x')) {
+          url = 'https://x.com/$cleanHandle';
+        } else if (platform.contains('github')) {
+          url = 'https://github.com/$cleanHandle';
+        } else if (platform.contains('youtube')) {
+          url = 'https://youtube.com/@$cleanHandle';
+        } else if (platform.contains('facebook')) {
+          url = 'https://facebook.com/$cleanHandle';
+        } else if (platform.contains('tiktok')) {
+          url = 'https://tiktok.com/@$cleanHandle';
+        } else if (platform.contains('whatsapp')) {
+          final phoneDigits = cleanHandle.replaceAll(RegExp(r'[^0-9]'), '');
+          url = 'https://wa.me/$phoneDigits';
+        } else if (platform.contains('telegram')) {
+          url = 'https://t.me/$cleanHandle';
+        } else if (url.isNotEmpty) {
+          url = 'https://$url';
+        }
+      }
+    }
+
+    if (url.isEmpty) return;
+
+    try {
+      final uri = Uri.parse(url);
+      final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!launched) {
+        await launchUrl(uri, mode: LaunchMode.platformDefault);
+      }
+    } catch (e) {
+      debugPrint('[PROFILE-VIEW] Error launching URL ($url): $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not open link: $url'), backgroundColor: Colors.redAccent),
+        );
+      }
+    }
   }
 
   String _getRolesSubtitle() {
@@ -466,36 +736,48 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
           ),
         ],
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-      child: Row(
-        children: [
-          iconWidget,
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(radius),
+          onTap: () {
+            HapticFeedback.lightImpact();
+            _launchSocialLink(link);
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+            child: Row(
               children: [
-                Text(
-                  platform,
-                  style: GoogleFonts.outfit(
-                    color: textColor,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                iconWidget,
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        platform,
+                        style: GoogleFonts.outfit(
+                          color: textColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      if (link.handle != null && link.handle.isNotEmpty)
+                        Text(
+                          link.handle,
+                          style: GoogleFonts.outfit(
+                            color: subtextColor,
+                            fontSize: 13,
+                          ),
+                        ),
+                    ],
                   ),
                 ),
-                if (link.handle != null && link.handle.isNotEmpty)
-                  Text(
-                    link.handle,
-                    style: GoogleFonts.outfit(
-                      color: subtextColor,
-                      fontSize: 13,
-                    ),
-                  ),
+                Icon(Icons.arrow_forward_ios, size: 14, color: subtextColor),
               ],
             ),
           ),
-          Icon(Icons.arrow_forward_ios, size: 14, color: subtextColor),
-        ],
+        ),
       ),
     );
   }
@@ -872,35 +1154,40 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
                                               padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                                               child: Column(
                                                 children: [
-                                                  ListTile(
-                                                    contentPadding: EdgeInsets.zero,
-                                                    leading: const Icon(Icons.location_on, color: Color(0xFFEF4444)),
-                                                    title: Text(
-                                                      _profile!.location != null && _profile!.location!.isNotEmpty 
-                                                          ? _profile!.location! 
-                                                          : 'Kochi, Kerala', 
-                                                      style: GoogleFonts.outfit(fontSize: 14),
+                                                  if (_profile!.location != null && _profile!.location!.isNotEmpty)
+                                                    ListTile(
+                                                      contentPadding: EdgeInsets.zero,
+                                                      leading: const Icon(Icons.location_on, color: Color(0xFFEF4444)),
+                                                      title: Text(
+                                                        _profile!.location!, 
+                                                        style: GoogleFonts.outfit(fontSize: 14),
+                                                      ),
+                                                      trailing: const Icon(Icons.open_in_new_rounded, size: 16, color: Color(0xFF64748B)),
+                                                      onTap: () => _launchMaps(_profile!.location!),
                                                     ),
-                                                  ),
-                                              if (_profile!.phone != null && _profile!.phone!.isNotEmpty)
-                                                ListTile(
-                                                  contentPadding: EdgeInsets.zero,
-                                                  leading: const Icon(Icons.phone, color: Color(0xFF0F172A)),
-                                                  title: Text(_profile!.phone!, style: GoogleFonts.outfit(fontSize: 14)),
-                                                ),
-                                              if (_profile!.whatsapp != null && _profile!.whatsapp!.isNotEmpty)
-                                                ListTile(
-                                                  contentPadding: EdgeInsets.zero,
-                                                  leading: const Icon(Icons.chat, color: Color(0xFF25D366)),
-                                                  title: Text(_profile!.whatsapp!, style: GoogleFonts.outfit(fontSize: 14)),
-                                                ),
-                                            ],
-                                          ),
+                                                  if (_profile!.phone != null && _profile!.phone!.isNotEmpty)
+                                                    ListTile(
+                                                      contentPadding: EdgeInsets.zero,
+                                                      leading: const Icon(Icons.phone, color: Color(0xFF0F172A)),
+                                                      title: Text(_profile!.phone!, style: GoogleFonts.outfit(fontSize: 14)),
+                                                      trailing: const Icon(Icons.open_in_new_rounded, size: 16, color: Color(0xFF64748B)),
+                                                      onTap: () => _launchPhone(_profile!.phone!),
+                                                    ),
+                                                  if (_profile!.whatsapp != null && _profile!.whatsapp!.isNotEmpty)
+                                                    ListTile(
+                                                      contentPadding: EdgeInsets.zero,
+                                                      leading: const Icon(Icons.chat, color: Color(0xFF25D366)),
+                                                      title: Text(_profile!.whatsapp!, style: GoogleFonts.outfit(fontSize: 14)),
+                                                      trailing: const Icon(Icons.open_in_new_rounded, size: 16, color: Color(0xFF64748B)),
+                                                      onTap: () => _launchWhatsApp(_profile!.whatsapp!),
+                                                    ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                      ],
-                                    ),
-                                  ),
-                                );
+                                      ),
+                                    );
                                   },
                                 ),
                                 const SizedBox(height: 14),
@@ -1004,7 +1291,9 @@ class _ProfileViewScreenState extends State<ProfileViewScreen> {
                                         color: Colors.transparent,
                                         child: InkWell(
                                           borderRadius: BorderRadius.circular(18),
-                                          onTap: (isConnected || isPending || _isOwnProfile) ? null : _handleConnect,
+                                          onTap: isConnected
+                                              ? _handleConnectedOptions
+                                              : ((isPending || _isOwnProfile) ? null : _handleConnect),
                                           child: Center(
                                             child: _connecting
                                                 ? const SizedBox(

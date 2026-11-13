@@ -54,15 +54,15 @@ class ContactCard extends StatelessWidget {
         child: Container(
           width: double.infinity,
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.07),
+            color: Colors.white.withValues(alpha: 0.07),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: Colors.white.withOpacity(0.10),
+              color: Colors.white.withValues(alpha: 0.10),
               width: 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.22),
+                color: Colors.black.withValues(alpha: 0.22),
                 blurRadius: 24,
                 offset: const Offset(0, 8),
               ),
@@ -80,7 +80,7 @@ class ContactCard extends StatelessWidget {
                   _buildRow(row),
                   if (index < rows.length - 1)
                     Divider(
-                      color: Colors.white.withOpacity(0.07),
+                      color: Colors.white.withValues(alpha: 0.07),
                       height: 10,
                       thickness: 0.5,
                     ),
@@ -102,7 +102,7 @@ class ContactCard extends StatelessWidget {
             width: 26,
             height: 26,
             decoration: BoxDecoration(
-              color: const Color(0xFF6366F1).withOpacity(0.15),
+              color: const Color(0xFF6366F1).withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(7),
             ),
             child: Icon(row.icon, color: const Color(0xFF8B8CF8), size: 13),

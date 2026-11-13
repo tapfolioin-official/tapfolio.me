@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import '../storage/local_storage.dart';
 import '../utils/logger.dart';
 import '../utils/error_handler.dart';
+import 'security_service.dart';
 import '../../services/client_stub.dart' if (dart.library.js_util) '../../services/client_web.dart';
 
 class ApiClient {
@@ -53,8 +54,13 @@ class ApiClient {
       final body = response.body.trim();
       if (body.isNotEmpty) {
         final decoded = jsonDecode(body);
-        if (decoded is Map<String, dynamic> && decoded['token'] != null) {
-          token = decoded['token'];
+        if (decoded is Map<String, dynamic>) {
+          if (decoded['token'] != null) {
+            token = decoded['token'];
+          }
+          if (decoded['transactionKey'] != null) {
+            TransactionSecurityService.setSessionKey(decoded['transactionKey'].toString());
+          }
         }
       }
     } catch (_) {}
@@ -102,11 +108,23 @@ class ApiClient {
 
     http.Response? response;
     dynamic lastError;
+    String lastNonce = '';
 
     for (int i = 0; i <= retryCount; i++) {
       try {
         final request = http.Request(method, url);
         request.headers.addAll(finalHeaders);
+
+        // Sign transaction with fresh nonce, timestamp, and body hash
+        final nonce = TransactionSecurityService.generateNonce();
+        lastNonce = nonce;
+        final securityHeaders = TransactionSecurityService.signRequest(
+          method: method,
+          path: url.toString(),
+          body: body,
+          explicitNonce: nonce,
+        );
+        request.headers.addAll(securityHeaders);
 
         if (body != null) {
           if (body is String) {
@@ -136,6 +154,12 @@ class ApiClient {
 
     AppLogger.info('HTTP ${response.statusCode} <- $url');
 
+    // Cryptographic verification of server response
+    TransactionSecurityService.verifyResponseIntegrity(
+      response: response,
+      requestNonce: lastNonce,
+    );
+
     // Automatically check for JWT updates in headers/body
     await _updateToken(response);
 
@@ -143,6 +167,7 @@ class ApiClient {
     if (response.statusCode == 401 && authenticated) {
       AppLogger.warn('Auth token rejected (401). Purging credentials.');
       await _storage.clearJwtToken();
+      TransactionSecurityService.clearSessionKeys();
     }
 
     return response;

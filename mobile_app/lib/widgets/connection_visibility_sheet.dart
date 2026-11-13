@@ -23,6 +23,13 @@ class ConnectionVisibilitySheet extends StatefulWidget {
 class _ConnectionVisibilitySheetState extends State<ConnectionVisibilitySheet> {
   final ApiService _api = ApiService();
 
+  // ── Light-mode design tokens ──────────────────────────────────────────────
+  static const _blue = Color(0xFF3B82F6);
+  static const _textPrimary = Color(0xFF111827);
+  static const _textSecondary = Color(0xFF6B7280);
+  static const _borderColor = Color(0xFFE5E7EB);
+  static const _iconBgColor = Color(0xFFEFF6FF);
+
   late bool _shareName;
   late bool _shareEmail;
   late bool _sharePhone;
@@ -110,7 +117,7 @@ class _ConnectionVisibilitySheetState extends State<ConnectionVisibilitySheet> {
 
     return Container(
       decoration: const BoxDecoration(
-        color: Color(0xFF1a1a2e),
+        color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       padding: EdgeInsets.only(
@@ -122,7 +129,7 @@ class _ConnectionVisibilitySheetState extends State<ConnectionVisibilitySheet> {
       child: _loadingProfile
           ? const SizedBox(
               height: 250,
-              child: Center(child: CircularProgressIndicator(color: Color(0xFF6366F1))),
+              child: Center(child: CircularProgressIndicator(color: _blue)),
             )
           : SingleChildScrollView(
               child: Column(
@@ -133,7 +140,7 @@ class _ConnectionVisibilitySheetState extends State<ConnectionVisibilitySheet> {
                     child: Container(
                       width: 40, height: 4,
                       decoration: BoxDecoration(
-                        color: Colors.white24,
+                        color: const Color(0xFFD1D5DB),
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -144,21 +151,21 @@ class _ConnectionVisibilitySheetState extends State<ConnectionVisibilitySheet> {
                     style: GoogleFonts.outfit(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: _textPrimary,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     'Choose what details are visible to $otherName.',
-                    style: GoogleFonts.outfit(fontSize: 13, color: Colors.white54),
+                    style: GoogleFonts.outfit(fontSize: 13, color: _textSecondary),
                   ),
                   const SizedBox(height: 16),
-                  const Divider(color: Colors.white12),
+                  Divider(color: _borderColor),
                   const SizedBox(height: 8),
 
                   Text(
                     'CONTACT DETAILS',
-                    style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.bold, color: const Color(0xFF6366F1), letterSpacing: 1.2),
+                    style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.bold, color: _blue, letterSpacing: 1.2),
                   ),
                   const SizedBox(height: 8),
 
@@ -175,11 +182,11 @@ class _ConnectionVisibilitySheetState extends State<ConnectionVisibilitySheet> {
 
                   if (_mySocials.isNotEmpty) ...[
                     const SizedBox(height: 16),
-                    const Divider(color: Colors.white12),
+                    Divider(color: _borderColor),
                     const SizedBox(height: 8),
                     Text(
                       'SOCIAL LINKS',
-                      style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.bold, color: const Color(0xFF6366F1), letterSpacing: 1.2),
+                      style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.bold, color: _blue, letterSpacing: 1.2),
                     ),
                     const SizedBox(height: 8),
                     ..._mySocials.map((link) {
@@ -212,7 +219,7 @@ class _ConnectionVisibilitySheetState extends State<ConnectionVisibilitySheet> {
                     child: ElevatedButton(
                       onPressed: _saving ? null : _save,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF6366f1),
+                        backgroundColor: _blue,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 15),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
@@ -243,7 +250,7 @@ class _ConnectionVisibilitySheetState extends State<ConnectionVisibilitySheet> {
     ValueChanged<bool> onChanged, {
     Color? iconColor,
   }) {
-    final effectiveIconColor = iconColor ?? const Color(0xFF6366F1);
+    final effectiveIconColor = iconColor ?? _blue;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
@@ -252,7 +259,7 @@ class _ConnectionVisibilitySheetState extends State<ConnectionVisibilitySheet> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: effectiveIconColor.withValues(alpha: 0.12),
+              color: effectiveIconColor.withValues(alpha: 0.10),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, color: effectiveIconColor, size: 20),
@@ -262,15 +269,18 @@ class _ConnectionVisibilitySheetState extends State<ConnectionVisibilitySheet> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14)),
-                Text(description, style: GoogleFonts.outfit(color: Colors.white38, fontSize: 12)),
+                Text(label, style: GoogleFonts.outfit(color: _textPrimary, fontWeight: FontWeight.w600, fontSize: 14)),
+                Text(description, style: GoogleFonts.outfit(color: _textSecondary, fontSize: 12)),
               ],
             ),
           ),
           Switch(
             value: value,
             onChanged: onChanged,
-            activeThumbColor: const Color(0xFF6366f1),
+            activeColor: _blue,
+            activeTrackColor: _blue.withValues(alpha: 0.30),
+            inactiveThumbColor: const Color(0xFFD1D5DB),
+            inactiveTrackColor: const Color(0xFFE5E7EB),
           ),
         ],
       ),

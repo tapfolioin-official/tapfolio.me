@@ -13,6 +13,9 @@ export async function GET(
       return NextResponse.json({ error: 'Username is required.' }, { status: 400 });
     }
 
+    const urlObj = new URL(request.url);
+    const cardParam = urlObj.searchParams.get('card')?.trim();
+
     const slug = username.toLowerCase().trim();
     const profile = await prisma.profile.findUnique({
       where: { username: slug },
@@ -24,8 +27,12 @@ export async function GET(
         },
         user: {
           select: {
+            id: true,
             connectionCount: true,
             email: true,
+            cards: {
+              orderBy: [{ isActive: 'desc' }, { isDefault: 'desc' }, { updatedAt: 'desc' }],
+            },
             profileThemes: {
               orderBy: [{ isDefault: 'desc' }, { updatedAt: 'desc' }],
               take: 1
@@ -38,6 +45,24 @@ export async function GET(
     if (!profile) {
       return NextResponse.json({ error: 'Profile not found.' }, { status: 404 });
     }
+
+    // Resolve specific card if requested by ?card=TOKEN
+    let requestedCard = null;
+    if (cardParam && profile.user?.cards) {
+      requestedCard = profile.user.cards.find(
+        (c) => c.publicToken === cardParam || c.id === cardParam
+      );
+      if (requestedCard) {
+        try {
+          await prisma.card.update({
+            where: { id: requestedCard.id },
+            data: { scans: { increment: 1 }, views: { increment: 1 } },
+          });
+        } catch (_) {}
+      }
+    }
+
+    const activeCard = requestedCard || profile.user?.cards?.find((c) => c.isActive) || profile.user?.cards?.[0] || null;
 
     // Check connection status if caller is authenticated
     let connectionStatus: string | null = null;
@@ -77,19 +102,44 @@ export async function GET(
       }
     } catch (_) {}
 
+    const displayName = requestedCard?.name || profile.name;
+    const displayTagline = requestedCard?.designation || profile.tagline;
+    const displayBio = requestedCard?.bio || profile.bio;
+    const displayAvatar = requestedCard?.avatar || profile.avatar;
+    const displayTags = (requestedCard && requestedCard.skills && requestedCard.skills.length > 0)
+      ? requestedCard.skills.map((s: string, i: number) => ({ id: i + 1, text: s, type: 'role' }))
+      : profile.tags;
+
     return NextResponse.json(
       {
         success: true,
         connectionStatus,
         connectionId,
+        card: activeCard ? {
+          id: activeCard.id,
+          publicToken: activeCard.publicToken,
+          name: activeCard.name,
+          title: activeCard.title,
+          designation: activeCard.designation,
+          tagline: activeCard.tagline,
+          bio: activeCard.bio,
+          avatar: activeCard.avatar,
+          skills: activeCard.skills,
+          themeColor: activeCard.themeColor,
+          collectLeads: activeCard.collectLeads,
+          isDefault: activeCard.isDefault,
+          isActive: activeCard.isActive,
+          views: activeCard.views,
+          scans: activeCard.scans,
+        } : null,
         profile: {
           id: profile.id,
           userId: profile.userId,
-          name: profile.name,
+          name: displayName,
           username: profile.username,
-          tagline: profile.tagline,
-          avatar: profile.avatar,
-          bio: profile.bio,
+          tagline: displayTagline,
+          avatar: displayAvatar,
+          bio: displayBio,
           phone: profile.phone,
           whatsapp: profile.whatsapp,
           location: profile.location,
@@ -99,7 +149,7 @@ export async function GET(
           tapCount: profile.tapCount,
           email: profile.user?.email,
           connectionCount: profile.user?.connectionCount ?? 0,
-          tags: profile.tags,
+          tags: displayTags,
           socials: profile.socials,
           portfolioUrl: profile.portfolioUrl,
           resumeUrl: profile.resumeUrl,

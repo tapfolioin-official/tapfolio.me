@@ -3,7 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../../models/social_link.dart';
 import '../models/card_theme.dart';
 
-/// A row of social-platform icons — theme-aware.
+/// A row of social-platform icons — theme-aware and beautifully branded.
 ///
 /// All dimensions driven by [iconSize] for proportional rendering.
 class SocialIconsRow extends StatelessWidget {
@@ -34,6 +34,8 @@ class SocialIconsRow extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: visible.map((link) {
+        final brandStyle = _brandStyleForPlatform(link.icon, t);
+
         return Padding(
           padding: EdgeInsets.symmetric(horizontal: gap / 2),
           child: Container(
@@ -41,16 +43,84 @@ class SocialIconsRow extends StatelessWidget {
             height: iconSize,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: t.socialBg,
-              border: Border.all(color: t.socialBorder, width: borderW),
+              color: brandStyle.gradient == null ? brandStyle.color : null,
+              gradient: brandStyle.gradient,
+              border: brandStyle.border ? Border.all(color: t.socialBorder, width: borderW) : null,
+              boxShadow: [
+                BoxShadow(
+                  color: (brandStyle.color ?? const Color(0xFF3B82F6)).withValues(alpha: 0.15),
+                  blurRadius: 4,
+                  offset: const Offset(0, 1.5),
+                ),
+              ],
             ),
             child: Center(
-              child: _iconForPlatform(link.icon, size: faSize, color: t.socialIconColor),
+              child: _iconForPlatform(link.icon, size: faSize, color: brandStyle.iconColor),
             ),
           ),
         );
       }).toList(),
     );
+  }
+
+  _SocialBrandStyle _brandStyleForPlatform(String name, CardExportThemeData t) {
+    if (t.type != CardThemeType.light) {
+      return _SocialBrandStyle(
+        color: t.socialBg,
+        iconColor: t.socialIconColor,
+        border: true,
+      );
+    }
+
+    switch (name.toLowerCase()) {
+      case 'instagram':
+        return const _SocialBrandStyle(
+          gradient: LinearGradient(
+            colors: [Color(0xFFF58529), Color(0xFFDD2A7B), Color(0xFF8134AF)],
+            begin: Alignment.topRight,
+            end: Alignment.bottomLeft,
+          ),
+          iconColor: Colors.white,
+          border: false,
+        );
+      case 'linkedin':
+        return const _SocialBrandStyle(
+          color: Color(0xFF0A66C2),
+          iconColor: Colors.white,
+          border: false,
+        );
+      case 'facebook':
+        return const _SocialBrandStyle(
+          color: Color(0xFF1877F2),
+          iconColor: Colors.white,
+          border: false,
+        );
+      case 'github':
+        return const _SocialBrandStyle(
+          color: Color(0xFF24292E),
+          iconColor: Colors.white,
+          border: false,
+        );
+      case 'whatsapp':
+        return const _SocialBrandStyle(
+          color: Color(0xFF25D366),
+          iconColor: Colors.white,
+          border: false,
+        );
+      case 'twitter':
+      case 'x':
+        return const _SocialBrandStyle(
+          color: Color(0xFF000000),
+          iconColor: Colors.white,
+          border: false,
+        );
+      default:
+        return _SocialBrandStyle(
+          color: Colors.white,
+          iconColor: const Color(0xFF3B82F6),
+          border: true,
+        );
+    }
   }
 
   Widget _iconForPlatform(String name, {required double size, required Color color}) {
@@ -71,4 +141,18 @@ class SocialIconsRow extends StatelessWidget {
       default:          return Icon(Icons.link_rounded,            color: color, size: size);
     }
   }
+}
+
+class _SocialBrandStyle {
+  final Color? color;
+  final Gradient? gradient;
+  final Color iconColor;
+  final bool border;
+
+  const _SocialBrandStyle({
+    this.color,
+    this.gradient,
+    required this.iconColor,
+    this.border = false,
+  });
 }

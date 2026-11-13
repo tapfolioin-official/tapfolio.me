@@ -15,10 +15,12 @@ class CacheKeys {
   static const String leaderboard = 'cache_leaderboard';
   static const String theme = 'cache_theme';
   static const String sharingSettings = 'cache_sharing_settings';
+  static const String cards = 'cache_cards';
+  static const String activeCard = 'cache_active_card';
 
   /// The current cache schema version. Bump this when models change
   /// so that stale caches from older app versions are discarded.
-  static const int cacheVersion = 1;
+  static const int cacheVersion = 2;
   static const String cacheVersionKey = 'cache_version';
 
   /// All data keys (used for bulk clear on logout).
@@ -33,5 +35,7 @@ class CacheKeys {
     leaderboard,
     theme,
     sharingSettings,
+    cards,
+    activeCard,
   ];
 }

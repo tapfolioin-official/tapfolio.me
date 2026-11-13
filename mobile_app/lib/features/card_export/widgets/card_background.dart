@@ -8,6 +8,7 @@ import '../models/card_theme.dart';
 /// radial spotlights, and noise-grain overlay.
 ///
 /// Each [CardThemeType] renders a fundamentally different background:
+///  • Light   – Clean white/soft blue ambient gradient with subtle glow
 ///  • Aurora  – Purple/blue mesh gradient with aurora orbs
 ///  • Midnight – Pure dark with subtle noise, no colored orbs
 ///  • Ember   – Warm gold/amber gradient with warm-toned orbs
@@ -18,12 +19,14 @@ class CardBackground extends StatelessWidget {
   const CardBackground({
     super.key,
     required this.child,
-    this.theme = CardThemeType.aurora,
+    this.theme = CardThemeType.light,
   });
 
   @override
   Widget build(BuildContext context) {
     switch (theme) {
+      case CardThemeType.light:
+        return _buildLight();
       case CardThemeType.aurora:
         return _buildAurora();
       case CardThemeType.midnight:
@@ -31,6 +34,50 @@ class CardBackground extends StatelessWidget {
       case CardThemeType.ember:
         return _buildEmber();
     }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // Light — Clean white/soft blue ambient gradient
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  Widget _buildLight() {
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFFFFFFFF),
+            Color(0xFFF8FAFC),
+            Color(0xFFF1F5F9),
+            Color(0xFFEFF6FF),
+          ],
+          stops: [0.0, 0.35, 0.70, 1.0],
+        ),
+      ),
+      child: Stack(
+        children: [
+          Positioned(
+            top: -40,
+            right: -30,
+            child: _blurOrb(260, const Color(0xFF3B82F6).withValues(alpha: 0.08)),
+          ),
+          Positioned(
+            bottom: -50,
+            left: -40,
+            child: _blurOrb(280, const Color(0xFF60A5FA).withValues(alpha: 0.10)),
+          ),
+          Positioned(
+            top: 200,
+            left: -20,
+            child: _blurOrb(180, const Color(0xFF818CF8).withValues(alpha: 0.07)),
+          ),
+          _innerBorder(const Color(0xFFE2E8F0)),
+          Positioned.fill(child: child),
+        ],
+      ),
+    );
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -55,7 +102,6 @@ class CardBackground extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          // Orbs
           Positioned(top: -140, left: -100, child: _blurOrb(380, const Color(0xff7C3AED).withValues(alpha: 0.50))),
           Positioned(top: 80, left: -60, child: _blurOrb(200, const Color(0xff6D28D9).withValues(alpha: 0.25))),
           Positioned(top: 160, right: -120, child: _blurOrb(260, const Color(0xff8B5CF6).withValues(alpha: 0.28))),
@@ -98,28 +144,21 @@ class CardBackground extends StatelessWidget {
           end: Alignment.bottomCenter,
           colors: [
             Color(0xff000000),
-            Color(0xff050505),
-            Color(0xff0A0A0A),
             Color(0xff080808),
-            Color(0xff000000),
+            Color(0xff111111),
+            Color(0xff0A0A0A),
           ],
-          stops: [0.0, 0.25, 0.50, 0.75, 1.0],
+          stops: [0.0, 0.35, 0.70, 1.0],
         ),
       ),
       child: Stack(
         children: [
-          // Very subtle white radial at top
-          _radialGlow(const Alignment(0, -0.40), 0.70, Colors.white.withValues(alpha: 0.035)),
-
-          // Subtle noise
-          _noise(0.018),
-
-          // Clean inner border
+          Positioned(top: -100, left: -60, child: _blurOrb(300, Colors.white.withValues(alpha: 0.04))),
+          Positioned(bottom: -80, right: -60, child: _blurOrb(260, Colors.white.withValues(alpha: 0.03))),
+          _radialGlow(const Alignment(0, -0.6), 0.9, Colors.white.withValues(alpha: 0.04)),
+          _noise(0.035),
           _innerBorder(Colors.white.withValues(alpha: 0.08)),
-
-          // Very subtle top highlight
-          _topHighlight(Colors.white.withValues(alpha: 0.030)),
-
+          _topHighlight(Colors.white.withValues(alpha: 0.06)),
           Positioned.fill(child: child),
         ],
       ),
@@ -137,137 +176,130 @@ class CardBackground extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Color(0xff0D0800),
-            Color(0xff1A0E00),
-            Color(0xff241500),
-            Color(0xff1F1000),
-            Color(0xff2D1B00),
+            Color(0xff0D0905),
+            Color(0xff1A1208),
+            Color(0xff24180A),
+            Color(0xff1C1306),
+            Color(0xff120C04),
           ],
-          stops: [0.0, 0.22, 0.48, 0.74, 1.0],
+          stops: [0.0, 0.25, 0.50, 0.75, 1.0],
         ),
       ),
       child: Stack(
         children: [
-          // Warm orbs
-          Positioned(top: -130, left: -80, child: _blurOrb(340, const Color(0xffD4A44C).withValues(alpha: 0.35))),
-          Positioned(top: 100, right: -100, child: _blurOrb(220, const Color(0xffDAA520).withValues(alpha: 0.22))),
-          Positioned(bottom: -100, right: -70, child: _blurOrb(300, const Color(0xffB8860B).withValues(alpha: 0.28))),
-          Positioned(bottom: -70, left: -50, child: _blurOrb(200, const Color(0xffA0522D).withValues(alpha: 0.20))),
-          Positioned(top: -40, left: 0, right: 0, child: Center(child: _blurOrb(180, const Color(0xffD4A44C).withValues(alpha: 0.25)))),
-          Positioned(top: 280, left: 30, child: _blurOrb(140, const Color(0xffCD853F).withValues(alpha: 0.15))),
-
-          // Glass shapes (warm tint)
-          Positioned(top: 70, right: 25, child: _glassCircle(60, 0.035, tint: const Color(0xFFFFF8F0))),
-          Positioned(top: 260, left: 15, child: _glassCircle(40, 0.03, tint: const Color(0xFFFFF8F0))),
-          Positioned(bottom: 160, right: 45, child: _glassCircle(50, 0.025, tint: const Color(0xFFFFF8F0))),
-
-          // Overlays
-          _radialGlow(const Alignment(0, -0.50), 0.80, const Color(0xffD4A44C).withValues(alpha: 0.05)),
-          _radialGlow(const Alignment(0, 0.65), 0.60, const Color(0xffB8860B).withValues(alpha: 0.035)),
-          _blurOverlay(1.2, const Color(0xFFFFF8F0).withValues(alpha: 0.008)),
-          _noise(0.022),
-          _innerBorder(const Color(0xFFFFF8F0).withValues(alpha: 0.06)),
-          _topHighlight(const Color(0xFFFFF8F0).withValues(alpha: 0.045)),
-
+          Positioned(top: -120, left: -80, child: _blurOrb(360, const Color(0xffD4A44C).withValues(alpha: 0.40))),
+          Positioned(top: 100, right: -80, child: _blurOrb(240, const Color(0xffB8860B).withValues(alpha: 0.25))),
+          Positioned(bottom: -100, right: -60, child: _blurOrb(300, const Color(0xffCD853F).withValues(alpha: 0.30))),
+          Positioned(bottom: -60, left: -40, child: _blurOrb(200, const Color(0xffDAA520).withValues(alpha: 0.20))),
+          Positioned(top: 80, right: 30, child: _glassCircle(65, 0.04)),
+          Positioned(bottom: 120, left: 30, child: _glassCircle(45, 0.035)),
+          _radialGlow(const Alignment(0, -0.5), 0.85, const Color(0xffD4A44C).withValues(alpha: 0.06)),
+          _radialGlow(const Alignment(0, 0.7), 0.65, const Color(0xffB8860B).withValues(alpha: 0.04)),
+          _noise(0.028),
+          _innerBorder(const Color(0xffD4A44C).withValues(alpha: 0.10)),
+          _topHighlight(const Color(0xffD4A44C).withValues(alpha: 0.08)),
           Positioned.fill(child: child),
         ],
       ),
     );
   }
 
-  // ═══════════════════════════════════════════════════════════════════════════
-  // Shared helpers
-  // ═══════════════════════════════════════════════════════════════════════════
+  // ── Primitives ────────────────────────────────────────────────────────────
 
   Widget _blurOrb(double size, Color color) {
-    return IgnorePointer(
-      child: ImageFiltered(
-        imageFilter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
-        child: Container(
-          width: size, height: size,
-          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-        ),
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: color,
+      ),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 45, sigmaY: 45),
+        child: const SizedBox.expand(),
       ),
     );
   }
 
-  Widget _glassCircle(double size, double opacity, {Color tint = Colors.white}) {
-    return IgnorePointer(
-      child: Container(
-        width: size, height: size,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: tint.withValues(alpha: opacity),
-          border: Border.all(color: tint.withValues(alpha: opacity * 2.5), width: 0.8),
-        ),
+  Widget _glassCircle(double size, double opacity) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.white.withValues(alpha: opacity),
+        border: Border.all(color: Colors.white.withValues(alpha: opacity * 1.5)),
       ),
     );
   }
 
-  Widget _glassRect(double w, double h, double r, double opacity) {
-    return IgnorePointer(
-      child: Container(
-        width: w, height: h,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(r),
-          color: Colors.white.withValues(alpha: opacity),
-          border: Border.all(color: Colors.white.withValues(alpha: opacity * 2.5), width: 0.6),
-        ),
+  Widget _glassRect(double width, double height, double radius, double opacity) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(radius),
+        color: Colors.white.withValues(alpha: opacity),
+        border: Border.all(color: Colors.white.withValues(alpha: opacity * 1.5)),
       ),
     );
   }
 
-  Widget _radialGlow(Alignment center, double radius, Color color) {
+  Widget _radialGlow(Alignment alignment, double radius, Color color) {
     return Positioned.fill(
-      child: IgnorePointer(
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: RadialGradient(center: center, radius: radius, colors: [color, Colors.transparent]),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: RadialGradient(
+            center: alignment,
+            radius: radius,
+            colors: [color, Colors.transparent],
           ),
         ),
       ),
     );
   }
 
-  Widget _blurOverlay(double sigma, Color color) {
+  Widget _blurOverlay(double sigma, Color tint) {
     return Positioned.fill(
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: sigma, sigmaY: sigma),
-        child: Container(color: color),
+        child: ColoredBox(color: tint),
       ),
     );
   }
 
   Widget _noise(double opacity) {
     return Positioned.fill(
-      child: IgnorePointer(child: CustomPaint(painter: _NoisePainter(opacity: opacity))),
+      child: CustomPaint(
+        painter: _NoisePainter(opacity: opacity),
+      ),
     );
   }
 
   Widget _innerBorder(Color color) {
     return Positioned.fill(
-      child: IgnorePointer(
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: color, width: 1),
-            borderRadius: BorderRadius.circular(36),
-          ),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          border: Border.all(color: color, width: 1),
         ),
       ),
     );
   }
 
   Widget _topHighlight(Color color) {
-    return Positioned.fill(
-      child: IgnorePointer(
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(36),
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.center,
-              colors: [color, Colors.transparent],
-            ),
+    return Positioned(
+      top: 0,
+      left: 0,
+      right: 0,
+      height: 1.5,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Colors.transparent,
+              color,
+              Colors.transparent,
+            ],
           ),
         ),
       ),
@@ -275,7 +307,6 @@ class CardBackground extends StatelessWidget {
   }
 }
 
-/// Deterministic noise painter for stable export captures.
 class _NoisePainter extends CustomPainter {
   final double opacity;
   _NoisePainter({required this.opacity});
@@ -283,16 +314,18 @@ class _NoisePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final rng = Random(42);
-    final paint = Paint();
-    const step = 4.0;
-    for (double y = 0; y < size.height; y += step) {
-      for (double x = 0; x < size.width; x += step) {
-        paint.color = Colors.white.withValues(alpha: rng.nextDouble() * opacity);
-        canvas.drawRect(Rect.fromLTWH(x, y, step, step), paint);
-      }
+    final paint = Paint()
+      ..color = Colors.white.withValues(alpha: opacity)
+      ..strokeWidth = 1;
+
+    final count = (size.width * size.height * 0.0008).toInt().clamp(50, 400);
+    for (var i = 0; i < count; i++) {
+      final dx = rng.nextDouble() * size.width;
+      final dy = rng.nextDouble() * size.height;
+      canvas.drawPoints(PointMode.points, [Offset(dx, dy)], paint);
     }
   }
 
   @override
-  bool shouldRepaint(_NoisePainter old) => old.opacity != opacity;
+  bool shouldRepaint(covariant _NoisePainter old) => old.opacity != opacity;
 }

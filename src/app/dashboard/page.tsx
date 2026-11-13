@@ -1572,11 +1572,11 @@ export default function Dashboard() {
                 </div>
 
                 {/* Configurator Card Container */}
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8 flex flex-col gap-6 lg:max-h-[calc(100vh-375px)] lg:overflow-y-auto scrollbar-none lg:pr-1">
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8 flex flex-col gap-6 lg:max-h-[calc(100vh-375px)] lg:overflow-y-auto scrollbar-none lg:pr-1 relative">
 
                   {/* SUB-TAB 1: Profile Info */}
                   {themeSubTab === 'profile' && (
-                    <div className="flex flex-col gap-6">
+                    <div className="flex flex-col gap-6 relative">
                       <div className="flex justify-between items-center pb-3 border-b border-gray-100">
                         <h4 className="text-lg font-bold text-gray-900">Profile Details</h4>
                         <span className="text-xs text-blue-600 font-semibold px-2.5 py-1 bg-blue-50 rounded-full">Step 1</span>
@@ -1778,10 +1778,63 @@ export default function Dashboard() {
                         </form>
                       </div>
 
-                      <div className="flex justify-end mt-4 pt-4 border-t border-gray-100">
-                        <button type="button" onClick={handleSaveProfile} disabled={saving} className="px-6 py-2.5 bg-blue-600 text-white font-bold text-xs rounded-xl hover:bg-blue-700 shadow-sm transition-all">
-                          {saving ? 'Saving...' : 'Save Profile Details'}
-                        </button>
+                      {/* Clearance spacer to ensure final form fields are never obscured by floating action */}
+                      <div className="h-16 sm:h-10" />
+
+                      {/* Floating / Sticky Save Action */}
+                      <div className="sticky bottom-0 z-30 flex justify-end pointer-events-none mt-auto">
+                        <div className="pointer-events-auto w-full sm:w-auto p-1.5 sm:p-2 bg-white/95 backdrop-blur-md border border-gray-200/90 rounded-2xl shadow-xl shadow-gray-900/10 flex items-center justify-between sm:justify-end gap-3 transition-all duration-200">
+                          {/* Status / helper hint */}
+                          <div className="hidden sm:flex items-center gap-2 pl-3 text-xs text-gray-500 font-medium select-none">
+                            {saving ? (
+                              <span className="flex items-center gap-2 text-blue-600 font-semibold animate-pulse">
+                                <span className="relative flex h-2 w-2">
+                                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                                  <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
+                                </span>
+                                Saving profile...
+                              </span>
+                            ) : error ? (
+                              <span className="flex items-center gap-1.5 text-red-600 font-semibold truncate max-w-[220px]" title={error}>
+                                <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0"></span>
+                                <span className="truncate">{error}</span>
+                              </span>
+                            ) : success ? (
+                              <span className="flex items-center gap-1.5 text-emerald-600 font-semibold">
+                                <Check className="w-3.5 h-3.5 text-emerald-600 stroke-[3]" />
+                                Profile saved!
+                              </span>
+                            ) : (
+                              <span className="flex items-center gap-1.5 text-gray-400">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                Ready to save
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Save Button */}
+                          <button
+                            type="button"
+                            onClick={handleSaveProfile}
+                            disabled={saving}
+                            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-sm hover:shadow-md shadow-blue-500/20 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+                          >
+                            {saving ? (
+                              <>
+                                <svg className="animate-spin -ml-0.5 mr-1.5 h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24">
+                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Saving...
+                              </>
+                            ) : (
+                              <>
+                                <Check className="w-3.5 h-3.5 text-white stroke-[2.5]" />
+                                Save Profile Details
+                              </>
+                            )}
+                          </button>
+                        </div>
                       </div>
                     </div>
                   )}
