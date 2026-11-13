@@ -64,6 +64,15 @@ function getRandomHex(bytesCount = 16): string {
 export function isAllowedOrigin(origin: string | null): boolean {
   if (!origin) return false;
   if (TRUSTED_ORIGINS.has(origin)) return true;
+
+  try {
+    const url = new URL(origin);
+    const hostname = url.hostname.toLowerCase();
+    if (TRUSTED_HOSTS.has(hostname) || hostname.endsWith('.vercel.app')) {
+      return true;
+    }
+  } catch (_) {}
+
   if (process.env.NODE_ENV !== 'production') {
     if (
       origin.startsWith('http://localhost:') ||
@@ -82,8 +91,11 @@ export function isAllowedOrigin(origin: string | null): boolean {
  */
 export function isAllowedHost(host: string | null): boolean {
   if (!host) return false;
-  const hostWithoutPort = host.split(':')[0].toLowerCase();
+  // Handle multiple comma-separated hosts from proxies/load balancers
+  const primaryHost = host.split(',')[0].trim();
+  const hostWithoutPort = primaryHost.split(':')[0].toLowerCase();
   if (TRUSTED_HOSTS.has(hostWithoutPort)) return true;
+  if (hostWithoutPort.endsWith('.vercel.app')) return true;
   if (process.env.NODE_ENV !== 'production') {
     if (hostWithoutPort === 'localhost' || hostWithoutPort === '127.0.0.1') {
       return true;

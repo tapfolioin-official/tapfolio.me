@@ -27,7 +27,9 @@ export async function middleware(request: NextRequest) {
   // 1. Production HTTPS Redirection
   if (process.env.NODE_ENV === 'production') {
     const proto = request.headers.get('x-forwarded-proto');
-    if (proto && proto === 'http') {
+    // On Vercel, HTTPS is already terminated and redirected at the edge.
+    // Avoid double redirect loops on internal Vercel edge proxies.
+    if (proto === 'http' && !request.headers.get('x-vercel-id')) {
       const httpsUrl = request.nextUrl.clone();
       httpsUrl.protocol = 'https:';
       return NextResponse.redirect(httpsUrl, 301);
