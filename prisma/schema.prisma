@@ -716,6 +716,7 @@ model BlogMedia {
   height     Int?
   altText    String?  @map("alt_text")
   title      String?
+  fileData   String?  @map("file_data") @db.Text
   uploadedBy String?  @map("uploaded_by")
   createdAt  DateTime @default(now()) @map("created_at")
 

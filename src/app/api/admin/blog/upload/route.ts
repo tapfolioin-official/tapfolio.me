@@ -28,6 +28,7 @@ export async function POST(request: NextRequest) {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
     const fileSize = buffer.length;
+    const base64Data = buffer.toString('base64');
 
     // Check size limit: 10MB
     if (fileSize > 10 * 1024 * 1024) {
@@ -43,11 +44,15 @@ export async function POST(request: NextRequest) {
     const baseName = path.basename(originalName, ext);
     const safeName = `${slugify(baseName) || 'cover'}-${Date.now()}${ext.toLowerCase()}`;
 
-    // Target upload folder in public
-    const uploadsDir = path.join(process.cwd(), 'public', 'assets', 'blog', 'uploads');
-    await fs.mkdir(uploadsDir, { recursive: true });
-    const filePath = path.join(uploadsDir, safeName);
-    await fs.writeFile(filePath, buffer);
+    // Target upload folder in public (if filesystem writable)
+    try {
+      const uploadsDir = path.join(process.cwd(), 'public', 'assets', 'blog', 'uploads');
+      await fs.mkdir(uploadsDir, { recursive: true });
+      const filePath = path.join(uploadsDir, safeName);
+      await fs.writeFile(filePath, buffer);
+    } catch (fsErr) {
+      console.warn('[BLOG UPLOAD] Local filesystem write skipped (serverless/read-only):', fsErr);
+    }
 
     const publicUrl = `/assets/blog/uploads/${safeName}`;
 
@@ -58,7 +63,6 @@ export async function POST(request: NextRequest) {
 
     if (cloudName) {
       try {
-        const base64Data = buffer.toString('base64');
         const dataUrl = `data:${mimeType};base64,${base64Data}`;
         const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
         const cForm = new FormData();
@@ -73,11 +77,11 @@ export async function POST(request: NextRequest) {
           }
         }
       } catch (cErr) {
-        console.warn('[BLOG UPLOAD] Cloudinary upload failed, fallback to local:', cErr);
+        console.warn('[BLOG UPLOAD] Cloudinary upload failed, fallback to local/database:', cErr);
       }
     }
 
-    // Record in database
+    // Record in database including binary base64 so it can be served everywhere
     try {
       await prisma.blogMedia.create({
         data: {
@@ -87,6 +91,7 @@ export async function POST(request: NextRequest) {
           fileSize,
           altText: altText || baseName,
           title: baseName,
+          fileData: base64Data,
           uploadedBy: 'Tapfolio Admin',
         },
       });
