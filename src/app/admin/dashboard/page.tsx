@@ -1,6 +1,30 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
+import Link from 'next/link';
+import {
+  Users,
+  Sparkles,
+  TrendingUp,
+  Layers,
+  FolderGit2,
+  Zap,
+  Headphones,
+  ShieldAlert,
+  Clock,
+  RefreshCw,
+  CheckCircle2,
+  XCircle,
+  ExternalLink,
+  ShieldCheck,
+  Activity,
+  Megaphone,
+  UserCheck,
+  MessageSquare,
+  AlertTriangle,
+  ChevronRight,
+  Filter,
+} from 'lucide-react';
 import styles from './dashboard.module.css';
 
 interface KPIs {
@@ -27,22 +51,31 @@ export default function AdminDashboard() {
   const [tickets, setTickets] = useState<any[]>([]);
   const [loadingTickets, setLoadingTickets] = useState(true);
   const [selectedTicket, setSelectedTicket] = useState<any | null>(null);
+  const [ticketFilter, setTicketFilter] = useState<'ALL' | 'OPEN' | 'PENDING' | 'RESOLVED'>('ALL');
 
-  const fetchTickets = useCallback(async () => {
+  const fetchTickets = useCallback(async (retryCount = 0) => {
     try {
       const res = await fetch('/api/admin/support');
       if (res.ok) {
         const data = await res.json();
         setTickets(data.tickets || []);
+        setLoadingTickets(false);
+      } else if (retryCount < 2) {
+        setTimeout(() => fetchTickets(retryCount + 1), 1500);
+      } else {
+        setLoadingTickets(false);
       }
     } catch (e) {
-      console.error('Failed to fetch support tickets', e);
-    } finally {
-      setLoadingTickets(false);
+      if (retryCount < 2) {
+        setTimeout(() => fetchTickets(retryCount + 1), 1500);
+      } else {
+        console.error('Failed to fetch support tickets', e);
+        setLoadingTickets(false);
+      }
     }
   }, []);
 
-  const fetchData = useCallback(async (showRefreshing = false) => {
+  const fetchData = useCallback(async (showRefreshing = false, retryCount = 0) => {
     if (showRefreshing) setRefreshing(true);
     try {
       const res = await fetch('/api/admin/analytics');
@@ -50,12 +83,22 @@ export default function AdminDashboard() {
         const data = await res.json();
         setKpis(data.kpis);
         setLastUpdated(new Date());
+        setLoading(false);
+        setRefreshing(false);
+      } else if (retryCount < 2) {
+        setTimeout(() => fetchData(false, retryCount + 1), 1500);
+      } else {
+        setLoading(false);
+        setRefreshing(false);
       }
     } catch (e) {
-      console.error('Failed to fetch analytics', e);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
+      if (retryCount < 2) {
+        setTimeout(() => fetchData(false, retryCount + 1), 1500);
+      } else {
+        console.error('Failed to fetch analytics', e);
+        setLoading(false);
+        setRefreshing(false);
+      }
     }
   }, []);
 
@@ -64,7 +107,7 @@ export default function AdminDashboard() {
       const res = await fetch('/api/admin/support', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ticketId, status })
+        body: JSON.stringify({ ticketId, status }),
       });
       if (res.ok) {
         fetchTickets();
@@ -88,20 +131,28 @@ export default function AdminDashboard() {
   const formatTime = (date: Date) =>
     date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
+  const filteredTickets = tickets.filter((t) => {
+    if (ticketFilter === 'ALL') return true;
+    return t.status === ticketFilter;
+  });
+
   return (
     <div className={styles.page}>
       {/* Header */}
       <header className={styles.header}>
         <div>
-          <h1 className={styles.title}>Dashboard</h1>
+          <h1 className={styles.title}>
+            <span>Admin Command Center</span>
+          </h1>
           <p className={styles.subtitle}>
-            Real‑time overview of Tapfolio's performance
+            Real-time telemetry, user management, and system infrastructure performance.
           </p>
         </div>
         <div className={styles.headerRight}>
           {lastUpdated && (
             <span className={styles.timestamp}>
-              🕒 Updated {formatTime(lastUpdated)}
+              <Clock size={13} />
+              <span>Live sync {formatTime(lastUpdated)}</span>
             </span>
           )}
           <button
@@ -110,43 +161,66 @@ export default function AdminDashboard() {
             disabled={refreshing}
             aria-label="Refresh data"
           >
-            <svg
-              viewBox="0 0 24 24"
-              width="18"
-              height="18"
-              stroke="currentColor"
-              strokeWidth="2"
-              fill="none"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="23 4 23 10 17 10" />
-              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-            </svg>
-            <span>Refresh</span>
+            <RefreshCw size={14} className={refreshing ? 'animate-spin' : ''} />
+            <span>{refreshing ? 'Syncing...' : 'Sync Now'}</span>
           </button>
         </div>
       </header>
 
+      {/* Quick Action Navigation Strip */}
+      <div className={styles.quickActionsBar}>
+        <Link href="/admin/security" className={styles.quickActionPill}>
+          <ShieldCheck size={14} className="text-sky-400" />
+          <span>Security & Threat Center</span>
+          <span className={styles.pillDotSuccess} />
+        </Link>
+        <Link href="/admin/users" className={styles.quickActionPill}>
+          <Users size={14} className="text-blue-400" />
+          <span>User Directory</span>
+        </Link>
+        <Link href="/admin/live" className={styles.quickActionPill}>
+          <Activity size={14} className="text-emerald-400" />
+          <span>Live Taps Stream</span>
+        </Link>
+        <Link href="/admin/broadcast" className={styles.quickActionPill}>
+          <Megaphone size={14} className="text-amber-400" />
+          <span>System Broadcast</span>
+        </Link>
+        <Link href="/admin/portfolios" className={styles.quickActionPill}>
+          <Layers size={14} className="text-cyan-400" />
+          <span>Portfolios</span>
+        </Link>
+        <Link href="/admin/control-center" className={styles.quickActionPill}>
+          <Zap size={14} className="text-violet-400" />
+          <span>Control Center</span>
+        </Link>
+      </div>
+
       {/* KPI Grid */}
       <div className={styles.kpiGrid}>
-        {/* Card: Total Users */}
+        {/* Card 1: Total Users */}
         <MetricCard
-          icon="👥"
+          icon={<Users size={20} />}
+          iconColor="linear-gradient(135deg, rgba(37,99,235,0.2), rgba(56,189,248,0.2))"
+          iconBorder="rgba(56,189,248,0.3)"
+          iconText="#38bdf8"
           label="Total Users"
           value={loading ? undefined : (kpis?.totalUsers ?? 0)}
           formatter={(v) => (v ?? 0).toLocaleString()}
           footer={
             <span className={styles.metricTrendUp}>
-              +{loading ? '…' : kpis?.todayUsers} today
+              <TrendingUp size={12} /> +{loading ? '…' : kpis?.todayUsers} today
             </span>
           }
           loading={loading}
         />
 
-        {/* Card: Premium */}
+        {/* Card 2: Premium Users */}
         <MetricCard
-          icon="⭐"
+          icon={<Sparkles size={20} />}
+          iconColor="linear-gradient(135deg, rgba(245,158,11,0.2), rgba(251,191,36,0.2))"
+          iconBorder="rgba(251,191,36,0.3)"
+          iconText="#fbbf24"
           label="Premium Users"
           value={loading ? undefined : (kpis?.premiumUsers ?? 0)}
           formatter={(v) => (v ?? 0).toLocaleString()}
@@ -154,16 +228,19 @@ export default function AdminDashboard() {
             <span className={styles.metricTrendUp}>
               {loading
                 ? '…'
-                : `${((kpis?.premiumUsers || 0) / Math.max(kpis?.totalUsers || 1, 1) * 100).toFixed(1)}%`}{' '}
+                : `${(((kpis?.premiumUsers || 0) / Math.max(kpis?.totalUsers || 1, 1)) * 100).toFixed(1)}%`}{' '}
               conversion
             </span>
           }
           loading={loading}
         />
 
-        {/* Card: Growth */}
+        {/* Card 3: Weekly Growth */}
         <MetricCard
-          icon="📈"
+          icon={<TrendingUp size={20} />}
+          iconColor="linear-gradient(135deg, rgba(16,185,129,0.2), rgba(52,211,153,0.2))"
+          iconBorder="rgba(52,211,153,0.3)"
+          iconText="#34d399"
           label="Growth (weekly)"
           value={loading ? undefined : (kpis?.growth ?? 0)}
           formatter={(v) => `${(v ?? 0) > 0 ? '+' : ''}${v ?? 0}%`}
@@ -181,28 +258,42 @@ export default function AdminDashboard() {
           loading={loading}
         />
 
-        {/* Card: Portfolios */}
+        {/* Card 4: Portfolios */}
         <MetricCard
-          icon="🖼️"
-          label="Portfolios"
+          icon={<Layers size={20} />}
+          iconColor="linear-gradient(135deg, rgba(6,182,212,0.2), rgba(34,211,238,0.2))"
+          iconBorder="rgba(34,211,238,0.3)"
+          iconText="#22d3ee"
+          label="Active Portfolios"
           value={loading ? undefined : (kpis?.totalProfiles ?? 0)}
           formatter={(v) => (v ?? 0).toLocaleString()}
+          footer={
+            <span className={styles.metricTrendUp}>
+              Published live sites
+            </span>
+          }
           loading={loading}
         />
 
-        {/* Card: Projects */}
+        {/* Card 5: Projects */}
         <MetricCard
-          icon="🗂️"
-          label="Projects"
+          icon={<FolderGit2 size={20} />}
+          iconColor="linear-gradient(135deg, rgba(139,92,246,0.2), rgba(167,139,250,0.2))"
+          iconBorder="rgba(167,139,250,0.3)"
+          iconText="#a78bfa"
+          label="Showcase Projects"
           value={loading ? undefined : (kpis?.totalProjects ?? 0)}
           formatter={(v) => (v ?? 0).toLocaleString()}
           loading={loading}
         />
 
-        {/* Card: Total Taps */}
+        {/* Card 6: Total Taps */}
         <MetricCard
-          icon="👆"
-          label="Total Taps"
+          icon={<Zap size={20} />}
+          iconColor="linear-gradient(135deg, rgba(236,72,153,0.2), rgba(244,114,182,0.2))"
+          iconBorder="rgba(244,114,182,0.3)"
+          iconText="#f472b6"
+          label="Total NFC Taps"
           value={loading ? undefined : (kpis?.totalTaps ?? 0)}
           formatter={(v) => (v ?? 0).toLocaleString()}
           footer={
@@ -213,9 +304,12 @@ export default function AdminDashboard() {
           loading={loading}
         />
 
-        {/* Card: Support Queue */}
+        {/* Card 7: Support Queue */}
         <MetricCard
-          icon="💬"
+          icon={<Headphones size={20} />}
+          iconColor="linear-gradient(135deg, rgba(245,158,11,0.2), rgba(249,115,22,0.2))"
+          iconBorder="rgba(249,115,22,0.3)"
+          iconText="#fb923c"
           label="Support Queue"
           value={loading ? undefined : (kpis?.openTickets ?? 0)}
           formatter={(v) => (v ?? 0).toString()}
@@ -233,9 +327,12 @@ export default function AdminDashboard() {
           loading={loading}
         />
 
-        {/* Card: Pending Reports */}
+        {/* Card 8: Pending Reports */}
         <MetricCard
-          icon="🚨"
+          icon={<ShieldAlert size={20} />}
+          iconColor="linear-gradient(135deg, rgba(239,68,68,0.2), rgba(248,113,113,0.2))"
+          iconBorder="rgba(248,113,113,0.3)"
+          iconText="#f87171"
           label="Pending Reports"
           value={loading ? undefined : (kpis?.pendingReports ?? 0)}
           formatter={(v) => (v ?? 0).toString()}
@@ -247,25 +344,54 @@ export default function AdminDashboard() {
                   : styles.metricAlertSuccess
               }
             >
-              {(kpis?.pendingReports || 0) > 3 ? 'Action needed' : 'Clear'}
+              {(kpis?.pendingReports || 0) > 3 ? 'Action needed' : 'Clear & Protected'}
             </span>
           }
           loading={loading}
         />
       </div>
 
-      {/* Support Tickets Section */}
+      {/* Support Tickets & Complaints Section */}
       <div className={styles.ticketsCard}>
         <div className={styles.ticketsTitleBlock}>
-          <h2 className={styles.ticketsTitle}>User Reviews & Complaints</h2>
-          <p className={styles.ticketsSubtitle}>Manage feedback, complaints, and ticket requests submitted from the user dashboard.</p>
+          <div>
+            <h2 className={styles.ticketsTitle}>
+              <MessageSquare size={20} className="text-sky-400" />
+              <span>User Feedback & Complaints Queue</span>
+            </h2>
+            <p className={styles.ticketsSubtitle}>
+              Direct inquiries, bug reports, and user feedback submitted through the dashboard contact desk.
+            </p>
+          </div>
+
+          {/* Ticket Filter Pills */}
+          <div className="flex gap-2">
+            {(['ALL', 'OPEN', 'PENDING', 'RESOLVED'] as const).map((filter) => (
+              <button
+                key={filter}
+                onClick={() => setTicketFilter(filter)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  ticketFilter === filter
+                    ? 'bg-blue-600/30 text-sky-400 border border-sky-400/40 shadow-sm'
+                    : 'bg-white/5 text-slate-400 border border-white/5 hover:bg-white/10'
+                }`}
+              >
+                {filter}
+              </button>
+            ))}
+          </div>
         </div>
 
         {loadingTickets ? (
-          <div className="text-center py-10 text-gray-500 text-sm">Loading tickets...</div>
-        ) : tickets.length === 0 ? (
-          <div className="text-center py-10 text-gray-400 text-sm border border-dashed border-gray-200 rounded-2xl">
-            No active support tickets or complaints found.
+          <div className="text-center py-12 text-slate-500 text-sm flex items-center justify-center gap-2">
+            <RefreshCw size={16} className="animate-spin text-sky-400" />
+            <span>Loading support queue...</span>
+          </div>
+        ) : filteredTickets.length === 0 ? (
+          <div className="text-center py-12 text-slate-400 text-sm border border-dashed border-white/10 rounded-2xl bg-white/[0.01]">
+            <CheckCircle2 size={28} className="mx-auto mb-2 text-emerald-400 opacity-80" />
+            <p className="font-semibold text-slate-300">No {ticketFilter !== 'ALL' ? ticketFilter.toLowerCase() : ''} tickets found</p>
+            <p className="text-xs text-slate-500 mt-1">All user complaints and feedback in this view have been attended to.</p>
           </div>
         ) : (
           <div className={styles.tableWrapper}>
@@ -274,45 +400,52 @@ export default function AdminDashboard() {
                 <tr>
                   <th>User Details</th>
                   <th>Category / Subject</th>
-                  <th>Message Description</th>
-                  <th>Date Submitted</th>
+                  <th>Message Preview</th>
+                  <th>Submitted At</th>
                   <th>Status</th>
                   <th className="text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {tickets.map((t) => (
+                {filteredTickets.map((t) => (
                   <tr key={t.id}>
                     <td>
                       <div className={styles.ticketUser}>{t.name}</div>
                       <div className={styles.ticketEmail}>{t.email}</div>
                     </td>
                     <td>
-                      <span className="font-semibold text-gray-800">{t.subject}</span>
+                      <span className="font-semibold text-slate-200">{t.subject}</span>
                     </td>
                     <td title={t.message}>
                       <div className="flex flex-col gap-1 items-start">
                         <div className={styles.ticketMessage}>{t.message}</div>
                         <button
                           onClick={() => setSelectedTicket(t)}
-                          className="text-blue-500 hover:text-blue-700 text-xs font-bold bg-transparent border-none p-0 cursor-pointer"
+                          className="text-sky-400 hover:text-sky-300 text-xs font-semibold bg-transparent border-none p-0 cursor-pointer inline-flex items-center gap-1"
                         >
-                          Read Full Message
+                          <span>Inspect details</span>
+                          <ChevronRight size={12} />
                         </button>
                       </div>
                     </td>
                     <td>
                       <div className={styles.ticketDate}>
-                        {new Date(t.createdAt).toLocaleDateString()} {new Date(t.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        {new Date(t.createdAt).toLocaleDateString()} at{' '}
+                        {new Date(t.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </div>
                     </td>
                     <td>
-                      <span className={`${styles.statusBadge} ${
-                        t.status === 'OPEN' ? styles.statusOpen :
-                        t.status === 'PENDING' ? styles.statusPending :
-                        t.status === 'RESOLVED' ? styles.statusResolved :
-                        styles.statusClosed
-                      }`}>
+                      <span
+                        className={`${styles.statusBadge} ${
+                          t.status === 'OPEN'
+                            ? styles.statusOpen
+                            : t.status === 'PENDING'
+                            ? styles.statusPending
+                            : t.status === 'RESOLVED'
+                            ? styles.statusResolved
+                            : styles.statusClosed
+                        }`}
+                      >
                         {t.status}
                       </span>
                     </td>
@@ -322,6 +455,7 @@ export default function AdminDashboard() {
                           <button
                             onClick={() => handleUpdateTicketStatus(t.id, 'RESOLVED')}
                             className={styles.resolveBtn}
+                            title="Mark as Resolved"
                           >
                             Resolve
                           </button>
@@ -330,6 +464,7 @@ export default function AdminDashboard() {
                           <button
                             onClick={() => handleUpdateTicketStatus(t.id, 'CLOSED')}
                             className={styles.closeBtn}
+                            title="Close Ticket"
                           >
                             Close
                           </button>
@@ -346,18 +481,20 @@ export default function AdminDashboard() {
 
       {/* Read Message Detail Modal */}
       {selectedTicket && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modalContent}>
+        <div className={styles.modalOverlay} onClick={() => setSelectedTicket(null)}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <div className={styles.modalHeader}>
               <h3 className={styles.modalTitle}>{selectedTicket.subject}</h3>
-              <button onClick={() => setSelectedTicket(null)} className={styles.modalCloseBtn}>&times;</button>
+              <button onClick={() => setSelectedTicket(null)} className={styles.modalCloseBtn}>
+                &times;
+              </button>
             </div>
             <div className={styles.modalBody}>
               <div className={styles.modalMetaGrid}>
                 <div>
                   <label className={styles.modalMetaLabel}>From User</label>
                   <div className={styles.modalMetaVal}>{selectedTicket.name}</div>
-                  <div className="text-xs text-gray-500 font-mono mt-0.5">{selectedTicket.email}</div>
+                  <div className="text-xs text-slate-400 font-mono mt-0.5">{selectedTicket.email}</div>
                 </div>
                 <div>
                   <label className={styles.modalMetaLabel}>Date Submitted</label>
@@ -366,20 +503,25 @@ export default function AdminDashboard() {
                   </div>
                 </div>
                 <div>
-                  <label className={styles.modalMetaLabel}>Ticket Status</label>
+                  <label className={styles.modalMetaLabel}>Status</label>
                   <div className="mt-1">
-                    <span className={`${styles.statusBadge} ${
-                      selectedTicket.status === 'OPEN' ? styles.statusOpen :
-                      selectedTicket.status === 'PENDING' ? styles.statusPending :
-                      selectedTicket.status === 'RESOLVED' ? styles.statusResolved :
-                      styles.statusClosed
-                    }`}>
+                    <span
+                      className={`${styles.statusBadge} ${
+                        selectedTicket.status === 'OPEN'
+                          ? styles.statusOpen
+                          : selectedTicket.status === 'PENDING'
+                          ? styles.statusPending
+                          : selectedTicket.status === 'RESOLVED'
+                          ? styles.statusResolved
+                          : styles.statusClosed
+                      }`}
+                    >
                       {selectedTicket.status}
                     </span>
                   </div>
                 </div>
               </div>
-              
+
               <div className={styles.modalMessageBlock}>
                 <label className={styles.modalMetaLabel}>Review / Complaint Details</label>
                 <div className={styles.modalMessageText}>{selectedTicket.message}</div>
@@ -411,7 +553,7 @@ export default function AdminDashboard() {
                 )}
               </div>
               <button onClick={() => setSelectedTicket(null)} className={styles.closeModalActionBtn}>
-                Close View
+                Dismiss
               </button>
             </div>
           </div>
@@ -423,7 +565,10 @@ export default function AdminDashboard() {
 
 // ---------- Reusable Metric Card Component ----------
 interface MetricCardProps {
-  icon: string;
+  icon: React.ReactNode;
+  iconColor?: string;
+  iconBorder?: string;
+  iconText?: string;
   label: string;
   value?: number;
   formatter?: (value: number) => string;
@@ -433,6 +578,9 @@ interface MetricCardProps {
 
 function MetricCard({
   icon,
+  iconColor = 'rgba(255, 255, 255, 0.05)',
+  iconBorder = 'rgba(255, 255, 255, 0.08)',
+  iconText = '#38bdf8',
   label,
   value,
   formatter = (v) => v.toString(),
@@ -441,7 +589,16 @@ function MetricCard({
 }: MetricCardProps) {
   return (
     <div className={styles.metricCard}>
-      <div className={styles.metricIcon}>{icon}</div>
+      <div
+        className={styles.metricIcon}
+        style={{
+          background: iconColor,
+          borderColor: iconBorder,
+          color: iconText,
+        }}
+      >
+        {icon}
+      </div>
       <div className={styles.metricContent}>
         <span className={styles.metricLabel}>{label}</span>
         <span className={styles.metricValue}>
