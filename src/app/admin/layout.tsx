@@ -1,169 +1,79 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  LayoutDashboard,
-  Activity,
-  Users,
-  Layers,
-  Radio,
-  Smartphone,
-  Globe,
-  Target,
-  UserPlus,
-  Contact,
-  Building2,
-  GitPullRequest,
-  Briefcase,
-  CheckSquare,
-  Megaphone,
-  History,
   Search,
-  FileText,
-  AppWindow,
-  KeyRound,
-  TrendingUp,
-  CheckCheck,
-  Link2,
-  FolderGit2,
-  Network,
-  CornerDownRight,
-  BarChart3,
-  Gauge,
-  LineChart,
-  MousePointerClick,
-  TabletSmartphone,
-  DollarSign,
-  CreditCard,
-  Percent,
-  Headphones,
-  AlertTriangle,
-  Bell,
-  Mail,
-  ScrollText,
-  ShieldCheck,
-  Cpu,
-  Lock,
-  Settings,
   ChevronDown,
   ChevronRight,
   ExternalLink,
   RefreshCw,
   Sparkles,
+  ShieldCheck,
+  Bell,
+  Menu,
+  X,
+  ArrowRight,
 } from 'lucide-react';
+import {
+  NAV_SECTIONS,
+  ALL_NAV_ITEMS,
+  getActiveNavItem,
+  isNavItemActive,
+  getActiveSection,
+  NavItem,
+} from '@/lib/admin-navigation';
 import styles from './admin.module.css';
-
-interface NavItem {
-  label: string;
-  href: string;
-  icon: React.ComponentType<{ size?: number; className?: string }>;
-  badge?: string;
-}
-
-interface NavSection {
-  id: string;
-  label: string;
-  items: NavItem[];
-}
-
-const NAV_SECTIONS: NavSection[] = [
-  {
-    id: 'overview',
-    label: 'Overview',
-    items: [
-      { label: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
-      { label: 'Live Activity', href: '/admin/live', icon: Activity },
-    ],
-  },
-  {
-    id: 'platform',
-    label: 'Platform Management',
-    items: [
-      { label: 'User Management', href: '/admin/users', icon: Users },
-      { label: 'Portfolio Management', href: '/admin/portfolios', icon: Layers },
-      { label: 'NFC Management', href: '/admin/nfc', icon: Radio },
-      { label: 'Mobile App Management', href: '/admin/mobile-app', icon: Smartphone },
-      { label: 'Website Management', href: '/admin/website', icon: Globe },
-    ],
-  },
-  {
-    id: 'crm',
-    label: 'CRM',
-    items: [
-      { label: 'CRM Dashboard', href: '/admin/crm', icon: Target, badge: 'New' },
-      { label: 'Leads', href: '/admin/crm/leads', icon: UserPlus },
-      { label: 'Contacts', href: '/admin/crm/contacts', icon: Contact },
-      { label: 'Companies', href: '/admin/crm/companies', icon: Building2 },
-      { label: 'Pipelines', href: '/admin/crm/pipelines', icon: GitPullRequest },
-      { label: 'Deals', href: '/admin/crm/deals', icon: Briefcase },
-      { label: 'Tasks & Follow-ups', href: '/admin/crm/tasks', icon: CheckSquare },
-      { label: 'Campaigns', href: '/admin/crm/campaigns', icon: Megaphone },
-      { label: 'Communication History', href: '/admin/crm/communications', icon: History },
-    ],
-  },
-  {
-    id: 'seo',
-    label: 'SEO & Marketing',
-    items: [
-      { label: 'SEO Dashboard', href: '/admin/seo', icon: Search },
-      { label: 'Website SEO', href: '/admin/seo/website', icon: FileText },
-      { label: 'App SEO & Store', href: '/admin/seo/app', icon: AppWindow },
-      { label: 'Keyword Research', href: '/admin/seo/keywords', icon: KeyRound },
-      { label: 'Rank Tracking', href: '/admin/seo/rankings', icon: TrendingUp },
-      { label: 'Technical SEO Audit', href: '/admin/seo/audit', icon: CheckCheck },
-      { label: 'Backlink Management', href: '/admin/seo/backlinks', icon: Link2 },
-      { label: 'Content Management', href: '/admin/seo/content', icon: FolderGit2 },
-      { label: 'Sitemap Management', href: '/admin/seo/sitemap', icon: Network },
-      { label: 'Redirect Manager', href: '/admin/seo/redirects', icon: CornerDownRight },
-      { label: 'Search Console', href: '/admin/seo/search-console', icon: BarChart3 },
-      { label: 'Performance Monitoring', href: '/admin/seo/performance', icon: Gauge },
-    ],
-  },
-  {
-    id: 'analytics',
-    label: 'Analytics & Business',
-    items: [
-      { label: 'Platform Analytics', href: '/admin/analytics', icon: LineChart },
-      { label: 'Website Analytics', href: '/admin/analytics/website', icon: MousePointerClick },
-      { label: 'App Analytics', href: '/admin/analytics/app', icon: TabletSmartphone },
-      { label: 'Revenue', href: '/admin/revenue', icon: DollarSign },
-      { label: 'Subscriptions', href: '/admin/subscriptions', icon: CreditCard },
-      { label: 'Conversion Analytics', href: '/admin/analytics/conversions', icon: Percent },
-    ],
-  },
-  {
-    id: 'communication',
-    label: 'Communication',
-    items: [
-      { label: 'Support Tickets', href: '/admin/support', icon: Headphones },
-      { label: 'Reviews & Complaints', href: '/admin/reports', icon: AlertTriangle },
-      { label: 'Notifications', href: '/admin/notifications', icon: Bell },
-      { label: 'Broadcast Centre', href: '/admin/broadcast', icon: Radio },
-      { label: 'Email Campaigns', href: '/admin/campaigns', icon: Mail },
-    ],
-  },
-  {
-    id: 'system',
-    label: 'System',
-    items: [
-      { label: 'Activity Logs', href: '/admin/logs', icon: ScrollText },
-      { label: 'Security', href: '/admin/security', icon: ShieldCheck },
-      { label: 'API Integrations', href: '/admin/integrations', icon: Cpu },
-      { label: 'Admin Roles & Permissions', href: '/admin/roles', icon: Lock },
-      { label: 'Settings', href: '/admin/settings', icon: Settings },
-    ],
-  },
-];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [searchQuery, setSearchQuery] = useState('');
-  const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [userCollapsed, setUserCollapsed] = useState<Record<string, boolean>>({});
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  // Determine the single active leaf item and active parent section
+  const activeItem = useMemo(() => getActiveNavItem(pathname), [pathname]);
+  const activeSection = useMemo(() => getActiveSection(pathname), [pathname]);
+
+  // Close mobile drawer on route transition
+  useEffect(() => {
+    setMobileOpen(false);
+    setSearchOpen(false);
+  }, [pathname]);
+
+  // Close search dropdown on click outside or escape key
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setSearchOpen(false);
+      }
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setSearchOpen(false);
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        const input = document.getElementById('admin-quick-search') as HTMLInputElement | null;
+        if (input) {
+          input.focus();
+          setSearchOpen(true);
+        }
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   const toggleSection = (id: string) => {
-    setCollapsedSections((prev) => ({
+    setUserCollapsed((prev) => ({
       ...prev,
       [id]: !prev[id],
     }));
@@ -173,13 +83,37 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     window.location.reload();
   };
 
+  // Filter navigation items for topbar command palette
+  const searchResults = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return [];
+    return ALL_NAV_ITEMS.filter(
+      (item) =>
+        item.label.toLowerCase().includes(q) ||
+        item.sectionLabel.toLowerCase().includes(q) ||
+        (item.description && item.description.toLowerCase().includes(q))
+    ).slice(0, 8);
+  }, [searchQuery]);
+
   return (
     <div className={styles.layout}>
-      {/* ─── Sidebar ─── */}
-      <aside className={styles.sidebar}>
+      {/* Mobile Drawer Backdrop */}
+      {mobileOpen && (
+        <div
+          className={styles.mobileBackdrop}
+          onClick={() => setMobileOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* ─── Master Sidebar ─── */}
+      <aside
+        className={`${styles.sidebar} ${mobileOpen ? styles.sidebarOpen : ''}`}
+        aria-label="Admin Navigation"
+      >
         {/* Header / Brand */}
         <div className={styles.sidebarHeader}>
-          <Link href="/admin/dashboard" className={styles.brand}>
+          <Link href="/admin/dashboard" className={styles.brand} onClick={() => setMobileOpen(false)}>
             <div className={styles.brandLogo}>
               <Sparkles size={20} />
             </div>
@@ -188,39 +122,61 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <span className={styles.brandSub}>Admin Panel</span>
             </div>
           </Link>
+          {mobileOpen && (
+            <button
+              type="button"
+              onClick={() => setMobileOpen(false)}
+              className={styles.topbarBtn}
+              aria-label="Close navigation"
+            >
+              <X size={16} />
+            </button>
+          )}
         </div>
 
-        {/* Navigation */}
-        <nav className={styles.sidebarNav}>
+        {/* Navigation Sections */}
+        <nav className={styles.sidebarNav} role="navigation">
           {NAV_SECTIONS.map((section) => {
-            const isCollapsed = collapsedSections[section.id];
+            // A section is expanded if:
+            // 1. It contains the active route (ensuring active item is visible), UNLESS user explicitly collapsed it.
+            // 2. Default is open (userCollapsed[section.id] !== true).
+            const isCollapsed = Boolean(userCollapsed[section.id]);
+
             return (
               <div key={section.id} className={styles.navSection}>
-                <div
+                <button
+                  type="button"
                   className={styles.navSectionHeader}
                   onClick={() => toggleSection(section.id)}
+                  aria-expanded={!isCollapsed}
+                  style={{ width: '100%', background: 'transparent', border: 'none', textAlign: 'left' }}
                 >
                   <span className={styles.navSectionLabel}>{section.label}</span>
                   <span className={styles.navSectionToggle}>
                     {isCollapsed ? <ChevronRight size={13} /> : <ChevronDown size={13} />}
                   </span>
-                </div>
+                </button>
 
                 {!isCollapsed && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem', marginTop: '0.2rem' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.15rem',
+                      marginTop: '0.2rem',
+                    }}
+                  >
                     {section.items.map((item) => {
-                      const isActive =
-                        pathname === item.href ||
-                        (item.href !== '/admin' &&
-                          item.href !== '/admin/dashboard' &&
-                          pathname.startsWith(item.href));
+                      const isActive = isNavItemActive(item, activeItem);
                       const IconComponent = item.icon;
 
                       return (
                         <Link
-                          key={item.href}
+                          key={item.id}
                           href={item.href}
+                          onClick={() => setMobileOpen(false)}
                           className={isActive ? styles.navItemActive : styles.navItem}
+                          aria-current={isActive ? 'page' : undefined}
                         >
                           <span className={styles.navIcon}>
                             <IconComponent size={16} />
@@ -246,7 +202,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <div className={styles.proDesc}>
               Unlock enterprise analytics, custom NFC themes and auto SEO tools.
             </div>
-            <button className={styles.proBtn} onClick={() => alert('Tapfolio Enterprise is active.')}>
+            <button
+              className={styles.proBtn}
+              onClick={() => alert('Tapfolio Enterprise is active.')}
+            >
               Active Enterprise
             </button>
           </div>
@@ -257,19 +216,75 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <main className={styles.main}>
         {/* Topbar */}
         <header className={styles.topbar}>
-          {/* Search Box */}
-          <div className={styles.searchBox}>
-            <span className={styles.searchIcon}>
-              <Search size={15} />
-            </span>
-            <input
-              className={styles.searchInput}
-              placeholder="Search users, portfolios, or anything..."
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <span className={styles.shortcutBadge}>⌘K</span>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            {/* Mobile Hamburger Button */}
+            <button
+              type="button"
+              className={styles.mobileMenuBtn}
+              onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label="Toggle navigation drawer"
+            >
+              <Menu size={18} />
+            </button>
+
+            {/* Quick Search Palette */}
+            <div className={styles.searchBoxWrapper} ref={searchRef}>
+              <div className={styles.searchBox}>
+                <span className={styles.searchIcon}>
+                  <Search size={15} />
+                </span>
+                <input
+                  id="admin-quick-search"
+                  className={styles.searchInput}
+                  placeholder="Search users, portfolios, or anything..."
+                  type="text"
+                  value={searchQuery}
+                  onFocus={() => setSearchOpen(true)}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setSearchOpen(true);
+                  }}
+                />
+                <span className={styles.shortcutBadge}>⌘K</span>
+              </div>
+
+              {/* Instant Search Results Dropdown */}
+              {searchOpen && searchResults.length > 0 && (
+                <div className={styles.searchDropdown}>
+                  <div
+                    style={{
+                      fontSize: '0.68rem',
+                      fontWeight: 800,
+                      color: '#94a3b8',
+                      textTransform: 'uppercase',
+                      padding: '0.4rem 0.75rem',
+                      letterSpacing: '0.06em',
+                    }}
+                  >
+                    Quick Navigation
+                  </div>
+                  {searchResults.map((result) => {
+                    const ResultIcon = result.icon;
+                    return (
+                      <Link
+                        key={result.id}
+                        href={result.href}
+                        onClick={() => {
+                          setSearchOpen(false);
+                          setSearchQuery('');
+                        }}
+                        className={styles.searchResultItem}
+                      >
+                        <ResultIcon size={16} />
+                        <span style={{ fontWeight: 600 }}>{result.label}</span>
+                        <span className={styles.searchResultSection}>{result.sectionLabel}</span>
+                        <ArrowRight size={13} style={{ color: '#94a3b8', marginLeft: 4 }} />
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Right Header Section */}
@@ -283,9 +298,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             {/* Quick Actions */}
             <div className={styles.topbarActions}>
               <button
+                type="button"
                 onClick={handleRefresh}
                 className={styles.topbarBtn}
                 title="Refresh Platform"
+                aria-label="Refresh Platform"
               >
                 <RefreshCw size={15} />
               </button>
@@ -294,14 +311,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 href="/admin/security"
                 className={styles.topbarBtn}
                 title="Security & Threat Center"
+                aria-label="Security & Threat Center"
               >
                 <ShieldCheck size={15} />
                 <span className={styles.btnDot} />
               </Link>
 
               <button
+                type="button"
                 className={styles.topbarBtn}
                 title="Notifications"
+                aria-label="Notifications"
                 onClick={() => alert('3 unread system alerts.')}
               >
                 <Bell size={15} />
@@ -314,6 +334,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 rel="noopener noreferrer"
                 className={styles.topbarBtn}
                 title="Open Public Website (tapfolio.me)"
+                aria-label="Open Public Website"
               >
                 <ExternalLink size={15} />
               </Link>
