@@ -1,9 +1,51 @@
-import React from 'react';
+'use client';
+
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { BLOG_POSTS } from '@/lib/content/blog-posts';
+
+interface ArticleSummary {
+  slug: string;
+  title: string;
+  summary: string;
+  date: string;
+  readTime: string;
+  author: string;
+}
 
 export default function FeaturedBlogsSection() {
-  const featured = BLOG_POSTS.slice(0, 3);
+  const [featured, setFeatured] = useState<ArticleSummary[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/admin/blog/posts?limit=3&status=PUBLISHED')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.posts && data.posts.length > 0) {
+          setFeatured(
+            data.posts.map((p: any) => ({
+              slug: p.slug,
+              title: p.title,
+              summary: p.summary,
+              date: p.publishedAt
+                ? new Date(p.publishedAt).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                  })
+                : 'Recently Published',
+              readTime: p.readingTime || '5 min read',
+              author: p.authorName || 'Tapfolio Team',
+            }))
+          );
+        }
+      })
+      .catch((err) => console.error('Failed to load featured articles:', err))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (!loading && featured.length === 0) {
+    return null;
+  }
 
   return (
     <section className="w-full py-24 bg-white flex justify-center border-t border-b border-gray-100">

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
-import { saveArticle, syncScheduledPosts, PostInput } from '@/lib/blog-service';
+import { saveArticle, deleteArticle, syncScheduledPosts, PostInput } from '@/lib/blog-service';
 import { BlogPostStatus } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
 
@@ -139,15 +139,9 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Valid post ID is required' }, { status: 400 });
     }
 
-    const post = await prisma.blogPost.delete({
-      where: { id },
-    });
-
-    try {
-      revalidatePath('/blog');
-      revalidatePath(`/blog/${post.slug}`);
-    } catch (e) {
-      // Ignore
+    const post = await deleteArticle(id);
+    if (!post) {
+      return NextResponse.json({ success: false, error: 'Article not found' }, { status: 404 });
     }
 
     return NextResponse.json({

@@ -633,19 +633,21 @@ model BlogTag {
 }
 
 model BlogAuthor {
-  id          Int        @id @default(autoincrement())
-  name        String
-  slug        String     @unique
-  email       String?
-  avatar      String?
-  designation String?
-  bio         String?    @db.Text
-  twitter     String?
-  linkedin    String?
-  website     String?
-  posts       BlogPost[]
-  createdAt   DateTime   @default(now()) @map("created_at")
-  updatedAt   DateTime   @updatedAt @map("updated_at")
+  id             Int        @id @default(autoincrement())
+  name           String
+  slug           String     @unique
+  email          String?
+  avatar         String?
+  avatarImageId  String?    @map("avatar_image_id")
+  avatarImage    BlogImage? @relation(fields: [avatarImageId], references: [id], onDelete: SetNull)
+  designation    String?
+  bio            String?    @db.Text
+  twitter        String?
+  linkedin       String?
+  website        String?
+  posts          BlogPost[]
+  createdAt      DateTime   @default(now()) @map("created_at")
+  updatedAt      DateTime   @updatedAt @map("updated_at")
 
   @@map("blog_authors")
 }
@@ -657,6 +659,8 @@ model BlogPost {
   summary           String         @db.Text
   content           String         @db.Text
   featuredImage     String?        @map("featured_image")
+  featuredImageId   String?        @map("featured_image_id")
+  featuredImageRel  BlogImage?     @relation(fields: [featuredImageId], references: [id], onDelete: SetNull)
   imageAlt          String?        @map("image_alt")
   status            BlogPostStatus @default(DRAFT)
   publishedAt       DateTime?      @map("published_at")
@@ -693,6 +697,7 @@ model BlogPost {
   @@index([publishedAt])
   @@index([categoryId])
   @@index([authorId])
+  @@index([featuredImageId])
   @@map("blog_posts")
 }
 
@@ -704,6 +709,27 @@ model BlogPostTag {
 
   @@id([postId, tagId])
   @@map("blog_post_tags")
+}
+
+model BlogImage {
+  id         String     @id @default(uuid())
+  filename   String
+  mimeType   String     @map("mime_type")
+  fileSize   Int        @map("file_size")
+  width      Int?
+  height     Int?
+  altText    String?    @map("alt_text")
+  title      String?
+  data       Bytes      @db.ByteA
+  uploadedBy String?    @map("uploaded_by")
+  createdAt  DateTime   @default(now()) @map("created_at")
+  updatedAt  DateTime   @updatedAt @map("updated_at")
+
+  posts      BlogPost[]
+  authors    BlogAuthor[]
+
+  @@index([filename])
+  @@map("blog_images")
 }
 
 model BlogMedia {

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import path from 'path';
-import fs from 'fs/promises';
 import prisma from '@/lib/db';
 import { slugify } from '@/lib/blog-utils';
 
@@ -16,21 +15,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'No image file provided' }, { status: 400 });
     }
 
-    // Validate mime type
+    // 1. Validate MIME type
     const mimeType = file.type || 'image/jpeg';
-    if (!mimeType.startsWith('image/')) {
+    const allowedMimes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'];
+    if (!allowedMimes.includes(mimeType) && !mimeType.startsWith('image/')) {
       return NextResponse.json(
-        { success: false, error: 'Uploaded file must be an image (PNG, JPG, WebP, GIF, SVG)' },
+        { success: false, error: 'Uploaded file must be a valid image (PNG, JPG, WebP, GIF, SVG)' },
         { status: 400 }
       );
     }
 
+    // 2. Validate File Size (10MB limit)
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
     const fileSize = buffer.length;
-    const base64Data = buffer.toString('base64');
 
-    // Check size limit: 10MB
     if (fileSize > 10 * 1024 * 1024) {
       return NextResponse.json(
         { success: false, error: 'Image size exceeds maximum limit of 10MB' },
@@ -38,78 +37,48 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate safe filename
+    // 3. Generate clean, collision-resistant filename
     const originalName = file.name || 'cover-image.jpg';
     const ext = path.extname(originalName) || '.jpg';
     const baseName = path.basename(originalName, ext);
-    const safeName = `${slugify(baseName) || 'cover'}-${Date.now()}${ext.toLowerCase()}`;
+    const safeFilename = `${slugify(baseName) || 'image'}-${Date.now()}${ext.toLowerCase()}`;
 
-    // Target upload folder in public (if filesystem writable)
-    try {
-      const uploadsDir = path.join(process.cwd(), 'public', 'assets', 'blog', 'uploads');
-      await fs.mkdir(uploadsDir, { recursive: true });
-      const filePath = path.join(uploadsDir, safeName);
-      await fs.writeFile(filePath, buffer);
-    } catch (fsErr) {
-      console.warn('[BLOG UPLOAD] Local filesystem write skipped (serverless/read-only):', fsErr);
-    }
+    // 4. Save directly into Neon PostgreSQL BYTEA binary storage
+    const image = await prisma.blogImage.create({
+      data: {
+        filename: safeFilename,
+        mimeType,
+        fileSize,
+        altText: altText || baseName,
+        title: baseName,
+        data: buffer,
+        uploadedBy: 'Tapfolio Admin',
+      },
+      select: {
+        id: true,
+        filename: true,
+        fileSize: true,
+        mimeType: true,
+        altText: true,
+        createdAt: true,
+      },
+    });
 
-    const publicUrl = `/assets/blog/uploads/${safeName}`;
-
-    // Cloudinary upload if configured
-    let finalUrl = publicUrl;
-    const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
-    const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET || 'tapfolio';
-
-    if (cloudName) {
-      try {
-        const dataUrl = `data:${mimeType};base64,${base64Data}`;
-        const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
-        const cForm = new FormData();
-        cForm.append('file', dataUrl);
-        cForm.append('upload_preset', uploadPreset);
-
-        const cRes = await fetch(cloudinaryUrl, { method: 'POST', body: cForm });
-        if (cRes.ok) {
-          const cData = await cRes.json();
-          if (cData.secure_url) {
-            finalUrl = cData.secure_url;
-          }
-        }
-      } catch (cErr) {
-        console.warn('[BLOG UPLOAD] Cloudinary upload failed, fallback to local/database:', cErr);
-      }
-    }
-
-    // Record in database including binary base64 so it can be served everywhere
-    try {
-      await prisma.blogMedia.create({
-        data: {
-          filename: safeName,
-          url: finalUrl,
-          mimeType,
-          fileSize,
-          altText: altText || baseName,
-          title: baseName,
-          fileData: base64Data,
-          uploadedBy: 'Tapfolio Admin',
-        },
-      });
-    } catch (dbErr) {
-      console.warn('[BLOG UPLOAD] Failed to insert into blogMedia:', dbErr);
-    }
+    const publicUrl = `/api/blog/images/${image.id}`;
 
     return NextResponse.json({
       success: true,
-      url: finalUrl,
-      filename: safeName,
-      size: fileSize,
-      mimeType,
+      id: image.id,
+      url: publicUrl,
+      filename: image.filename,
+      size: image.fileSize,
+      mimeType: image.mimeType,
+      altText: image.altText,
     });
   } catch (error: any) {
-    console.error('[BLOG UPLOAD] Error:', error);
+    console.error('[BLOG UPLOAD TO POSTGRESQL ERROR]:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to upload photo' },
+      { success: false, error: error.message || 'Failed to upload photo into database' },
       { status: 500 }
     );
   }

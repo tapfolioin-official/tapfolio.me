@@ -4,7 +4,6 @@ import { LANDING_PAGES } from '@/lib/content/landing-pages';
 import { INDUSTRIES } from '@/lib/content/industries';
 import { PRODUCTS } from '@/lib/content/products';
 import { COMPARISONS } from '@/lib/content/comparison';
-import { BLOG_POSTS } from '@/lib/content/blog-posts';
 import { GEO_DOCS } from '@/lib/geo-data';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -87,13 +86,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8
   }));
 
-  // 7. Blog Articles
-  const blogPages: MetadataRoute.Sitemap = BLOG_POSTS.map(post => ({
-    url: `${host}/blog/${post.slug}`,
-    lastModified: timestamp,
-    changeFrequency: 'weekly',
-    priority: 0.8
-  }));
+  // 7. Blog Articles (Dynamic from Neon PostgreSQL)
+  let blogPages: MetadataRoute.Sitemap = [];
+  try {
+    const publishedArticles = await prisma.blogPost.findMany({
+      where: {
+        status: 'PUBLISHED',
+        publishedAt: { lte: new Date() },
+      },
+      select: {
+        slug: true,
+        updatedAt: true,
+      },
+    });
+    blogPages = publishedArticles.map((post) => ({
+      url: `${host}/blog/${post.slug}`,
+      lastModified: post.updatedAt ? post.updatedAt.toISOString() : timestamp,
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    }));
+  } catch (err) {
+    console.error('Failed to load blog pages for sitemap:', err);
+  }
 
   // 8. Dynamic User Profiles
   let profilePages: MetadataRoute.Sitemap = [];

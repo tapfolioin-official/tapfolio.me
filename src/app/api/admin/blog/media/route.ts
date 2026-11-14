@@ -17,45 +17,36 @@ export async function GET(request: NextRequest) {
       ];
     }
 
-    const media = await prisma.blogMedia.findMany({
+    const images = await prisma.blogImage.findMany({
       where,
       orderBy: { createdAt: 'desc' },
       take: 60,
+      select: {
+        id: true,
+        filename: true,
+        mimeType: true,
+        fileSize: true,
+        width: true,
+        height: true,
+        altText: true,
+        title: true,
+        uploadedBy: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
+
+    const media = images.map((img) => ({
+      ...img,
+      url: `/api/blog/images/${img.id}`,
+    }));
 
     return NextResponse.json({
       success: true,
       media,
     });
   } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
-  }
-}
-
-export async function POST(request: NextRequest) {
-  try {
-    const { filename, url, mimeType, fileSize, width, height, altText, title } = await request.json();
-
-    if (!url || !filename) {
-      return NextResponse.json({ success: false, error: 'URL and filename are required' }, { status: 400 });
-    }
-
-    const item = await prisma.blogMedia.create({
-      data: {
-        filename,
-        url,
-        mimeType: mimeType || 'image/jpeg',
-        fileSize: fileSize || 0,
-        width: width || null,
-        height: height || null,
-        altText: altText || null,
-        title: title || filename,
-        uploadedBy: 'Admin',
-      },
-    });
-
-    return NextResponse.json({ success: true, item });
-  } catch (error: any) {
+    console.error('Failed to query blog media library:', error);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
@@ -69,12 +60,13 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Media ID required' }, { status: 400 });
     }
 
-    await prisma.blogMedia.delete({
+    await prisma.blogImage.delete({
       where: { id },
     });
 
-    return NextResponse.json({ success: true, message: 'Media item removed' });
+    return NextResponse.json({ success: true, message: 'Media asset deleted successfully from database' });
   } catch (error: any) {
+    console.error('Failed to delete media asset:', error);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }

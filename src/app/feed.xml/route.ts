@@ -1,11 +1,27 @@
 import { NextResponse } from 'next/server';
-import { BLOG_POSTS } from '@/lib/content/blog-posts';
+import prisma from '@/lib/db';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   const host = 'https://www.tapfolio.me';
   
-  const rssItems = BLOG_POSTS.map(post => {
-    const parsedDate = new Date(post.date).toUTCString();
+  let posts: any[] = [];
+  try {
+    posts = await prisma.blogPost.findMany({
+      where: {
+        status: 'PUBLISHED',
+        publishedAt: { lte: new Date() },
+      },
+      orderBy: { publishedAt: 'desc' },
+      take: 100,
+    });
+  } catch (err) {
+    console.error('Failed to load blog posts for RSS feed:', err);
+  }
+
+  const rssItems = posts.map(post => {
+    const parsedDate = post.publishedAt ? new Date(post.publishedAt).toUTCString() : new Date().toUTCString();
     
     return `
     <item>
@@ -13,8 +29,8 @@ export async function GET() {
       <link>${host}/blog/${post.slug}</link>
       <guid>${host}/blog/${post.slug}</guid>
       <pubDate>${parsedDate}</pubDate>
-      <description>${escapeXml(post.summary)}</description>
-      <author>${escapeXml(post.author)}</author>
+      <description>${escapeXml(post.summary || '')}</description>
+      <author>${escapeXml(post.authorName || 'Tapfolio Team')}</author>
     </item>`;
   }).join('');
 

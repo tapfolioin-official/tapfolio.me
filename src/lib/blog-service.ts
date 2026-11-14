@@ -1,8 +1,9 @@
 import prisma from '@/lib/db';
 import { BlogPostStatus } from '@prisma/client';
-import { slugify, calculateReadingTime, countWords } from './blog-utils';
+import { revalidatePath } from 'next/cache';
+import { slugify, calculateReadingTime, countWords, resolveBlogImageUrl } from './blog-utils';
 
-export { slugify, calculateReadingTime, countWords };
+export { slugify, calculateReadingTime, countWords, resolveBlogImageUrl };
 
 export interface PostInput {
   id?: number;
@@ -11,6 +12,7 @@ export interface PostInput {
   summary: string;
   content: string;
   featuredImage?: string | null;
+  featuredImageId?: string | null;
   imageAlt?: string | null;
   status: BlogPostStatus;
   publishedAt?: Date | string | null;
@@ -71,8 +73,10 @@ export async function getPublicBlogPosts(options?: {
   const limit = Math.max(1, Math.min(100, options?.limit || 12));
   const skip = (page - 1) * limit;
 
+  const now = new Date();
   const where: any = {
     status: BlogPostStatus.PUBLISHED,
+    publishedAt: { lte: now },
   };
 
   if (options?.category && options.category !== 'All') {
@@ -146,7 +150,8 @@ export async function getPostBySlug(slug: string, options?: { allowDraft?: boole
   });
 
   if (post) {
-    if (!options?.allowDraft && post.status !== BlogPostStatus.PUBLISHED) {
+    const isFuture = post.publishedAt && new Date(post.publishedAt) > new Date();
+    if (!options?.allowDraft && (post.status !== BlogPostStatus.PUBLISHED || isFuture)) {
       return { post: null, redirectTarget: null, isDraft: true };
     }
     return { post, redirectTarget: null, isDraft: false };
@@ -342,6 +347,20 @@ export async function saveArticle(input: PostInput, editorName: string = 'Admin'
     }
   }
 
+  // Resolve featuredImage and database featuredImageId
+  let featuredImageId: string | null = input.featuredImageId || null;
+  let featuredImage: string | null = input.featuredImage || null;
+
+  if (featuredImage) {
+    const uuidMatch = featuredImage.match(/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})/);
+    if (uuidMatch && uuidMatch[1]) {
+      featuredImageId = uuidMatch[1];
+      featuredImage = `/api/blog/images/${uuidMatch[1]}`;
+    }
+  } else if (featuredImageId) {
+    featuredImage = `/api/blog/images/${featuredImageId}`;
+  }
+
   if (input.id) {
     // Check if slug changed -> setup 301 redirect
     const existing = await prisma.blogPost.findUnique({
@@ -368,7 +387,8 @@ export async function saveArticle(input: PostInput, editorName: string = 'Admin'
         slug: targetSlug,
         summary: input.summary,
         content: input.content,
-        featuredImage: input.featuredImage || null,
+        featuredImage,
+        featuredImageId,
         imageAlt: input.imageAlt || null,
         status: postStatus,
         publishedAt: publishedAt || (postStatus === BlogPostStatus.PUBLISHED ? existing?.publishedAt || new Date() : null),
@@ -386,10 +406,27 @@ export async function saveArticle(input: PostInput, editorName: string = 'Admin'
         canonicalUrl: input.canonicalUrl || `https://tapfolio.me/blog/${targetSlug}`,
         ogTitle: input.ogTitle || input.title,
         ogDescription: input.ogDescription || input.summary,
-        ogImage: input.ogImage || input.featuredImage || null,
+        ogImage: input.ogImage || featuredImage || null,
         metaRobots: input.metaRobots || 'index, follow',
       },
     });
+
+    // Sync tags
+    if (input.tags && Array.isArray(input.tags)) {
+      await prisma.blogPostTag.deleteMany({ where: { postId: post.id } });
+      for (const tagName of input.tags) {
+        if (!tagName.trim()) continue;
+        const tagSlug = slugify(tagName.trim());
+        const tag = await prisma.blogTag.upsert({
+          where: { slug: tagSlug },
+          update: { name: tagName.trim() },
+          create: { name: tagName.trim(), slug: tagSlug },
+        });
+        await prisma.blogPostTag.create({
+          data: { postId: post.id, tagId: tag.id },
+        });
+      }
+    }
 
     // Save revision snapshot
     await prisma.blogRevision.create({
@@ -401,6 +438,13 @@ export async function saveArticle(input: PostInput, editorName: string = 'Admin'
         savedBy: editorName,
       },
     });
+
+    try {
+      revalidatePath('/blog');
+      revalidatePath(`/blog/${post.slug}`);
+    } catch (e) {
+      // Non-blocking outside request context
+    }
 
     return post;
   } else {
@@ -419,7 +463,8 @@ export async function saveArticle(input: PostInput, editorName: string = 'Admin'
         slug: finalSlug,
         summary: input.summary,
         content: input.content,
-        featuredImage: input.featuredImage || null,
+        featuredImage,
+        featuredImageId,
         imageAlt: input.imageAlt || null,
         status: postStatus,
         publishedAt,
@@ -437,10 +482,26 @@ export async function saveArticle(input: PostInput, editorName: string = 'Admin'
         canonicalUrl: input.canonicalUrl || `https://tapfolio.me/blog/${finalSlug}`,
         ogTitle: input.ogTitle || input.title,
         ogDescription: input.ogDescription || input.summary,
-        ogImage: input.ogImage || input.featuredImage || null,
+        ogImage: input.ogImage || featuredImage || null,
         metaRobots: input.metaRobots || 'index, follow',
       },
     });
+
+    // Sync tags
+    if (input.tags && Array.isArray(input.tags)) {
+      for (const tagName of input.tags) {
+        if (!tagName.trim()) continue;
+        const tagSlug = slugify(tagName.trim());
+        const tag = await prisma.blogTag.upsert({
+          where: { slug: tagSlug },
+          update: { name: tagName.trim() },
+          create: { name: tagName.trim(), slug: tagSlug },
+        });
+        await prisma.blogPostTag.create({
+          data: { postId: post.id, tagId: tag.id },
+        });
+      }
+    }
 
     await prisma.blogRevision.create({
       data: {
@@ -452,8 +513,40 @@ export async function saveArticle(input: PostInput, editorName: string = 'Admin'
       },
     });
 
+    try {
+      revalidatePath('/blog');
+      revalidatePath(`/blog/${post.slug}`);
+    } catch (e) {
+      // Non-blocking outside request context
+    }
+
     return post;
   }
+}
+
+/**
+ * Deletes an article and its associated relations safely using a database transaction.
+ */
+export async function deleteArticle(id: number) {
+  const post = await prisma.blogPost.findUnique({ where: { id } });
+  if (!post) return null;
+
+  await prisma.$transaction(async (tx) => {
+    await tx.blogPostTag.deleteMany({ where: { postId: id } });
+    await tx.blogRevision.deleteMany({ where: { postId: id } });
+    await tx.blogPost.delete({ where: { id } });
+  });
+
+  try {
+    revalidatePath('/blog');
+    if (post.slug) {
+      revalidatePath(`/blog/${post.slug}`);
+    }
+  } catch (err) {
+    // Non-blocking
+  }
+
+  return post;
 }
 
 /**
@@ -464,6 +557,9 @@ export function generateArticleJsonLd(post: any) {
   const publishIso = post.publishedAt ? new Date(post.publishedAt).toISOString() : new Date().toISOString();
   const updateIso = post.updatedAt ? new Date(post.updatedAt).toISOString() : publishIso;
 
+  const resolvedImage = resolveBlogImageUrl(post.featuredImage, post.slug);
+  const fullImageUrl = resolvedImage.startsWith('http') ? resolvedImage : `https://tapfolio.me${resolvedImage}`;
+
   const blogPostingSchema = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
@@ -473,7 +569,7 @@ export function generateArticleJsonLd(post: any) {
     },
     headline: post.title,
     description: post.summary || post.metaDescription,
-    image: post.featuredImage ? [post.featuredImage.startsWith('http') ? post.featuredImage : `https://tapfolio.me${post.featuredImage}`] : undefined,
+    image: resolvedImage ? [fullImageUrl] : undefined,
     datePublished: publishIso,
     dateModified: updateIso,
     author: {

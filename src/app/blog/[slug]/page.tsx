@@ -4,8 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/app/team/_components/Navbar";
 import Footer from "@/app/team/_components/Footer";
-import { getPostBySlug, incrementArticleViews, generateArticleJsonLd } from "@/lib/blog-service";
-import { BLOG_POSTS } from "@/lib/content/blog-posts";
+import { getPostBySlug, incrementArticleViews, generateArticleJsonLd, resolveBlogImageUrl } from "@/lib/blog-service";
 import {
   Calendar,
   Clock,
@@ -25,10 +24,7 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const result = await getPostBySlug(slug, { allowDraft: true });
-
-  const post =
-    result.post ||
-    BLOG_POSTS.find((p) => p.slug === slug);
+  const post = result.post;
 
   if (!post) {
     return {
@@ -39,7 +35,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const pageUrl = `https://tapfolio.me/blog/${post.slug}`;
   const title = (post as any).seoTitle || post.title;
   const description = (post as any).metaDescription || post.summary;
-  const image = (post as any).featuredImage || (post as any).image || "/assets/blog/tapfolio_nfc_business_cards_price_details.png";
+  const image = resolveBlogImageUrl(post.featuredImage, post.slug);
 
   return {
     title: `${title} | Tapfolio Blog`,
@@ -72,33 +68,25 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function DynamicBlogPostPage({ params }: PageProps) {
+export default async function DynamicBlogPostPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>;
+  searchParams?: Promise<{ preview?: string }>;
+}) {
   const { slug } = await params;
-  const result = await getPostBySlug(slug, { allowDraft: true });
+  const sParams = searchParams ? await searchParams : {};
+  const isPreview = sParams.preview === 'true';
+
+  const result = await getPostBySlug(slug, { allowDraft: isPreview });
 
   // Handle 301 redirects if slug changed
   if (result.redirectTarget) {
     redirect(`/blog/${result.redirectTarget}`);
   }
 
-  // Get article from database or static fallback
-  let post: any = result.post;
-  if (!post) {
-    const staticPost = BLOG_POSTS.find((p) => p.slug === slug);
-    if (staticPost) {
-      post = {
-        title: staticPost.title,
-        slug: staticPost.slug,
-        summary: staticPost.summary,
-        content: staticPost.content,
-        featuredImage: staticPost.image,
-        publishedAt: staticPost.date ? new Date(staticPost.date) : new Date(),
-        readingTime: staticPost.readTime || "5 min read",
-        authorName: staticPost.author,
-        categoryName: staticPost.category,
-      };
-    }
-  }
+  const post = result.post;
 
   if (!post) {
     notFound();
@@ -221,7 +209,7 @@ export default async function DynamicBlogPostPage({ params }: PageProps) {
           <div className="w-full relative overflow-hidden rounded-3xl border border-slate-200/80 shadow-md">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={post.featuredImage}
+              src={resolveBlogImageUrl(post.featuredImage, post.slug)}
               alt={post.imageAlt || post.title}
               className="w-full h-auto object-cover max-h-[500px]"
             />

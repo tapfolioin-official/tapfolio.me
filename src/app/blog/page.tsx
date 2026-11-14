@@ -3,8 +3,7 @@ import type { Metadata } from "next";
 import Navbar from "@/app/team/_components/Navbar";
 import Footer from "@/app/team/_components/Footer";
 import { getWebPageSchema, getBreadcrumbSchema } from "@/lib/geo-schemas";
-import { BLOG_POSTS } from "@/lib/content/blog-posts";
-import { getPublicBlogPosts } from "@/lib/blog-service";
+import { getPublicBlogPosts, resolveBlogImageUrl } from "@/lib/blog-service";
 import BlogHubClient from "./BlogHubClient";
 
 export const revalidate = 60;
@@ -46,7 +45,7 @@ export default async function BlogHubPage() {
         title: p.title,
         summary: p.summary,
         content: p.content,
-        image: p.featuredImage || "/assets/blog/tapfolio_nfc_business_cards_price_details.png",
+        image: resolveBlogImageUrl(p.featuredImage, p.slug),
         date: p.publishedAt ? new Date(p.publishedAt).toISOString().split('T')[0] : '2024-01-01',
         readTime: p.readingTime || '5 min read',
         author: p.authorName || 'Tapfolio Team',
@@ -54,12 +53,7 @@ export default async function BlogHubPage() {
       }));
     }
   } catch (err) {
-    console.error('Failed to query database blog posts, falling back to static archive:', err);
-  }
-
-  // Fallback to static archive if database has not populated
-  if (!posts || posts.length === 0) {
-    posts = BLOG_POSTS;
+    console.error('Failed to query database blog posts:', err);
   }
 
   return (
