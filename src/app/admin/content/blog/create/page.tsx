@@ -37,7 +37,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import { slugify, calculateReadingTime, countWords } from '@/lib/blog-service';
-import styles from '../../dashboard/dashboard.module.css';
+import styles from '@/app/admin/dashboard/dashboard.module.css';
 
 export default function BlogEditorPage() {
   const router = useRouter();

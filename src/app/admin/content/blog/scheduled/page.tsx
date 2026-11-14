@@ -11,7 +11,7 @@ import {
   Sparkles,
   ExternalLink,
 } from 'lucide-react';
-import styles from '../../dashboard/dashboard.module.css';
+import styles from '@/app/admin/dashboard/dashboard.module.css';
 
 interface ScheduledPost {
   id: number;

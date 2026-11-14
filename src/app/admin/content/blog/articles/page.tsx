@@ -23,7 +23,7 @@ import {
   Check,
   X,
 } from 'lucide-react';
-import styles from '../../dashboard/dashboard.module.css';
+import styles from '@/app/admin/dashboard/dashboard.module.css';
 
 interface ArticleItem {
   id: number;

@@ -20,7 +20,7 @@ import {
   Search,
   Filter,
 } from 'lucide-react';
-import styles from '../../dashboard/dashboard.module.css';
+import styles from '@/app/admin/dashboard/dashboard.module.css';
 
 interface DashboardMetrics {
   totalArticles: number;

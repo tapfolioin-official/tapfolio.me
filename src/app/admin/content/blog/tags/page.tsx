@@ -8,7 +8,7 @@ import {
   Trash2,
   Search,
 } from 'lucide-react';
-import styles from '../../dashboard/dashboard.module.css';
+import styles from '@/app/admin/dashboard/dashboard.module.css';
 
 export default function BlogTagsPage() {
   const [tags, setTags] = useState<any[]>([]);

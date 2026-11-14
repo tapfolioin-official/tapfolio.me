@@ -11,7 +11,7 @@ import {
   ExternalLink,
   Search,
 } from 'lucide-react';
-import styles from '../../dashboard/dashboard.module.css';
+import styles from '@/app/admin/dashboard/dashboard.module.css';
 
 interface CategoryItem {
   id: number;
