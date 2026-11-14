@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -37,14 +37,45 @@ import {
   FileText,
   Search,
   CheckCheck,
+  Upload,
+  Loader2,
+  FolderOpen,
 } from 'lucide-react';
 import { slugify, calculateReadingTime, countWords } from '@/lib/blog-utils';
 import styles from '@/app/admin/dashboard/dashboard.module.css';
+
+// Pre-packaged high-res Tapfolio branded blog banners
+const PRESET_COVERS = [
+  {
+    label: 'Smart NFC Phone Tap',
+    url: '/assets/blog/nfc-card-tap-on-smartphone-setup-onboarding_jpg_7ffbe946-24c6-4bf2-b995-abe1f93c3566.jpg',
+  },
+  {
+    label: 'Luxury Metal Card Desk',
+    url: '/assets/blog/luxury-metal-business-card-desk_d7b41e5b-2b71-4d95-8f0d-50aba3f07090.jpg',
+  },
+  {
+    label: 'Matte Black Minimalist',
+    url: '/assets/blog/minimalist-matte-black-nfc-card-logo-only_jpg_e242400e-9793-4b00-a2e8-7d0b95b30c2a.jpg',
+  },
+  {
+    label: 'Analytics Dashboard',
+    url: '/assets/blog/nfc-business-card-analytics-dashboard-taps-clicks_jpg_a9409d32-e863-453a-b1e4-ac578f49bd3d.jpg',
+  },
+  {
+    label: 'Trade Show Networking',
+    url: '/assets/blog/trade-show-networking-nfc-business-card-tap-crowd_jpg_5e9cca82-9ef2-4b95-9e82-0d3c2a54221e.jpg',
+  },
+];
 
 function BlogEditorContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const editId = searchParams.get('id');
+
+  // File input refs for uploading photos
+  const mainFileInputRef = useRef<HTMLInputElement>(null);
+  const sidebarFileInputRef = useRef<HTMLInputElement>(null);
 
   // Article state
   const [postId, setPostId] = useState<number | null>(null);
@@ -75,6 +106,8 @@ function BlogEditorContent() {
   const [writeMode, setWriteMode] = useState<'write' | 'preview'>('write');
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const [copiedSlug, setCopiedSlug] = useState(false);
   const [feedback, setFeedback] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
   const [existingCategories, setExistingCategories] = useState<string[]>([]);
@@ -182,6 +215,74 @@ function BlogEditorContent() {
 
   const handleRemoveTag = (tagToRemove: string) => {
     setTags(tags.filter((t) => t !== tagToRemove));
+  };
+
+  // Upload photo handler
+  const handlePhotoUpload = async (file: File) => {
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setFeedback({ text: 'Please upload an image file (PNG, JPG, WebP, GIF, SVG)', type: 'error' });
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      setFeedback({ text: 'Photo file size exceeds 10MB limit', type: 'error' });
+      return;
+    }
+
+    setUploadingImage(true);
+    setFeedback(null);
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('altText', imageAlt || title);
+
+    try {
+      const res = await fetch('/api/admin/blog/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success && data.url) {
+        setFeaturedImage(data.url);
+        if (!imageAlt) {
+          const autoAlt = title || file.name.replace(/\.[^/.]+$/, '');
+          setImageAlt(autoAlt);
+        }
+        setFeedback({ text: 'Featured cover photo uploaded successfully!', type: 'success' });
+      } else {
+        setFeedback({ text: data.error || 'Failed to upload photo', type: 'error' });
+      }
+    } catch (err: any) {
+      setFeedback({ text: err.message || 'Error uploading photo', type: 'error' });
+    } finally {
+      setUploadingImage(false);
+      setTimeout(() => setFeedback(null), 4000);
+    }
+  };
+
+  // Drag & drop handlers
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handlePhotoUpload(e.dataTransfer.files[0]);
+    }
   };
 
   // Word count & reading time
@@ -316,6 +417,32 @@ function BlogEditorContent() {
 
   return (
     <div className={styles.page}>
+      {/* Hidden file input for main photo upload */}
+      <input
+        type="file"
+        ref={mainFileInputRef}
+        accept="image/*"
+        style={{ display: 'none' }}
+        onChange={(e) => {
+          if (e.target.files && e.target.files[0]) {
+            handlePhotoUpload(e.target.files[0]);
+          }
+        }}
+      />
+
+      {/* Hidden file input for sidebar photo upload */}
+      <input
+        type="file"
+        ref={sidebarFileInputRef}
+        accept="image/*"
+        style={{ display: 'none' }}
+        onChange={(e) => {
+          if (e.target.files && e.target.files[0]) {
+            handlePhotoUpload(e.target.files[0]);
+          }
+        }}
+      />
+
       {/* ─── Top Control Bar ─── */}
       <div
         style={{
@@ -863,12 +990,12 @@ function BlogEditorContent() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => insertFormatting('![Image alt](', ')')}
-                      title="Insert Image"
+                      onClick={() => mainFileInputRef.current?.click()}
+                      title="Upload & Insert Image"
                       className={styles.secondaryBtn}
-                      style={{ padding: '0.35rem 0.55rem', borderRadius: 6 }}
+                      style={{ padding: '0.35rem 0.55rem', borderRadius: 6, color: '#0052ff' }}
                     >
-                      <ImageIcon size={13} />
+                      <Upload size={13} />
                     </button>
                     <button
                       type="button"
@@ -895,7 +1022,7 @@ function BlogEditorContent() {
                 {writeMode === 'write' ? (
                   <textarea
                     id="blog-editor-textarea"
-                    rows={22}
+                    rows={20}
                     placeholder="Write your article in Markdown or clean text format..."
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
@@ -909,7 +1036,7 @@ function BlogEditorContent() {
                       color: '#0f172a',
                       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                       outline: 'none',
-                      minHeight: 460,
+                      minHeight: 420,
                       resize: 'vertical',
                       boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.02)',
                     }}
@@ -921,7 +1048,7 @@ function BlogEditorContent() {
                       background: '#ffffff',
                       borderRadius: 10,
                       border: '1px solid #e2e8f0',
-                      minHeight: 460,
+                      minHeight: 420,
                       fontSize: '0.96rem',
                       lineHeight: 1.8,
                       color: '#1e293b',
@@ -1192,7 +1319,7 @@ function BlogEditorContent() {
                         }}
                       >
                         <ImageIcon size={32} />
-                        <span style={{ fontSize: '0.8rem' }}>Set a featured cover image in the right sidebar</span>
+                        <span style={{ fontSize: '0.8rem' }}>Upload or select a cover image below</span>
                       </div>
                     )}
                   </div>
@@ -1210,6 +1337,304 @@ function BlogEditorContent() {
                 </div>
               </div>
             )}
+          </div>
+
+          {/* ═══ Card 3: Featured Cover Image & Photo Upload (Under Article Writing) ═══ */}
+          <div
+            className={styles.tableCard}
+            style={{
+              padding: '1.5rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '1rem',
+            }}
+          >
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem' }}>
+                <ImageIcon size={18} color="#0052ff" />
+                <div>
+                  <h3 style={{ fontSize: '0.96rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                    Featured Cover Image
+                  </h3>
+                  <span style={{ fontSize: '0.74rem', color: '#64748b' }}>
+                    Display photo for blog listings, social embeds, and reader previews (Recommended: 1200 × 630px, 16:9)
+                  </span>
+                </div>
+              </div>
+
+              {featuredImage && (
+                <span
+                  style={{
+                    padding: '0.2rem 0.6rem',
+                    borderRadius: 20,
+                    fontSize: '0.72rem',
+                    fontWeight: 750,
+                    background: '#ecfdf5',
+                    color: '#059669',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.3rem',
+                  }}
+                >
+                  <Check size={12} /> Cover Set
+                </span>
+              )}
+            </div>
+
+            {/* Photo Upload & Preview Canvas */}
+            {featuredImage ? (
+              <div
+                style={{
+                  position: 'relative',
+                  width: '100%',
+                  height: 320,
+                  borderRadius: 12,
+                  overflow: 'hidden',
+                  border: '1px solid #e2e8f0',
+                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.04)',
+                }}
+              >
+                <img
+                  src={featuredImage}
+                  alt={imageAlt || 'Featured preview'}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+
+                {/* Overlay Action Bar */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: 12,
+                    right: 12,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                  }}
+                >
+                  <button
+                    type="button"
+                    disabled={uploadingImage}
+                    onClick={() => mainFileInputRef.current?.click()}
+                    style={{
+                      background: 'rgba(15, 23, 42, 0.85)',
+                      backdropFilter: 'blur(6px)',
+                      color: '#ffffff',
+                      border: 'none',
+                      borderRadius: 8,
+                      padding: '0.45rem 0.85rem',
+                      fontSize: '0.78rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.4rem',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+                    }}
+                  >
+                    {uploadingImage ? <Loader2 size={13} className="animate-spin" /> : <Upload size={13} />}
+                    {uploadingImage ? 'Uploading...' : 'Replace Photo'}
+                  </button>
+
+                  <a
+                    href={featuredImage}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      background: 'rgba(15, 23, 42, 0.85)',
+                      backdropFilter: 'blur(6px)',
+                      color: '#ffffff',
+                      borderRadius: 8,
+                      padding: '0.45rem 0.65rem',
+                      fontSize: '0.78rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      textDecoration: 'none',
+                    }}
+                    title="View full image in new tab"
+                  >
+                    <ExternalLink size={13} />
+                  </a>
+
+                  <button
+                    type="button"
+                    onClick={() => setFeaturedImage('')}
+                    style={{
+                      background: 'rgba(239, 68, 68, 0.9)',
+                      backdropFilter: 'blur(6px)',
+                      color: '#ffffff',
+                      border: 'none',
+                      borderRadius: 8,
+                      padding: '0.45rem 0.85rem',
+                      fontSize: '0.78rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.35rem',
+                    }}
+                  >
+                    <Trash2 size={13} /> Remove
+                  </button>
+                </div>
+              </div>
+            ) : (
+              /* Drag & Drop Upload Dropzone */
+              <div
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                onClick={() => mainFileInputRef.current?.click()}
+                style={{
+                  height: 200,
+                  borderRadius: 14,
+                  background: isDragging ? '#eff6ff' : '#f8fafc',
+                  border: isDragging ? '2px dashed #0052ff' : '2px dashed #cbd5e1',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  padding: '1.5rem',
+                  gap: '0.65rem',
+                  textAlign: 'center',
+                }}
+              >
+                <div
+                  style={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: '50%',
+                    background: '#e0edff',
+                    color: '#0052ff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  {uploadingImage ? (
+                    <Loader2 size={24} className="animate-spin" />
+                  ) : (
+                    <Upload size={24} />
+                  )}
+                </div>
+
+                <div>
+                  <span style={{ fontSize: '0.92rem', fontWeight: 800, color: '#0f172a' }}>
+                    {uploadingImage
+                      ? 'Uploading photo to Tapfolio...'
+                      : isDragging
+                      ? 'Drop image here to upload'
+                      : 'Click to upload photo, or drag and drop'}
+                  </span>
+                  <p style={{ fontSize: '0.76rem', color: '#64748b', margin: '0.2rem 0 0' }}>
+                    Supports PNG, JPG, WebP or GIF up to 10MB
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  disabled={uploadingImage}
+                  className={styles.primaryBtn}
+                  style={{
+                    padding: '0.45rem 1rem',
+                    fontSize: '0.78rem',
+                    borderRadius: 8,
+                    marginTop: '0.25rem',
+                    pointerEvents: 'none',
+                  }}
+                >
+                  <Upload size={13} /> Browse Files
+                </button>
+              </div>
+            )}
+
+            {/* Inputs: Image URL & Alt Text */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '1rem', marginTop: '0.25rem' }}>
+              <div>
+                <label style={{ fontSize: '0.72rem', fontWeight: 800, color: '#475569', textTransform: 'uppercase' }}>
+                  Image URL / Path
+                </label>
+                <input
+                  type="text"
+                  placeholder="/assets/blog/... or https://..."
+                  value={featuredImage}
+                  onChange={(e) => setFeaturedImage(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '0.6rem 0.8rem',
+                    borderRadius: 8,
+                    border: '1px solid #e2e8f0',
+                    fontSize: '0.82rem',
+                    marginTop: '0.3rem',
+                  }}
+                />
+              </div>
+
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <label style={{ fontSize: '0.72rem', fontWeight: 800, color: '#475569', textTransform: 'uppercase' }}>
+                    Image Alt Text (SEO Critical)
+                  </label>
+                  {imageAlt && (
+                    <span style={{ fontSize: '0.7rem', color: '#059669', fontWeight: 700 }}>
+                      ✓ Configured
+                    </span>
+                  )}
+                </div>
+                <input
+                  type="text"
+                  placeholder="Describe image for screen readers & Google Images"
+                  value={imageAlt}
+                  onChange={(e) => setImageAlt(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '0.6rem 0.8rem',
+                    borderRadius: 8,
+                    border: '1px solid #e2e8f0',
+                    fontSize: '0.82rem',
+                    marginTop: '0.3rem',
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Tapfolio Preset Photo Library */}
+            <div style={{ marginTop: '0.25rem' }}>
+              <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: '0.45rem' }}>
+                Or select from Tapfolio Branded Photo Presets:
+              </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.45rem' }}>
+                {PRESET_COVERS.map((preset) => (
+                  <button
+                    key={preset.url}
+                    type="button"
+                    onClick={() => {
+                      setFeaturedImage(preset.url);
+                      if (!imageAlt) setImageAlt(preset.label);
+                    }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.35rem',
+                      padding: '0.35rem 0.7rem',
+                      borderRadius: 8,
+                      border: featuredImage === preset.url ? '1px solid #0052ff' : '1px solid #e2e8f0',
+                      background: featuredImage === preset.url ? '#eff6ff' : '#ffffff',
+                      color: featuredImage === preset.url ? '#0052ff' : '#334155',
+                      fontSize: '0.75rem',
+                      fontWeight: 650,
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                    }}
+                  >
+                    <FolderOpen size={12} />
+                    {preset.label}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -1386,115 +1811,96 @@ function BlogEditorContent() {
             </div>
           </div>
 
-          {/* Settings Card 2: Featured Cover Image */}
+          {/* Settings Card 2: Cover Image Quick Sync */}
           <div className={styles.tableCard} style={{ padding: '1.25rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', marginBottom: '0.85rem' }}>
-              <ImageIcon size={15} color="#0052ff" />
-              <h3 style={{ fontSize: '0.88rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
-                Featured Cover Image
-              </h3>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.85rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                <ImageIcon size={15} color="#0052ff" />
+                <h3 style={{ fontSize: '0.88rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+                  Cover Thumbnail
+                </h3>
+              </div>
+              <button
+                type="button"
+                disabled={uploadingImage}
+                onClick={() => sidebarFileInputRef.current?.click()}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#0052ff',
+                  fontSize: '0.74rem',
+                  fontWeight: 750,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.25rem',
+                  padding: 0,
+                }}
+              >
+                <Upload size={12} /> Upload
+              </button>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {featuredImage ? (
-                <div
+            {featuredImage ? (
+              <div
+                style={{
+                  position: 'relative',
+                  width: '100%',
+                  height: 140,
+                  borderRadius: 10,
+                  overflow: 'hidden',
+                  border: '1px solid #e2e8f0',
+                }}
+              >
+                <img
+                  src={featuredImage}
+                  alt={imageAlt || 'Featured preview'}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setFeaturedImage('')}
                   style={{
-                    position: 'relative',
-                    width: '100%',
-                    height: 150,
-                    borderRadius: 10,
-                    overflow: 'hidden',
-                    border: '1px solid #e2e8f0',
-                  }}
-                >
-                  <img
-                    src={featuredImage}
-                    alt={imageAlt || 'Featured preview'}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setFeaturedImage('')}
-                    style={{
-                      position: 'absolute',
-                      top: 8,
-                      right: 8,
-                      background: 'rgba(15, 23, 42, 0.75)',
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: 6,
-                      padding: '4px 8px',
-                      fontSize: '0.72rem',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.3rem',
-                    }}
-                  >
-                    <Trash2 size={11} /> Remove
-                  </button>
-                </div>
-              ) : (
-                <div
-                  style={{
-                    height: 110,
-                    borderRadius: 10,
-                    background: '#f8fafc',
-                    border: '1.5px dashed #cbd5e1',
+                    position: 'absolute',
+                    top: 6,
+                    right: 6,
+                    background: 'rgba(15, 23, 42, 0.75)',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: 6,
+                    padding: '3px 7px',
+                    fontSize: '0.7rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
                     display: 'flex',
-                    flexDirection: 'column',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    color: '#94a3b8',
-                    gap: '0.4rem',
+                    gap: '0.25rem',
                   }}
                 >
-                  <ImageIcon size={24} />
-                  <span style={{ fontSize: '0.76rem' }}>No cover image configured</span>
-                </div>
-              )}
-
-              <div>
-                <label style={{ fontSize: '0.72rem', fontWeight: 800, color: '#475569', textTransform: 'uppercase' }}>
-                  Image URL
-                </label>
-                <input
-                  type="text"
-                  placeholder="/assets/blog/... or https://..."
-                  value={featuredImage}
-                  onChange={(e) => setFeaturedImage(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem 0.7rem',
-                    borderRadius: 8,
-                    border: '1px solid #e2e8f0',
-                    fontSize: '0.8rem',
-                    marginTop: '0.2rem',
-                  }}
-                />
+                  <Trash2 size={11} /> Remove
+                </button>
               </div>
-
-              <div>
-                <label style={{ fontSize: '0.72rem', fontWeight: 800, color: '#475569', textTransform: 'uppercase' }}>
-                  Image Alt Text (SEO)
-                </label>
-                <input
-                  type="text"
-                  placeholder="Describe image for search indexing"
-                  value={imageAlt}
-                  onChange={(e) => setImageAlt(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem 0.7rem',
-                    borderRadius: 8,
-                    border: '1px solid #e2e8f0',
-                    fontSize: '0.8rem',
-                    marginTop: '0.2rem',
-                  }}
-                />
+            ) : (
+              <div
+                onClick={() => sidebarFileInputRef.current?.click()}
+                style={{
+                  height: 100,
+                  borderRadius: 10,
+                  background: '#f8fafc',
+                  border: '1.5px dashed #cbd5e1',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#94a3b8',
+                  gap: '0.35rem',
+                  cursor: 'pointer',
+                }}
+              >
+                <Upload size={20} />
+                <span style={{ fontSize: '0.75rem', fontWeight: 650 }}>Click to upload cover photo</span>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Settings Card 3: Tags & Taxonomy */}
