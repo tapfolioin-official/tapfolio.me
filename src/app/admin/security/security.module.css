@@ -1,9 +1,9 @@
-/* ---------- Security Monitoring Console Styles ---------- */
+/* ---------- Security Monitoring Console Styles (Clean Light SaaS) ---------- */
 .page {
-  padding: 2rem;
-  background: #090d16;
+  padding: 1.75rem 2rem 3.5rem;
+  background: #f5f8ff;
   min-height: 100vh;
-  color: #f1f5f9;
+  color: #0f172a;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
@@ -19,8 +19,8 @@
 
 .title {
   font-size: 1.85rem;
-  font-weight: 700;
-  color: #ffffff;
+  font-weight: 850;
+  color: #0f172a;
   letter-spacing: -0.025em;
   margin: 0;
   display: flex;
@@ -30,10 +30,10 @@
 
 .titleBadge {
   font-size: 0.75rem;
-  font-weight: 600;
-  background: rgba(16, 185, 129, 0.15);
-  color: #10b981;
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  font-weight: 700;
+  background: #ecfdf5;
+  color: #059669;
+  border: 1px solid #a7f3d0;
   padding: 0.2rem 0.6rem;
   border-radius: 999px;
   display: inline-flex;
@@ -59,483 +59,297 @@
 
 .subtitle {
   font-size: 0.9rem;
-  color: #94a3b8;
+  color: #64748b;
   margin: 0.35rem 0 0 0;
 }
 
-.controls {
+.headerActions {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   flex-wrap: wrap;
 }
 
-.btn {
-  display: inline-flex;
+.actionBtn {
+  display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 1rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 10px;
-  font-size: 0.85rem;
-  font-weight: 600;
+  padding: 0.55rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #334155;
   cursor: pointer;
   transition: all 0.2s ease;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: #131b2e;
-  color: #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
 }
 
-.btn:hover:not(:disabled) {
-  background: #1e293b;
-  border-color: rgba(255, 255, 255, 0.2);
-  color: #ffffff;
+.actionBtn:hover {
+  background: #f8fafc;
+  color: #0052ff;
+  border-color: #cbd5e1;
 }
 
-.btnPrimary {
-  background: #2563eb;
-  border-color: #3b82f6;
-  color: #ffffff;
+.actionBtnDanger {
+  composes: actionBtn;
+  background: #fff1f2;
+  border-color: #fecaca;
+  color: #dc2626;
 }
 
-.btnPrimary:hover:not(:disabled) {
-  background: #1d4ed8;
-  box-shadow: 0 0 16px rgba(37, 99, 235, 0.4);
+.actionBtnDanger:hover {
+  background: #ffe4e6;
 }
 
-.btnDanger {
-  background: rgba(239, 68, 68, 0.15);
-  border-color: rgba(239, 68, 68, 0.3);
-  color: #f87171;
-}
-
-.btnDanger:hover:not(:disabled) {
-  background: rgba(239, 68, 68, 0.25);
-  border-color: #ef4444;
-  color: #ffffff;
-}
-
-/* KPI Overview Grid */
+/* KPI Cards Grid */
 .kpiGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.25rem;
   margin-bottom: 2rem;
 }
 
 .kpiCard {
-  background: #111827;
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 14px;
-  padding: 1.25rem 1rem;
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.2s, border-color 0.2s;
-}
-
-.kpiCard:hover {
-  border-color: rgba(255, 255, 255, 0.15);
-  transform: translateY(-2px);
-}
-
-.kpiLabel {
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: #94a3b8;
-  margin-bottom: 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.kpiValue {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #ffffff;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-}
-
-.kpiSubtext {
-  font-size: 0.72rem;
-  color: #64748b;
-  margin-top: 0.4rem;
-}
-
-/* Security Health Matrix */
-.matrixGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 0.85rem;
-  margin-bottom: 2rem;
-}
-
-.matrixCard {
-  background: rgba(17, 24, 39, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  padding: 0.9rem 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.matrixName {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: #cbd5e1;
-}
-
-.matrixDesc {
-  font-size: 0.7rem;
-  color: #64748b;
-  margin-top: 0.15rem;
-}
-
-.statusPill {
-  font-size: 0.7rem;
-  font-weight: 600;
-  padding: 0.2rem 0.5rem;
-  border-radius: 6px;
-  background: rgba(16, 185, 129, 0.12);
-  color: #34d399;
-  border: 1px solid rgba(16, 185, 129, 0.2);
-  white-space: nowrap;
-}
-
-/* Layout Split: Events Stream (2/3) + Blocked IPs (1/3) */
-.layoutSplit {
-  display: grid;
-  grid-template-columns: 2fr 1.1fr;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-@media (max-width: 1024px) {
-  .layoutSplit {
-    grid-template-columns: 1fr;
-  }
-}
-
-.panel {
-  background: #111827;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #ffffff;
+  border: 1px solid #e8eefa;
   border-radius: 16px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.panelHeader {
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-
-.panelTitle {
-  font-size: 1.05rem;
-  font-weight: 600;
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.filterBar {
-  padding: 0.85rem 1.5rem;
-  background: rgba(15, 23, 42, 0.5);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-  align-items: center;
-}
-
-.searchBox {
-  flex: 1;
-  min-width: 180px;
-  background: #090d16;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  padding: 0.4rem 0.75rem;
-  color: #f1f5f9;
-  font-size: 0.82rem;
-  outline: none;
-}
-
-.searchBox:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
-}
-
-.selectBox {
-  background: #090d16;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  padding: 0.4rem 0.75rem;
-  color: #e2e8f0;
-  font-size: 0.8rem;
-  cursor: pointer;
-  outline: none;
-}
-
-.eventsList {
-  display: flex;
-  flex-direction: column;
-  max-height: 600px;
-  overflow-y: auto;
-}
-
-.eventItem {
-  padding: 1rem 1.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 1.4rem;
+  box-shadow: 0 2px 12px rgba(0, 82, 255, 0.03);
   display: flex;
   align-items: flex-start;
   gap: 1rem;
-  transition: background 0.15s;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.eventItem:hover {
-  background: rgba(255, 255, 255, 0.02);
+.kpiCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 82, 255, 0.08);
 }
 
-.eventItem:last-child {
-  border-bottom: none;
+.kpiIconWrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: #edf3ff;
+  color: #0052ff;
 }
 
-.severityTag {
-  padding: 0.2rem 0.55rem;
-  border-radius: 6px;
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  white-space: nowrap;
-}
-
-.sevCritical {
-  background: rgba(239, 68, 68, 0.15);
-  color: #f87171;
-  border: 1px solid rgba(239, 68, 68, 0.3);
-}
-
-.sevHigh {
-  background: rgba(249, 115, 22, 0.15);
-  color: #fb923c;
-  border: 1px solid rgba(249, 115, 22, 0.3);
-}
-
-.sevMedium {
-  background: rgba(245, 158, 11, 0.15);
-  color: #fbbf24;
-  border: 1px solid rgba(245, 158, 11, 0.3);
-}
-
-.sevLow {
-  background: rgba(59, 130, 246, 0.15);
-  color: #60a5fa;
-  border: 1px solid rgba(59, 130, 246, 0.3);
-}
-
-.eventContent {
+.kpiContent {
   flex: 1;
   min-width: 0;
 }
 
-.eventHeaderRow {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  flex-wrap: wrap;
+.kpiLabel {
+  font-size: 0.75rem;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
   margin-bottom: 0.25rem;
 }
 
-.eventPath {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #ffffff;
+.kpiValue {
+  font-size: 1.85rem;
+  font-weight: 850;
+  color: #0f172a;
+  line-height: 1.1;
+  margin-bottom: 0.25rem;
 }
 
-.eventClient {
-  font-size: 0.68rem;
-  padding: 0.15rem 0.45rem;
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.06);
-  color: #94a3b8;
-  font-weight: 500;
-}
-
-.eventIp {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.75rem;
-  color: #38bdf8;
-  background: rgba(56, 189, 248, 0.1);
-  padding: 0.1rem 0.4rem;
-  border-radius: 4px;
-}
-
-.eventTime {
-  font-size: 0.72rem;
+.kpiSubtext {
+  font-size: 0.78rem;
   color: #64748b;
-  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
-.eventDetail {
-  font-size: 0.82rem;
-  color: #cbd5e1;
-  line-height: 1.4;
-  margin-top: 0.2rem;
+/* Security Health Matrix Grid */
+.matrixGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
-.eventActions {
+.panel {
+  background: #ffffff;
+  border: 1px solid #e8eefa;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 12px rgba(0, 82, 255, 0.03);
+}
+
+.panelHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.panelTitle {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-top: 0.5rem;
 }
 
-.actionBtn {
-  background: none;
-  border: none;
-  font-size: 0.75rem;
-  color: #38bdf8;
-  cursor: pointer;
-  padding: 0.2rem 0.5rem;
-  border-radius: 4px;
-  background: rgba(56, 189, 248, 0.08);
-  font-weight: 500;
-  transition: background 0.15s, color 0.15s;
-}
-
-.actionBtn:hover {
-  background: rgba(56, 189, 248, 0.2);
-  color: #ffffff;
-}
-
-.actionBtnDanger {
-  color: #f87171;
-  background: rgba(239, 68, 68, 0.08);
-}
-
-.actionBtnDanger:hover {
-  background: rgba(239, 68, 68, 0.2);
-  color: #ffffff;
-}
-
-/* Blocked IPs Table */
-.blockedTable {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.82rem;
-}
-
-.blockedTable th {
-  text-align: left;
-  padding: 0.75rem 1rem;
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: #64748b;
-  text-transform: uppercase;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.blockedTable td {
-  padding: 0.85rem 1rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-  color: #e2e8f0;
-}
-
-.blockedTable tr:hover {
-  background: rgba(255, 255, 255, 0.02);
-}
-
-/* Modal Overlay */
-.modalBackdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: 1rem;
-}
-
-.modalContent {
-  background: #111827;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 16px;
-  width: 100%;
-  max-width: 500px;
-  overflow: hidden;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
-}
-
-.modalHeader {
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.modalTitle {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #ffffff;
-}
-
-.modalBody {
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
+.defenseGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
 }
 
-.formGroup {
+.defenseCard {
+  background: #f8fafc;
+  border: 1px solid #e8eefa;
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+}
+
+.defenseIconPass {
+  color: #059669;
+  flex-shrink: 0;
+}
+
+.defenseTitle {
+  font-size: 0.85rem;
+  font-weight: 750;
+  color: #0f172a;
+  margin-bottom: 0.2rem;
+}
+
+.defenseDesc {
+  font-size: 0.75rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+/* Blocked IPs */
+.blockedIpList {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.65rem;
 }
 
-.formLabel {
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: #94a3b8;
-}
-
-.formInput {
-  background: #090d16;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  padding: 0.6rem 0.85rem;
-  color: #ffffff;
-  font-size: 0.85rem;
-  outline: none;
-}
-
-.formInput:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
-}
-
-.modalFooter {
-  padding: 1rem 1.5rem;
-  background: rgba(15, 23, 42, 0.5);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+.blockedIpRow {
   display: flex;
-  justify-content: flex-end;
-  gap: 0.75rem;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.65rem 0.85rem;
+  background: #fff1f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  font-size: 0.82rem;
 }
 
-.emptyState {
-  padding: 3rem 1.5rem;
-  text-align: center;
+.unblockBtn {
+  background: #ffffff;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  border-radius: 6px;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.unblockBtn:hover {
+  background: #fee2e2;
+}
+
+/* Event Logs Stream Table */
+.eventsCard {
+  background: #ffffff;
+  border: 1px solid #e8eefa;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 12px rgba(0, 82, 255, 0.03);
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.eventsTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.eventsTable th {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e2e8f0;
   color: #64748b;
-  font-size: 0.88rem;
+  font-size: 0.72rem;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: left;
+  background: #f8fafc;
+}
+
+.eventsTable td {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+.eventsTable tr:hover td {
+  background: #f8fafc;
+}
+
+.sevCritical {
+  background: #fee2e2;
+  color: #dc2626;
+  font-weight: 800;
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+}
+
+.sevHigh {
+  background: #ffedd5;
+  color: #c2410c;
+  font-weight: 800;
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+}
+
+.sevMedium {
+  background: #fef3c7;
+  color: #b45309;
+  font-weight: 800;
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+}
+
+.sevLow {
+  background: #eff6ff;
+  color: #0052ff;
+  font-weight: 800;
+  font-size: 0.7rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+}
+
+@media (max-width: 1024px) {
+  .matrixGrid {
+    grid-template-columns: 1fr;
+  }
 }

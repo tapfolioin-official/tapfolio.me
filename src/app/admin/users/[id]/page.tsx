@@ -57,7 +57,7 @@ export default async function UserDetailPage({ params }: { params: Promise<{ id:
     .sort((a, b) => new Date(b.date!).getTime() - new Date(a.date!).getTime());
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', padding: '1rem 0' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', padding: '1.5rem 2rem 3rem' }}>
       {/* Header / Back Link */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
         <Link
@@ -68,12 +68,13 @@ export default async function UserDetailPage({ params }: { params: Promise<{ id:
             gap: '0.45rem',
             fontSize: '0.82rem',
             fontWeight: 700,
-            color: '#38bdf8',
+            color: '#0052ff',
             textDecoration: 'none',
-            background: 'rgba(56, 189, 248, 0.1)',
-            border: '1px solid rgba(56, 189, 248, 0.25)',
-            padding: '0.4rem 0.85rem',
-            borderRadius: '8px',
+            background: '#ffffff',
+            border: '1px solid #e2e8f0',
+            padding: '0.45rem 0.95rem',
+            borderRadius: '10px',
+            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.03)',
             transition: 'all 0.15s ease',
           }}
         >
@@ -85,14 +86,14 @@ export default async function UserDetailPage({ params }: { params: Promise<{ id:
       {/* Profile Header Card */}
       <div
         style={{
-          background: '#0d1322',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
+          background: '#ffffff',
+          border: '1px solid #e8eefa',
           borderRadius: '16px',
           padding: '1.75rem',
           display: 'flex',
           alignItems: 'center',
           gap: '1.5rem',
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.25)',
+          boxShadow: '0 2px 12px rgba(0, 82, 255, 0.03)',
           flexWrap: 'wrap',
         }}
       >
@@ -104,8 +105,8 @@ export default async function UserDetailPage({ params }: { params: Promise<{ id:
             height: '80px',
             borderRadius: '50%',
             objectFit: 'cover',
-            border: '2px solid rgba(56, 189, 248, 0.4)',
-            boxShadow: '0 0 16px rgba(56, 189, 248, 0.2)',
+            border: '3px solid #edf3ff',
+            boxShadow: '0 4px 14px rgba(0, 82, 255, 0.12)',
           }}
         />
         <div style={{ flex: 1, minWidth: '240px' }}>
@@ -113,10 +114,10 @@ export default async function UserDetailPage({ params }: { params: Promise<{ id:
             <h1
               style={{
                 fontSize: '1.65rem',
-                fontWeight: 800,
-                color: '#ffffff',
+                fontWeight: 850,
+                color: '#0f172a',
                 margin: 0,
-                letterSpacing: '-0.02em',
+                letterSpacing: '-0.025em',
               }}
             >
               {user.name}
@@ -127,16 +128,16 @@ export default async function UserDetailPage({ params }: { params: Promise<{ id:
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
-                  color: '#38bdf8',
+                  color: '#0052ff',
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '0.25rem',
                   fontSize: '0.8rem',
+                  fontWeight: 700,
                   textDecoration: 'none',
-                  background: 'rgba(56, 189, 248, 0.1)',
-                  padding: '0.2rem 0.5rem',
+                  background: '#edf3ff',
+                  padding: '0.25rem 0.6rem',
                   borderRadius: '6px',
-                  border: '1px solid rgba(56, 189, 248, 0.2)',
                 }}
               >
                 <span>@{profile.username}</span>
@@ -144,19 +145,19 @@ export default async function UserDetailPage({ params }: { params: Promise<{ id:
               </Link>
             )}
           </div>
-          <p style={{ fontSize: '0.88rem', color: '#94a3b8', margin: '0.35rem 0 0 0', fontWeight: 500 }}>
+          <p style={{ fontSize: '0.88rem', color: '#64748b', margin: '0.35rem 0 0 0', fontWeight: 500 }}>
             {user.email}
           </p>
           <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem', flexWrap: 'wrap' }}>
             <span
               style={{
                 fontSize: '0.7rem',
-                fontWeight: 700,
+                fontWeight: 750,
                 padding: '0.25rem 0.65rem',
                 borderRadius: '6px',
-                background: profile?.isPremium ? 'rgba(245, 158, 11, 0.15)' : 'rgba(255, 255, 255, 0.05)',
-                color: profile?.isPremium ? '#fbbf24' : '#94a3b8',
-                border: profile?.isPremium ? '1px solid rgba(245, 158, 11, 0.3)' : '1px solid rgba(255, 255, 255, 0.1)',
+                background: profile?.isPremium ? '#fffbeb' : '#f1f5f9',
+                color: profile?.isPremium ? '#d97706' : '#64748b',
+                border: profile?.isPremium ? '1px solid #fde68a' : '1px solid #e2e8f0',
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
               }}
@@ -166,12 +167,12 @@ export default async function UserDetailPage({ params }: { params: Promise<{ id:
             <span
               style={{
                 fontSize: '0.7rem',
-                fontWeight: 700,
+                fontWeight: 750,
                 padding: '0.25rem 0.65rem',
                 borderRadius: '6px',
-                background: profile?.isOnline ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
-                color: profile?.isOnline ? '#34d399' : '#f87171',
-                border: profile?.isOnline ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(239, 68, 68, 0.3)',
+                background: profile?.isOnline ? '#ecfdf5' : '#fef2f2',
+                color: profile?.isOnline ? '#059669' : '#dc2626',
+                border: profile?.isOnline ? '1px solid #a7f3d0' : '1px solid #fecaca',
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
               }}
@@ -183,12 +184,12 @@ export default async function UserDetailPage({ params }: { params: Promise<{ id:
                 key={acc.id}
                 style={{
                   fontSize: '0.7rem',
-                  fontWeight: 700,
+                  fontWeight: 750,
                   padding: '0.25rem 0.65rem',
                   borderRadius: '6px',
-                  background: 'rgba(59, 130, 246, 0.15)',
-                  color: '#60a5fa',
-                  border: '1px solid rgba(59, 130, 246, 0.3)',
+                  background: '#eff6ff',
+                  color: '#0052ff',
+                  border: '1px solid #bfdbfe',
                   textTransform: 'uppercase',
                   letterSpacing: '0.04em',
                 }}
@@ -199,10 +200,10 @@ export default async function UserDetailPage({ params }: { params: Promise<{ id:
           </div>
         </div>
         <div style={{ textAlign: 'right' }}>
-          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+          <div style={{ fontSize: '0.7rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             Registration Date
           </div>
-          <div style={{ fontSize: '0.92rem', fontWeight: 700, color: '#f1f5f9', marginTop: '0.25rem' }}>
+          <div style={{ fontSize: '0.92rem', fontWeight: 750, color: '#0f172a', marginTop: '0.25rem' }}>
             {new Date(user.createdAt).toLocaleDateString(undefined, {
               year: 'numeric',
               month: 'short',
@@ -213,24 +214,24 @@ export default async function UserDetailPage({ params }: { params: Promise<{ id:
       </div>
 
       {/* Stats Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.25rem' }}>
         {[
-          { label: 'NFC Taps', value: profile?.tapCount || 0, icon: <Zap size={18} />, color: '#38bdf8', bg: 'rgba(56, 189, 248, 0.1)' },
-          { label: 'Social Links', value: profile?.socials.length || 0, icon: <Link2 size={18} />, color: '#a78bfa', bg: 'rgba(167, 139, 250, 0.1)' },
-          { label: 'Portfolio Projects', value: profile?.projects.length || 0, icon: <FolderGit2 size={18} />, color: '#34d399', bg: 'rgba(52, 211, 153, 0.1)' },
-          { label: 'Custom Tags', value: profile?.tags.length || 0, icon: <Tag size={18} />, color: '#fbbf24', bg: 'rgba(251, 191, 36, 0.1)' },
+          { label: 'NFC Taps', value: profile?.tapCount || 0, icon: <Zap size={18} />, color: '#0052ff', bg: '#edf3ff' },
+          { label: 'Social Links', value: profile?.socials.length || 0, icon: <Link2 size={18} />, color: '#00a3ff', bg: '#edf3ff' },
+          { label: 'Portfolio Projects', value: profile?.projects.length || 0, icon: <FolderGit2 size={18} />, color: '#059669', bg: '#ecfdf5' },
+          { label: 'Custom Tags', value: profile?.tags.length || 0, icon: <Tag size={18} />, color: '#d97706', bg: '#fffbeb' },
         ].map((stat) => (
           <div
             key={stat.label}
             style={{
-              background: '#0d1322',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-              borderRadius: '14px',
+              background: '#ffffff',
+              border: '1px solid #e8eefa',
+              borderRadius: '16px',
               padding: '1.25rem',
               display: 'flex',
               alignItems: 'center',
               gap: '1rem',
-              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.25)',
+              boxShadow: '0 2px 12px rgba(0, 82, 255, 0.03)',
             }}
           >
             <div
@@ -249,10 +250,10 @@ export default async function UserDetailPage({ params }: { params: Promise<{ id:
               {stat.icon}
             </div>
             <div>
-              <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              <div style={{ fontSize: '0.74rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 {stat.label}
               </div>
-              <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#ffffff', marginTop: '0.15rem' }}>
+              <div style={{ fontSize: '1.6rem', fontWeight: 850, color: '#0f172a', marginTop: '0.15rem' }}>
                 {stat.value}
               </div>
             </div>
@@ -265,31 +266,31 @@ export default async function UserDetailPage({ params }: { params: Promise<{ id:
         {/* Timeline */}
         <div
           style={{
-            background: '#0d1322',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            background: '#ffffff',
+            border: '1px solid #e8eefa',
             borderRadius: '16px',
             overflow: 'hidden',
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.25)',
+            boxShadow: '0 2px 12px rgba(0, 82, 255, 0.03)',
           }}
         >
           <div
             style={{
               padding: '1.25rem 1.5rem',
-              borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+              borderBottom: '1px solid #f1f5f9',
               fontSize: '0.95rem',
-              fontWeight: 700,
-              color: '#ffffff',
+              fontWeight: 800,
+              color: '#0f172a',
               display: 'flex',
               alignItems: 'center',
               gap: '0.5rem',
             }}
           >
-            <Calendar size={16} className="text-sky-400" />
+            <Calendar size={16} className="text-blue-600" />
             <span>Activity & Event History</span>
           </div>
           <div style={{ padding: '0.5rem 0', maxHeight: '350px', overflowY: 'auto' }}>
             {timeline.length === 0 ? (
-              <div style={{ padding: '2rem', textAlign: 'center', color: '#64748b', fontSize: '0.85rem' }}>
+              <div style={{ padding: '2rem', textAlign: 'center', color: '#94a3b8', fontSize: '0.85rem' }}>
                 No recorded activity events.
               </div>
             ) : (
@@ -301,7 +302,7 @@ export default async function UserDetailPage({ params }: { params: Promise<{ id:
                     alignItems: 'center',
                     gap: '0.75rem',
                     padding: '0.75rem 1.5rem',
-                    borderBottom: i < timeline.length - 1 ? '1px solid rgba(255, 255, 255, 0.04)' : 'none',
+                    borderBottom: i < timeline.length - 1 ? '1px solid #f8fafc' : 'none',
                   }}
                 >
                   <span
@@ -309,17 +310,17 @@ export default async function UserDetailPage({ params }: { params: Promise<{ id:
                       width: '8px',
                       height: '8px',
                       borderRadius: '50%',
-                      background: '#38bdf8',
-                      boxShadow: '0 0 8px #38bdf8',
+                      background: '#0052ff',
+                      boxShadow: '0 0 6px rgba(0, 82, 255, 0.4)',
                       flexShrink: 0,
                     }}
                   />
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#f1f5f9' }}>
+                    <div style={{ fontSize: '0.85rem', fontWeight: 650, color: '#1e293b' }}>
                       {event.label}
                     </div>
                   </div>
-                  <span style={{ fontSize: '0.72rem', fontWeight: 600, color: '#64748b' }}>
+                  <span style={{ fontSize: '0.72rem', fontWeight: 600, color: '#94a3b8' }}>
                     {new Date(event.date!).toLocaleDateString()}
                   </span>
                 </div>
@@ -331,26 +332,26 @@ export default async function UserDetailPage({ params }: { params: Promise<{ id:
         {/* Profile Details */}
         <div
           style={{
-            background: '#0d1322',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            background: '#ffffff',
+            border: '1px solid #e8eefa',
             borderRadius: '16px',
             overflow: 'hidden',
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.25)',
+            boxShadow: '0 2px 12px rgba(0, 82, 255, 0.03)',
           }}
         >
           <div
             style={{
               padding: '1.25rem 1.5rem',
-              borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
+              borderBottom: '1px solid #f1f5f9',
               fontSize: '0.95rem',
-              fontWeight: 700,
-              color: '#ffffff',
+              fontWeight: 800,
+              color: '#0f172a',
               display: 'flex',
               alignItems: 'center',
               gap: '0.5rem',
             }}
           >
-            <User size={16} className="text-blue-400" />
+            <User size={16} className="text-blue-600" />
             <span>Profile Metadata & Parameters</span>
           </div>
           <div>
@@ -367,19 +368,19 @@ export default async function UserDetailPage({ params }: { params: Promise<{ id:
                 style={{
                   display: 'flex',
                   justifyContent: 'space-between',
-                  padding: '0.8rem 1.5rem',
-                  borderBottom: idx < 5 ? '1px solid rgba(255, 255, 255, 0.04)' : 'none',
+                  padding: '0.85rem 1.5rem',
+                  borderBottom: idx < 5 ? '1px solid #f8fafc' : 'none',
                   alignItems: 'center',
                 }}
               >
-                <span style={{ fontSize: '0.82rem', fontWeight: 600, color: '#94a3b8' }}>
+                <span style={{ fontSize: '0.82rem', fontWeight: 600, color: '#64748b' }}>
                   {row.label}
                 </span>
                 <span
                   style={{
                     fontSize: '0.85rem',
                     fontWeight: 700,
-                    color: '#f1f5f9',
+                    color: '#0f172a',
                     textAlign: 'right',
                     maxWidth: '60%',
                     overflow: 'hidden',

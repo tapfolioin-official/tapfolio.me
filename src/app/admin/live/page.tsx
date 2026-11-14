@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { Users, Globe, Smartphone, Laptop, Radio, Activity } from 'lucide-react';
 import styles from '../dashboard/dashboard.module.css';
 
 interface LiveUser {
@@ -88,25 +89,33 @@ export default function LiveUsersPage() {
       {/* Summary Cards */}
       <div className={styles.kpiGrid}>
         <div className={styles.kpiCard}>
-          <span className={styles.kpiLabel}>🟢 Online Now</span>
+          <span className={styles.kpiLabel} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <Activity size={15} color="#22C55E" /> Online Now
+          </span>
           <span className={styles.kpiValue}>
             {loading ? '—' : stats?.onlineCount ?? 0}
           </span>
         </div>
         <div className={styles.kpiCard}>
-          <span className={styles.kpiLabel}>🌍 Countries</span>
+          <span className={styles.kpiLabel} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <Globe size={15} color="#0052FF" /> Countries
+          </span>
           <span className={styles.kpiValue}>
             {loading ? '—' : stats?.countries ?? 0}
           </span>
         </div>
         <div className={styles.kpiCard}>
-          <span className={styles.kpiLabel}>📱 Mobile</span>
+          <span className={styles.kpiLabel} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <Smartphone size={15} color="#0052FF" /> Mobile Devices
+          </span>
           <span className={styles.kpiValue}>
             {loading ? '—' : stats?.mobile ?? 0}
           </span>
         </div>
         <div className={styles.kpiCard}>
-          <span className={styles.kpiLabel}>💻 Desktop</span>
+          <span className={styles.kpiLabel} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <Laptop size={15} color="#0052FF" /> Desktop Devices
+          </span>
           <span className={styles.kpiValue}>
             {loading ? '—' : stats?.desktop ?? 0}
           </span>
@@ -114,11 +123,22 @@ export default function LiveUsersPage() {
       </div>
 
       {/* Live Users Table */}
-      <div className={styles.panel}>
-        <div className={styles.panelHeader}>
-          <span className={styles.panelTitle}>
-            👥 Active Sessions
-            <span className={styles.panelBadge}>LIVE</span>
+      <div className={styles.panelCard} style={{ marginTop: '1.25rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+          <span style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Users size={18} color="#0052FF" /> Active Live Sessions
+          </span>
+          <span
+            style={{
+              padding: '0.2rem 0.55rem',
+              borderRadius: 6,
+              fontSize: '0.72rem',
+              fontWeight: 800,
+              background: '#ecfdf5',
+              color: '#059669',
+            }}
+          >
+            REALTIME
           </span>
         </div>
         <div style={{ overflowX: 'auto' }}>
