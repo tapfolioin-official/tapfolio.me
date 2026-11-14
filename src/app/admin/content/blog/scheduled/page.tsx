@@ -85,7 +85,7 @@ export default function ScheduledPostsPage() {
 
         <div className={styles.headerRight}>
           <Link
-            href="/admin/content/blog/create"
+            href="/admin/content/blog/create?status=SCHEDULED"
             className={styles.primaryBtn}
             style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
           >

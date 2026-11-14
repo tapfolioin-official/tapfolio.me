@@ -40,6 +40,7 @@ import {
   Upload,
   Loader2,
   FolderOpen,
+  CalendarClock,
 } from 'lucide-react';
 import { slugify, calculateReadingTime, countWords } from '@/lib/blog-utils';
 import styles from '@/app/admin/dashboard/dashboard.module.css';
@@ -134,6 +135,31 @@ function BlogEditorContent() {
       })
       .catch(() => {});
   }, []);
+
+  // Pre-select SCHEDULED if navigated with ?status=SCHEDULED
+  useEffect(() => {
+    const urlStatus = searchParams.get('status')?.toUpperCase();
+    if (urlStatus === 'SCHEDULED' && !editId) {
+      setStatus('SCHEDULED');
+      const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
+      tomorrow.setHours(10, 0, 0, 0);
+      setScheduledAt(tomorrow.toISOString().slice(0, 16));
+    }
+  }, [searchParams, editId]);
+
+  const handleStatusChange = (newStatus: typeof status) => {
+    setStatus(newStatus);
+    if (newStatus === 'SCHEDULED' && !scheduledAt) {
+      const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
+      tomorrow.setHours(10, 0, 0, 0);
+      setScheduledAt(tomorrow.toISOString().slice(0, 16));
+    }
+  };
+
+  const setQuickSchedule = (hoursAhead: number) => {
+    const target = new Date(Date.now() + hoursAhead * 60 * 60 * 1000);
+    setScheduledAt(target.toISOString().slice(0, 16));
+  };
 
   // Load article if editId is provided
   useEffect(() => {
@@ -554,19 +580,64 @@ function BlogEditorContent() {
             >
               Unpublish
             </button>
+          ) : status === 'SCHEDULED' ? (
+            <>
+              <button
+                type="button"
+                disabled={saving}
+                onClick={() => handleSave('PUBLISHED')}
+                className={styles.secondaryBtn}
+                style={{
+                  padding: '0.45rem 0.85rem',
+                  fontSize: '0.82rem',
+                  color: '#059669',
+                  borderColor: '#a7f3d0',
+                }}
+                title="Publish live immediately instead of waiting for scheduled time"
+              >
+                <Send size={13} /> Publish Now
+              </button>
+              <button
+                type="button"
+                disabled={saving}
+                onClick={() => handleSave('DRAFT')}
+                className={styles.secondaryBtn}
+                style={{
+                  padding: '0.45rem 0.85rem',
+                  fontSize: '0.82rem',
+                }}
+              >
+                Revert to Draft
+              </button>
+            </>
           ) : (
-            <button
-              type="button"
-              disabled={saving}
-              onClick={() => handleSave('DRAFT')}
-              className={styles.secondaryBtn}
-              style={{
-                padding: '0.45rem 0.85rem',
-                fontSize: '0.82rem',
-              }}
-            >
-              <Save size={13} /> Save Draft
-            </button>
+            <>
+              <button
+                type="button"
+                onClick={() => handleStatusChange('SCHEDULED')}
+                className={styles.secondaryBtn}
+                style={{
+                  padding: '0.45rem 0.85rem',
+                  fontSize: '0.82rem',
+                  color: '#0284c7',
+                  borderColor: '#bae6fd',
+                }}
+              >
+                <CalendarClock size={13} /> Schedule
+              </button>
+              <button
+                type="button"
+                disabled={saving}
+                onClick={() => handleSave('DRAFT')}
+                className={styles.secondaryBtn}
+                style={{
+                  padding: '0.45rem 0.85rem',
+                  fontSize: '0.82rem',
+                }}
+              >
+                <Save size={13} /> Save Draft
+              </button>
+            </>
           )}
 
           {/* Primary Action Button */}
@@ -582,6 +653,7 @@ function BlogEditorContent() {
               padding: '0.48rem 1.15rem',
               fontSize: '0.82rem',
               fontWeight: 750,
+              background: status === 'SCHEDULED' ? '#0284c7' : '#0052ff',
             }}
           >
             {saving ? (
@@ -589,6 +661,10 @@ function BlogEditorContent() {
             ) : status === 'PUBLISHED' ? (
               <>
                 <Save size={14} /> Save Changes
+              </>
+            ) : status === 'SCHEDULED' ? (
+              <>
+                <CalendarClock size={14} /> Schedule Article
               </>
             ) : (
               <>
@@ -1670,7 +1746,7 @@ function BlogEditorContent() {
                 </label>
                 <select
                   value={status}
-                  onChange={(e) => setStatus(e.target.value as any)}
+                  onChange={(e) => handleStatusChange(e.target.value as any)}
                   style={{
                     width: '100%',
                     padding: '0.55rem 0.75rem',
@@ -1692,7 +1768,7 @@ function BlogEditorContent() {
 
               {/* Scheduled Date Picker */}
               {status === 'SCHEDULED' && (
-                <div style={{ background: '#f0f9ff', padding: '0.65rem', borderRadius: 8, border: '1px solid #bae6fd' }}>
+                <div style={{ background: '#f0f9ff', padding: '0.75rem', borderRadius: 8, border: '1px solid #bae6fd' }}>
                   <label style={{ fontSize: '0.72rem', fontWeight: 800, color: '#0369a1', textTransform: 'uppercase' }}>
                     Scheduled Date & Time
                   </label>
@@ -1710,7 +1786,57 @@ function BlogEditorContent() {
                       background: '#fff',
                     }}
                   />
-                  <span style={{ fontSize: '0.7rem', color: '#0369a1', marginTop: '0.25rem', display: 'block' }}>
+                  <div style={{ display: 'flex', gap: '0.3rem', marginTop: '0.45rem', flexWrap: 'wrap' }}>
+                    <button
+                      type="button"
+                      onClick={() => setQuickSchedule(24)}
+                      style={{
+                        padding: '2px 6px',
+                        borderRadius: 4,
+                        fontSize: '0.68rem',
+                        fontWeight: 700,
+                        background: '#e0f2fe',
+                        color: '#0369a1',
+                        border: '1px solid #bae6fd',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      +24h
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setQuickSchedule(72)}
+                      style={{
+                        padding: '2px 6px',
+                        borderRadius: 4,
+                        fontSize: '0.68rem',
+                        fontWeight: 700,
+                        background: '#e0f2fe',
+                        color: '#0369a1',
+                        border: '1px solid #bae6fd',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      +3 Days
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setQuickSchedule(168)}
+                      style={{
+                        padding: '2px 6px',
+                        borderRadius: 4,
+                        fontSize: '0.68rem',
+                        fontWeight: 700,
+                        background: '#e0f2fe',
+                        color: '#0369a1',
+                        border: '1px solid #bae6fd',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      +1 Week
+                    </button>
+                  </div>
+                  <span style={{ fontSize: '0.7rem', color: '#0369a1', marginTop: '0.35rem', display: 'block' }}>
                     Article will publish automatically at this time.
                   </span>
                 </div>

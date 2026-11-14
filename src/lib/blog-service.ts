@@ -321,11 +321,25 @@ export async function saveArticle(input: PostInput, editorName: string = 'Admin'
   // Handle publishing timestamps
   let publishedAt: Date | null = null;
   let scheduledAt: Date | null = null;
+  let postStatus = input.status;
 
   if (input.status === BlogPostStatus.PUBLISHED) {
     publishedAt = input.publishedAt ? new Date(input.publishedAt) : new Date();
   } else if (input.status === BlogPostStatus.SCHEDULED) {
-    scheduledAt = input.scheduledAt ? new Date(input.scheduledAt) : new Date();
+    if (input.scheduledAt) {
+      const parsed = new Date(input.scheduledAt);
+      if (!isNaN(parsed.getTime())) {
+        scheduledAt = parsed;
+        if (parsed <= new Date()) {
+          publishedAt = parsed;
+          postStatus = BlogPostStatus.PUBLISHED;
+        }
+      } else {
+        scheduledAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+      }
+    } else {
+      scheduledAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    }
   }
 
   if (input.id) {
@@ -356,8 +370,8 @@ export async function saveArticle(input: PostInput, editorName: string = 'Admin'
         content: input.content,
         featuredImage: input.featuredImage || null,
         imageAlt: input.imageAlt || null,
-        status: input.status,
-        publishedAt: publishedAt || (input.status === BlogPostStatus.PUBLISHED ? existing?.publishedAt || new Date() : null),
+        status: postStatus,
+        publishedAt: publishedAt || (postStatus === BlogPostStatus.PUBLISHED ? existing?.publishedAt || new Date() : null),
         scheduledAt,
         readingTime,
         authorId,
@@ -407,7 +421,7 @@ export async function saveArticle(input: PostInput, editorName: string = 'Admin'
         content: input.content,
         featuredImage: input.featuredImage || null,
         imageAlt: input.imageAlt || null,
-        status: input.status,
+        status: postStatus,
         publishedAt,
         scheduledAt,
         readingTime,
