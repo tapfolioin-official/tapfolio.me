@@ -12,6 +12,7 @@ import {
   CSRF_COOKIE_NAME,
   CSRF_TTL_MS,
 } from './lib/web-security';
+import { isIpBlocked, recordSecurityEvent } from './lib/security-monitor';
 
 function isPublicApiRoute(pathname: string): boolean {
   return (
@@ -23,6 +24,15 @@ function isPublicApiRoute(pathname: string): boolean {
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0].trim() || '127.0.0.1';
+
+  // 0. Active IP Blocklist Enforcement
+  if (isIpBlocked(clientIp) && pathname.startsWith('/api/')) {
+    return NextResponse.json(
+      { error: 'Access denied: Your IP address is temporarily blocked due to repeated security policy violations.', code: 'IP_BLOCKED' },
+      { status: 403 }
+    );
+  }
 
   // 1. Production HTTPS Redirection
   // Vercel edge network natively terminates and enforces HTTPS redirection at the DNS/CDN boundary.
@@ -104,6 +114,19 @@ export async function middleware(request: NextRequest) {
       mobileVerification = await verifyTransactionSecurity(request);
       if (!mobileVerification.valid) {
         console.warn(`[SECURITY/MOBILE] Rejected request ${request.method} ${pathname}: ${mobileVerification.error}`);
+        recordSecurityEvent({
+          eventType: mobileVerification.error?.toLowerCase().includes('nonce') ? 'REPLAY_ATTACK' : 'HMAC_MISMATCH',
+          severity: 'CRITICAL',
+          clientType: 'mobile',
+          ipAddress: clientIp,
+          path: pathname,
+          method: request.method,
+          detail: mobileVerification.error || 'Mobile transaction security verification failed.',
+          metadata: {
+            client: clientHeader,
+            signature: signature ? `${signature.substring(0, 12)}...` : undefined,
+          },
+        });
         return NextResponse.json(
           { error: mobileVerification.error, code: 'SECURITY_INTEGRITY_VIOLATION' },
           { status: mobileVerification.status || 403 }
@@ -114,6 +137,28 @@ export async function middleware(request: NextRequest) {
       const webVerification = await validateWebRequest(request);
       if (!webVerification.valid) {
         console.warn(`[SECURITY/WEB] Rejected request ${request.method} ${pathname}: ${webVerification.error}`);
+        const errLower = (webVerification.error || '').toLowerCase();
+        const eventType = errLower.includes('csrf')
+          ? 'CSRF_VIOLATION'
+          : errLower.includes('origin') || errLower.includes('referer') || errLower.includes('cross-site')
+          ? 'UNTRUSTED_ORIGIN'
+          : errLower.includes('content-type')
+          ? 'INVALID_CONTENT_TYPE'
+          : 'SUSPICIOUS_TOKEN';
+
+        recordSecurityEvent({
+          eventType,
+          severity: eventType === 'INVALID_CONTENT_TYPE' ? 'LOW' : 'HIGH',
+          clientType: 'web',
+          ipAddress: clientIp,
+          path: pathname,
+          method: request.method,
+          detail: webVerification.error || 'Browser web security violation.',
+          metadata: {
+            origin: request.headers.get('origin'),
+            secFetchSite: request.headers.get('sec-fetch-site'),
+          },
+        });
         return NextResponse.json(
           { error: webVerification.error, code: 'SECURITY_WEB_VIOLATION' },
           { status: webVerification.status || 403 }
@@ -131,6 +176,16 @@ export async function middleware(request: NextRequest) {
           idempotencyKey
         );
         if (lockRes.duplicate) {
+          recordSecurityEvent({
+            eventType: 'REPLAY_ATTACK',
+            severity: 'CRITICAL',
+            clientType: 'web',
+            ipAddress: clientIp,
+            path: pathname,
+            method: request.method,
+            detail: `Duplicate transaction replay detected with idempotency key: ${idempotencyKey.substring(0, 16)}...`,
+            metadata: { idempotencyKey },
+          });
           return NextResponse.json(
             {
               error: lockRes.error || 'Duplicate transaction detected.',

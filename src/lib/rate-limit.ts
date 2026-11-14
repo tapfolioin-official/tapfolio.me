@@ -1,3 +1,5 @@
+import { recordSecurityEvent } from './security-monitor';
+
 const tracker = new Map<string, number[]>();
 
 // Clean up memory periodically to prevent memory leaks in long-running processes
@@ -31,6 +33,20 @@ export function rateLimit(key: string, limit: number, windowMs: number = 60000):
   const activeTimestamps = timestamps.filter((t) => now - t < windowMs);
 
   if (activeTimestamps.length >= limit) {
+    const ip = key.includes(':') ? key.split(':')[1] : 'unknown';
+    const endpoint = key.includes(':') ? key.split(':')[0] : key;
+
+    recordSecurityEvent({
+      eventType: 'RATE_LIMIT_EXCEEDED',
+      severity: 'MEDIUM',
+      clientType: 'web',
+      ipAddress: ip,
+      path: endpoint,
+      method: 'POST',
+      detail: `Rate limit triggered: ${activeTimestamps.length + 1} requests exceeded limit of ${limit} in ${windowMs / 1000}s.`,
+      metadata: { key, limit, windowMs },
+    });
+
     return false;
   }
 

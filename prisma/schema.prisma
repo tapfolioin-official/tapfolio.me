@@ -567,4 +567,36 @@ model IdempotencyRecord {
   @@map("idempotency_records")
 }
 
+model SecurityEvent {
+  id          String   @id @default(uuid())
+  eventType   String   @map("event_type") // HMAC_MISMATCH, REPLAY_ATTACK, CSRF_VIOLATION, RATE_LIMIT_EXCEEDED, UNTRUSTED_ORIGIN, FAILED_LOGIN, SUSPICIOUS_TOKEN, IP_BLOCKED
+  severity    String   @default("MEDIUM") // LOW, MEDIUM, HIGH, CRITICAL
+  clientType  String   @default("web") @map("client_type") // web, mobile
+  ipAddress   String?  @map("ip_address")
+  path        String?
+  method      String?
+  detail      String
+  metadata    Json?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([eventType])
+  @@index([severity])
+  @@index([ipAddress])
+  @@index([createdAt])
+  @@map("security_events")
+}
+
+model BlockedIp {
+  id        Int       @id @default(autoincrement())
+  ipAddress String    @unique @map("ip_address")
+  reason    String
+  blockedBy String?   @map("blocked_by") // admin email or "SYSTEM_AUTO"
+  expiresAt DateTime? @map("expires_at") // null = permanent
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  @@index([ipAddress])
+  @@map("blocked_ips")
+}
+
+
 
