@@ -78,6 +78,43 @@ console.log('[Test 1] Sibling Route Isolation (CRM Suite):');
   }
 }
 
+// ─── Test 1B: Sibling Route Isolation (Content Management Suite) ───
+console.log('\n[Test 1B] Sibling Route Isolation (Content Management Suite):');
+{
+  const contentRoutes = [
+    { path: '/admin/content/blog', expectedId: 'content-blog-dashboard' },
+    { path: '/admin/blog', expectedId: 'content-blog-dashboard' },
+    { path: '/admin/content/blog/articles', expectedId: 'content-blog-articles' },
+    { path: '/admin/content/blog/create', expectedId: 'content-blog-create' },
+    { path: '/admin/content/blog/create?id=42', expectedId: 'content-blog-create' },
+    { path: '/admin/content/blog/categories', expectedId: 'content-blog-categories' },
+    { path: '/admin/content/blog/tags', expectedId: 'content-blog-tags' },
+    { path: '/admin/content/blog/authors', expectedId: 'content-blog-authors' },
+    { path: '/admin/content/blog/media', expectedId: 'content-blog-media' },
+    { path: '/admin/content/blog/scheduled', expectedId: 'content-blog-scheduled' },
+    { path: '/admin/content/blog/seo', expectedId: 'content-blog-seo' },
+    { path: '/admin/content/blog/analytics', expectedId: 'content-blog-analytics' },
+  ];
+
+  for (const { path, expectedId } of contentRoutes) {
+    const active = getActiveNavItem(path);
+    assert(active !== null && active.id === expectedId, `Route ${path} matches ${expectedId}`);
+
+    const activeItems = ALL_NAV_ITEMS.filter((item) => isNavItemActive(item, active));
+    assert(
+      activeItems.length === 1 && activeItems[0].id === expectedId,
+      `Route ${path} has EXACTLY 1 active leaf (Found ${activeItems.length})`,
+      activeItems.map((i) => i.label).join(', ')
+    );
+
+    // Verify Blog Dashboard is NOT active when on /admin/content/blog/articles
+    if (path === '/admin/content/blog/articles') {
+      const dash = ALL_NAV_ITEMS.find((i) => i.id === 'content-blog-dashboard')!;
+      assert(!isNavItemActive(dash, active), 'Blog Dashboard is NOT active when on /admin/content/blog/articles');
+    }
+  }
+}
+
 // ─── Test 2: Sibling Route Non-Overlap (SEO Suite) ───
 console.log('\n[Test 2] Sibling Route Isolation (SEO Suite):');
 {

@@ -598,5 +598,156 @@ model BlockedIp {
   @@map("blocked_ips")
 }
 
+// ═══════════════════════════════════════════════════════════════
+// BLOG MANAGEMENT & PUBLISHING PLATFORM (CMS)
+// ═══════════════════════════════════════════════════════════════
+
+enum BlogPostStatus {
+  DRAFT
+  PENDING_REVIEW
+  SCHEDULED
+  PUBLISHED
+  ARCHIVED
+}
+
+model BlogCategory {
+  id          Int        @id @default(autoincrement())
+  name        String     @unique
+  slug        String     @unique
+  description String?
+  posts       BlogPost[]
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+
+  @@map("blog_categories")
+}
+
+model BlogTag {
+  id        Int           @id @default(autoincrement())
+  name      String        @unique
+  slug      String        @unique
+  posts     BlogPostTag[]
+  createdAt DateTime      @default(now()) @map("created_at")
+
+  @@map("blog_tags")
+}
+
+model BlogAuthor {
+  id          Int        @id @default(autoincrement())
+  name        String
+  slug        String     @unique
+  email       String?
+  avatar      String?
+  designation String?
+  bio         String?    @db.Text
+  twitter     String?
+  linkedin    String?
+  website     String?
+  posts       BlogPost[]
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+
+  @@map("blog_authors")
+}
+
+model BlogPost {
+  id                Int            @id @default(autoincrement())
+  title             String
+  slug              String         @unique
+  summary           String         @db.Text
+  content           String         @db.Text
+  featuredImage     String?        @map("featured_image")
+  imageAlt          String?        @map("image_alt")
+  status            BlogPostStatus @default(DRAFT)
+  publishedAt       DateTime?      @map("published_at")
+  scheduledAt       DateTime?      @map("scheduled_at")
+  readingTime       String?        @map("reading_time")
+  views             Int            @default(0)
+  
+  authorId          Int?           @map("author_id")
+  author            BlogAuthor?    @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  authorName        String?        @map("author_name")
+
+  categoryId        Int?           @map("category_id")
+  category          BlogCategory?  @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  categoryName      String?        @map("category_name")
+
+  // SEO Fields
+  seoTitle          String?        @map("seo_title")
+  metaDescription   String?        @map("meta_description") @db.Text
+  focusKeyword      String?        @map("focus_keyword")
+  secondaryKeywords String[]       @default([]) @map("secondary_keywords")
+  canonicalUrl      String?        @map("canonical_url")
+  ogTitle           String?        @map("og_title")
+  ogDescription     String?        @map("og_description") @db.Text
+  ogImage           String?        @map("og_image")
+  metaRobots        String?        @default("index, follow") @map("meta_robots")
+
+  tags              BlogPostTag[]
+  revisions         BlogRevision[]
+  createdAt         DateTime       @default(now()) @map("created_at")
+  updatedAt         DateTime       @updatedAt @map("updated_at")
+
+  @@index([slug])
+  @@index([status])
+  @@index([publishedAt])
+  @@index([categoryId])
+  @@index([authorId])
+  @@map("blog_posts")
+}
+
+model BlogPostTag {
+  postId Int      @map("post_id")
+  tagId  Int      @map("tag_id")
+  post   BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag    BlogTag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId])
+  @@map("blog_post_tags")
+}
+
+model BlogMedia {
+  id         String   @id @default(uuid())
+  filename   String
+  url        String
+  mimeType   String   @map("mime_type")
+  fileSize   Int      @map("file_size")
+  width      Int?
+  height     Int?
+  altText    String?  @map("alt_text")
+  title      String?
+  uploadedBy String?  @map("uploaded_by")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([filename])
+  @@map("blog_media")
+}
+
+model BlogRevision {
+  id        Int      @id @default(autoincrement())
+  postId    Int      @map("post_id")
+  post      BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  title     String
+  content   String   @db.Text
+  summary   String?  @db.Text
+  savedBy   String?  @map("saved_by")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([postId])
+  @@map("blog_revisions")
+}
+
+model BlogRedirect {
+  id         Int      @id @default(autoincrement())
+  sourceSlug String   @unique @map("source_slug")
+  targetSlug String   @map("target_slug")
+  statusCode Int      @default(301) @map("status_code")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([sourceSlug])
+  @@map("blog_redirects")
+}
+
+
 
 
