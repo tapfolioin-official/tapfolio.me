@@ -18,6 +18,14 @@ declare global {
   var prismaGlobal: undefined | ReturnType<typeof prismaClientSingleton>;
 }
 
+// In development, ensure cached client is refreshed if new models (e.g. blogImage) were generated
+if (globalThis.prismaGlobal && !(globalThis.prismaGlobal as any).blogImage) {
+  try {
+    globalThis.prismaGlobal.$disconnect().catch(() => {});
+  } catch (e) {}
+  globalThis.prismaGlobal = undefined;
+}
+
 const prisma = globalThis.prismaGlobal ?? prismaClientSingleton();
 
 export default prisma;

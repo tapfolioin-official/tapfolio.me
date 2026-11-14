@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import path from 'path';
+import crypto from 'crypto';
 import prisma from '@/lib/db';
 import { slugify } from '@/lib/blog-utils';
 
@@ -44,36 +45,58 @@ export async function POST(request: NextRequest) {
     const safeFilename = `${slugify(baseName) || 'image'}-${Date.now()}${ext.toLowerCase()}`;
 
     // 4. Save directly into Neon PostgreSQL BYTEA binary storage
-    const image = await prisma.blogImage.create({
-      data: {
-        filename: safeFilename,
+    let imageId: string = '';
+
+    if ((prisma as any).blogImage?.create) {
+      try {
+        const image = await (prisma as any).blogImage.create({
+          data: {
+            filename: safeFilename,
+            mimeType,
+            fileSize,
+            altText: altText || baseName,
+            title: baseName,
+            data: buffer,
+            uploadedBy: 'Tapfolio Admin',
+          },
+          select: {
+            id: true,
+          },
+        });
+        imageId = image.id;
+      } catch (prismaErr) {
+        console.warn('[BLOG UPLOAD] Prisma create failed, falling back to raw SQL:', prismaErr);
+      }
+    }
+
+    // Fallback if dev server cached stale Prisma Client prototype
+    if (!imageId) {
+      const uuid = crypto.randomUUID();
+      await prisma.$executeRawUnsafe(
+        `INSERT INTO blog_images (id, filename, mime_type, file_size, alt_text, title, data, uploaded_by, created_at, updated_at)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())`,
+        uuid,
+        safeFilename,
         mimeType,
         fileSize,
-        altText: altText || baseName,
-        title: baseName,
-        data: buffer,
-        uploadedBy: 'Tapfolio Admin',
-      },
-      select: {
-        id: true,
-        filename: true,
-        fileSize: true,
-        mimeType: true,
-        altText: true,
-        createdAt: true,
-      },
-    });
+        altText || baseName,
+        baseName,
+        buffer,
+        'Tapfolio Admin'
+      );
+      imageId = uuid;
+    }
 
-    const publicUrl = `/api/blog/images/${image.id}`;
+    const publicUrl = `/api/blog/images/${imageId}`;
 
     return NextResponse.json({
       success: true,
-      id: image.id,
+      id: imageId,
       url: publicUrl,
-      filename: image.filename,
-      size: image.fileSize,
-      mimeType: image.mimeType,
-      altText: image.altText,
+      filename: safeFilename,
+      size: fileSize,
+      mimeType,
+      altText: altText || baseName,
     });
   } catch (error: any) {
     console.error('[BLOG UPLOAD TO POSTGRESQL ERROR]:', error);

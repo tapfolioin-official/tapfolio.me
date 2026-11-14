@@ -16,32 +16,63 @@ export async function GET(
     // Clean id (in case filename or extension was appended)
     const cleanId = id.split('/')[0].split('.')[0].trim();
 
-    // Query image from Neon PostgreSQL
-    // Accept either direct UUID or filename lookup
-    const image = await prisma.blogImage.findFirst({
-      where: {
-        OR: [
-          { id: cleanId },
-          { id },
-          { filename: id },
-        ],
-      },
-      select: {
-        id: true,
-        data: true,
-        mimeType: true,
-        fileSize: true,
-        filename: true,
-        updatedAt: true,
-      },
-    });
+    let image: any = null;
+
+    // 1. Try Prisma Client ORM query if blogImage model is present
+    if ((prisma as any).blogImage?.findFirst) {
+      try {
+        image = await (prisma as any).blogImage.findFirst({
+          where: {
+            OR: [
+              { id: cleanId },
+              { id },
+              { filename: id },
+            ],
+          },
+          select: {
+            id: true,
+            data: true,
+            mimeType: true,
+            fileSize: true,
+            filename: true,
+            updatedAt: true,
+          },
+        });
+      } catch (prismaErr) {
+        console.warn('[API BLOG IMAGE] Prisma findFirst skipped, falling back to raw query:', prismaErr);
+      }
+    }
+
+    // 2. Resilient raw SQL fallback (protects against stale PrismaClient instances in active dev processes)
+    if (!image) {
+      try {
+        const rows = await prisma.$queryRawUnsafe<any[]>(
+          `SELECT id, data, mime_type AS "mimeType", file_size AS "fileSize", filename, updated_at AS "updatedAt"
+           FROM blog_images
+           WHERE id::text = $1 OR id::text = $2 OR filename = $1
+           LIMIT 1`,
+          id,
+          cleanId
+        );
+        if (rows && rows.length > 0) {
+          image = rows[0];
+        }
+      } catch (rawErr) {
+        console.error('[API BLOG IMAGE RAW SQL ERROR]:', rawErr);
+      }
+    }
 
     if (!image || !image.data) {
       return new NextResponse('Image not found', { status: 404 });
     }
 
     // Generate ETag based on ID and updatedAt timestamp
-    const etag = `W/"${image.id}-${image.updatedAt.getTime()}"`;
+    const updatedAtTime =
+      image.updatedAt instanceof Date
+        ? image.updatedAt.getTime()
+        : new Date(image.updatedAt || Date.now()).getTime();
+
+    const etag = `W/"${image.id}-${updatedAtTime}"`;
     const clientEtag = request.headers.get('if-none-match');
 
     if (clientEtag === etag) {
