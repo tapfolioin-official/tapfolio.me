@@ -134,10 +134,10 @@ export default function PrivacyPolicy() {
                 Our security and compliance team is available to assist with inquiries.
               </p>
               <a 
-                href="mailto:tapfolio.in@gmail.com" 
+                href="mailto:security@tapfolio.me" 
                 className="inline-flex items-center gap-2 bg-white text-blue-600 font-bold text-xs px-4 py-2.5 rounded-full hover:bg-blue-50 transition-colors"
               >
-                tapfolio.in@gmail.com <ArrowRight size={14} />
+                security@tapfolio.me <ArrowRight size={14} />
               </a>
             </div>
           </aside>
@@ -303,7 +303,8 @@ export default function PrivacyPolicy() {
                 For questions regarding this policy, data protection inquiries, or assistance with account management:
               </p>
               <div className="space-y-1 text-sm font-medium text-gray-900">
-                <p><strong>Email:</strong> <a href="mailto:tapfolio.in@gmail.com" className="text-blue-600 hover:underline">tapfolio.in@gmail.com</a></p>
+                <p><strong>Privacy & Data Protection:</strong> <a href="mailto:security@tapfolio.me" className="text-blue-600 hover:underline">security@tapfolio.me</a></p>
+                <p><strong>Customer Support:</strong> <a href="mailto:support@tapfolio.me" className="text-blue-600 hover:underline">support@tapfolio.me</a></p>
                 <p><strong>Entity:</strong> TapFolio Inc.</p>
               </div>
             </section>

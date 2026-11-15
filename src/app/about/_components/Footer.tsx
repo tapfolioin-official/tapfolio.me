@@ -16,7 +16,9 @@ export default function Footer() {
               The smartest business card on the planet. Eco-friendly, always updated, and designed for modern professionals.
             </p>
             <div className="text-gray-900 font-medium text-sm">
-              tapfolio.in@gmail.com
+              <a href="mailto:hello@tapfolio.me" className="hover:text-blue-600 transition-colors">
+                hello@tapfolio.me
+              </a>
             </div>
           </div>
           

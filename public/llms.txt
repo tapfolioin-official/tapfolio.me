@@ -26,9 +26,10 @@
 ## Contact & Help Center
 - Support Channels: Email support, custom setup guides, and troubleshooting lines.
   - Link: https://www.tapfolio.me/support
-  - General: tapfolio.in@gmail.com
-  - Tech Support: tapfolio.in@gmail.com
-  - Enterprise Sales: enterprise@tapfolio.me
+  - General: hello@tapfolio.me
+  - Tech Support: developer@tapfolio.me
+  - Customer Support: support@tapfolio.me
+  - Sales & Enterprise: sales@tapfolio.me
 
 ## Official Canonical Resources
 - Web Platform: https://www.tapfolio.me

@@ -19,7 +19,9 @@ export default function Footer() {
               Official leadership & founder profile directory for Tapfolio. Structured entity graph for Google Knowledge Graph and search engine indexation.
             </p>
             <div className="text-blue-600 font-semibold text-xs mt-1">
-              tapfolio.in@gmail.com
+              <a href="mailto:hello@tapfolio.me" className="hover:underline">
+                hello@tapfolio.me
+              </a>
             </div>
           </div>
           

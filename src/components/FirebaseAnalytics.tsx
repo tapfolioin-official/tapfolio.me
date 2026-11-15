@@ -6,7 +6,7 @@ import { initAnalytics } from '@/lib/firebase';
 export default function FirebaseAnalytics() {
   useEffect(() => {
     initAnalytics().catch((err) => {
-      console.warn('[FIREBASE] Analytics initialization error:', err);
+      console.debug('[FIREBASE] Analytics initialization skipped:', err);
     });
   }, []);
 

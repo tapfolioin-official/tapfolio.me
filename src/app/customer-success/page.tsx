@@ -209,7 +209,11 @@ export default function CustomerSuccessPage() {
               <p className="text-gray-500 text-sm leading-relaxed mb-6">
                 The smartest business card on the planet. Eco-friendly, always updated, and designed for modern professionals.
               </p>
-              <div className="text-gray-900 font-medium text-sm">tapfolio.in@gmail.com</div>
+              <div className="text-gray-900 font-medium text-sm">
+                <a href="mailto:hello@tapfolio.me" className="hover:text-blue-600 transition-colors">
+                  hello@tapfolio.me
+                </a>
+              </div>
             </div>
             <div>
               <h4 className="font-bold text-gray-900 mb-4">Products</h4>

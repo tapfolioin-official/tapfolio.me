@@ -95,7 +95,7 @@ export const foundersData: Record<string, FounderProfile> = {
     company: "Tapfolio",
     avatar: "/nibras.png",
     shortSummary: "Meet Mohammed Nibrasul Haqq, Co-Founder & CTO of Tapfolio. Explore his work in software engineering, AI integration, platform architecture, and product development.",
-    email: "tapfolio.in@gmail.com",
+    email: "developer@tapfolio.me",
     portfolioUrl: "https://www.tapfolio.me/nibrasulhaqq",
     socials: [
       { platform: "LinkedIn", url: "https://www.linkedin.com/in/mohammed-nibrasul-haqq-8267162ba/" },

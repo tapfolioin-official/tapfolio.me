@@ -17,7 +17,7 @@ export function getOrganizationSchema(): Record<string, any> {
       "caption": "Tapfolio Logo"
     },
     "description": "Tapfolio provides smart NFC professional profiles and digital business cards.",
-    "email": "tapfolio.in@gmail.com",
+    "email": "hello@tapfolio.me",
     "foundingLocation": {
       "@type": "Place",
       "name": "Kochi, India"
@@ -62,7 +62,7 @@ export function getOrganizationSchema(): Record<string, any> {
     ],
     "contactPoint": {
       "@type": "ContactPoint",
-      "email": "tapfolio.in@gmail.com",
+      "email": "support@tapfolio.me",
       "contactType": "customer support"
     }
   };

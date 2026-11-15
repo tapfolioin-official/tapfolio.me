@@ -13,7 +13,7 @@ const getInitialData = (): InvoiceData => {
       tagline: 'Where Innovation Meets Identity',
       address: 'CORPORATE OFFICE',
       phone: '+91 77366 50217',
-      email: 'tapfolio.in@gmail.com',
+      email: 'support@tapfolio.me',
       website: 'www.tapfolio.me',
       gstNumber: '',
       panNumber: ''

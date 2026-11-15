@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAnalytics, isSupported } from 'firebase/analytics';
+import type { Analytics } from 'firebase/analytics';
 
 export const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyCKHc3Gt5zosmGmTVzc-LLSR42e8Gjbedc",
@@ -14,10 +14,28 @@ export const firebaseConfig = {
 // Initialize Firebase (singleton pattern for Next.js SSR)
 export const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
+let analyticsInstance: Analytics | null = null;
+
 // Initialize Analytics (runs on client-side only when supported)
-export const initAnalytics = async () => {
-  if (typeof window !== 'undefined' && await isSupported()) {
-    return getAnalytics(app);
+export const initAnalytics = async (): Promise<Analytics | null> => {
+  if (typeof window === 'undefined') {
+    return null;
   }
+
+  if (analyticsInstance) {
+    return analyticsInstance;
+  }
+
+  try {
+    const { getAnalytics, isSupported } = await import('firebase/analytics');
+    const supported = await isSupported().catch(() => false);
+    if (supported) {
+      analyticsInstance = getAnalytics(app);
+      return analyticsInstance;
+    }
+  } catch (error) {
+    console.debug('[FIREBASE] Analytics initialization skipped:', error);
+  }
+
   return null;
 };
