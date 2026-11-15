@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import prisma from '@/lib/db';
 import { signJWT } from '@/lib/auth';
+import { deriveSessionKey } from '@/lib/security';
 import { rateLimit } from '@/lib/rate-limit';
 
 export async function POST(request: Request) {
@@ -59,6 +60,7 @@ export async function POST(request: Request) {
       success: true,
       message: 'Password reset successfully!',
       token,
+      transactionKey: await deriveSessionKey(token),
       user: {
         id: user.id,
         name: user.name,

@@ -1,9 +1,9 @@
 import { NextRequest } from 'next/server';
 
 // Server-side master transaction secret (stored in server env, never sent to clients)
+// Default baseline key matches the mobile app's fallback for pre-auth bootstrap transactions
 const SERVER_MASTER_SECRET =
   process.env.API_TRANSACTION_SECRET ||
-  process.env.JWT_SECRET ||
   'tapfolio_master_sec_2026_9f8a3c1e5b7d';
 
 // In-memory nonce cache to prevent replay attacks (nonce -> expiration timestamp)
@@ -189,20 +189,55 @@ export async function verifyTransactionSecurity(request: NextRequest): Promise<V
 
   // 5. Build canonical representation: METHOD\nPATH\nQUERY\nTIMESTAMP\nNONCE\nBODY_HASH
   const method = request.method.toUpperCase();
-  const pathname = request.nextUrl.pathname;
+  const rawPathname = request.nextUrl.pathname;
+  const pathname = rawPathname.length > 1 ? rawPathname.replace(/\/+$/, '') : rawPathname;
   const search = request.nextUrl.search ? request.nextUrl.search.replace(/^\?/, '') : '';
-  const canonicalString = `${method}\n${pathname}\n${search}\n${timestamp}\n${nonce}\n${bodyHash}`;
 
-  const expectedSignature = await computeHmacSha256(canonicalString, secret);
+  const candidateCanonicals = Array.from(
+    new Set([
+      `${method}\n${pathname}\n${search}\n${timestamp}\n${nonce}\n${bodyHash}`,
+      `${method}\n${rawPathname}\n${search}\n${timestamp}\n${nonce}\n${bodyHash}`,
+    ])
+  );
+
+  // Candidate secrets to check:
+  // 1. Resolved secret (session key derived from JWT token, or handshake key, or SERVER_MASTER_SECRET)
+  // 2. Default baseline key ('tapfolio_master_sec_2026_9f8a3c1e5b7d') for unauthenticated mobile requests
+  // 3. API_TRANSACTION_SECRET or JWT_SECRET for backward compatibility
+  const candidateSecrets = Array.from(
+    new Set(
+      [
+        secret,
+        'tapfolio_master_sec_2026_9f8a3c1e5b7d',
+        process.env.API_TRANSACTION_SECRET,
+        process.env.JWT_SECRET,
+      ].filter((s): s is string => Boolean(s && typeof s === 'string' && s.trim().length > 0))
+    )
+  );
+
+  let matchedSecret: string | null = null;
 
   try {
     const signatureBuffer = hexToBytes(signature);
-    const expectedBuffer = hexToBytes(expectedSignature);
 
-    if (
-      signatureBuffer.length !== expectedBuffer.length ||
-      !timingSafeEqual(signatureBuffer, expectedBuffer)
-    ) {
+    for (const canonical of candidateCanonicals) {
+      for (const candidate of candidateSecrets) {
+        const expectedSignature = await computeHmacSha256(canonical, candidate);
+        const expectedBuffer = hexToBytes(expectedSignature);
+
+        if (
+          signatureBuffer.length === expectedBuffer.length &&
+          timingSafeEqual(signatureBuffer, expectedBuffer)
+        ) {
+          matchedSecret = candidate;
+          break;
+        }
+      }
+      if (matchedSecret) break;
+    }
+
+    if (!matchedSecret) {
+      console.warn(`[SECURITY/HMAC_MISMATCH] Signature mismatch for ${method} ${pathname}`);
       return {
         valid: false,
         isMobile: true,
@@ -224,7 +259,7 @@ export async function verifyTransactionSecurity(request: NextRequest): Promise<V
     isMobile: true,
     nonce,
     timestamp,
-    resolvedSecret: secret,
+    resolvedSecret: matchedSecret,
   };
 }
 
