@@ -276,18 +276,7 @@ export async function middleware(request: NextRequest) {
 
   const response = NextResponse.next();
 
-  // 9. Sign Response for Mobile Client
-  if (pathname.startsWith('/api/') && mobileVerification?.isMobile && mobileVerification.nonce) {
-    const { signature: respSig, timestamp: respTime } = await generateResponseSignature(
-      response.status,
-      mobileVerification.nonce,
-      mobileVerification.resolvedSecret
-    );
-    response.headers.set('X-Pertap-Response-Signature', respSig);
-    response.headers.set('X-Pertap-Response-Timestamp', respTime);
-  }
-
-  // 10. Provision CSRF Token Cookie for Browser Sessions
+  // 9. Provision CSRF Token Cookie for Browser Sessions
   if (!isMobile && !request.cookies.has(CSRF_COOKIE_NAME)) {
     const csrfToken = await generateCsrfToken();
     response.cookies.set(CSRF_COOKIE_NAME, csrfToken, {
